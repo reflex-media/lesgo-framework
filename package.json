@@ -1,0 +1,76 @@
+{
+  "name": "lesgo-framework",
+  "version": "0.1.0",
+  "description": "Core framework for lesgo node.js serverless framework.",
+  "main": "./index.js",
+  "author": "Sufiyan Rahmat",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/reflex-media/lesgo-framework/issues"
+  },
+  "homepage": "https://github.com/reflex-media/lesgo-framework#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/reflex-media/lesgo-framework.git"
+  },
+  "scripts": {
+    "build": "babel src -d build --ignore **/__tests__/ --ignore **/__mocks__/",
+    "test": "jest",
+    "coverage": "jest --coverage"
+  },
+  "bin": {
+    "lesgo-scripts": "./bin/slsboot-scripts.sh"
+  },
+  "engines": {
+    "node": ">=10.0.0"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.6.0",
+    "@babel/core": "^7.6.0",
+    "@babel/preset-env": "^7.6.0",
+    "babel-jest": "^24.9.0",
+    "babel-preset-minify": "^0.5.1",
+    "eslint": "^6.4.0",
+    "eslint-config-airbnb-base": "^14.0.0",
+    "eslint-config-prettier": "^6.3.0",
+    "eslint-plugin-import": "^2.18.2",
+    "eslint-plugin-jest": "^22.17.0",
+    "eslint-plugin-prettier": "^3.1.1",
+    "husky": "^3.0.5",
+    "jest": "^24.9.0",
+    "lint-staged": "^9.2.5",
+    "prettier": "^1.18.2"
+  },
+  "jest": {
+    "verbose": true,
+    "testMatch": [
+      "**/__tests__/*.spec.js"
+    ],
+    "collectCoverageFrom": [
+      "src/**/*.js"
+    ],
+    "coverageReporters": [
+      "html",
+      "text"
+    ],
+    "coverageThreshold": {
+      "global": {
+        "branches": 100,
+        "functions": 100,
+        "lines": 100,
+        "statements": 100
+      }
+    }
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.js": [
+      "eslint --fix",
+      "git add"
+    ]
+  }
+}
