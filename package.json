@@ -1,5 +1,5 @@
 {
-  "name": "lesgo-framework",
+  "name": "lesgo",
   "version": "0.1.0",
   "description": "Core framework for lesgo node.js serverless framework.",
   "main": "./index.js",
