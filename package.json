@@ -1,6 +1,6 @@
 {
-  "name": "lesgo",
-  "version": "0.1.0",
+  "name": "@reflex-media/lesgo",
+  "version": "0.1.3",
   "description": "Core framework for lesgo node.js serverless framework.",
   "main": "./index.js",
   "author": "Sufiyan Rahmat",
@@ -19,7 +19,7 @@
     "coverage": "jest --coverage"
   },
   "bin": {
-    "lesgo-scripts": "./bin/slsboot-scripts.sh"
+    "lesgo-scripts": "./bin/lesgo-scripts.sh"
   },
   "engines": {
     "node": ">=10.0.0"
