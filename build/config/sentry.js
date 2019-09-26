@@ -1,0 +1,1 @@
+"use strict";Object.defineProperty(exports,"__esModule",{value:!0}),exports["default"]=void 0;var _default={enabled:"true"===process.env.SENTRY_ENABLED,dsn:process.env.SENTRY_DSN};exports["default"]=_default;
