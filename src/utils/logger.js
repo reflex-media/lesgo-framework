@@ -1,5 +1,5 @@
 import winston from 'winston';
-import Sentry from 'winston-transport-sentry-node';
+import Sentry from 'winston-sentry-raven-transport';
 
 import { app, sentry } from '../config';
 
@@ -21,15 +21,15 @@ if (app.env === 'local' && app.debug) {
 if (sentry.enabled) {
   transports.push(
     new Sentry({
-      sentry: {
-        dsn: sentry.dsn,
+      dsn: sentry.dsn,
+      level: sentry.level,
+      config: {
         environment: app.env,
-        debug: app.debug,
+        captureUnhandledRejections: true,
         tags: {
           service: app.service,
         },
       },
-      level: sentry.level,
     })
   );
 }

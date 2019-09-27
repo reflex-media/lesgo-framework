@@ -44,12 +44,7 @@
   "dependencies": {
     "sentry": "^0.1.2",
     "winston": "^3.2.1",
-    "winston-transport-sentry-node": "^0.2.0"
-  },
-  "requires": {
-    "sentry": "^0.1.2",
-    "winston": "^3.2.1",
-    "winston-transport-sentry-node": "^0.2.0"
+    "winston-sentry-raven-transport": "^1.0.3"
   },
   "jest": {
     "verbose": true,
