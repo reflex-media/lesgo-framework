@@ -25,7 +25,7 @@ if (sentry.enabled) {
       level: sentry.level,
       config: {
         environment: app.env,
-        captureUnhandledRejections: true,
+        release: sentry.release,
         tags: {
           service: app.service,
         },
