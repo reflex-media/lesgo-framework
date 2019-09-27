@@ -1,3 +1,5 @@
+import logger from '../utils/logger';
+
 export const normalizeRequest = opts => {
   const { headers, qs, body } = opts;
   let input = null;
@@ -33,6 +35,10 @@ export const normalizeHttpRequestBeforeHandler = (handler, next) => {
 
   // eslint-disable-next-line no-param-reassign
   handler.event.input = normalizeRequest(options);
+
+  // attach additional http request metadata in the logger
+  logger.withMeta = logger.child({ path: handler.event.path });
+
   /* istanbul ignore next */
   next();
 };
