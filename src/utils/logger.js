@@ -10,6 +10,7 @@ const transports = [
   }),
 ];
 
+/* istanbul ignore next */
 if (app.env === 'local' && app.debug) {
   transports.push(
     new winston.transports.File({
@@ -25,6 +26,7 @@ if (app.env === 'local' && app.debug) {
   );
 }
 
+/* istanbul ignore next */
 if (sentry.enabled) {
   transports.push(
     new Sentry({
