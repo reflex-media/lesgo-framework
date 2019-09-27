@@ -1,6 +1,20 @@
+import logger from '../utils/logger';
+
 export const normalizeHandler = records => {
-  if (!records || records === null || Object.keys(records).length === 0)
-    return null;
+  let recordCount = 0;
+
+  if (!records || records === null || Object.keys(records).length === 0) {
+    recordCount = null;
+  } else {
+    recordCount = Object.keys(records).length;
+  }
+
+  // attach additional SQS message metadata in the logger
+  logger.withMeta = logger.child({
+    recordCount,
+  });
+
+  if (recordCount === null) return null;
 
   return Object.values(records).map(record => ({
     messageId: record.messageId,

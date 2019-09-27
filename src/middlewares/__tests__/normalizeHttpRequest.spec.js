@@ -83,4 +83,18 @@ describe('test normalizeHttpRequestBeforeHandler', () => {
     normalizeHttpRequestBeforeHandler(handler, () => {});
     expect(handler.event.input).toBe(null);
   });
+
+  it('test with request context', () => {
+    const handler = {
+      event: {
+        headers: {},
+        requestContext: {
+          requestId: 'requestId',
+        },
+      },
+    };
+
+    normalizeHttpRequestBeforeHandler(handler, () => {});
+    expect(handler.event.requestContext.requestId).toBe('requestId');
+  });
 });

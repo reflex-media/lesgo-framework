@@ -37,7 +37,15 @@ export const normalizeHttpRequestBeforeHandler = (handler, next) => {
   handler.event.input = normalizeRequest(options);
 
   // attach additional http request metadata in the logger
-  logger.withMeta = logger.child({ path: handler.event.path });
+  logger.withMeta = logger.child({
+    path: handler.event.path,
+    queryStringParameters: options.qs,
+    body: options.body,
+    httpMethod: handler.event.httpMethod,
+    requestId: handler.event.requestContext
+      ? handler.event.requestContext.requestId
+      : null,
+  });
 
   /* istanbul ignore next */
   next();

@@ -70,7 +70,10 @@
         "lines": 100,
         "statements": 100
       }
-    }
+    },
+    "setupFiles": [
+      "./src/setupTest.js"
+    ]
   },
   "husky": {
     "hooks": {

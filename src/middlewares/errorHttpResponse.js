@@ -1,3 +1,5 @@
+import logger from '../utils/logger';
+
 export const errorHttpResponseHandler = opts => {
   const defaults = {
     response: '',
@@ -22,21 +24,34 @@ export const errorHttpResponseHandler = opts => {
 
   const options = { ...defaults, ...optionsHeadersMerged };
 
+  const jsonBody = {
+    status: 'error',
+    data: null,
+    error: {
+      code: options.error.code || 'UNKNOWN_ERROR',
+      message: options.error.name
+        ? `${options.error.name}: ${options.error.message}`
+        : options.error.message || options.error,
+      details: options.error.extra || '',
+    },
+    _meta: options.debugMode ? options.event : {},
+  };
+
+  const statusCode = options.error.statusCode || options.statusCode;
+
+  /* istanbul ignore next */
+  if (statusCode === 500) {
+    // this is likely an unhandled exception, log it
+    logger.withMeta.error(jsonBody.error.message, {
+      code: jsonBody.error.code,
+      details: jsonBody.error.details,
+    });
+  }
+
   return {
     headers: options.headers,
-    statusCode: options.error.statusCode || options.statusCode,
-    body: JSON.stringify({
-      status: 'error',
-      data: null,
-      error: {
-        code: options.error.code || 'UNKNOWN_ERROR',
-        message: options.error.name
-          ? `${options.error.name}: ${options.error.message}`
-          : options.error.message || options.error,
-        details: options.error.extra || '',
-      },
-      _meta: options.debugMode ? options.event : {},
-    }),
+    statusCode,
+    body: JSON.stringify(jsonBody),
   };
 };
 
