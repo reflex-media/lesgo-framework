@@ -10,46 +10,28 @@ const transports = [
   }),
 ];
 
-const exceptionTransports = [new winston.transports.Console()];
-
-/* istanbul ignore next */
 if (app.env === 'local' && app.debug) {
   transports.push(
     new winston.transports.File({
-      filename: 'logs/logs.log',
-    })
-  );
-
-  transports.push(
-    new winston.transports.File({
-      filename: 'logs/errors.log',
-      level: 'error',
-    })
-  );
-
-  exceptionTransports.push(
-    new winston.transports.File({
-      filename: 'logs/exceptions.log',
+      filename: 'logs/lesgo.log',
     })
   );
 }
 
-/* istanbul ignore next */
 if (sentry.enabled) {
-  const sentryTransport = new Sentry({
-    sentry: {
-      dsn: sentry.dsn,
-      environment: app.env,
-      debug: app.debug,
-      tags: {
-        service: app.service,
+  transports.push(
+    new Sentry({
+      sentry: {
+        dsn: sentry.dsn,
+        environment: app.env,
+        debug: app.debug,
+        tags: {
+          service: app.service,
+        },
       },
-    },
-    level: sentry.level,
-  });
-
-  transports.push(sentryTransport);
-  exceptionTransports.push(sentryTransport);
+      level: sentry.level,
+    })
+  );
 }
 
 const loggerOptions = {
@@ -57,7 +39,6 @@ const loggerOptions = {
   format: winston.format.json(),
   defaultMeta: { environment: app.env, service: app.service },
   transports,
-  exceptionHandlers: exceptionTransports,
 };
 
 const logger = winston.createLogger(loggerOptions);
