@@ -10,7 +10,7 @@ const transports = [
   }),
 ];
 
-if (app.env === 'local' || app.debug) {
+if (app.env === 'local' && app.debug) {
   transports.push(
     new winston.transports.File({
       filename: 'logs/logs.log',
@@ -32,6 +32,9 @@ if (sentry.enabled) {
         dsn: sentry.dsn,
         environment: app.env,
         debug: app.debug,
+        tags: {
+          service: app.service,
+        },
       },
       level: 'error',
     })
@@ -41,7 +44,7 @@ if (sentry.enabled) {
 const loggerOptions = {
   level: 'info',
   format: winston.format.json(),
-  defaultMeta: { environment: app.env },
+  defaultMeta: { environment: app.env, service: app.service },
   transports,
 };
 
