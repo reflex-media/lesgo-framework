@@ -1,5 +1,5 @@
 import winston from 'winston';
-import Sentry from 'winston-sentry-raven-transport';
+import SentryWinstonTransport from '../services/SentryWinstonTransport';
 
 import { app, sentry } from '../config';
 
@@ -20,13 +20,13 @@ if (app.env === 'local' && app.debug) {
 
 if (sentry.enabled) {
   transports.push(
-    new Sentry({
+    new SentryWinstonTransport({
       dsn: sentry.dsn,
       level: sentry.level,
       config: {
-        environment: app.env,
-        release: sentry.release,
         tags: {
+          release: sentry.release,
+          environment: app.env,
           service: app.service,
         },
       },
@@ -37,7 +37,7 @@ if (sentry.enabled) {
 const loggerOptions = {
   level: 'info',
   format: winston.format.json(),
-  defaultMeta: { environment: app.env, service: app.service },
+  defaultMeta: {},
   transports,
 };
 
