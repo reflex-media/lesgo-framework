@@ -28,6 +28,7 @@
     "@babel/cli": "^7.6.0",
     "@babel/core": "^7.6.0",
     "@babel/preset-env": "^7.6.0",
+    "@sentry/cli": "^1.47.2",
     "babel-jest": "^24.9.0",
     "babel-preset-minify": "^0.5.1",
     "eslint": "^6.4.0",

@@ -72,6 +72,9 @@ if [ -f "$FILE" ]; then
     ENVFILE=${ENVFILE}.local
 fi
 
+# Load env
+export $(cat ./config/environments/.env.${ENVFILE} | sed 's/#.*//g' | xargs)
+
 # color codes
 RED='\033[0;31m';
 GREEN='\033[0;32m';
@@ -102,6 +105,7 @@ function deploy_func ()
 {
     echo -e "${YELLOW}Deploying ${FUNCTION} to ${STAGE}${NC}"
     sls deploy -f ${FUNCTION} --stage ${STAGE} --env ${ENVFILE}
+    deploy_sourcemap
 }
 
 function prompt_confirmation_deploy_all ()
@@ -132,6 +136,7 @@ function deploy_full ()
 {
     echo -e "${YELLOW}Deploying service to ${STAGE}${NC}"
     sls deploy --stage ${STAGE} --env ${ENVFILE}
+    deploy_sourcemap_all
 }
 
 function invoke_func ()
@@ -144,6 +149,19 @@ function log_stream_func ()
 {
     echo -e "${YELLOW}Log Streaming function ${FUNCTION} on ${STAGE}${NC}"
     sls logs -f ${FUNCTION} --stage ${STAGE} --env ${ENVFILE} -t
+}
+
+function deploy_sourcemap_all ()
+{
+    echo -e "${YELLOW}Deploying all sourcemaps to Sentry${NC}"
+    yes | for z in ./.serverless/*.zip; do unzip -d .webpack/ "$z"; done
+    sentry-cli releases --org=${SENTRY_ORG} --project=${SENTRY_PROJECT} files ${SENTRY_RELEASE} upload-sourcemaps "./.webpack/src/handlers" --url-prefix="/var/task/src/handlers" --rewrite=true
+}
+
+function deploy_sourcemap ()
+{
+    echo -e "${YELLOW}Deploying function sourcemap to Sentry${NC}"
+    sentry-cli releases --org=${SENTRY_ORG} --project=${SENTRY_PROJECT} files ${SENTRY_RELEASE} upload-sourcemaps "./.webpack/${FUNCTION}/src/handlers" --url-prefix="/var/task/src/handlers" --rewrite=true
 }
 
 ###############################################################################
