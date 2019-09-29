@@ -105,7 +105,10 @@ function deploy_func ()
 {
     echo -e "${YELLOW}Deploying ${FUNCTION} to ${STAGE}${NC}"
     sls deploy -f ${FUNCTION} --stage ${STAGE} --env ${ENVFILE}
-    deploy_sourcemap
+
+    if [[ ${SENTRY_ENABLED} == "true" ]]; then
+        deploy_sourcemap
+    fi
 }
 
 function prompt_confirmation_deploy_all ()
@@ -136,7 +139,10 @@ function deploy_full ()
 {
     echo -e "${YELLOW}Deploying service to ${STAGE}${NC}"
     sls deploy --stage ${STAGE} --env ${ENVFILE}
-    deploy_sourcemap_all
+
+    if [[ ${SENTRY_ENABLED} == "true" ]]; then
+        deploy_sourcemap_all
+    fi
 }
 
 function invoke_func ()
