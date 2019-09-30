@@ -36,8 +36,7 @@ export const normalizeHttpRequestBeforeHandler = (handler, next) => {
   // eslint-disable-next-line no-param-reassign
   handler.event.input = normalizeRequest(options);
 
-  // attach additional http request metadata in the logger
-  logger.withMeta = logger.child({
+  logger.addMeta({
     queryStringParameters: options.qs,
     body: options.body,
     requestId: handler.event.requestContext
