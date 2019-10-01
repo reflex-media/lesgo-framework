@@ -2,16 +2,20 @@ import { app, sentry } from '../config';
 
 import LoggerService from '../services/LoggerService';
 
-export const transports = [
+const transports = [
   {
     logType: 'console',
-    level: app.env === 'local' && app.debug ? 'debug' : 'info',
+    level:
+      app.env === 'local' && /* istanbul ignore next */ app.debug
+        ? /* istanbul ignore next */ 'debug'
+        : 'info',
     config: {
       getCreatedAt: true,
     },
   },
 ];
 
+/* istanbul ignore else */
 if (sentry.enabled) {
   transports.push({
     logType: 'sentry',

@@ -1,19 +1,17 @@
-// import logger, {transports} from '../logger';
+import logger from '../logger';
 
-// import { app } from '../../config';
+import { sentry } from '../../config';
 
 describe('test logger utils', () => {
   it('test logger', () => {
-    // app.env = 'local';
-    // app.debug = 'debug';
-    // const transports = [
-    //   {
-    //     logType: 'console',
-    //     level: app.env === 'local' && app.debug ? 'debug' : 'info',
-    //     config: {
-    //       getCreatedAt: true,
-    //     },
-    //   },
-    // ];
+    sentry.enabled = true;
+    logger.info('some info log');
+
+    expect(logger.transports).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ logType: 'console' }),
+        expect.objectContaining({ logType: 'sentry' }),
+      ])
+    );
   });
 });

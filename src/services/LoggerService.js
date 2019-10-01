@@ -85,13 +85,14 @@ export default class LoggerService {
       scope.setExtras(context.extra);
       scope.setTags(context.tags);
 
-      if (context.level === 'error' || context.level === 'fatal') {
+      if (context.level === 'error') {
         return Sentry.captureException(new Error(context.message));
       }
 
       return Sentry.captureMessage(context.message, context.level);
     });
 
+    /* istanbul ignore next */
     return Sentry.configureScope(scope => {
       scope.clear();
     });

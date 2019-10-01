@@ -1,1 +1,0 @@
-"use strict";console.log=jest.fn(),console.debug=jest.fn(),console.info=jest.fn(),console.warn=jest.fn(),console.error=jest.fn(),jest.mock("@sentry/minimal",function(){return{Sentry:jest.fn().mockImplementation(function(a){return{withScope:jest.fn(function(){return!1}),captureMessage:jest.fn().mockImplementation(function(b,c){return{message:b,level:c,mocked:{dsn:a.dsn}}})}})}});

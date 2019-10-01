@@ -1,5 +1,7 @@
 /* eslint no-console: 0 */
 
+import * as Sentry from '@sentry/minimal';
+
 import LoggerService from '../LoggerService';
 
 describe('test LoggerService instantiation', () => {
@@ -212,6 +214,23 @@ describe('test log LoggerService with console transport', () => {
     );
   });
 
+  it('test log with custom empty meta', () => {
+    console.info = jest.fn();
+
+    const logger = new LoggerService({ transports: [{ logType: 'console' }] });
+    logger.addMeta();
+    logger.log('info', 'some info log');
+
+    expect(console.info).toHaveBeenCalledWith(
+      JSON.stringify({
+        level: 'info',
+        message: 'some info log',
+        logger: 'lesgo-logger',
+        extra: {},
+      })
+    );
+  });
+
   it('test log with lower level', () => {
     console.info = jest.fn();
 
@@ -304,6 +323,48 @@ describe('test log LoggerService with Sentry transport', () => {
 
   it('test log with sentry', () => {
     const logger = new LoggerService(sentryTransportConfig);
-    expect(logger.error('some sentry error log')).toHaveBeenCalledWith({});
+    logger.error('some sentry error log');
+
+    const callback = Sentry.withScope.mock.calls[0][0]; // <= get the callback passed to Sentry.withScope
+    const scope = { setExtras: jest.fn(), setTags: jest.fn() };
+    callback(scope); // <= call the callback
+
+    expect(Sentry.captureException).toHaveBeenCalledWith(
+      new Error('some sentry error log')
+    );
+  });
+
+  it('test skip log with sentry', () => {
+    const logger = new LoggerService(sentryTransportConfig);
+    logger.info('some sentry info log');
+
+    const callback = Sentry.withScope.mock.calls[0][0]; // <= get the callback passed to Sentry.withScope
+    const scope = { setExtras: jest.fn(), setTags: jest.fn() };
+    callback(scope); // <= call the callback
+
+    expect(Sentry.captureMessage).not.toHaveBeenCalled();
+
+    Sentry.withScope.mockReset();
+  });
+
+  it('test info log with sentry', () => {
+    const logger = new LoggerService({
+      transports: [
+        {
+          logType: 'sentry',
+          level: 'info',
+        },
+      ],
+    });
+    logger.info('some sentry info log');
+
+    const callback = Sentry.withScope.mock.calls[0][0]; // <= get the callback passed to Sentry.withScope
+    const scope = { setExtras: jest.fn(), setTags: jest.fn() };
+    callback(scope); // <= call the callback
+
+    expect(Sentry.captureMessage).toHaveBeenCalledWith(
+      'some sentry info log',
+      'info'
+    );
   });
 });
