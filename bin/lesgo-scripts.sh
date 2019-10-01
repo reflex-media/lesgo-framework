@@ -9,12 +9,13 @@
 usage="$(basename "$0") [-f] [-s] [-t] [-h] -- script to deploy serverless functions
 
 where:
-    -t      define the type of action to be taken (deploy, invoke, logs)
+    -t      define the type of action to be taken (build, deploy, invoke, logs)
     -f      specify function to involve
     -s      specify stage (e.g; dev, stage, prod)
     -h      show this help text"
 
 # arg options
+BUILD=0;        # serverless build without deploy
 DEPLOY=0;       # serverless deploy
 INVOKE=0;       # serverless invoke of specific function
 LOGS=0;         # serverless stream log of specific function
@@ -27,7 +28,9 @@ while getopts "hs:f:t:" OPT ; do
     f) FUNCTION=${OPTARG} ;;
     s) STAGE=${OPTARG} ;;
     t)
-        if [ ${OPTARG} == "deploy" ]; then
+        if [ ${OPTARG} == "build" ]; then
+            BUILD=1;
+        elif [ ${OPTARG} == "deploy" ]; then
             DEPLOY=1;
         elif [ ${OPTARG} == "invoke" ]; then
             INVOKE=1;
@@ -102,6 +105,10 @@ function deploy_func ()
 {
     echo -e "${YELLOW}Deploying ${FUNCTION} to ${STAGE}${NC}"
     sls deploy -f ${FUNCTION} --stage ${STAGE} --env ${ENVFILE}
+
+    if [[ ${SENTRY_ENABLED} == "true" ]]; then
+        deploy_sourcemap
+    fi
 }
 
 function prompt_confirmation_deploy_all ()
@@ -132,6 +139,10 @@ function deploy_full ()
 {
     echo -e "${YELLOW}Deploying service to ${STAGE}${NC}"
     sls deploy --stage ${STAGE} --env ${ENVFILE}
+
+    if [[ ${SENTRY_ENABLED} == "true" ]]; then
+        deploy_sourcemap_all
+    fi
 }
 
 function invoke_func ()
@@ -146,6 +157,25 @@ function log_stream_func ()
     sls logs -f ${FUNCTION} --stage ${STAGE} --env ${ENVFILE} -t
 }
 
+function deploy_sourcemap_all ()
+{
+    echo -e "${YELLOW}Deploying all sourcemaps to Sentry${NC}"
+    yes | for z in ./.serverless/*.zip; do unzip -d .webpack/ "$z"; done
+    sentry-cli --auth-token=${SENTRY_AUTHTOKEN} releases --org=${SENTRY_ORG} --project=${SENTRY_PROJECT} files ${SENTRY_RELEASE} upload-sourcemaps "./.webpack/src/handlers" --url-prefix="/var/task/src/handlers" --rewrite=true
+}
+
+function deploy_sourcemap ()
+{
+    echo -e "${YELLOW}Deploying function sourcemap to Sentry${NC}"
+    sentry-cli --auth-token=${SENTRY_AUTHTOKEN} releases --org=${SENTRY_ORG} --project=${SENTRY_PROJECT} files ${SENTRY_RELEASE} upload-sourcemaps "./.webpack/${FUNCTION}/src/handlers" --url-prefix="/var/task/src/handlers" --rewrite=true
+}
+
+function build ()
+{
+    echo -e "${YELLOW}Building bundle without deployment${NC}"
+    sls webpack --stage ${STAGE} --env ${ENVFILE}
+}
+
 ###############################################################################
 #                                                                             #
 # RUN STUFF                                                                   #
@@ -153,6 +183,9 @@ function log_stream_func ()
 ###############################################################################
 
 if [ -n "$STAGE" ]; then
+    # Load env
+    export $(cat ./config/environments/.env.${ENVFILE} | sed 's/#.*//g' | xargs)
+
     if [[ ${STAGE} == "dev" ]] || [[ ${STAGE} == "stage" ]] || [[ ${STAGE} == "prod" ]]; then
         if [ ${INVOKE} -eq 1 ]; then
             if [ -n "$FUNCTION" ]; then
@@ -174,6 +207,8 @@ if [ -n "$STAGE" ]; then
             else
                 prompt_confirmation_deploy_all
             fi
+        elif [ ${BUILD} -eq 1 ]; then
+            build
         else
           echo -e "${RED}Invalid Task [-t] supplied. Only 'deploy', 'invoke', 'logs' are allowed.${NC}"
           exit 1;

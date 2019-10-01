@@ -1,1 +1,0 @@
-"use strict";var _logger=_interopRequireDefault(require("./utils/logger"));function _interopRequireDefault(a){return a&&a.__esModule?a:{default:a}}_logger["default"].withMeta=_logger["default"].child({abc:"asd"});

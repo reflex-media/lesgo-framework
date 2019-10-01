@@ -1,46 +1,41 @@
-import winston from 'winston';
-import Sentry from 'winston-sentry-raven-transport';
-
 import { app, sentry } from '../config';
 
+import LoggerService from '../services/LoggerService';
+
 const transports = [
-  new winston.transports.Console({
-    level: 'info',
-    colorize: true,
-  }),
+  {
+    logType: 'console',
+    level:
+      app.env === 'local' && /* istanbul ignore next */ app.debug
+        ? /* istanbul ignore next */ 'debug'
+        : 'info',
+    config: {
+      getCreatedAt: true,
+    },
+  },
 ];
 
-if (app.env === 'local' && app.debug) {
-  transports.push(
-    new winston.transports.File({
-      filename: 'logs/lesgo.log',
-    })
-  );
-}
-
+/* istanbul ignore else */
 if (sentry.enabled) {
-  transports.push(
-    new Sentry({
+  transports.push({
+    logType: 'sentry',
+    level: sentry.level,
+    config: {
       dsn: sentry.dsn,
-      level: sentry.level,
-      config: {
-        environment: app.env,
+      tags: {
         release: sentry.release,
-        tags: {
-          service: app.service,
-        },
+        environment: app.env,
+        service: app.service,
       },
-    })
-  );
+    },
+  });
 }
 
 const loggerOptions = {
-  level: 'info',
-  format: winston.format.json(),
-  defaultMeta: { environment: app.env, service: app.service },
+  defaultMeta: {},
   transports,
 };
 
-const logger = winston.createLogger(loggerOptions);
+const logger = new LoggerService(loggerOptions);
 
 export default logger;
