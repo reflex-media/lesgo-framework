@@ -43,7 +43,7 @@ export default class LoggerService {
     const structuredMessage = this.structureLogMessage(level, message, extra);
 
     this.transports.map(transport => {
-      return this[transport.logType](level, structuredMessage);
+      return this[`${transport.logType}Logger`](level, structuredMessage);
     });
   }
 
@@ -70,18 +70,18 @@ export default class LoggerService {
     };
   }
 
-  console(level, message) {
+  consoleLogger(level, message) {
     if (!this.checkIsLogRequired('console', level)) return null;
     const refinedMessage = this.refineMessagePerTransport('console', message);
     return console[level](JSON.stringify(refinedMessage)); // eslint-disable-line no-console
   }
 
-  sentry(level, message) {
+  sentryLogger(level, message) {
     if (!this.checkIsLogRequired('sentry', level)) return null;
 
     const context = this.refineMessagePerTransport('sentry', message);
 
-    return Sentry.withScope(scope => {
+    Sentry.withScope(scope => {
       scope.setExtras(context.extra);
       scope.setTags(context.tags);
 
@@ -90,6 +90,10 @@ export default class LoggerService {
       }
 
       return Sentry.captureMessage(context.message, context.level);
+    });
+
+    return Sentry.configureScope(scope => {
+      scope.clear();
     });
   }
 
