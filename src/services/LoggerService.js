@@ -1,6 +1,4 @@
-import * as Sentry from '@sentry/node';
-
-import { sentry as sentryConfig } from '../config';
+import * as Sentry from '@sentry/minimal';
 
 export default class LoggerService {
   constructor(opts = {}) {
@@ -31,14 +29,6 @@ export default class LoggerService {
       info: 2,
       debug: 3,
     };
-
-    const sentryTransport = this.getTransportByName('sentry');
-    if (sentryTransport !== undefined) {
-      if (sentryConfig.enabled) {
-        Sentry.init({ dsn: sentryTransport.config.dsn });
-        this.sentryLogger = Sentry;
-      }
-    }
   }
 
   log(level, message, extra = {}) {
@@ -87,15 +77,15 @@ export default class LoggerService {
 
     const context = this.refineMessagePerTransport('sentry', message);
 
-    return this.sentryLogger.withScope(scope => {
+    return Sentry.withScope(scope => {
       scope.setExtras(context.extra);
       scope.setTags(context.tags);
 
       if (context.level === 'error' || context.level === 'fatal') {
-        return this.sentryLogger.captureException(new Error(context.message));
+        return Sentry.captureException(new Error(context.message));
       }
 
-      return this.sentryLogger.captureMessage(context.message, context.level);
+      return Sentry.captureMessage(context.message, context.level);
     });
   }
 
