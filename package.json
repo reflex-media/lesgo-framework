@@ -15,6 +15,7 @@
   },
   "scripts": {
     "build": "babel src -d build --ignore **/__tests__/ --ignore **/__mocks__/",
+    "pretest": "eslint .",
     "test": "jest",
     "coverage": "jest --coverage"
   },
@@ -44,6 +45,9 @@
   },
   "dependencies": {
     "@sentry/minimal": "^5.6.1"
+  },
+  "require": {
+    "@sentry/cli": "^1.47.2"
   },
   "jest": {
     "verbose": true,

@@ -2,7 +2,7 @@ import { app, sentry } from '../config';
 
 import LoggerService from '../services/LoggerService';
 
-const transports = [
+export const transports = [
   {
     logType: 'console',
     level: app.env === 'local' && app.debug ? 'debug' : 'info',

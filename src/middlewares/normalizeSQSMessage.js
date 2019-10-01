@@ -9,10 +9,7 @@ export const normalizeHandler = records => {
     recordCount = Object.keys(records).length;
   }
 
-  // attach additional SQS message metadata in the logger
-  logger.withMeta = logger.child({
-    recordCount,
-  });
+  logger.addMeta({ recordCount });
 
   if (recordCount === null) return null;
 

@@ -1,5 +1,9 @@
 import * as Sentry from '@sentry/minimal';
 
+const getCurrentDateTime = () => {
+  return new Date().toUTCString();
+};
+
 export default class LoggerService {
   constructor(opts = {}) {
     const defaultOptions = {
@@ -15,7 +19,7 @@ export default class LoggerService {
         ...defaultOptions.meta,
         ...(opts.defaultMeta || {}),
       },
-      transports: opts.transports,
+      transports: opts.transports || [],
     };
 
     this.logger = options.logger;
@@ -142,15 +146,11 @@ export default class LoggerService {
       }
 
       if (transport.config.getCreatedAt) {
-        refinedMessage.created = this.getCurrentDateTime();
+        refinedMessage.created = getCurrentDateTime();
       }
     }
 
     return refinedMessage;
-  }
-
-  getCurrentDateTime() {
-    return new Date().toUTCString();
   }
 
   getTransportByName(transportName) {
