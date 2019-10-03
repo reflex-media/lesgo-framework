@@ -1,5 +1,7 @@
 import * as Sentry from '@sentry/minimal';
 
+import LesgoException from '../exceptions/LesgoException';
+
 const getCurrentDateTime = () => {
   return new Date().toUTCString();
 };
@@ -37,7 +39,7 @@ export default class LoggerService {
 
   log(level, message, extra = {}) {
     if (level === undefined || !Object.keys(this.logLevels).includes(level)) {
-      throw new Error('Invalid level provided in log()');
+      throw new LesgoException('Invalid level provided in log()');
     }
 
     const structuredMessage = this.structureLogMessage(level, message, extra);
@@ -86,7 +88,11 @@ export default class LoggerService {
       scope.setTags(context.tags);
 
       if (context.level === 'error') {
-        return Sentry.captureException(new Error(context.message));
+        return Sentry.captureException(
+          context.message instanceof Error
+            ? context.message
+            : new Error(context.message)
+        );
       }
 
       return Sentry.captureMessage(context.message, context.level);

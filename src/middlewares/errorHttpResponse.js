@@ -42,10 +42,7 @@ export const errorHttpResponseHandler = opts => {
   /* istanbul ignore next */
   if (statusCode === 500) {
     // this is likely an unhandled exception, log it
-    logger.error(jsonBody.error.message, {
-      code: jsonBody.error.code,
-      details: jsonBody.error.details,
-    });
+    logger.error(options.error);
   }
 
   return {

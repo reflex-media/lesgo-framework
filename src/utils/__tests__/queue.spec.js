@@ -1,5 +1,6 @@
 import queue, { dispatch } from '../queue';
 import { aws } from '../../config';
+import LesgoException from '../../exceptions/LesgoException';
 
 describe('test queue utils', () => {
   it('test queue.dispatch', () => {
@@ -35,13 +36,19 @@ describe('test queue utils', () => {
 
   it('test queue dispatch with empty payload', () => {
     return expect(() => dispatch()).toThrow(
-      new Error('payload is undefined in dispatch()')
+      new LesgoException(
+        'payload is undefined in dispatch()',
+        'SQSSERVICE_DISPATCH_PAYLOAD_UNDEFINED'
+      )
     );
   });
 
   it('test queue dispatch with empty queueName', () => {
     return expect(() => dispatch({ someData: 'someValue' })).toThrow(
-      new Error('queueName is undefined in dispatch()')
+      new LesgoException(
+        'queueName is undefined in dispatch()',
+        'SQSSERVICE_DISPATCH_QUEUENAME_UNDEFINED'
+      )
     );
   });
 });

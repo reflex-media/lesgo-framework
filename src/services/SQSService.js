@@ -1,6 +1,8 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { SQS } from 'aws-sdk';
+
 import { aws } from '../config';
+import LesgoException from '../exceptions/LesgoException';
 
 export default class SQSService {
   constructor(
@@ -35,11 +37,17 @@ export default class SQSService {
    */
   dispatch(payload, queueName) {
     if (payload === undefined) {
-      throw new Error('payload is undefined in dispatch()');
+      throw new LesgoException(
+        'payload is undefined in dispatch()',
+        'SQSSERVICE_DISPATCH_PAYLOAD_UNDEFINED'
+      );
     }
 
     if (queueName === undefined) {
-      throw new Error('queueName is undefined in dispatch()');
+      throw new LesgoException(
+        'queueName is undefined in dispatch()',
+        'SQSSERVICE_DISPATCH_QUEUENAME_UNDEFINED'
+      );
     }
 
     const queue = aws.sqs.queues[queueName];
