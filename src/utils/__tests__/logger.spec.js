@@ -1,5 +1,4 @@
 import logger from '../logger';
-
 import { sentry } from '../../config';
 
 describe('test logger utils', () => {

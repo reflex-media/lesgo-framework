@@ -1,10 +1,9 @@
 export default {
   sqs: {
     options: {
-      override: process.env.AWS_SQS_OPTIONS_OVERRIDE === 'true',
-      accessKeyId: process.env.AWS_SQS_OPTIONS_ACCESS_KEY_ID,
-      secretAccessKey: process.env.AWS_SQS_OPTIONS_SECRET_ACCESS_KEY,
-      region: process.env.AWS_SQS_OPTIONS_REGION,
+      accessKeyId: process.env.AWS_SQS_OPTIONS_ACCESS_KEY_ID || null,
+      secretAccessKey: process.env.AWS_SQS_OPTIONS_SECRET_ACCESS_KEY || null,
+      region: process.env.AWS_SQS_OPTIONS_REGION || null,
     },
     queues: {
       pingQueue: {

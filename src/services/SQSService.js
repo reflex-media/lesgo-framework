@@ -1,3 +1,4 @@
+// eslint-disable-next-line import/no-extraneous-dependencies
 import { SQS } from 'aws-sdk';
 import { aws } from '../config';
 
@@ -11,22 +12,14 @@ export default class SQSService {
   ) {
     let options = {};
 
-    if (aws.sqs.options.override) {
-      options = {
-        accessKeyId: aws.sqs.options.accessKeyId,
-        secretAccessKey: aws.sqs.options.secretAccessKey,
-        region: aws.sqs.options.region,
-      };
-    } else {
-      if (opts.accessKeyId !== null && opts.accessKeyId !== undefined) {
-        options = { ...options, accessKeyId: opts.accessKeyId };
-      }
-      if (opts.secretAccessKey !== null && opts.secretAccessKey !== undefined) {
-        options = { ...options, secretAccessKey: opts.secretAccessKey };
-      }
-      if (opts.region !== null && opts.region !== undefined) {
-        options = { ...options, region: opts.region };
-      }
+    if (opts.accessKeyId !== null && opts.accessKeyId !== undefined) {
+      options = { ...options, accessKeyId: opts.accessKeyId };
+    }
+    if (opts.secretAccessKey !== null && opts.secretAccessKey !== undefined) {
+      options = { ...options, secretAccessKey: opts.secretAccessKey };
+    }
+    if (opts.region !== null && opts.region !== undefined) {
+      options = { ...options, region: opts.region };
     }
 
     this.sqsClient = new SQS({
@@ -41,6 +34,14 @@ export default class SQSService {
    * @param {string} queueName
    */
   dispatch(payload, queueName) {
+    if (payload === undefined) {
+      throw new Error('payload is undefined in dispatch()');
+    }
+
+    if (queueName === undefined) {
+      throw new Error('queueName is undefined in dispatch()');
+    }
+
     const queue = aws.sqs.queues[queueName];
 
     return this.sqsClient

@@ -40,6 +40,9 @@ jest.mock('aws-sdk', () => {
             }),
           };
         }),
+        mocked: {
+          ...opts,
+        },
       };
     }),
   };
