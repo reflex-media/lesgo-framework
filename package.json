@@ -17,7 +17,8 @@
     "build": "babel src -d build --ignore **/__tests__/ --ignore **/__mocks__/",
     "pretest": "eslint .",
     "test": "jest",
-    "coverage": "jest --coverage"
+    "coverage": "jest --coverage",
+    "coveralls": "npm run coverage && cat ./coverage/lcov.info | coveralls"
   },
   "bin": {
     "lesgo-scripts": "./bin/lesgo-scripts.sh"
@@ -33,6 +34,7 @@
     "aws-sdk": "^2.541.0",
     "babel-jest": "^24.9.0",
     "babel-preset-minify": "^0.5.1",
+    "coveralls": "^3.0.6",
     "eslint": "^6.4.0",
     "eslint-config-airbnb-base": "^14.0.0",
     "eslint-config-prettier": "^6.3.0",
@@ -60,7 +62,8 @@
     ],
     "coverageReporters": [
       "html",
-      "text"
+      "text",
+      "lcov"
     ],
     "coverageThreshold": {
       "global": {
