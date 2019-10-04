@@ -1,6 +1,6 @@
 {
   "name": "lesgo",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Core framework for lesgo node.js serverless framework.",
   "main": "./index.js",
   "author": "Sufiyan Rahmat",
@@ -30,6 +30,7 @@
     "@babel/core": "^7.6.0",
     "@babel/preset-env": "^7.6.0",
     "@sentry/cli": "^1.47.2",
+    "aws-sdk": "^2.541.0",
     "babel-jest": "^24.9.0",
     "babel-preset-minify": "^0.5.1",
     "eslint": "^6.4.0",

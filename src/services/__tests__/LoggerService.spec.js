@@ -3,6 +3,7 @@
 import * as Sentry from '@sentry/minimal';
 
 import LoggerService from '../LoggerService';
+import LesgoException from '../../exceptions/LesgoException';
 
 describe('test LoggerService instantiation', () => {
   it('test instantiate default LoggerService', () => {
@@ -114,7 +115,7 @@ describe('test log LoggerService with console transport', () => {
   it('test log with undefined level', () => {
     const logger = new LoggerService();
     expect(() => logger.log('invalidLevel', 'some message')).toThrow(
-      new Error('Invalid level provided in log()')
+      new LesgoException('Invalid level provided in log()')
     );
   });
 
@@ -319,6 +320,21 @@ describe('test log LoggerService with Sentry transport', () => {
         },
       },
     });
+  });
+
+  it('test Error exception log', () => {
+    const logger = new LoggerService(sentryTransportConfig);
+    logger.error(new LesgoException('New Error Exception'));
+
+    const callback = Sentry.withScope.mock.calls[0][0]; // <= get the callback passed to Sentry.withScope
+    const scope = { setExtras: jest.fn(), setTags: jest.fn() };
+    callback(scope); // <= call the callback
+
+    expect(Sentry.captureException).toHaveBeenCalledWith(
+      new LesgoException('New Error Exception')
+    );
+
+    Sentry.withScope.mockReset();
   });
 
   it('test log with sentry', () => {
