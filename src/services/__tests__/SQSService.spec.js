@@ -14,7 +14,6 @@ describe('test SQSService instantiation', () => {
   it('test instantiate SQSService with custom options', () => {
     // eslint-disable-next-line no-unused-vars
     const sqs = new SQSService({
-      override: true,
       accessKeyId: 'aws.sqs.options.accessKeyId',
       secretAccessKey: 'aws.sqs.options.secretAccessKey',
       region: 'aws.sqs.options.region',
