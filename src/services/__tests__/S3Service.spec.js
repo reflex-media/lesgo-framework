@@ -2,7 +2,7 @@ import { S3 } from 'aws-sdk';
 
 import S3Service from '../S3Service';
 
-describe('test S3Service instantiation', () => {
+describe('ServicesGroup: test S3Service instantiation', () => {
   it('test instantiate default S3Service', () => {
     // eslint-disable-next-line no-unused-vars
     const s3Instance = new S3Service();
@@ -26,7 +26,7 @@ describe('test S3Service instantiation', () => {
   });
 });
 
-describe('test S3Service usage', () => {
+describe('ServicesGroup: test S3Service usage', () => {
   it('test getObject', () => {
     // eslint-disable-next-line no-unused-vars
     const s3Instance = new S3Service();

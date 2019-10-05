@@ -1,6 +1,6 @@
 import LesgoException from '../LesgoException';
 
-describe('test LesgoException', () => {
+describe('ExceptionsGroup: test LesgoException', () => {
   it('test LesgoException with extra parameters', () => {
     const lesgoException = new LesgoException(
       'some message',

@@ -3,7 +3,7 @@ import {
   successHttpResponseAfterHandler,
 } from '../successHttpResponse';
 
-describe('test successHttpResponseHandler middleware', () => {
+describe('MiddlewareGroup: test successHttpResponseHandler middleware', () => {
   it('test default without parameters', () => {
     const data = successHttpResponseHandler();
 
@@ -100,7 +100,7 @@ describe('test successHttpResponseHandler middleware', () => {
   });
 });
 
-describe('test successHttpResponseAfterHandler', () => {
+describe('MiddlewareGroup: test successHttpResponseAfterHandler', () => {
   it('test with default parameters', () => {
     const handler = {
       response: {},

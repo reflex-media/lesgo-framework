@@ -1,7 +1,7 @@
 import objectStore, { getObject } from '../objectStore';
 import LesgoException from '../../exceptions/LesgoException';
 
-describe('test objectStore utils', () => {
+describe('UtilsGroup: test objectStore utils', () => {
   it('test objectStore.getObject', () => {
     return expect(
       // eslint-disable-next-line import/no-named-as-default-member

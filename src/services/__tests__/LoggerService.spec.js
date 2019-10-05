@@ -5,7 +5,7 @@ import * as Sentry from '@sentry/minimal';
 import LoggerService from '../LoggerService';
 import LesgoException from '../../exceptions/LesgoException';
 
-describe('test LoggerService instantiation', () => {
+describe('ServicesGroup: test LoggerService instantiation', () => {
   it('test instantiate default LoggerService', () => {
     const logger = new LoggerService();
 
@@ -94,7 +94,7 @@ describe('test LoggerService instantiation', () => {
   });
 });
 
-describe('test log LoggerService with console transport', () => {
+describe('ServicesGroup: test log LoggerService with console transport', () => {
   const consoleTransportConfig = {
     transports: [
       {
@@ -287,7 +287,7 @@ describe('test log LoggerService with console transport', () => {
   });
 });
 
-describe('test log LoggerService with Sentry transport', () => {
+describe('ServicesGroup: test log LoggerService with Sentry transport', () => {
   const sentryTransportConfig = {
     transports: [
       {

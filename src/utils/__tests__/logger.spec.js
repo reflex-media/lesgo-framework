@@ -1,7 +1,7 @@
 import logger from '../logger';
 import { sentry } from '../../config';
 
-describe('test logger utils', () => {
+describe('UtilsGroup: test logger utils', () => {
   it('test logger', () => {
     sentry.enabled = true;
     logger.info('some info log');

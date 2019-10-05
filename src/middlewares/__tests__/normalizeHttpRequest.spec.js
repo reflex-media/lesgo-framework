@@ -3,7 +3,7 @@ import {
   normalizeHttpRequestBeforeHandler,
 } from '../normalizeHttpRequest';
 
-describe('test normalizeRequest', () => {
+describe('MiddlewareGroup: test normalizeRequest', () => {
   it('test with default parameters', () => {
     const data = normalizeRequest({ headers: null, qs: null, body: null });
     expect(data).toBe(null);
@@ -70,7 +70,7 @@ describe('test normalizeRequest', () => {
   });
 });
 
-describe('test normalizeHttpRequestBeforeHandler', () => {
+describe('MiddlewareGroup: test normalizeHttpRequestBeforeHandler', () => {
   it('test with default parameters', () => {
     const handler = {
       event: {
