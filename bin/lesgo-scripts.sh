@@ -9,7 +9,7 @@
 usage="$(basename "$0") [-f] [-s] [-t] [-h] -- script to deploy serverless functions
 
 where:
-    -t      define the type of action to be taken (build, deploy, invoke, logs)
+    -t      define the type of action to be taken (build, deploy, invoke, logs, destroy)
     -f      specify function to involve
     -s      specify stage (e.g; dev, stage, prod)
     -h      show this help text"
@@ -19,6 +19,7 @@ BUILD=0;        # serverless build without deploy
 DEPLOY=0;       # serverless deploy
 INVOKE=0;       # serverless invoke of specific function
 LOGS=0;         # serverless stream log of specific function
+DESTROY=0;      # serverless remove entire service
 FUNCTION='';    # specify function to involve
 STAGE='';       # deploy specific stage/environment
 
@@ -36,6 +37,8 @@ while getopts "hs:f:t:" OPT ; do
             INVOKE=1;
         elif [ ${OPTARG} == "logs" ]; then
             LOGS=1;
+        elif [ ${OPTARG} == "destroy" ]; then
+            DESTROY=1;
         else
             echo "Incorrect arguments supplied for ${OPT}"
             exit 1
@@ -176,6 +179,24 @@ function build ()
     sls webpack --stage ${STAGE} --env ${ENVFILE}
 }
 
+function prompt_confirmation_destroy_service ()
+{
+    while true; do
+        read -p "Confirm destroy service to ${STAGE} with .env.${ENVFILE}? Note: This action will remove entire service from AWS. Ensure no other applications are using this service. [Y|N] " yn
+        case ${yn} in
+            [Yy] | yes | Yes | YES ) destroy_service; break;;
+            [Nn] | no | No | NO ) echo -e "${YELLOW}Cancelled destroying service to [${STAGE}]${NC}"; exit;;
+            * ) echo -e "${PURPLE}Please answer yes or no.${NC}";;
+        esac
+    done
+}
+
+function destroy_service ()
+{
+    echo -e "${YELLOW}Removing service to ${STAGE}${NC}"
+    sls remove --stage ${STAGE} --env ${ENVFILE}
+}
+
 ###############################################################################
 #                                                                             #
 # RUN STUFF                                                                   #
@@ -209,6 +230,8 @@ if [ -n "$STAGE" ]; then
             fi
         elif [ ${BUILD} -eq 1 ]; then
             build
+        elif [ ${DESTROY} -eq 1 ]; then
+            prompt_confirmation_destroy_service
         else
           echo -e "${RED}Invalid Task [-t] supplied. Only 'deploy', 'invoke', 'logs' are allowed.${NC}"
           exit 1;
