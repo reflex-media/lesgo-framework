@@ -2,7 +2,7 @@ import queue, { dispatch } from '../queue';
 import { aws } from '../../config';
 import LesgoException from '../../exceptions/LesgoException';
 
-describe('test queue utils', () => {
+describe('UtilsGroup: test queue utils', () => {
   it('test queue.dispatch', () => {
     return expect(
       // eslint-disable-next-line import/no-named-as-default-member

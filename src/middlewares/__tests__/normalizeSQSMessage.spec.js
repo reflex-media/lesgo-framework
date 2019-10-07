@@ -1,6 +1,6 @@
 import { normalizeHandler } from '../normalizeSQSMessage';
 
-describe('test normalizeRecords middleware', () => {
+describe('MiddlewareGroup: test normalizeRecords middleware', () => {
   it('test without parameters', () => {
     const data = normalizeHandler(undefined);
     expect(data).toBe(null);

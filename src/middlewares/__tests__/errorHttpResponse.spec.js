@@ -4,7 +4,7 @@ import {
 } from '../errorHttpResponse';
 import ValidationErrorException from '../__mocks__/ValidationErrorException';
 
-describe('test errorHandler middleware', () => {
+describe('MiddlewareGroup: test errorHandler middleware', () => {
   it('test with thrown Error', () => {
     const data = errorHttpResponseHandler({
       error: new Error('Test validation error'),
@@ -132,7 +132,7 @@ describe('test errorHandler middleware', () => {
   });
 });
 
-describe('test errorHttpResponseAfterHandler', () => {
+describe('MiddlewareGroup: test errorHttpResponseAfterHandler', () => {
   it('test with default parameters', () => {
     const handler = {
       error: {},

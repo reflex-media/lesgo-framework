@@ -3,7 +3,7 @@ import { SQS } from 'aws-sdk';
 import SQSService from '../SQSService';
 import { aws } from '../../config';
 
-describe('test SQSService instantiation', () => {
+describe('ServicesGroup: test SQSService instantiation', () => {
   it('test instantiate default SQSService', () => {
     // eslint-disable-next-line no-unused-vars
     const sqs = new SQSService();
@@ -27,7 +27,7 @@ describe('test SQSService instantiation', () => {
   });
 });
 
-describe('test SQSService usage', () => {
+describe('ServicesGroup: test SQSService usage', () => {
   it('test dispatch', () => {
     // eslint-disable-next-line no-unused-vars
     const sqs = new SQSService();
