@@ -12,7 +12,8 @@ where:
     -t      define the type of action to be taken (build, deploy, invoke, logs, destroy)
     -f      specify function to involve
     -s      specify stage (e.g; dev, stage, prod)
-    -h      show this help text"
+    -h      show this help text
+    -l      to invoke a local function"
 
 # arg options
 BUILD=0;        # serverless build without deploy
@@ -22,9 +23,10 @@ LOGS=0;         # serverless stream log of specific function
 DESTROY=0;      # serverless remove entire service
 FUNCTION='';    # specify function to involve
 STAGE='';       # deploy specific stage/environment
+INVOKE_LOCAL=0; # default to non local execution
 
 # parse the options
-while getopts "hs:f:t:" OPT ; do
+while getopts "lhs:f:t:" OPT ; do
   case ${OPT} in
     f) FUNCTION=${OPTARG} ;;
     s) STAGE=${OPTARG} ;;
@@ -43,6 +45,7 @@ while getopts "hs:f:t:" OPT ; do
             echo "Incorrect arguments supplied for ${OPT}"
             exit 1
         fi;;
+    l) INVOKE_LOCAL=1 ;;
     h)
         echo "${usage}"
         exit 0
@@ -151,7 +154,11 @@ function deploy_full ()
 function invoke_func ()
 {
     echo -e "${YELLOW}Invoking function ${FUNCTION} on ${STAGE}${NC}"
-    sls invoke -f ${FUNCTION} --stage ${STAGE} --env ${ENVFILE} -l
+    if [ ${INVOKE_LOCAL} == 1 ]; then
+        sls invoke local -f ${FUNCTION} --stage ${STAGE} --env ${ENVFILE} -l
+    else
+        sls invoke -f ${FUNCTION} --stage ${STAGE} --env ${ENVFILE} -l
+    fi
 }
 
 function log_stream_func ()
