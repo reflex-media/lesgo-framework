@@ -2,9 +2,9 @@ import jwtpkg from 'jsonwebtoken';
 import LesgoException from '../exceptions/LesgoException';
 
 export default class JwtService {
-  constructor({ token, settings }) {
+  constructor(token, secret, settings) {
+    this.decoded = jwtpkg.verify(token, secret);
     this.settings = settings;
-    this.decoded = jwtpkg.verify(token, settings.secret);
   }
 
   validate() {
