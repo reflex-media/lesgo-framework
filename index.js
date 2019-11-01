@@ -10,3 +10,7 @@ exports.middlewares = middlewares;
 const services = require('./build/services');
 
 exports.services = services;
+
+const utils = require('./build/utils');
+
+exports.utils = utils;
