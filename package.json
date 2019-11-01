@@ -18,7 +18,8 @@
     "pretest": "eslint .",
     "test": "jest",
     "coverage": "jest --coverage",
-    "coveralls": "npm run coverage && cat ./coverage/lcov.info | coveralls"
+    "coveralls": "npm run coverage && cat ./coverage/lcov.info | coveralls",
+    "start": "npm run build"
   },
   "prepublishOnly": "npm run build",
   "bin": {
