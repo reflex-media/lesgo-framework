@@ -2,7 +2,7 @@
   "name": "lesgo",
   "version": "0.2.2",
   "description": "Core framework for lesgo node.js serverless framework.",
-  "main": "./index.js",
+  "main": "./build/index.js",
   "author": "Sufiyan Rahmat",
   "license": "MIT",
   "bugs": {
