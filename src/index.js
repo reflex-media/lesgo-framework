@@ -3,14 +3,14 @@ exports.printMsg = function printr() {
   console.log('Import specific middlewares as required.');
 };
 
-const middlewares = require('./build/middlewares');
+const middlewares = require('./middlewares');
 
 exports.middlewares = middlewares;
 
-const services = require('./build/services');
+const services = require('./services');
 
 exports.services = services;
 
-const utils = require('./build/utils');
+const utils = require('./utils');
 
 exports.utils = utils;
