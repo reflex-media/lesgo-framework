@@ -47,6 +47,7 @@
     "prettier": "^1.18.2"
   },
   "dependencies": {
+    "@elastic/elasticsearch": "^7.4.0",
     "@sentry/minimal": "^5.6.1",
     "jsonwebtoken": "^8.5.1",
     "mysql2": "^1.7.0",

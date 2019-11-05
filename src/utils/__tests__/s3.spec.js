@@ -1,11 +1,11 @@
-import objectStore, { getObject } from '../objectStore';
+import s3, { getObject } from '../s3';
 import LesgoException from '../../exceptions/LesgoException';
 
 describe('UtilsGroup: test objectStore utils', () => {
   it('test objectStore.getObject', () => {
     return expect(
       // eslint-disable-next-line import/no-named-as-default-member
-      objectStore.getObject('someKey', 'someBucket')
+      s3.getObject('someKey', 'someBucket')
     ).resolves.toMatchObject({
       LastModified: '2019-09-04T05:00:57.000Z',
       ContentLength: 27892,
