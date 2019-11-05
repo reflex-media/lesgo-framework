@@ -1,7 +1,5 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { SQS } from 'aws-sdk';
-
-import { aws } from '../config';
 import LesgoException from '../exceptions/LesgoException';
 
 export default class SQSService {
@@ -10,16 +8,19 @@ export default class SQSService {
       accessKeyId: null,
       secretAccessKey: null,
       region: null,
-    }
+    },
+    queues = {}
   ) {
     let options = {};
 
     if (opts.accessKeyId !== null && opts.accessKeyId !== undefined) {
       options = { ...options, accessKeyId: opts.accessKeyId };
     }
+
     if (opts.secretAccessKey !== null && opts.secretAccessKey !== undefined) {
       options = { ...options, secretAccessKey: opts.secretAccessKey };
     }
+
     if (opts.region !== null && opts.region !== undefined) {
       options = { ...options, region: opts.region };
     }
@@ -27,6 +28,8 @@ export default class SQSService {
     this.sqsClient = new SQS({
       ...{ ...options },
     });
+
+    this.queues = queues;
   }
 
   /**
@@ -50,7 +53,7 @@ export default class SQSService {
       );
     }
 
-    const queue = aws.sqs.queues[queueName];
+    const queue = this.queues[queueName];
 
     return this.sqsClient
       .sendMessage({

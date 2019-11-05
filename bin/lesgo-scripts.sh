@@ -11,7 +11,7 @@ usage="$(basename "$0") [-f] [-s] [-t] [-h] -- script to deploy serverless funct
 where:
     -t      define the type of action to be taken (build, deploy, invoke, logs, destroy)
     -f      specify function to involve
-    -s      specify stage (e.g; dev, stage, prod)
+    -s      specify environment (e.g; development, staging, production)
     -h      show this help text
     -l      to invoke a local function"
 
@@ -60,21 +60,6 @@ done
 # Set envfile to reference from
 ENVFILE=${STAGE}
 
-# rewrite stage names
-if [[ ${STAGE} == "production" ]]; then
-    STAGE="prod"
-elif [[ ${STAGE} == "prod" ]]; then
-    ENVFILE="production"
-elif [[ ${STAGE} == "staging" ]]; then
-    STAGE="stage"
-elif [[ ${STAGE} == "stage" ]]; then
-    ENVFILE="staging"
-elif [[ ${STAGE} == "development" ]]; then
-    STAGE="dev"
-elif [[ ${STAGE} == "dev" ]]; then
-    ENVFILE="development"
-fi
-
 # Check if local env file exists
 FILE=config/environments/.env.${ENVFILE}.local
 if [ -f "$FILE" ]; then
@@ -100,7 +85,7 @@ NC='\033[0m';
 
 function deploy_func_check ()
 {
-    if [[ ${STAGE} == "prod" ]]; then
+    if [[ ${STAGE} == "production" ]]; then
         prompt_confirmation_deploy_function
     else
         deploy_func
@@ -214,37 +199,32 @@ if [ -n "$STAGE" ]; then
     # Load env
     export $(cat ./config/environments/.env.${ENVFILE} | sed 's/#.*//g' | xargs)
 
-    if [[ ${STAGE} == "dev" ]] || [[ ${STAGE} == "stage" ]] || [[ ${STAGE} == "prod" ]]; then
-        if [ ${INVOKE} -eq 1 ]; then
-            if [ -n "$FUNCTION" ]; then
-                invoke_func
-            else
-                echo -e "${RED}Function [-f] is required to invoke.${NC}"
-                exit 1;
-            fi
-        elif [ ${LOGS} -eq 1 ]; then
-            if [ -n "$FUNCTION" ]; then
-                log_stream_func
-            else
-                echo -e "${RED}Function [-f] is required to stream logs.${NC}"
-                exit 1;
-            fi
-        elif [ ${DEPLOY} -eq 1 ]; then
-            if [ -n "$FUNCTION" ]; then
-                deploy_func_check
-            else
-                prompt_confirmation_deploy_all
-            fi
-        elif [ ${BUILD} -eq 1 ]; then
-            build
-        elif [ ${DESTROY} -eq 1 ]; then
-            prompt_confirmation_destroy_service
+    if [ ${INVOKE} -eq 1 ]; then
+        if [ -n "$FUNCTION" ]; then
+            invoke_func
         else
-          echo -e "${RED}Invalid Task [-t] supplied. Only 'deploy', 'invoke', 'logs' are allowed.${NC}"
-          exit 1;
+            echo -e "${RED}Function [-f] is required to invoke.${NC}"
+            exit 1;
         fi
+    elif [ ${LOGS} -eq 1 ]; then
+        if [ -n "$FUNCTION" ]; then
+            log_stream_func
+        else
+            echo -e "${RED}Function [-f] is required to stream logs.${NC}"
+            exit 1;
+        fi
+    elif [ ${DEPLOY} -eq 1 ]; then
+        if [ -n "$FUNCTION" ]; then
+            deploy_func_check
+        else
+            prompt_confirmation_deploy_all
+        fi
+    elif [ ${BUILD} -eq 1 ]; then
+        build
+    elif [ ${DESTROY} -eq 1 ]; then
+        prompt_confirmation_destroy_service
     else
-        echo -e "${RED}Invalid Stage [-s] supplied. Only 'dev', 'development', 'stage', 'staging', 'prod', 'production' are allowed.${NC}"
+        echo -e "${RED}Invalid Task [-t] supplied. Only 'deploy', 'invoke', 'logs' are allowed.${NC}"
         exit 1;
     fi
 else

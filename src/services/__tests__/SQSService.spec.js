@@ -1,5 +1,4 @@
 import { SQS } from 'aws-sdk';
-
 import SQSService from '../SQSService';
 import { aws } from '../../config';
 
@@ -30,7 +29,7 @@ describe('ServicesGroup: test SQSService instantiation', () => {
 describe('ServicesGroup: test SQSService usage', () => {
   it('test dispatch', () => {
     // eslint-disable-next-line no-unused-vars
-    const sqs = new SQSService();
+    const sqs = new SQSService({}, aws.sqs.queues);
 
     return expect(
       sqs.dispatch({ someData: 'someValue' }, 'pingQueue')
