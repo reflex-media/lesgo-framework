@@ -18,11 +18,7 @@ class ElasticSearchService {
 
     switch (conn) {
       case 'aws':
-        // eslint-disable-next-line no-case-declarations
-        const awsConn = new AwsConnection();
-        awsConn.setRegion(this.options.awsRegion);
-
-        Connection = awsConn;
+        Connection = AwsConnection;
         break;
 
       default:
@@ -68,9 +64,9 @@ class ElasticSearchService {
    *     },
    *   };
    */
-  createIndices(index, settings) {
+  createIndices(settings, index = null) {
     const params = {
-      index,
+      index: index || this.index,
       include_type_name: true,
       body: settings,
     };

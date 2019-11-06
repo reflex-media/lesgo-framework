@@ -1,6 +1,7 @@
 import AWS from 'aws-sdk'; // eslint-disable-line import/no-extraneous-dependencies
 import { Connection } from '@elastic/elasticsearch';
 import SignedRequest from './SignedRequest';
+import LesgoException from '../../exceptions/LesgoException';
 
 /* eslint-disable class-methods-use-this */
 export default class AwsElasticSearchConnection extends Connection {
@@ -10,17 +11,17 @@ export default class AwsElasticSearchConnection extends Connection {
     this.opts = opts;
   }
 
-  setRegion(region) {
-    this.region = region;
-  }
-
   async request(params, cb) {
     try {
       const awsCreds = await this.getCredentials();
 
+      if (!this.opts.awsRegion) {
+        throw new LesgoException('Please provide the awsRegion!');
+      }
+
       const httpClient = SignedRequest(AWS, {
         endpoint: this.opts.url.host,
-        region: this.region,
+        region: this.opts.awsRegion,
         service: 'es',
         awsCreds,
       });
