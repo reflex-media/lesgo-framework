@@ -34,6 +34,10 @@ class ElasticSearchService {
     return this;
   }
 
+  getClient() {
+    return this.client;
+  }
+
   search(body) {
     return new Promise((resolve, reject) => {
       const param = {

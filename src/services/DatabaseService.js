@@ -1,17 +1,24 @@
-import SequelDatabase from 'sequelize';
+import { Model } from 'objection';
+import Knex from 'knex';
 
 export default class DatabaseService {
   constructor(options) {
     this.options = options;
+    this.knex = new Knex(this.options);
 
-    this.initialize();
+    Model.knex(this.knex);
   }
 
-  initialize() {
-    this.sequelize = new SequelDatabase(this.options);
+  options() {
+    return this.options;
   }
 
-  healthCheck() {
-    return this.sequelize.authenticate();
+  knex() {
+    return this.knex;
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  model() {
+    return Model;
   }
 }
