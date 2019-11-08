@@ -2,7 +2,7 @@
   "name": "lesgo",
   "version": "0.2.2",
   "description": "Core framework for lesgo node.js serverless framework.",
-  "main": "./index.js",
+  "main": "./build/index.js",
   "author": "Sufiyan Rahmat",
   "license": "MIT",
   "bugs": {
@@ -20,6 +20,7 @@
     "coverage": "jest --coverage",
     "coveralls": "npm run coverage && cat ./coverage/lcov.info | coveralls"
   },
+  "prepublishOnly": "npm run build",
   "bin": {
     "lesgo-scripts": "./bin/lesgo-scripts.sh"
   },

@@ -1,1 +1,0 @@
-"use strict";Object.defineProperty(exports,"__esModule",{value:!0}),exports["default"]=void 0;var _default={service:process.env.APP_SERVICE_NAME,env:process.env.APP_ENV||process.env.NODE_ENV,debug:"true"===process.env.APP_DEBUG};exports["default"]=_default;
