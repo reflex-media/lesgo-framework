@@ -1,4 +1,4 @@
-import s3, { getObject } from '../s3';
+import s3, { getObject } from '../objectStore';
 import LesgoException from '../../exceptions/LesgoException';
 
 describe('UtilsGroup: test objectStore utils', () => {
