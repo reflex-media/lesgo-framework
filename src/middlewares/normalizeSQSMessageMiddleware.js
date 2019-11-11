@@ -24,7 +24,7 @@ export const normalizeHandler = records => {
  * Normalizes handler.event.Records as handler.event.collections Object.
  * This type of request is received by SQS listeners
  */
-const normalizeSQSMessage /* istanbul ignore next */ = () => {
+const normalizeSQSMessageMiddleware /* istanbul ignore next */ = () => {
   return {
     before: (handler, next) => {
       const { Records } = handler.event;
@@ -35,4 +35,4 @@ const normalizeSQSMessage /* istanbul ignore next */ = () => {
   };
 };
 
-export default normalizeSQSMessage;
+export default normalizeSQSMessageMiddleware;

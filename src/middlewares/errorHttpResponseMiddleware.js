@@ -71,11 +71,11 @@ export const errorHttpResponseAfterHandler = (handler, next, opts) => {
  * Formats response for error responses
  */
 /* istanbul ignore next */
-const errorHttpResponse = opts => {
+const errorHttpResponseMiddleware = opts => {
   return {
     onError: (handler, next) =>
       errorHttpResponseAfterHandler(handler, next, opts),
   };
 };
 
-export default errorHttpResponse;
+export default errorHttpResponseMiddleware;

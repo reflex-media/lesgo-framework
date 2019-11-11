@@ -1,13 +1,13 @@
-import http from './http';
-import normalizeHttpRequest from './normalizeHttpRequest';
-import successHttpResponse from './successHttpResponse';
-import errorHttpResponse from './errorHttpResponse';
-import normalizeSQSMessage from './normalizeSQSMessage';
+import httpMiddleware from './httpMiddleware';
+import normalizeHttpRequestMiddleware from './normalizeHttpRequestMiddleware';
+import successHttpResponseMiddleware from './successHttpResponseMiddleware';
+import errorHttpResponseMiddleware from './errorHttpResponseMiddleware';
+import normalizeSQSMessageMiddleware from './normalizeSQSMessageMiddleware';
 
 export {
-  http,
-  normalizeHttpRequest,
-  successHttpResponse,
-  errorHttpResponse,
-  normalizeSQSMessage,
+  httpMiddleware,
+  normalizeHttpRequestMiddleware,
+  successHttpResponseMiddleware,
+  errorHttpResponseMiddleware,
+  normalizeSQSMessageMiddleware,
 };
