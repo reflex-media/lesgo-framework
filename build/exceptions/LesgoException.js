@@ -1,1 +1,0 @@
-"use strict";Object.defineProperty(exports,"__esModule",{value:!0}),exports.default=void 0;class LesgoException extends Error{constructor(a,b="LESGO_EXCEPTION",c=500,d){super(),this.name="LesgoException",this.message=a,this.statusCode=c,this.code=b,Error.captureStackTrace(this,this.constructor),d&&(this.extra=d)}}exports.default=LesgoException;

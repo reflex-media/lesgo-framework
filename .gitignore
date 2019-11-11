@@ -6,3 +6,5 @@ coverage
 
 # yarn error log
 yarn-error.log
+
+/build
