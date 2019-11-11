@@ -15,7 +15,10 @@
   },
   "files": [
     "build",
-    "bin"
+    "bin",
+    "middlewares.js",
+    "services.js",
+    "utils.js"
   ],
   "scripts": {
     "build": "babel src -d build --ignore **/__tests__/ --ignore **/__mocks__/",
