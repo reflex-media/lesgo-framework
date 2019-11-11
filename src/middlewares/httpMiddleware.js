@@ -1,12 +1,12 @@
-import { normalizeHttpRequestBeforeHandler } from './normalizeHttpRequest';
-import { successHttpResponseAfterHandler } from './successHttpResponse';
-import { errorHttpResponseAfterHandler } from './errorHttpResponse';
+import { normalizeHttpRequestBeforeHandler } from './normalizeHttpRequestMiddleware';
+import { successHttpResponseAfterHandler } from './successHttpResponseMiddleware';
+import { errorHttpResponseAfterHandler } from './errorHttpResponseMiddleware';
 
 /**
  * Combines all http middlewares into a single middleware
  */
 /* istanbul ignore next */
-const http = opts => {
+const httpMiddleware = opts => {
   return {
     before: (handler, next) => normalizeHttpRequestBeforeHandler(handler, next),
     after: (handler, next) =>
@@ -16,4 +16,4 @@ const http = opts => {
   };
 };
 
-export default http;
+export default httpMiddleware;

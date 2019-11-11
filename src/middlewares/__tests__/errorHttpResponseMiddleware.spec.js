@@ -1,7 +1,7 @@
 import {
   errorHttpResponseHandler,
   errorHttpResponseAfterHandler,
-} from '../errorHttpResponse';
+} from '../errorHttpResponseMiddleware';
 import ValidationErrorException from '../__mocks__/ValidationErrorException';
 
 describe('MiddlewareGroup: test errorHandler middleware', () => {

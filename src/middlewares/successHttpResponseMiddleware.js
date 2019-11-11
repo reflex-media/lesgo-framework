@@ -50,11 +50,11 @@ export const successHttpResponseAfterHandler = (handler, next, opts) => {
  * Formats response for successful responses
  */
 /* istanbul ignore next */
-const successHttpResponse = opts => {
+const successHttpResponseMiddleware = opts => {
   return {
     after: (handler, next) =>
       successHttpResponseAfterHandler(handler, next, opts),
   };
 };
 
-export default successHttpResponse;
+export default successHttpResponseMiddleware;

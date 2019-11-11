@@ -1,7 +1,7 @@
 import {
   successHttpResponseHandler,
   successHttpResponseAfterHandler,
-} from '../successHttpResponse';
+} from '../successHttpResponseMiddleware';
 
 describe('MiddlewareGroup: test successHttpResponseHandler middleware', () => {
   it('test default without parameters', () => {
