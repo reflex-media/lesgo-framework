@@ -2,7 +2,7 @@
   "name": "lesgo",
   "version": "0.2.6",
   "description": "Core framework for lesgo node.js serverless framework.",
-  "main": "./build/index.js",
+  "main": "./src/index.js",
   "author": "Sufiyan Rahmat",
   "license": "MIT",
   "bugs": {
@@ -14,20 +14,15 @@
     "url": "git+https://github.com/reflex-media/lesgo-framework.git"
   },
   "files": [
-    "build",
-    "bin",
-    "middlewares.js",
-    "services.js",
-    "utils.js"
+    "src",
+    "bin"
   ],
   "scripts": {
-    "build": "babel src -d build --ignore **/__tests__/ --ignore **/__mocks__/",
     "pretest": "eslint .",
     "test": "jest",
     "coverage": "jest --coverage",
     "coveralls": "npm run coverage && cat ./coverage/lcov.info | coveralls",
-    "prepare": "npm run build",
-    "prepublishOnly": "npm run build"
+    "prepublishOnly": "npm run test"
   },
   "bin": {
     "lesgo-scripts": "./bin/lesgo-scripts.sh"
