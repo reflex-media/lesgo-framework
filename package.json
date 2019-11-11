@@ -37,7 +37,6 @@
     "@sentry/cli": "^1.47.2",
     "aws-sdk": "^2.541.0",
     "babel-jest": "^24.9.0",
-    "babel-preset-minify": "^0.5.1",
     "coveralls": "^3.0.6",
     "eslint": "^6.4.0",
     "eslint-config-airbnb-base": "^14.0.0",
