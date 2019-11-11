@@ -1,4 +1,4 @@
-import { normalizeHandler } from '../normalizeSQSMessage';
+import { normalizeHandler } from '../normalizeSQSMessageMiddleware';
 
 describe('MiddlewareGroup: test normalizeRecords middleware', () => {
   it('test without parameters', () => {

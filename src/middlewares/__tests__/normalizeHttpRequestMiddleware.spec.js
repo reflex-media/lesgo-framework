@@ -1,7 +1,7 @@
 import {
   normalizeRequest,
   normalizeHttpRequestBeforeHandler,
-} from '../normalizeHttpRequest';
+} from '../normalizeHttpRequestMiddleware';
 
 describe('MiddlewareGroup: test normalizeRequest', () => {
   it('test with default parameters', () => {
