@@ -58,8 +58,8 @@ class ElasticSearchService {
   }
 
   /**
-   * @param {*} index
    * @param {*} settings
+   * @param {*} index
    *
    *  const settings = {
    *    index: {
