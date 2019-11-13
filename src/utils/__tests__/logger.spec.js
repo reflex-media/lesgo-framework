@@ -1,9 +1,7 @@
 import logger from '../logger';
-import { sentry } from '../../config';
 
 describe('UtilsGroup: test logger utils', () => {
   it('test logger', () => {
-    sentry.enabled = true;
     logger.info('some info log');
 
     expect(logger.transports).toEqual(
