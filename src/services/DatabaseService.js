@@ -1,5 +1,5 @@
-import { Model } from 'objection';
-import Knex from 'knex';
+import { Model } from 'objection/lib/model/Model';
+import Knex from './knex';
 
 export default class DatabaseService {
   constructor(options) {

@@ -1,5 +1,4 @@
 import * as Sentry from '@sentry/minimal';
-
 import LesgoException from '../exceptions/LesgoException';
 
 const getCurrentDateTime = () => {
