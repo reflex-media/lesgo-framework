@@ -54,9 +54,7 @@
     "@sentry/minimal": "^5.6.1",
     "jsonwebtoken": "^8.5.1",
     "knex": "^0.20.1",
-    "memcached-elasticache": "^1.1.1",
-    "mysql2": "^2.0.0",
-    "objection": "^1.6.11"
+    "memcached-elasticache": "^1.1.1"
   },
   "require": {
     "@sentry/cli": "^1.47.2"
