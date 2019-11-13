@@ -1,10 +1,11 @@
+import { aws as config } from '../config';
 import SQSService from '../services/SQSService';
-import { aws } from '../config';
 
-const queue = new SQSService(aws.sqs.options, aws.sqs.queues);
+const queue = new SQSService(config.sqs.options, config.sqs.queues);
 
-export const dispatch = (payload, queueName) => {
+const dispatch = (payload, queueName) => {
   return queue.dispatch(payload, queueName);
 };
 
+export { dispatch };
 export default queue;

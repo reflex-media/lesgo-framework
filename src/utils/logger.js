@@ -1,5 +1,4 @@
 import { app, sentry } from '../config';
-
 import LoggerService from '../services/LoggerService';
 
 const transports = [

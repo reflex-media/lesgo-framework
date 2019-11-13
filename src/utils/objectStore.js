@@ -1,10 +1,11 @@
+import { aws as config } from '../config';
 import S3Service from '../services/S3Service';
-import { aws } from '../config';
 
-const s3 = new S3Service(aws.s3.options);
+const s3 = new S3Service(config.s3.options);
 
-export const getObject = (objectKey, bucketName) => {
+const getObject = (objectKey, bucketName) => {
   return s3.getObject(objectKey, bucketName);
 };
 
+export { getObject };
 export default s3;
