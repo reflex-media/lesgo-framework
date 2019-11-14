@@ -4,4 +4,6 @@
  - Added ElasticSearchService
    - this service provides a connection that can connect thru local or AWS' ElasticSearch as of the moment.
  - Added JwtService
-   - To validate jwt access token, and custom claims.
+   - to validate jwt access token, and custom claims.
+ - Added ElastiCacheService
+   - a service that can use memcached/redis for in-memory key-value search.
