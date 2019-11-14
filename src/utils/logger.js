@@ -1,4 +1,5 @@
-import { app, sentry } from '../config';
+import app from 'Config/app'; // eslint-disable-line import/no-unresolved
+import sentry from 'Config/sentry'; // eslint-disable-line import/no-unresolved
 import LoggerService from '../services/LoggerService';
 
 const transports = [

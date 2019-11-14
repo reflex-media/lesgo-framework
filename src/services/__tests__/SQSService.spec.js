@@ -1,6 +1,6 @@
+import aws from 'Config/aws'; // eslint-disable-line import/no-unresolved
 import { SQS } from 'aws-sdk';
 import SQSService from '../SQSService';
-import { aws } from '../../config';
 
 describe('ServicesGroup: test SQSService instantiation', () => {
   it('test instantiate default SQSService', () => {

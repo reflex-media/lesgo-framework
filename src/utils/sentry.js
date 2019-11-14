@@ -1,4 +1,4 @@
-import { sentry as config } from '../config';
+import config from 'Config/sentry'; // eslint-disable-line import/no-unresolved
 
 export const connectSentry = () => {
   // Leave to use process.env so that it can be removed from webpack build

@@ -1,4 +1,4 @@
-import { aws as config } from '../config';
+import config from 'Config/aws'; // eslint-disable-line import/no-unresolved
 import SQSService from '../services/SQSService';
 
 const queue = new SQSService(config.sqs.options, config.sqs.queues);

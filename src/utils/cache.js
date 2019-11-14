@@ -1,4 +1,4 @@
-import { cache as config } from '../config';
+import config from 'Config/cache'; // eslint-disable-line import/no-unresolved
 import ElastiCacheService from '../services/ElastiCacheService';
 
 const singleton = [];

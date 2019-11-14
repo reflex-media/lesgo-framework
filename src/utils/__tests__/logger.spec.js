@@ -1,5 +1,5 @@
+import sentry from 'Config/sentry'; // eslint-disable-line import/no-unresolved
 import logger from '../logger';
-import { sentry } from '../../config';
 
 describe('UtilsGroup: test logger utils', () => {
   it('test logger', () => {

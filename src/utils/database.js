@@ -1,4 +1,4 @@
-import { database as config } from '../config';
+import config from 'Config/database'; // eslint-disable-line import/no-unresolved
 import DatabaseService from '../services/DatabaseService';
 
 const singleton = [];
