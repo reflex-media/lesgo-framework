@@ -82,7 +82,10 @@
     },
     "setupFiles": [
       "./setupTest.js"
-    ]
+    ],
+    "moduleNameMapper": {
+      "^Config(.*)$": "<rootDir>/__mocks__/config$1.js"
+    }
   },
   "husky": {
     "hooks": {
