@@ -2,9 +2,18 @@ import jwtpkg from 'jsonwebtoken';
 import LesgoException from '../exceptions/LesgoException';
 
 export default class JwtService {
-  constructor(token, secret, settings) {
-    this.decoded = jwtpkg.verify(token, secret);
-    this.settings = settings;
+  constructor(token, config) {
+    this.decoded = jwtpkg.verify(token, config.secret);
+    this.settings = {
+      validate: {
+        iss: config.iss.validate,
+        customClaims: config.customClaims.validate,
+      },
+      config: {
+        iss: config.iss.data,
+        customClaims: config.customClaims.data,
+      },
+    };
   }
 
   validate() {
