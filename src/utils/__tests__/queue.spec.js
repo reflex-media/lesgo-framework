@@ -1,5 +1,5 @@
+import aws from 'Config/aws'; // eslint-disable-line import/no-unresolved
 import queue, { dispatch } from '../queue';
-import { aws } from '../../config';
 import LesgoException from '../../exceptions/LesgoException';
 
 describe('UtilsGroup: test queue utils', () => {

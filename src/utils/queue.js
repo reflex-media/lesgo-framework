@@ -1,7 +1,7 @@
+import config from 'Config/aws'; // eslint-disable-line import/no-unresolved
 import SQSService from '../services/SQSService';
-import { aws } from '../config';
 
-const queue = new SQSService(aws.sqs.options);
+const queue = new SQSService(config.sqs.options, config.sqs.queues);
 
 const dispatch = (payload, queueName) => {
   return queue.dispatch(payload, queueName);
