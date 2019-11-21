@@ -21,7 +21,11 @@ export default class JwtService {
       this.settings.validate.iss &&
       this.settings.config.iss.indexOf(this.decoded.iss) === -1
     ) {
-      throw new LesgoException(`Token's [iss] is not valid!`);
+      throw new LesgoException(
+        `Token's [iss] is not valid!`,
+        'JWT_ISS_NOT_VALID',
+        403
+      );
     }
 
     /**
@@ -31,7 +35,9 @@ export default class JwtService {
     this.settings.config.customClaims.forEach(customClaim => {
       if (this.settings.validate.customClaims && !this.decoded[customClaim]) {
         throw new LesgoException(
-          `Token's custom claim [${customClaim}] not found!`
+          `Token's custom claim [${customClaim}] not found!`,
+          'JWT_CUSTOM_CLAIM_NOT_FOUND',
+          403
         );
       }
     });
