@@ -197,13 +197,15 @@ class ElasticSearchService {
     const bulk = [];
 
     bodies.forEach(body => {
+      // array 0 - add index operation
       bulk.push({
         index: {
           _index: this.index,
           _type: this.type,
-          _id: body.id,
+          _id: body.profile_id,
         },
       });
+      // array 1 - profile attributes
       bulk.push(body);
     });
 
