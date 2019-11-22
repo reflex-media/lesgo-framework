@@ -1,3 +1,5 @@
+/* istanbul ignore file */
+
 import config from 'Config/sentry'; // eslint-disable-line import/no-unresolved
 
 export const connectSentry = () => {
