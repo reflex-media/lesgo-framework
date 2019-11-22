@@ -1,6 +1,10 @@
 /**
  * Modified version of [knex/lib/index.js]
+ * Ignoring this file for now since it is a copy of knex.js.
+ * However, will still be good to ensure this file is validated
  */
+
+/* istanbul ignore file */
 
 import Raw from 'knex/lib/raw';
 import Client from 'knex/lib/client';

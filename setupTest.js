@@ -9,3 +9,22 @@ console.error = jest.fn();
 
 // Mock Sentry
 jest.mock('@sentry/minimal');
+
+// Mock Knex.js library
+jest.mock('./src/services/knex', () => {
+  return jest.fn().mockImplementation(() => {
+    return {
+      raw: jest.fn().mockImplementation(query => {
+        return new Promise(resolve => {
+          const response = {
+            data: {},
+            mocked: {
+              query,
+            },
+          };
+          resolve(response);
+        });
+      }),
+    };
+  });
+});
