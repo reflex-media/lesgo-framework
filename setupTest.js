@@ -29,6 +29,7 @@ jest.mock('./src/services/knex', () => {
   });
 });
 
+// Mock Elasticsearch
 jest.mock('@elastic/elasticsearch', () => {
   return {
     Client: jest.fn().mockImplementation((opts, conn) => {
