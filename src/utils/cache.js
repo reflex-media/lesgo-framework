@@ -33,7 +33,7 @@ const ec = (conn = null) => {
 const get = key => {
   return new Promise((res, rej) => {
     try {
-      ec.get(key, (err, data) => {
+      ec().get(key, (err, data) => {
         if (err) {
           rej(new LesgoException(err, 'CACHE_GET_ERROR'));
         } else {
@@ -44,7 +44,7 @@ const get = key => {
       rej(new LesgoException(err, 'CACHE_GET_EXCEPTION'));
     }
 
-    ec.end();
+    ec().end();
   });
 };
 
@@ -59,7 +59,7 @@ const get = key => {
 const set = (key, val, lifetime) => {
   return new Promise((res, rej) => {
     try {
-      ec.set(key, val, lifetime, err => {
+      ec().set(key, val, lifetime, err => {
         if (err) {
           rej(new LesgoException(err, 'CACHE_SET_ERROR'));
         } else {
@@ -70,7 +70,7 @@ const set = (key, val, lifetime) => {
       rej(new LesgoException(err, 'CACHE_SET_EXCEPTION'));
     }
 
-    ec.end();
+    ec().end();
   });
 };
 
@@ -83,7 +83,7 @@ const set = (key, val, lifetime) => {
 const del = key => {
   return new Promise((res, rej) => {
     try {
-      ec.del(key, err => {
+      ec().del(key, err => {
         if (err) {
           rej(new LesgoException(err, 'CACHE_DEL_ERROR'));
         } else {
@@ -94,9 +94,13 @@ const del = key => {
       rej(new LesgoException(err, 'CACHE_DEL_EXCEPTION'));
     }
 
-    ec.end();
+    ec().end();
   });
 };
 
-export { get, set, del };
-export default ec;
+export default {
+  ec,
+  get,
+  set,
+  del,
+};

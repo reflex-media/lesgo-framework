@@ -1,20 +1,34 @@
 const Memcached = jest.fn().mockImplementation((url, options) => {
+  let mockedCache = null;
+
   return {
-    set: jest.fn().mockImplementation((cacheKey, cacheData, cacheTime) => {
-      return {
-        mocked: {
-          cacheKey,
-          cacheData,
-          cacheTime,
-        },
-      };
+    set: jest
+      .fn()
+      .mockImplementation((cacheKey, cacheData, cacheTime, callback) => {
+        if (cacheKey === 'mockError') return callback('mockedError');
+        if (cacheKey === 'mockException') throw new Error('mockedException');
+
+        mockedCache = {
+          [cacheKey]: {
+            data: cacheData,
+            lifetime: cacheTime,
+          },
+        };
+
+        return callback(null, true);
+      }),
+    get: jest.fn().mockImplementation((cacheKey, callback) => {
+      if (cacheKey === 'mockError') return callback('mockedError');
+      if (cacheKey === 'mockException') throw new Error('mockedException');
+
+      return callback(null, mockedCache[cacheKey]);
     }),
-    get: jest.fn().mockImplementation(cacheKey => {
-      return {
-        mocked: {
-          cacheKey,
-        },
-      };
+    del: jest.fn().mockImplementation((cacheKey, callback) => {
+      if (cacheKey === 'mockError') return callback('mockedError');
+      if (cacheKey === 'mockException') throw new Error('mockedException');
+
+      mockedCache = { [cacheKey]: true };
+      return callback(null, mockedCache[cacheKey]);
     }),
     mocked: {
       url,
