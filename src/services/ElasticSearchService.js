@@ -71,13 +71,44 @@ class ElasticSearchService {
   createIndices(settings, index = null) {
     const params = {
       index: index || this.index,
-      include_type_name: true,
       body: settings,
     };
 
     return new Promise((resolve, reject) => {
       this.client.indices.create(params, (err, response) => {
         // eslint-disable-next-line no-unused-expressions
+        err ? reject(err) : resolve(response);
+      });
+    });
+  }
+
+  deleteIndices(index, options = {}) {
+    const params = {
+      index,
+      ...options,
+    };
+
+    return new Promise((resolve, reject) => {
+      this.client.indices.delete(params, (err, response) => {
+        err ? reject(err) : resolve(response);
+      });
+    });
+  }
+
+  existIndices(index, options = {}) {
+    const params = { index, ...options };
+    return new Promise((resolve, reject) => {
+      this.client.indices.exists(params, (err, response) => {
+        // eslint-disable-next-line prefer-promise-reject-errors
+        err ? reject(err) : resolve(response.body);
+      });
+    });
+  }
+
+  putMapping(index, type, body) {
+    const params = { index, type, body: { properties: body } };
+    return new Promise((resolve, reject) => {
+      this.client.indices.putMapping(params, (err, response) => {
         err ? reject(err) : resolve(response);
       });
     });
@@ -92,7 +123,6 @@ class ElasticSearchService {
 
     return new Promise((resolve, reject) => {
       this.client.get(params, (err, response) => {
-        // eslint-disable-next-line no-unused-expressions
         err ? reject(err) : resolve(response);
       });
     });
@@ -167,13 +197,15 @@ class ElasticSearchService {
     const bulk = [];
 
     bodies.forEach(body => {
+      // array 0 - add index operation
       bulk.push({
         index: {
           _index: this.index,
           _type: this.type,
-          _id: body.id,
+          _id: body.profile_id,
         },
       });
+      // array 1 - profile attributes
       bulk.push(body);
     });
 
