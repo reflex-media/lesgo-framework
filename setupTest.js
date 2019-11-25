@@ -43,6 +43,38 @@ jest.mock('@elastic/elasticsearch', () => {
             });
           }),
         },
+        search: jest.fn().mockImplementation((param, callback) => {
+          return callback(null, {
+            response: {},
+            mocked: {
+              param,
+            },
+          });
+        }),
+        get: jest.fn().mockImplementation((params, callback) => {
+          return callback(null, {
+            response: {},
+            mocked: {
+              params,
+            },
+          });
+        }),
+        index: jest.fn().mockImplementation((params, callback) => {
+          return callback(null, {
+            data: {},
+            mocked: {
+              params,
+            },
+          });
+        }),
+        bulk: jest.fn().mockImplementation((bodies, callback) => {
+          return callback(null, {
+            data: {},
+            mocked: {
+              bodies,
+            },
+          });
+        }),
         mocked: {
           opts,
           conn,

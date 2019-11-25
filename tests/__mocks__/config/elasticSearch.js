@@ -15,5 +15,11 @@ export default {
         ],
       },
     },
+    mocked: {
+      connection: 'mocked',
+      index: 'lesgo',
+      type: '_doc',
+      options: {},
+    },
   },
 };
