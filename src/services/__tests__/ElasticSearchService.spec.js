@@ -86,11 +86,11 @@ describe('ServicesGroup: test ElasticSearchService', () => {
     const es = new ElasticSearchService(config.adapters.aws);
     const bodies = [
       {
-        id: 1,
+        profile_id: 1,
         someKey1: 'someValue1',
       },
       {
-        id: 2,
+        profile_id: 2,
         someKey2: 'someValue2',
       },
     ];
@@ -105,7 +105,7 @@ describe('ServicesGroup: test ElasticSearchService', () => {
               },
             },
             {
-              id: 1,
+              profile_id: 1,
               someKey1: 'someValue1',
             },
             {
@@ -114,10 +114,53 @@ describe('ServicesGroup: test ElasticSearchService', () => {
               },
             },
             {
-              id: 2,
+              profile_id: 2,
               someKey2: 'someValue2',
             },
           ],
+        },
+      },
+    });
+  });
+
+  it('test deleteIndices', () => {
+    const es = new ElasticSearchService(config.adapters.aws);
+    return expect(
+      es.deleteIndices(config.adapters.aws.index)
+    ).resolves.toMatchObject({
+      mocked: {
+        params: {
+          index: config.adapters.aws.index,
+        },
+      },
+    });
+  });
+
+  it('test existIndeces', () => {
+    const es = new ElasticSearchService(config.adapters.aws);
+    return expect(
+      es.existIndices(config.adapters.aws.index)
+    ).resolves.toMatchObject({
+      mocked: {
+        params: {
+          index: config.adapters.aws.index,
+        },
+      },
+    });
+  });
+
+  it('test putMapping', () => {
+    const es = new ElasticSearchService(config.adapters.aws);
+    return expect(
+      es.putMapping(config.adapters.aws.index, 'mockType', 'mockBody')
+    ).resolves.toMatchObject({
+      mocked: {
+        params: {
+          index: config.adapters.aws.index,
+          type: 'mockType',
+          body: {
+            properties: 'mockBody',
+          },
         },
       },
     });

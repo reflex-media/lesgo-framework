@@ -90,6 +90,7 @@ class ElasticSearchService {
 
     return new Promise((resolve, reject) => {
       this.client.indices.delete(params, (err, response) => {
+        // eslint-disable-next-line no-unused-expressions
         err ? reject(err) : resolve(response);
       });
     });
@@ -99,7 +100,7 @@ class ElasticSearchService {
     const params = { index, ...options };
     return new Promise((resolve, reject) => {
       this.client.indices.exists(params, (err, response) => {
-        // eslint-disable-next-line prefer-promise-reject-errors
+        // eslint-disable-next-line no-unused-expressions
         err ? reject(err) : resolve(response.body);
       });
     });
@@ -109,6 +110,7 @@ class ElasticSearchService {
     const params = { index, type, body: { properties: body } };
     return new Promise((resolve, reject) => {
       this.client.indices.putMapping(params, (err, response) => {
+        // eslint-disable-next-line no-unused-expressions
         err ? reject(err) : resolve(response);
       });
     });
@@ -123,6 +125,7 @@ class ElasticSearchService {
 
     return new Promise((resolve, reject) => {
       this.client.get(params, (err, response) => {
+        // eslint-disable-next-line no-unused-expressions
         err ? reject(err) : resolve(response);
       });
     });

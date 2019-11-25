@@ -43,6 +43,30 @@ jest.mock('@elastic/elasticsearch', () => {
               },
             });
           }),
+          delete: jest.fn().mockImplementation((params, callback) => {
+            return callback(null, {
+              data: {},
+              mocked: {
+                params,
+              },
+            });
+          }),
+          exists: jest.fn().mockImplementation((params, callback) => {
+            return callback(null, {
+              body: {
+                mocked: {
+                  params,
+                },
+              },
+            });
+          }),
+          putMapping: jest.fn().mockImplementation((params, callback) => {
+            return callback(null, {
+              mocked: {
+                params,
+              },
+            });
+          }),
         },
         search: jest.fn().mockImplementation((param, callback) => {
           return callback(null, {
