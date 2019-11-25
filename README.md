@@ -27,18 +27,10 @@ $ yarn coverage
 
 View the generated html report in `coverage/index.html`.
 
-### Test environment
+### Testing environment
 
-Declare test environment configurations as NODE variables in `setupTest.js`.
+Declare testing environment configurations in `tests/config` directory.
 
 ## Contributing
 
-You may contribute to the core framework by submitting a PR to the `develop` branch.
-
-The codebase is written in ES6 (ES2015) syntax and compiled and minified to ES5 in the `build` directory. This `build` directory will be used by Lesgo!
-
-**To compile**
-
-```
-$ yarn build
-```
+You may contribute to the core framework by submitting a PR to the `develop` branch. Refer to the official [Docs](https://reflex-media.github.io/lesgo-docs/contributing/) for more information.
