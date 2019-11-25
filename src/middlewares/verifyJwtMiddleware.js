@@ -2,7 +2,7 @@ import config from 'Config/jwt'; // eslint-disable-line import/no-unresolved
 import JwtService from '../services/JwtService';
 import LesgoException from '../exceptions/LesgoException';
 
-const token = headers => {
+export const token = headers => {
   if (!headers.Authorization) {
     throw new LesgoException(
       'Authorization Header is required!',
@@ -24,28 +24,30 @@ const token = headers => {
   return parsed[1];
 };
 
-const verifyJwtMiddleware = () => {
+export const verifyJwtMiddlewareBeforeHandler = (handler, next) => {
+  const { headers } = handler.event;
+
+  try {
+    const service = new JwtService(token(headers), config);
+
+    // eslint-disable-next-line no-param-reassign
+    handler.event.decodedJwt = service.validate().decoded;
+
+    next();
+  } catch (err) {
+    if (err.name === 'JsonWebTokenError') {
+      throw new LesgoException(err.message, 'JWT_ERROR', 403);
+    } else if (err.name === 'TokenExpiredError') {
+      throw new LesgoException(err.message, 'JWT_EXPIRED', 403);
+    } else {
+      throw err;
+    }
+  }
+};
+
+const verifyJwtMiddleware /* istanbul ignore next */ = () => {
   return {
-    before: (handler, next) => {
-      const { headers } = handler.event;
-
-      try {
-        const service = new JwtService(token(headers), config);
-
-        // eslint-disable-next-line no-param-reassign
-        handler.event.decodedJwt = service.validate().decoded;
-
-        next();
-      } catch (err) {
-        if (err.name === 'JsonWebTokenError') {
-          throw new LesgoException(err.message, 'JWT_ERROR', 403);
-        } else if (err.name === 'TokenExpiredError') {
-          throw new LesgoException(err.message, 'JWT_EXPIRED', 403);
-        } else {
-          throw err;
-        }
-      }
-    },
+    before: (handler, next) => verifyJwtMiddlewareBeforeHandler(handler, next),
   };
 };
 

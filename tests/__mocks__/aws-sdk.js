@@ -58,5 +58,16 @@ const S3 = jest.fn().mockImplementation(opts => {
   };
 });
 
-export { SQS, S3 };
-export default { SQS, S3 };
+const config = {
+  credentials: jest.fn(),
+  getCredentials: jest.fn().mockImplementation(callback => {
+    return callback(null, {
+      mocked: {
+        credentials: 'mockedCredentials',
+      },
+    });
+  }),
+};
+
+export { SQS, S3, config };
+export default { SQS, S3, config };

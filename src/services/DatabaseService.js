@@ -7,8 +7,4 @@ export default class DatabaseService {
     this.query = new Knex(this.options);
     this.knex = this.query;
   }
-
-  options() {
-    return this.options;
-  }
 }
