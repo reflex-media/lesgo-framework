@@ -2,6 +2,9 @@ import config from 'Config/cache'; // eslint-disable-line import/no-unresolved
 import ElastiCacheService from '../services/ElastiCacheService';
 import LesgoException from '../exceptions/LesgoException';
 
+/**
+ * Reusable instance
+ */
 const singleton = [];
 
 /**
@@ -41,7 +44,7 @@ const get = key => {
         }
       });
     } catch (err) {
-      rej(new LesgoException(err, 'CACHE_GET_EXCEPTION'));
+      rej(new LesgoException(err.message, 'CACHE_GET_EXCEPTION', 500, err));
     }
 
     ec().end();
@@ -67,7 +70,7 @@ const set = (key, val, lifetime) => {
         }
       });
     } catch (err) {
-      rej(new LesgoException(err, 'CACHE_SET_EXCEPTION'));
+      rej(new LesgoException(err.message, 'CACHE_SET_EXCEPTION', 500, err));
     }
 
     ec().end();
@@ -91,7 +94,7 @@ const del = key => {
         }
       });
     } catch (err) {
-      rej(new LesgoException(err, 'CACHE_DEL_EXCEPTION'));
+      rej(new LesgoException(err.message, 'CACHE_DEL_EXCEPTION', 500, err));
     }
 
     ec().end();

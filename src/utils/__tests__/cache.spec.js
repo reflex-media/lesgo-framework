@@ -61,18 +61,27 @@ describe('UtilsGroup: test cache utils', () => {
       cache.set('mockException', cacheData, cacheTime)
     ).rejects.toMatchObject({
       code: 'CACHE_SET_EXCEPTION',
+      message: 'mockedException',
+      name: 'LesgoException',
+      statusCode: 500,
     });
   });
 
   it('test getting cache with exception', async () => {
     await expect(cache.get('mockException')).rejects.toMatchObject({
       code: 'CACHE_GET_EXCEPTION',
+      message: 'mockedException',
+      name: 'LesgoException',
+      statusCode: 500,
     });
   });
 
   it('test deleting cache with exception', async () => {
     await expect(cache.del('mockException')).rejects.toMatchObject({
       code: 'CACHE_DEL_EXCEPTION',
+      message: 'mockedException',
+      name: 'LesgoException',
+      statusCode: 500,
     });
   });
 });
