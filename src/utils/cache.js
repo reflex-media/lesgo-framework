@@ -42,12 +42,12 @@ const get = key => {
         } else {
           res(data);
         }
+
+        ec().end();
       });
     } catch (err) {
       rej(new LesgoException(err.message, 'CACHE_GET_EXCEPTION', 500, err));
     }
-
-    ec().end();
   });
 };
 
@@ -68,12 +68,12 @@ const set = (key, val, lifetime) => {
         } else {
           res(true);
         }
+
+        ec().end();
       });
     } catch (err) {
       rej(new LesgoException(err.message, 'CACHE_SET_EXCEPTION', 500, err));
     }
-
-    ec().end();
   });
 };
 
@@ -92,12 +92,12 @@ const del = key => {
         } else {
           res(true);
         }
+
+        ec().end();
       });
     } catch (err) {
       rej(new LesgoException(err.message, 'CACHE_DEL_EXCEPTION', 500, err));
     }
-
-    ec().end();
   });
 };
 
