@@ -1,5 +1,5 @@
 import config from 'Config/elasticsearch'; // eslint-disable-line import/no-unresolved
-import ElasticsearchService from '../ElasticsearchService';
+import ElasticsearchService from '../ElasticsearchService2';
 
 // TODO we'll need to add more expected response
 

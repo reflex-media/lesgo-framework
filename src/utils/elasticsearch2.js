@@ -1,5 +1,5 @@
 import config from 'Config/elasticsearch'; // eslint-disable-line import/no-unresolved
-import ElasticsearchService from '../services/ElasticsearchService';
+import ElasticsearchService from '../services/ElasticsearchService2';
 
 const singleton = [];
 

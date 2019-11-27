@@ -1,4 +1,4 @@
-import AwsElasticsearchConnection from '../aws/AwsElasticsearchConnection';
+import AwsElasticsearchConnection from '../aws/AwsElasticsearchConnection2';
 
 describe('ServicesGroup: test AwsElasticsearchConnection', () => {
   it('test getCredentials AwsElasticsearchConnection', () => {
