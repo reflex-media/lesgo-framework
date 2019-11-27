@@ -2,7 +2,7 @@ import {
   Client as ElasticsearchClient,
   Connection as DefaultConnection,
 } from '@elastic/elasticsearch';
-import AwsConnection from './aws/AwsElasticsearchConnection2';
+import AwsConnection from './aws/AwsElasticsearchConnection';
 
 class ElasticsearchService {
   constructor({ index, type, connection, options }) {
