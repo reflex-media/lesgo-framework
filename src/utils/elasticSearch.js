@@ -1,5 +1,5 @@
-import config from 'Config/elasticSearch'; // eslint-disable-line import/no-unresolved
-import ElasticSearchService from '../services/ElasticSearchService';
+import config from 'Config/elasticsearch'; // eslint-disable-line import/no-unresolved
+import ElasticsearchService from '../services/ElasticsearchService';
 
 const singleton = [];
 
@@ -8,7 +8,7 @@ const es = (conn = null) => {
     return singleton[conn];
   }
 
-  const instance = new ElasticSearchService({
+  const instance = new ElasticsearchService({
     ...config.adapters[conn || config.default],
   });
 

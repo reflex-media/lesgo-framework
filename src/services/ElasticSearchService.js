@@ -1,10 +1,10 @@
 import {
-  Client as ElasticSearchClient,
+  Client as ElasticsearchClient,
   Connection as DefaultConnection,
 } from '@elastic/elasticsearch';
-import AwsConnection from './aws/AwsElasticSearchConnection';
+import AwsConnection from './aws/AwsElasticsearchConnection';
 
-class ElasticSearchService {
+class ElasticsearchService {
   constructor({ index, type, connection, options }) {
     this.index = index;
     this.type = type;
@@ -26,7 +26,7 @@ class ElasticSearchService {
         break;
     }
 
-    this.client = new ElasticSearchClient({
+    this.client = new ElasticsearchClient({
       ...this.options,
       Connection,
     });
@@ -216,4 +216,4 @@ class ElasticSearchService {
   }
 }
 
-export default ElasticSearchService;
+export default ElasticsearchService;

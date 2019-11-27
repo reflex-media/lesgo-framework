@@ -1,11 +1,11 @@
-import config from 'Config/elasticSearch'; // eslint-disable-line import/no-unresolved
-import ElasticSearchService from '../ElasticSearchService';
+import config from 'Config/elasticsearch'; // eslint-disable-line import/no-unresolved
+import ElasticsearchService from '../ElasticsearchService';
 
 // TODO we'll need to add more expected response
 
-describe('ServicesGroup: test ElasticSearchService', () => {
-  it('test instantiate default ElasticSearchService connection', () => {
-    const es = new ElasticSearchService(config.adapters.mocked);
+describe('ServicesGroup: test ElasticsearchService', () => {
+  it('test instantiate default ElasticsearchService connection', () => {
+    const es = new ElasticsearchService(config.adapters.mocked);
     expect(es.getClient()).toMatchObject({
       mocked: {
         conn: undefined,
@@ -14,7 +14,7 @@ describe('ServicesGroup: test ElasticSearchService', () => {
   });
 
   it('test search', () => {
-    const es = new ElasticSearchService(config.adapters.aws);
+    const es = new ElasticsearchService(config.adapters.aws);
     return expect(es.search({ someKey: 'someValue' })).resolves.toMatchObject({
       mocked: {
         param: {
@@ -29,7 +29,7 @@ describe('ServicesGroup: test ElasticSearchService', () => {
   });
 
   it('test get', () => {
-    const es = new ElasticSearchService(config.adapters.aws);
+    const es = new ElasticsearchService(config.adapters.aws);
     return expect(es.get(1)).resolves.toMatchObject({
       mocked: {
         params: {
@@ -40,7 +40,7 @@ describe('ServicesGroup: test ElasticSearchService', () => {
   });
 
   it('test create', () => {
-    const es = new ElasticSearchService(config.adapters.aws);
+    const es = new ElasticsearchService(config.adapters.aws);
     return expect(
       es.create(1, { someKey: 'someValue' })
     ).resolves.toMatchObject({
@@ -56,7 +56,7 @@ describe('ServicesGroup: test ElasticSearchService', () => {
   });
 
   it('test indexOrCreateById', () => {
-    const es = new ElasticSearchService(config.adapters.aws);
+    const es = new ElasticsearchService(config.adapters.aws);
     return expect(
       es.indexOrCreateById({ id: 1, someKey: 'someValue' })
     ).resolves.toMatchObject({
@@ -72,7 +72,7 @@ describe('ServicesGroup: test ElasticSearchService', () => {
   });
 
   it('test updateById', () => {
-    const es = new ElasticSearchService(config.adapters.aws);
+    const es = new ElasticsearchService(config.adapters.aws);
     return expect(es.updateById(1)).resolves.toMatchObject({
       mocked: {
         params: {
@@ -83,7 +83,7 @@ describe('ServicesGroup: test ElasticSearchService', () => {
   });
 
   it('test bulkIndex', () => {
-    const es = new ElasticSearchService(config.adapters.aws);
+    const es = new ElasticsearchService(config.adapters.aws);
     const bodies = [
       {
         profile_id: 1,
@@ -124,7 +124,7 @@ describe('ServicesGroup: test ElasticSearchService', () => {
   });
 
   it('test deleteIndices', () => {
-    const es = new ElasticSearchService(config.adapters.aws);
+    const es = new ElasticsearchService(config.adapters.aws);
     return expect(
       es.deleteIndices(config.adapters.aws.index)
     ).resolves.toMatchObject({
@@ -137,7 +137,7 @@ describe('ServicesGroup: test ElasticSearchService', () => {
   });
 
   it('test existIndeces', () => {
-    const es = new ElasticSearchService(config.adapters.aws);
+    const es = new ElasticsearchService(config.adapters.aws);
     return expect(
       es.existIndices(config.adapters.aws.index)
     ).resolves.toMatchObject({
@@ -150,7 +150,7 @@ describe('ServicesGroup: test ElasticSearchService', () => {
   });
 
   it('test putMapping', () => {
-    const es = new ElasticSearchService(config.adapters.aws);
+    const es = new ElasticsearchService(config.adapters.aws);
     return expect(
       es.putMapping(config.adapters.aws.index, 'mockType', 'mockBody')
     ).resolves.toMatchObject({
