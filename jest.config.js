@@ -14,6 +14,5 @@ module.exports = {
   setupFiles: ['./setupTest.js'],
   moduleNameMapper: {
     '^Config(.*)$': '<rootDir>/tests/__mocks__/config$1.js',
-    'aws-sdk': '<rootDir>/tests/__mocks__/aws-sdk.js',
   },
 };
