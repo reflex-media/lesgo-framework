@@ -4,7 +4,7 @@ import SignedRequest from './SignedRequest';
 import LesgoException from '../../exceptions/LesgoException';
 
 /* eslint-disable class-methods-use-this */
-export default class AwsElasticSearchConnection extends Connection {
+export default class AwsElasticsearchConnection extends Connection {
   constructor(opts) {
     super(opts);
 

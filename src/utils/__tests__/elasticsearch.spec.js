@@ -1,8 +1,8 @@
-import es from '../elasticSearch';
+import es from '../elasticsearch';
 
 // TODO we'll need to add more expected response
 
-describe('UtilsGroup: test elasticSearch utils', () => {
+describe('UtilsGroup: test elasticsearch utils', () => {
   it('test creating index', async () => {
     await expect(
       es().createIndices({

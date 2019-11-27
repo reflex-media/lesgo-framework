@@ -1,6 +1,6 @@
 import cache from './cache';
 import database from './database';
-import elasticSearch from './elasticSearch';
+import elasticsearch from './elasticsearch';
 import logger from './logger';
 import { getObject } from './objectStore';
 import { dispatch } from './queue';
@@ -12,7 +12,7 @@ export {
   connectSentry,
   database,
   dispatch,
-  elasticSearch,
+  elasticsearch,
   getObject,
   logger,
 };
