@@ -3,7 +3,8 @@ import LesgoException from '../exceptions/LesgoException';
 
 export default class JwtService {
   constructor(token, config) {
-    this.decoded = jwtpkg.verify(token, config.secret);
+    this.jwtpkg = jwtpkg;
+    this.decoded = this.jwtpkg.verify(token, config.secret);
     this.settings = {
       validate: {
         iss: config.iss.validate,
@@ -45,7 +46,7 @@ export default class JwtService {
     return this;
   }
 
-  static jwt() {
-    return jwtpkg;
+  jwt() {
+    return this.jwtpkg;
   }
 }

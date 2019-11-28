@@ -1,4 +1,5 @@
 import config from 'Config/jwt'; // eslint-disable-line import/no-unresolved
+import jwt from 'jsonwebtoken';
 import JwtService from '../JwtService';
 import { token } from '../../middlewares/verifyJwtMiddleware';
 
@@ -28,5 +29,7 @@ describe('ServicesGroup: test JwtService instantiation', () => {
         },
       },
     });
+
+    expect(service.jwt()).toMatchObject(jwt);
   });
 });
