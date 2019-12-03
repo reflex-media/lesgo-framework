@@ -46,6 +46,7 @@ class ElasticsearchService {
         body,
       };
       this.client.search(param, (err, response) => {
+        /* istanbul ignore next */
         if (err) {
           reject(err);
         }
@@ -77,7 +78,7 @@ class ElasticsearchService {
     return new Promise((resolve, reject) => {
       this.client.indices.create(params, (err, response) => {
         // eslint-disable-next-line no-unused-expressions
-        err ? reject(err) : resolve(response);
+        err ? /* istanbul ignore next */ reject(err) : resolve(response);
       });
     });
   }
@@ -91,7 +92,7 @@ class ElasticsearchService {
     return new Promise((resolve, reject) => {
       this.client.indices.delete(params, (err, response) => {
         // eslint-disable-next-line no-unused-expressions
-        err ? reject(err) : resolve(response);
+        err ? /* istanbul ignore next */ reject(err) : resolve(response);
       });
     });
   }
@@ -101,7 +102,7 @@ class ElasticsearchService {
     return new Promise((resolve, reject) => {
       this.client.indices.exists(params, (err, response) => {
         // eslint-disable-next-line no-unused-expressions
-        err ? reject(err) : resolve(response.body);
+        err ? /* istanbul ignore next */ reject(err) : resolve(response.body);
       });
     });
   }
@@ -111,7 +112,7 @@ class ElasticsearchService {
     return new Promise((resolve, reject) => {
       this.client.indices.putMapping(params, (err, response) => {
         // eslint-disable-next-line no-unused-expressions
-        err ? reject(err) : resolve(response);
+        err ? /* istanbul ignore next */ reject(err) : resolve(response);
       });
     });
   }
@@ -126,7 +127,7 @@ class ElasticsearchService {
     return new Promise((resolve, reject) => {
       this.client.get(params, (err, response) => {
         // eslint-disable-next-line no-unused-expressions
-        err ? reject(err) : resolve(response);
+        err ? /* istanbul ignore next */ reject(err) : resolve(response);
       });
     });
   }
@@ -142,7 +143,7 @@ class ElasticsearchService {
     return new Promise((resolve, reject) => {
       this.client.index(params, (err, response) => {
         // eslint-disable-next-line no-unused-expressions
-        err ? reject(err) : resolve(response);
+        err ? /* istanbul ignore next */ reject(err) : resolve(response);
       });
     });
   }
@@ -153,7 +154,7 @@ class ElasticsearchService {
         { body: this.constructBulkIndex(bodies) },
         (err, response) => {
           // eslint-disable-next-line no-unused-expressions
-          err ? reject(err) : resolve(response);
+          err ? /* istanbul ignore next */ reject(err) : resolve(response);
         }
       );
     });
@@ -170,7 +171,7 @@ class ElasticsearchService {
     return new Promise((resolve, reject) => {
       this.client.index(params, (err, response) => {
         // eslint-disable-next-line no-unused-expressions
-        err ? reject(err) : resolve(response);
+        err ? /* istanbul ignore next */ reject(err) : resolve(response);
       });
     });
   }
@@ -185,7 +186,7 @@ class ElasticsearchService {
     return new Promise((resolve, reject) => {
       this.client.get(params, (err, response) => {
         // eslint-disable-next-line no-unused-expressions
-        err ? reject(err) : resolve(response);
+        err ? /* istanbul ignore next */ reject(err) : resolve(response);
       });
     });
   }
