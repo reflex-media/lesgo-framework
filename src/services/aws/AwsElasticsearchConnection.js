@@ -15,6 +15,7 @@ export default class AwsElasticsearchConnection extends Connection {
     try {
       const awsCreds = await this.getCredentials();
 
+      /* istanbul ignore else */
       if (!this.opts.awsRegion) {
         throw new LesgoException('Please provide the awsRegion!');
       }

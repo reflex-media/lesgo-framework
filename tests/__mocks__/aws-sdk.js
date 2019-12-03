@@ -69,5 +69,9 @@ const config = {
   }),
 };
 
-export { SQS, S3, config };
-export default { SQS, S3, config };
+const Endpoint = jest.fn().mockImplementation(opts => {
+  return opts;
+});
+
+export { SQS, S3, config, Endpoint };
+export default { SQS, S3, config, Endpoint };
