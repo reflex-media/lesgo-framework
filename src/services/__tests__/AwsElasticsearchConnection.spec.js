@@ -57,10 +57,22 @@ describe('ServicesGroup: test AwsElasticsearchConnection Request', () => {
   it('should call the request method', async () => {
     const conn = new AwsElasticsearchConnection({
       awsRegion: 'us-east-1',
-      url: new URL('http://localhost:9090'),
+      url: new URL('http://localhost'),
     });
 
-    conn.request({}, () => {});
+    await conn.request({ method: 'POST' }, () => {}); // using no body
+    await conn.request({ method: 'POST', body: 'Yow' }, () => {}); // using string to body
+    await conn.request({ method: 'POST', body: ['Yow'] }, () => {}); // using array to body
+
+    await conn.request(
+      {
+        method: 'POST',
+        body: ['Yow'],
+      },
+      err => {
+        throw err;
+      }
+    );
   });
 
   it('should call the request method and throw awsRegion Error', async () => {
