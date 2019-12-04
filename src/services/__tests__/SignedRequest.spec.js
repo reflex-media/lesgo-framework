@@ -49,6 +49,21 @@ describe('ServicesGroup: test SignedRequest', () => {
     handleSuccess(wrongHttpResp, false, (key, body) => {});
     wrongHttpResp.statusCode = 500;
     handleSuccess(wrongHttpResp, false, (key, body) => {});
+
+    handleSuccess(
+      {
+        statusCode: 200,
+        on: (key, cb) => {
+          if (key === 'data') {
+            cb('notJsonFormat');
+          } else if (key === 'end') {
+            cb();
+          }
+        },
+      },
+      false,
+      (key, body) => {}
+    );
   });
 
   it('test handleFail', () => {
