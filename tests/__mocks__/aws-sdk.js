@@ -109,7 +109,23 @@ const NodeHttpClient = jest.fn().mockImplementation(() => {
   };
 });
 
-export { SQS, S3, config, Endpoint, HttpRequest, Signers, NodeHttpClient };
+class EnvironmentCredentials {
+  constructor(opts) {
+    this.opts = opts;
+  }
+}
+
+export {
+  SQS,
+  S3,
+  config,
+  Endpoint,
+  HttpRequest,
+  Signers,
+  NodeHttpClient,
+  EnvironmentCredentials,
+};
+
 export default {
   SQS,
   S3,
@@ -118,4 +134,5 @@ export default {
   HttpRequest,
   Signers,
   NodeHttpClient,
+  EnvironmentCredentials,
 };
