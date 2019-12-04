@@ -69,5 +69,53 @@ const config = {
   }),
 };
 
-export { SQS, S3, config };
-export default { SQS, S3, config };
+const Endpoint = jest.fn().mockImplementation(opts => {
+  return opts;
+});
+
+const HttpRequest = jest.fn().mockImplementation(opts => {
+  return opts;
+});
+
+const Signers = {
+  V4: jest.fn().mockImplementation((req, service) => {
+    return {
+      mocked: {
+        req,
+        service,
+      },
+      addAuthorization: jest
+        .fn()
+        .mockImplementation((awsCreds, dateInstance) => {
+          return {
+            mocked: {
+              awsCreds,
+              dateInstance,
+            },
+          };
+        }),
+    };
+  }),
+};
+
+const NodeHttpClient = jest.fn().mockImplementation(() => {
+  return {
+    handleRequest: jest.fn().mockImplementation(
+      // eslint-disable-next-line no-unused-vars
+      (httpRequest, httpOptions, successCallback, errCallback) => {
+        return true;
+      }
+    ),
+  };
+});
+
+export { SQS, S3, config, Endpoint, HttpRequest, Signers, NodeHttpClient };
+export default {
+  SQS,
+  S3,
+  config,
+  Endpoint,
+  HttpRequest,
+  Signers,
+  NodeHttpClient,
+};
