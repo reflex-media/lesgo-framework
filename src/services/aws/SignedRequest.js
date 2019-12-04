@@ -144,7 +144,7 @@ const signedRequest = (aws, config) => {
       } else {
         try {
           sendRequest(params, callback);
-        } catch (ex) {
+        } catch (ex) /* istanbul ignore next */ {
           process.nextTick(() => {
             callback(ex);
           });
@@ -154,5 +154,5 @@ const signedRequest = (aws, config) => {
   };
 };
 
-export { handleSuccess, handleFail, sendRequest, signedRequest };
+export { initialize, handleSuccess, handleFail, sendRequest, signedRequest };
 export default signedRequest;
