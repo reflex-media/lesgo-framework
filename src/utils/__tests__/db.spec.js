@@ -1,4 +1,4 @@
-import dbConfig from 'Config/database'; // eslint-disable-line import/no-unresolved
+import dbConfig from 'Config/db'; // eslint-disable-line import/no-unresolved
 import { connectDb, db, dbRead } from '../db';
 import * as dbConnect from '../dbConnect';
 

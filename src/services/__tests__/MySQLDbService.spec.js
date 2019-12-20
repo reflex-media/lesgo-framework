@@ -1,4 +1,4 @@
-import config from 'Config/database'; // eslint-disable-line import/no-unresolved
+import config from 'Config/db'; // eslint-disable-line import/no-unresolved
 import MySQLDbService from '../MySQLDbService';
 
 describe('ServicesGroup: test MySQLDbService', () => {

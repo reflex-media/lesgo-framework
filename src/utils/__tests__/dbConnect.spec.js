@@ -1,4 +1,4 @@
-import dbConfig from 'Config/database'; // eslint-disable-line import/no-unresolved
+import dbConfig from 'Config/db'; // eslint-disable-line import/no-unresolved
 import * as dbConnect from '../dbConnect';
 
 describe('UtilsGroup: test dbConnect utils', () => {
