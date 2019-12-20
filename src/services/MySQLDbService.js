@@ -19,7 +19,6 @@ export default class MySQLDbService {
       mydb = mysql();
     }
 
-    this.options = options;
     this.db = mydb;
     this.config = this.db.config;
     this.query = this.db.query;

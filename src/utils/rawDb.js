@@ -25,12 +25,14 @@ const connectReadDb = (conn = null) => {
   }
 
   const dbconfig = config.connections[conn || config.default];
-  if (dbconfig.connection.host_read !== dbconfig.connection.host) {
+  const { host, host_read: hostRead } = dbconfig.connection;
+
+  if (hostRead && hostRead !== host) {
     const instance = new MySQLDbService();
 
     instance.config({
       ...dbconfig.connection,
-      host: dbconfig.connection.host_read,
+      host: hostRead,
     });
 
     readSingleton[conn] = instance;
@@ -41,11 +43,18 @@ const connectReadDb = (conn = null) => {
   return connectWriteDb(conn);
 };
 
-export const connectDb = (conn = null) => {
+const connectDb = (conn = null) => {
   connectWriteDb(conn);
   connectReadDb(conn);
 };
 
-export const db = connectWriteDb();
+const db = connectWriteDb();
 
-export const dbRead = connectReadDb();
+const dbRead = connectReadDb();
+
+export const internalMethods = {
+  connectWriteDb,
+  connectReadDb,
+};
+
+export { db, dbRead, connectDb };
