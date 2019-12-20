@@ -5,11 +5,12 @@ export default class MySQLDbService {
     let mydb = null;
 
     if (options !== null) {
-      const { host, database, user, password } = options.connection;
+      const { host, port, database, user, password } = options.connection;
 
       mydb = mysql({
         config: {
           host,
+          port,
           database,
           user,
           password,
@@ -19,17 +20,17 @@ export default class MySQLDbService {
       mydb = mysql();
     }
 
-    this.db = mydb;
-    this.config = this.db.config;
-    this.query = this.db.query;
-    this.end = this.db.end;
+    this.mysql = mydb;
+    this.query = this.mysql.query;
+    this.end = this.mysql.end;
   }
 
-  connect(options) {
-    const { host, database, user, password } = options.connection;
+  connect(config) {
+    const { host, port, database, user, password } = config;
 
-    this.db.config({
+    this.mysql.config({
       host,
+      port,
       database,
       user,
       password,

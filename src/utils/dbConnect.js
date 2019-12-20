@@ -4,7 +4,7 @@ import MySQLDbService from '../services/MySQLDbService';
 const writeSingleton = [];
 const readSingleton = [];
 
-const connectWriteDb = (conn = null) => {
+export const connectWriteDb = (conn = null) => {
   if (writeSingleton[conn]) {
     return writeSingleton[conn];
   }
@@ -12,14 +12,14 @@ const connectWriteDb = (conn = null) => {
   const dbconfig = config.connections[conn || config.default];
   const instance = new MySQLDbService();
 
-  instance.config(dbconfig.connection);
+  instance.connect(dbconfig.connection);
 
   writeSingleton[conn] = instance;
 
   return instance;
 };
 
-const connectReadDb = (conn = null) => {
+export const connectReadDb = (conn = null) => {
   if (readSingleton[conn]) {
     return readSingleton[conn];
   }
@@ -30,7 +30,7 @@ const connectReadDb = (conn = null) => {
   if (hostRead && hostRead !== host) {
     const instance = new MySQLDbService();
 
-    instance.config({
+    instance.connect({
       ...dbconfig.connection,
       host: hostRead,
     });
@@ -42,19 +42,3 @@ const connectReadDb = (conn = null) => {
 
   return connectWriteDb(conn);
 };
-
-const connectDb = (conn = null) => {
-  connectWriteDb(conn);
-  connectReadDb(conn);
-};
-
-const db = connectWriteDb();
-
-const dbRead = connectReadDb();
-
-export const internalMethods = {
-  connectWriteDb,
-  connectReadDb,
-};
-
-export { db, dbRead, connectDb };

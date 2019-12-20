@@ -4,7 +4,7 @@ import MySQLDbService from '../MySQLDbService';
 describe('ServicesGroup: test MySQLDbService', () => {
   it('test instantiate default MySQLDbService', () => {
     const mydb = new MySQLDbService();
-    expect(mydb.db.getConfig()).toMatchObject({});
+    expect(mydb.mysql.getConfig()).toMatchObject({});
   });
 
   it('test instantiate MySQLDbService with options', () => {
@@ -13,7 +13,7 @@ describe('ServicesGroup: test MySQLDbService', () => {
 
     const mydb = new MySQLDbService(options);
 
-    expect(mydb.db.getConfig()).toMatchObject({
+    expect(mydb.mysql.getConfig()).toMatchObject({
       database,
       host,
       user,
@@ -22,13 +22,13 @@ describe('ServicesGroup: test MySQLDbService', () => {
   });
 
   it('test connect MySQLDbService instance', () => {
-    const options = config.connections.mysql;
-    const { database, host, user, password } = options.connection;
+    const dbConfig = config.connections.mysql.connection;
+    const { database, host, user, password } = dbConfig;
 
     const mydb = new MySQLDbService();
-    mydb.connect(options);
+    mydb.connect(dbConfig);
 
-    expect(mydb.db.getConfig()).toMatchObject({
+    expect(mydb.mysql.getConfig()).toMatchObject({
       database,
       host,
       user,
