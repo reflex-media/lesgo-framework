@@ -132,12 +132,13 @@ class ElasticsearchService {
     });
   }
 
-  indexOrCreateById(body) {
+  indexOrCreateById(body, refresh = false) {
     const params = {
       index: this.index,
       type: this.type,
       id: body.id,
       body,
+      refresh,
     };
 
     return new Promise((resolve, reject) => {
