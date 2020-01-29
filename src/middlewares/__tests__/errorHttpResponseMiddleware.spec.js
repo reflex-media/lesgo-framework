@@ -10,7 +10,6 @@ describe('MiddlewareGroup: test errorHandler middleware', () => {
       error: new Error('Test validation error'),
     });
 
-    expect(data.headers['Access-Control-Allow-Credentials']).toBe(true);
     expect(data.headers['Access-Control-Allow-Origin']).toBe('*');
     expect(data.headers['Cache-Control']).toBe('no-cache');
 
@@ -114,7 +113,6 @@ describe('MiddlewareGroup: test errorHandler middleware', () => {
   it('test with undefined opts', () => {
     const data = errorHttpResponseHandler();
 
-    expect(data.headers['Access-Control-Allow-Credentials']).toBe(true);
     expect(data.headers['Access-Control-Allow-Origin']).toBe('*');
     expect(data.headers['Cache-Control']).toBe('no-cache');
 

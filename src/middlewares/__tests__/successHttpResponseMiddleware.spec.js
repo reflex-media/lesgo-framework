@@ -7,7 +7,6 @@ describe('MiddlewareGroup: test successHttpResponseHandler middleware', () => {
   it('test default without parameters', () => {
     const data = successHttpResponseHandler();
 
-    expect(data.headers['Access-Control-Allow-Credentials']).toBe(true);
     expect(data.headers['Access-Control-Allow-Origin']).toBe('*');
     expect(data.headers['Cache-Control']).toBe('no-cache');
 
@@ -24,7 +23,6 @@ describe('MiddlewareGroup: test successHttpResponseHandler middleware', () => {
   it('test default', () => {
     const data = successHttpResponseHandler({ response: 'Some message' });
 
-    expect(data.headers['Access-Control-Allow-Credentials']).toBe(true);
     expect(data.headers['Access-Control-Allow-Origin']).toBe('*');
     expect(data.headers['Cache-Control']).toBe('no-cache');
 
