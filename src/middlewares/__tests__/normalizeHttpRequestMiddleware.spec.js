@@ -9,6 +9,11 @@ describe('MiddlewareGroup: test normalizeRequest', () => {
     expect(data).toBe(null);
   });
 
+  it('test with empty parameters from alb', () => {
+    const data = normalizeRequest({ headers: null, qs: {}, body: null });
+    expect(data).toBe(null);
+  });
+
   it('test with empty header parameters', () => {
     const data = normalizeRequest({ headers: {}, qs: null, body: null });
     expect(data).toBe(null);
