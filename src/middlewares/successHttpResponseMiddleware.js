@@ -7,6 +7,7 @@ export const successHttpResponseHandler = opts => {
     headers: {
       'Access-Control-Allow-Origin': '*',
       'Cache-Control': 'no-cache',
+      'Content-Type': 'application/json',
     },
   };
 
