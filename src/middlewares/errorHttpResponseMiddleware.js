@@ -9,6 +9,7 @@ export const errorHttpResponseHandler = opts => {
     headers: {
       'Access-Control-Allow-Origin': '*',
       'Cache-Control': 'no-cache',
+      'Content-Type': 'application/json',
     },
     error: '',
   };
