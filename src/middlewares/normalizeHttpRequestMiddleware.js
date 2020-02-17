@@ -1,8 +1,12 @@
 import logger from '../utils/logger';
 
 export const normalizeRequest = opts => {
-  const { headers, qs, body } = opts;
+  const { headers, body } = opts;
+  let { qs } = opts;
   let input = null;
+
+  // to be consistent with api gateway, we convert empty object to null
+  if (JSON.stringify(qs) === '{}') qs = null;
 
   if (!headers && qs === null) return input;
 

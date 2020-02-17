@@ -5,9 +5,9 @@ export const successHttpResponseHandler = opts => {
     event: {},
     debugMode: false,
     headers: {
-      'Access-Control-Allow-Credentials': true,
       'Access-Control-Allow-Origin': '*',
       'Cache-Control': 'no-cache',
+      'Content-Type': 'application/json',
     },
   };
 
