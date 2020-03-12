@@ -5,6 +5,7 @@ import logger from './logger';
 import { getObject } from './objectStore';
 import { dispatch } from './queue';
 import { connectSentry } from './sentry';
+import dynamodb from './dynamodb';
 
 // eslint-disable-next-line import/prefer-default-export
 export {
@@ -15,4 +16,5 @@ export {
   elasticsearch,
   getObject,
   logger,
+  dynamodb,
 };
