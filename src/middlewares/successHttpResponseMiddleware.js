@@ -1,3 +1,5 @@
+import gzipHttpResponse from './gzipHttpResponse';
+
 export const successHttpResponseHandler = opts => {
   const defaults = {
     response: '',
@@ -32,7 +34,7 @@ export const successHttpResponseHandler = opts => {
   };
 };
 
-export const successHttpResponseAfterHandler = (handler, next, opts) => {
+export const successHttpResponseAfterHandler = async (handler, next, opts) => {
   const defaults = {
     response: handler.response,
     event: handler.event,
@@ -42,6 +44,10 @@ export const successHttpResponseAfterHandler = (handler, next, opts) => {
 
   // eslint-disable-next-line no-param-reassign
   handler.response = successHttpResponseHandler(options);
+
+  // eslint-disable-next-line no-param-reassign
+  handler.response = await gzipHttpResponse(handler, opts);
+
   /* istanbul ignore next */
   next();
 };
