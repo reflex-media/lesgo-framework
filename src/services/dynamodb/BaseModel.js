@@ -34,6 +34,7 @@ class BaseModel {
 
   async update(object) {
     return new Promise((resolve, reject) => {
+      this.instance = new this.Model(object);
       this.Model.update(object, err => {
         err
           ? reject(new LesgoException(err, 'DYNAMODB_UPDATE_ERROR'))

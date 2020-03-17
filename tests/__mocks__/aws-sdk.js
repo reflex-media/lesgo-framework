@@ -109,6 +109,14 @@ const NodeHttpClient = jest.fn().mockImplementation(() => {
   };
 });
 
+const DynamoDB = jest.fn().mockImplementation(() => {
+  return {
+    describeTable: jest.fn().mockImplementation(() => {
+      return true;
+    }),
+  };
+});
+
 class EnvironmentCredentials {
   constructor(opts) {
     this.opts = opts;
@@ -124,6 +132,7 @@ export {
   Signers,
   NodeHttpClient,
   EnvironmentCredentials,
+  DynamoDB,
 };
 
 export default {
@@ -135,4 +144,5 @@ export default {
   Signers,
   NodeHttpClient,
   EnvironmentCredentials,
+  DynamoDB,
 };
