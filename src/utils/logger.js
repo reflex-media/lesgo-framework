@@ -11,6 +11,10 @@ const transports = [
         : 'info',
     config: {
       getCreatedAt: true,
+      tags: {
+        environment: app.env,
+        service: app.service,
+      },
     },
   },
 ];
@@ -24,8 +28,6 @@ if (sentry.enabled) {
       dsn: sentry.dsn,
       tags: {
         release: sentry.release,
-        environment: app.env,
-        service: app.service,
       },
     },
   });
