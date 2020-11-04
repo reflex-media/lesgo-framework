@@ -53,6 +53,7 @@
     "jsonwebtoken": "^8.5.1",
     "knex": "^0.20.1",
     "memcached-elasticache": "^1.1.1",
+    "nanoid": "^3.1.16",
     "serverless-mysql": "^1.5.2"
   },
   "husky": {
