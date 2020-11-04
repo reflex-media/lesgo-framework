@@ -99,10 +99,6 @@ function deploy_func ()
 {
     echo -e "${YELLOW}Deploying ${FUNCTION} to ${STAGE}${NC}"
     sls deploy -f ${FUNCTION} --stage ${STAGE} --env ${ENVFILE}
-
-    if [[ ${SENTRY_ENABLED} == "true" ]]; then
-        deploy_sourcemap
-    fi
 }
 
 function prompt_confirmation_deploy_all ()
@@ -133,10 +129,6 @@ function deploy_full ()
 {
     echo -e "${YELLOW}Deploying service to ${STAGE}${NC}"
     sls deploy --stage ${STAGE} --env ${ENVFILE}
-
-    if [[ ${SENTRY_ENABLED} == "true" ]]; then
-        deploy_sourcemap_all
-    fi
 }
 
 function invoke_func ()
@@ -153,19 +145,6 @@ function log_stream_func ()
 {
     echo -e "${YELLOW}Log Streaming function ${FUNCTION} on ${STAGE}${NC}"
     sls logs -f ${FUNCTION} --stage ${STAGE} --env ${ENVFILE} -t
-}
-
-function deploy_sourcemap_all ()
-{
-    echo -e "${YELLOW}Deploying all sourcemaps to Sentry${NC}"
-    yes | for z in ./.serverless/*.zip; do unzip -d .webpack/ "$z"; done
-    sentry-cli --auth-token=${SENTRY_AUTHTOKEN} releases --org=${SENTRY_ORG} --project=${SENTRY_PROJECT} files ${SENTRY_RELEASE} upload-sourcemaps "./.webpack/src/handlers" --url-prefix="/var/task/src/handlers" --rewrite=true
-}
-
-function deploy_sourcemap ()
-{
-    echo -e "${YELLOW}Deploying function sourcemap to Sentry${NC}"
-    sentry-cli --auth-token=${SENTRY_AUTHTOKEN} releases --org=${SENTRY_ORG} --project=${SENTRY_PROJECT} files ${SENTRY_RELEASE} upload-sourcemaps "./.webpack/${FUNCTION}/src/handlers" --url-prefix="/var/task/src/handlers" --rewrite=true
 }
 
 function build ()

@@ -7,7 +7,4 @@ export default {
     },
   },
   s3: jest.fn(),
-  sentry: {
-    enabled: true,
-  },
 };

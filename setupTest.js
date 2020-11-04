@@ -7,9 +7,6 @@ console.info = jest.fn();
 console.warn = jest.fn();
 console.error = jest.fn();
 
-// Mock Sentry
-jest.mock('@sentry/minimal');
-
 // Mock Knex.js library
 jest.mock('./src/services/knex', () => {
   return jest.fn().mockImplementation(() => {
