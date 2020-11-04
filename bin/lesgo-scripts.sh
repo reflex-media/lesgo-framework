@@ -6,14 +6,15 @@
 #                                                                             #
 ###############################################################################
 
-usage="$(basename "$0") [-f] [-s] [-t] [-h] -- script to deploy serverless functions
+usage="$(basename "$0") [-f] [-s] [-t] [-h] [-d] -- script to deploy serverless functions
 
 where:
     -t      define the type of action to be taken (build, deploy, invoke, logs, destroy)
     -f      specify function to involve
     -s      specify environment (e.g; development, staging, production)
     -h      show this help text
-    -l      to invoke a local function"
+    -l      to invoke a local function
+    -d      set data parameters for invoke function"
 
 # arg options
 BUILD=0;        # serverless build without deploy
@@ -24,9 +25,10 @@ DESTROY=0;      # serverless remove entire service
 FUNCTION='';    # specify function to involve
 STAGE='';       # deploy specific stage/environment
 INVOKE_LOCAL=0; # default to non local execution
+DATA=''         # set the data parameters for invoke function
 
 # parse the options
-while getopts "lhs:f:t:" OPT ; do
+while getopts "lhs:f:t:d:" OPT ; do
   case ${OPT} in
     f) FUNCTION=${OPTARG} ;;
     s) STAGE=${OPTARG} ;;
@@ -46,6 +48,7 @@ while getopts "lhs:f:t:" OPT ; do
             exit 1
         fi;;
     l) INVOKE_LOCAL=1 ;;
+    d) DATA=${OPTARG} ;;
     h)
         echo "${usage}"
         exit 0
@@ -140,9 +143,9 @@ function invoke_func ()
 {
     echo -e "${YELLOW}Invoking function ${FUNCTION} on ${STAGE}${NC}"
     if [ ${INVOKE_LOCAL} == 1 ]; then
-        sls invoke local -f ${FUNCTION} --stage ${STAGE} --env ${ENVFILE} -l
+        sls invoke local -f ${FUNCTION} --stage ${STAGE} --env ${ENVFILE} -d ${DATA} -l
     else
-        sls invoke -f ${FUNCTION} --stage ${STAGE} --env ${ENVFILE} -l
+        sls invoke -f ${FUNCTION} --stage ${STAGE} --env ${ENVFILE} -d ${DATA} -l
     fi
 }
 
