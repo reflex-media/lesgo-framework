@@ -1,10 +1,14 @@
 import dataApiClient from 'data-api-client';
 import logger from '../utils/logger';
-import isEmpty from '../utils/isEmpty';
 import LesgoException from '../exceptions/LesgoException';
 
 export default class AuroraDbService {
   constructor(opts = {}) {
+    this.client = null;
+    this.connect(opts);
+  }
+
+  connect(opts) {
     const { secretArn, resourceArn, database } = opts;
 
     this.client = dataApiClient({
@@ -14,18 +18,12 @@ export default class AuroraDbService {
     });
   }
 
-  async query(sql, sqlParams, dbClient = null) {
+  async query(sql, sqlParams) {
     try {
       logger.info('QUERYING AURORA DB', { sql, sqlParams });
-      let resp = null;
-
-      if (!isEmpty(dbClient)) {
-        resp = await dbClient.query(sql, sqlParams);
-      } else {
-        resp = await this.client.query(sql, sqlParams);
-      }
-
+      const resp = await this.client.query(sql, sqlParams);
       logger.info('AURORA DB RESPONSE', { resp });
+
       return resp;
     } catch (err) {
       throw new LesgoException(

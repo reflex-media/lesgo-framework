@@ -4,6 +4,11 @@ import logger from '../utils/logger';
 
 export default class DynamoDb {
   constructor(opts = {}) {
+    this.client = null;
+    this.connect(opts);
+  }
+
+  connect(opts) {
     const { region } = opts;
 
     this.client = new DocumentClient({ region });
