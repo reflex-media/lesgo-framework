@@ -9,11 +9,11 @@ export default class FirebaseAdmin {
   }
 
   connect(opts) {
-    const { serviceAccount, databaseURL } = opts;
+    const { serviceAccount, projectName } = opts;
 
     this.app = firebaseAdmin.initializeApp({
       credential: firebaseAdmin.credential.cert(serviceAccount),
-      databaseURL,
+      databaseURL: `https://${projectName}.firebaseio.com`,
     });
   }
 
