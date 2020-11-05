@@ -1,0 +1,79 @@
+import dataApiClient from 'data-api-client';
+import logger from '../utils/logger';
+import isEmpty from '../utils/isEmpty';
+import LesgoException from '../exceptions/LesgoException';
+
+export default class AuroraDbService {
+  constructor(opts = {}) {
+    const { secretArn, resourceArn, database } = opts;
+
+    this.client = dataApiClient({
+      secretArn,
+      resourceArn,
+      database,
+    });
+  }
+
+  async query(sql, sqlParams, dbClient = null) {
+    try {
+      logger.info('QUERYING AURORA DB', { sql, sqlParams });
+      let resp = null;
+
+      if (!isEmpty(dbClient)) {
+        resp = await dbClient.query(sql, sqlParams);
+      } else {
+        resp = await this.client.query(sql, sqlParams);
+      }
+
+      logger.info('AURORA DB RESPONSE', { resp });
+      return resp;
+    } catch (err) {
+      throw new LesgoException(
+        'Exception caught executing SQL Statement',
+        'AURORADBSERVICE_QUERY_EXCEPTION',
+        500,
+        { err }
+      );
+    }
+  }
+
+  async select(sql, sqlParams, dbClient = null) {
+    const resp = await this.query(sql, sqlParams, dbClient);
+    return resp.records;
+  }
+
+  async selectFirst(sql, sqlParams, dbClient = null) {
+    const resp = await this.query(sql, sqlParams, dbClient);
+    return resp.records[0];
+  }
+
+  async insert(sql, sqlParams, dbClient = null) {
+    const resp = await this.query(sql, sqlParams, dbClient);
+
+    if (resp.numberOfRecordsUpdated <= 0) {
+      throw new LesgoException(
+        'No records inserted from INSERT query',
+        'AURORADBSERVICE_NO_RECORDS_INSERTED',
+        400,
+        { resp, sql, sqlParams, dbClient }
+      );
+    }
+
+    return resp.insertId;
+  }
+
+  async update(sql, sqlParams, dbClient = null) {
+    const resp = await this.query(sql, sqlParams, dbClient);
+
+    if (resp.numberOfRecordsUpdated <= 0) {
+      throw new LesgoException(
+        'No records updated from UPDATE query',
+        'AURORADBSERVICE_NO_RECORDS_UPDATED',
+        400,
+        { resp, sql, sqlParams, dbClient }
+      );
+    }
+
+    return resp.insertId;
+  }
+}

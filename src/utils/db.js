@@ -1,10 +1,14 @@
-import { connectWriteDb, connectReadDb } from './dbConnect';
+import config from 'Config/db'; // eslint-disable-line import/no-unresolved
+import AuroraDbService from '../services/AuroraDbService';
 
-export const connectDb = (conn = null) => {
-  connectWriteDb(conn);
-  connectReadDb(conn);
+const db = (opts = {}) => {
+  const { secretArn, resourceArn, database } = opts;
+
+  return new AuroraDbService(
+    !secretArn ? secretArn : config.secretArn,
+    !resourceArn ? resourceArn : config.resourceArn,
+    !database ? database : config.database
+  );
 };
 
-export const db = connectWriteDb();
-
-export const dbRead = connectReadDb();
+export default db;
