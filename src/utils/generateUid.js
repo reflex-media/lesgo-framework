@@ -1,6 +1,6 @@
 import { customAlphabet } from 'nanoid';
 
-export default async params => {
+export default async (params = {}) => {
   const { prefix, suffix, length } = params;
 
   const nanoid = customAlphabet(
@@ -8,5 +8,5 @@ export default async params => {
     !length ? 21 : length
   );
   const uid = await nanoid();
-  return `${!prefix ? '' : `${prefix}-`}${uid}${!suffix ? '' : `${suffix}-`}`;
+  return `${!prefix ? '' : `${prefix}-`}${uid}${!suffix ? '' : `-${suffix}`}`;
 };
