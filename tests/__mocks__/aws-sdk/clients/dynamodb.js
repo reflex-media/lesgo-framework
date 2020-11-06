@@ -1,6 +1,6 @@
 import isEmpty from '../../../../src/utils/isEmpty';
 
-export const DocumentClient = jest.fn().mockImplementation(() => {
+export const DocumentClient = jest.fn().mockImplementation(opts => {
   return {
     query: jest.fn().mockImplementation(params => {
       return {
@@ -152,6 +152,9 @@ export const DocumentClient = jest.fn().mockImplementation(() => {
         }),
       };
     }),
+    mocked: {
+      ...opts,
+    },
   };
 });
 

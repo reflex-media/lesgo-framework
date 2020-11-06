@@ -1,4 +1,5 @@
 export default {
+  region: 'ap-southeast-1',
   sqs: {
     queues: {
       pingQueue: {
