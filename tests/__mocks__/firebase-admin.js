@@ -1,4 +1,4 @@
-export const initializeApp = jest.fn().mockImplementation(() => {
+export const initializeApp = jest.fn().mockImplementation(opts => {
   return {
     auth: jest.fn().mockImplementation(() => {
       return {
@@ -81,12 +81,18 @@ export const initializeApp = jest.fn().mockImplementation(() => {
         }),
       };
     }),
-    delete: jest.fn().mockImplementation(fakeError => {
-      if (fakeError)
-        throw new Error('FAKE-failed-delete-app', 'FAKE-App failed to delete');
+    delete: jest.fn().mockImplementation(() => {
+      if (opts.databaseURL === 'https://fakeError.firebaseio.com') {
+        return Promise.reject(
+          new Error('FAKE-failed-delete-app', 'FAKE-App failed to delete')
+        );
+      }
 
-      return jest.fn();
+      return Promise.resolve(jest.fn());
     }),
+    mocked: {
+      ...opts,
+    },
   };
 });
 

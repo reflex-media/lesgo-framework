@@ -312,12 +312,31 @@ describe('test FirebaseAdminService deleteUser', () => {
 });
 
 describe('test FirebaseAdminService delete', () => {
-  it('should return success response when calling the function', () => {
+  it('should return success response when calling the function', async () => {
     const fbAdmin = new FirebaseAdminService({
       serviceAccount: firebaseConfig.serviceAccount,
       projectName: firebaseConfig.projectName,
     });
 
-    expect(fbAdmin.delete()).toBeDefined();
+    return expect(fbAdmin.delete()).resolves.toBeDefined();
+  });
+
+  it('should be able to catch thrown exception', async () => {
+    const fbAdmin = new FirebaseAdminService({
+      serviceAccount: firebaseConfig.serviceAccount,
+      projectName: 'fakeError',
+    });
+
+    try {
+      const resp = await fbAdmin.delete();
+      expect(resp).toThrow();
+    } catch (err) {
+      expect(err).toMatchObject(
+        new LesgoException(
+          'Failed to delete firebase app',
+          'FIREBASE_DELETE_APP'
+        )
+      );
+    }
   });
 });

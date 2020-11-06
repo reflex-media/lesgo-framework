@@ -11,6 +11,14 @@ export default class DynamoDb {
   connect(opts) {
     const { region } = opts;
 
+    if (!region)
+      throw new LesgoException(
+        'Missing required parameter region',
+        'DYNAMODB_MISSING_PARAMETER',
+        500,
+        { opts }
+      );
+
     this.client = new DocumentClient({ region });
   }
 

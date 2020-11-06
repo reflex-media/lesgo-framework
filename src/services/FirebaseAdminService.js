@@ -91,7 +91,8 @@ export default class FirebaseAdmin {
   async delete() {
     try {
       logger.info('DELETING FIREBASE APP');
-      return this.app.delete();
+      const resp = await this.app.delete();
+      return resp;
     } catch (err) {
       throw new LesgoException(
         'Failed to delete firebase app',
