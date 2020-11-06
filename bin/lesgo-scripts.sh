@@ -6,14 +6,15 @@
 #                                                                             #
 ###############################################################################
 
-usage="$(basename "$0") [-f] [-s] [-t] [-h] -- script to deploy serverless functions
+usage="$(basename "$0") [-f] [-s] [-t] [-h] [-y] -- script to deploy serverless functions
 
 where:
     -t      define the type of action to be taken (build, deploy, invoke, logs, destroy)
     -f      specify function to involve
     -s      specify environment (e.g; development, staging, production)
     -h      show this help text
-    -l      to invoke a local function"
+    -l      to invoke a local function
+    -y      no question/prompt for ci/cd"
 
 # arg options
 BUILD=0;        # serverless build without deploy
@@ -24,9 +25,10 @@ DESTROY=0;      # serverless remove entire service
 FUNCTION='';    # specify function to involve
 STAGE='';       # deploy specific stage/environment
 INVOKE_LOCAL=0; # default to non local execution
+NO_QUESTION=0;
 
 # parse the options
-while getopts "lhs:f:t:" OPT ; do
+while getopts "lhs:f:t:y" OPT ; do
   case ${OPT} in
     f) FUNCTION=${OPTARG} ;;
     s) STAGE=${OPTARG} ;;
@@ -46,6 +48,7 @@ while getopts "lhs:f:t:" OPT ; do
             exit 1
         fi;;
     l) INVOKE_LOCAL=1 ;;
+    y) NO_QUESTION=1 ;;
     h)
         echo "${usage}"
         exit 0
@@ -104,14 +107,18 @@ function deploy_func ()
 
 function prompt_confirmation_deploy_all ()
 {
-    while true; do
-        read -p "Confirm deploy service to ${STAGE} with .env.${ENVFILE}? [Y|N] " yn
-        case ${yn} in
-            [Yy] | yes | Yes | YES ) deploy_full; break;;
-            [Nn] | no | No | NO ) echo -e "${YELLOW}Cancelled deploying service to [${STAGE}]${NC}"; exit;;
-            * ) echo -e "${PURPLE}Please answer yes or no.${NC}";;
-        esac
-    done
+    if [ ${NO_QUESTION} -eq 1 ]; then
+        deploy_full;
+    else
+        while true; do
+            read -p "Confirm deploy service to ${STAGE} with .env.${ENVFILE}? [Y|N] " yn
+            case ${yn} in
+                [Yy] | yes | Yes | YES ) deploy_full; break;;
+                [Nn] | no | No | NO ) echo -e "${YELLOW}Cancelled deploying service to [${STAGE}]${NC}"; exit;;
+                * ) echo -e "${PURPLE}Please answer yes or no.${NC}";;
+            esac
+        done
+    fi
 }
 
 function prompt_confirmation_deploy_function ()
