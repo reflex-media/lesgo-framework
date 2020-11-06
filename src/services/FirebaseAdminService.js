@@ -1,5 +1,6 @@
 import * as firebaseAdmin from 'firebase-admin';
 import logger from '../utils/logger';
+import isEmpty from '../utils/isEmpty';
 import LesgoException from '../exceptions/LesgoException';
 
 export default class FirebaseAdmin {
@@ -11,24 +12,38 @@ export default class FirebaseAdmin {
   connect(opts) {
     const { serviceAccount, projectName } = opts;
 
+    if (!serviceAccount || !projectName)
+      throw new LesgoException(
+        'Missing required parameters serviceAccount and or projectName',
+        'FIREBASEADMIN_MISSING_PARAMETERS',
+        500,
+        { opts }
+      );
+
     this.app = firebaseAdmin.initializeApp({
       credential: firebaseAdmin.credential.cert(serviceAccount),
       databaseURL: `https://${projectName}.firebaseio.com`,
     });
   }
 
-  async getAllUsers(nextPageToken) {
+  async getAllUsers(maxResults, nextPageToken) {
+    const max = !isEmpty(maxResults) ? maxResults : 25;
+
     try {
-      logger.info('FETCHING FIREBASE USERS', { nextPageToken });
-      const users = await this.app.auth().listUsers(25, nextPageToken);
+      logger.info('FETCHING FIREBASE USERS', {
+        max,
+        maxResults,
+        nextPageToken,
+      });
+      const users = await this.app.auth().listUsers(max, nextPageToken);
       logger.info('FETCHED FIREBASE USERS', { users });
-      return users;
+      return users.users;
     } catch (err) {
       throw new LesgoException(
-        'Failed to getch all users from firebase',
+        'Failed to fetch all users from firebase',
         'FIREBASE_FETCH_USERS',
         500,
-        { err, nextPageToken }
+        { err, max, maxResults, nextPageToken }
       );
     }
   }
