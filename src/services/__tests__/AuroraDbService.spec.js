@@ -9,22 +9,24 @@ const auroraConfig = {
   database: 'fakeDbName',
 };
 
-describe('ServicesGroup: test AuroraDbService', () => {
-  it('test instantiate default AuroraDbService', () => {
+describe('test AuroraDbService instantiate', () => {
+  it('should not throw exception when instantiating', () => {
     const db = new AuroraDbService();
 
     expect(dataApiClient).toHaveBeenCalledWith({});
     expect(db.client.mocked).toMatchObject({});
   });
 
-  it('test instantiate AuroraDbService with custom config', () => {
+  it('should not throw exception with custom config', () => {
     const db = new AuroraDbService(auroraConfig);
 
     expect(dataApiClient).toHaveBeenCalledWith(auroraConfig);
     expect(db.client.mocked).toMatchObject(auroraConfig);
   });
+});
 
-  it('test update connection to AuroraDbService', () => {
+describe('test AuroraDbService connect', () => {
+  it('should have updated credentials when calling connect', () => {
     const db = new AuroraDbService(auroraConfig);
     db.connect({
       secretArn: dbConfig.secretCommandArn,
@@ -34,8 +36,10 @@ describe('ServicesGroup: test AuroraDbService', () => {
       secretArn: dbConfig.secretCommandArn,
     });
   });
+});
 
-  it('test query', async () => {
+describe('test AuroraDbService query', () => {
+  it('should return records object when calling query function', async () => {
     const db = new AuroraDbService(auroraConfig);
     return expect(db.query('SELECT_QUERY', {})).resolves.toMatchObject({
       records: [
@@ -50,8 +54,10 @@ describe('ServicesGroup: test AuroraDbService', () => {
       ],
     });
   });
+});
 
-  it('test select query', async () => {
+describe('test AuroraDbService select', () => {
+  it('should return array records when calling select function', async () => {
     const db = new AuroraDbService(auroraConfig);
     return expect(db.select('SELECT_QUERY', {})).resolves.toMatchObject([
       {
@@ -65,25 +71,7 @@ describe('ServicesGroup: test AuroraDbService', () => {
     ]);
   });
 
-  it('test selectFirst query', async () => {
-    const db = new AuroraDbService(auroraConfig);
-    return expect(db.selectFirst('SELECT_QUERY', {})).resolves.toMatchObject({
-      id: 1,
-      uid: 'some-uid-1',
-    });
-  });
-
-  it('test insert query', async () => {
-    const db = new AuroraDbService(auroraConfig);
-    return expect(db.insert('INSERT_QUERY', {})).resolves.toEqual(20);
-  });
-
-  it('test update query', async () => {
-    const db = new AuroraDbService(auroraConfig);
-    return db.update('UPDATE_QUERY', {});
-  });
-
-  it('test invalid query', async () => {
+  it('should throw an exception when writing with invalid query', async () => {
     const error = new LesgoException(
       'Exception caught executing SQL Statement',
       'AURORADBSERVICE_QUERY_EXCEPTION',
@@ -99,7 +87,7 @@ describe('ServicesGroup: test AuroraDbService', () => {
     return expect(db.select('INVALID_QUERY', {})).rejects.toMatchObject(error);
   });
 
-  it('test invalid query parameters', async () => {
+  it('should throw an exception when calling select with invalid query parameters', async () => {
     const error = new LesgoException(
       'Exception caught executing SQL Statement',
       'AURORADBSERVICE_QUERY_EXCEPTION',
@@ -116,8 +104,25 @@ describe('ServicesGroup: test AuroraDbService', () => {
       db.select('RANDOM_QUERY', 'INVALID_QUERY_PARAMETERS')
     ).rejects.toMatchObject(error);
   });
+});
 
-  it('test invalid insert query', async () => {
+describe('test AuroraDbService selectFirst', () => {
+  it('should only return the first record when calling selectFirst', async () => {
+    const db = new AuroraDbService(auroraConfig);
+    return expect(db.selectFirst('SELECT_QUERY', {})).resolves.toMatchObject({
+      id: 1,
+      uid: 'some-uid-1',
+    });
+  });
+});
+
+describe('test AuroraDbService insert', () => {
+  it('should return recordId when inserting record', async () => {
+    const db = new AuroraDbService(auroraConfig);
+    return expect(db.insert('INSERT_QUERY', {})).resolves.toEqual(20);
+  });
+
+  it('should throw exception when calling insert with invalid query', async () => {
     const error = new LesgoException(
       'No records inserted from INSERT query',
       'AURORADBSERVICE_NO_RECORDS_INSERTED',
@@ -129,8 +134,15 @@ describe('ServicesGroup: test AuroraDbService', () => {
       error
     );
   });
+});
 
-  it('test invalid update query', async () => {
+describe('test AuroraDbService update', () => {
+  it('should return success when making update query', async () => {
+    const db = new AuroraDbService(auroraConfig);
+    return db.update('UPDATE_QUERY', {});
+  });
+
+  it('should throw exception when caliing update with invalid query', async () => {
     const error = new LesgoException(
       'No records updated from UPDATE query',
       'AURORADBSERVICE_NO_RECORDS_UPDATED',
