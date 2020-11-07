@@ -38,6 +38,20 @@ describe('test FirebaseAdminService connect', () => {
     });
   });
 
+  it('should throw an error when instantiating FirebaseAdminService without setting opts', () => {
+    try {
+      expect(new FirebaseAdminService()).toThrow();
+    } catch (err) {
+      expect(err).toMatchObject(
+        new LesgoException(
+          'Missing required parameters serviceAccount and or projectName',
+          'FIREBASEADMIN_MISSING_PARAMETERS',
+          500
+        )
+      );
+    }
+  });
+
   it('should throw an error when instantiating FirebaseAdminService with missing serviceAccount', () => {
     try {
       expect(
