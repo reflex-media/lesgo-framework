@@ -1,30 +1,32 @@
-import dbConfig from 'Config/db'; // eslint-disable-line import/no-unresolved
-import { connectDb, db, dbRead } from '../db';
-import * as dbConnect from '../dbConnect';
+import config from 'Config/db'; // eslint-disable-line import/no-unresolved
+import db from '../db';
 
-describe('UtilsGroup: test db utils', () => {
-  it('test db', () => {
-    const { host } = dbConfig.connections.mysql.connection;
-    expect(db.mysql.getConfig()).toMatchObject({ host });
+describe('test db utils instantiate', () => {
+  it('should not throw error on instantiating AuroraDbService', () => {
+    return expect(db).toMatchObject({
+      client: {
+        mocked: {
+          database: config.database,
+          resourceArn: config.resourceArn,
+          secretArn: config.secretArn,
+        },
+      },
+    });
   });
 
-  it('test dbRead', () => {
-    const { host_read: hostRead } = dbConfig.connections.mysql.connection;
-    expect(dbRead.mysql.getConfig()).toMatchObject({ host: hostRead });
-  });
+  it('should update AuroraDb credentials on connect', () => {
+    db.connect({
+      database: config.database,
+      resourceArn: config.resourceArn,
+      secretArn: config.secretCommandArn,
+    });
 
-  it('test connectDb', () => {
-    const connectWriteDbSpy = jest.spyOn(dbConnect, 'connectWriteDb');
-    const connectReadDbSpy = jest.spyOn(dbConnect, 'connectReadDb');
-
-    const result = connectDb();
-
-    expect(connectWriteDbSpy).toHaveBeenCalledTimes(1);
-    expect(connectReadDbSpy).toHaveBeenCalledTimes(1);
-
-    expect(result).toBeUndefined();
-
-    connectWriteDbSpy.mockRestore();
-    connectReadDbSpy.mockRestore();
+    return expect(db.client).toMatchObject({
+      mocked: {
+        database: config.database,
+        resourceArn: config.resourceArn,
+        secretArn: config.secretCommandArn,
+      },
+    });
   });
 });

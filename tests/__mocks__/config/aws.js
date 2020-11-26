@@ -1,4 +1,5 @@
 export default {
+  region: 'ap-southeast-1',
   sqs: {
     queues: {
       pingQueue: {
@@ -7,7 +8,4 @@ export default {
     },
   },
   s3: jest.fn(),
-  sentry: {
-    enabled: true,
-  },
 };
