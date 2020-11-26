@@ -43,6 +43,8 @@ export const errorHttpResponseHandler = opts => {
   if (statusCode === 500) {
     // this is likely an unhandled exception, log it
     logger.error(options.error);
+  } else {
+    logger.warn(options.error);
   }
 
   return {
