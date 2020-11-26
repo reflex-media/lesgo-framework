@@ -1,4 +1,3 @@
-import * as Sentry from '@sentry/minimal';
 import LesgoException from '../exceptions/LesgoException';
 
 const getCurrentDateTime = () => {
@@ -75,32 +74,6 @@ export default class LoggerService {
     if (!this.checkIsLogRequired('console', level)) return null;
     const refinedMessage = this.refineMessagePerTransport('console', message);
     return console[level](JSON.stringify(refinedMessage)); // eslint-disable-line no-console
-  }
-
-  sentryLogger(level, message) {
-    if (!this.checkIsLogRequired('sentry', level)) return null;
-
-    const context = this.refineMessagePerTransport('sentry', message);
-
-    Sentry.withScope(scope => {
-      scope.setExtras(context.extra);
-      scope.setTags(context.tags);
-
-      if (context.level === 'error') {
-        return Sentry.captureException(
-          context.message instanceof Error
-            ? context.message
-            : new Error(context.message)
-        );
-      }
-
-      return Sentry.captureMessage(context.message, context.level);
-    });
-
-    /* istanbul ignore next */
-    return Sentry.configureScope(scope => {
-      scope.clear();
-    });
   }
 
   checkIsLogRequired(transportName, level) {

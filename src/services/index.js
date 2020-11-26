@@ -1,4 +1,5 @@
-import DatabaseService from './DatabaseService';
+import AuroraDbService from './AuroraDbService';
+import DynamoDbService from './DynamoDbService';
 import ElastiCacheService from './ElastiCacheService';
 import ElasticsearchService from './ElasticsearchService';
 import JwtService from './JwtService';
@@ -7,7 +8,8 @@ import S3Service from './S3Service';
 import SQSService from './SQSService';
 
 export {
-  DatabaseService,
+  AuroraDbService,
+  DynamoDbService,
   ElastiCacheService,
   ElasticsearchService,
   JwtService,

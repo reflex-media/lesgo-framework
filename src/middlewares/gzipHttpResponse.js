@@ -4,7 +4,7 @@ import LesgoException from '../exceptions/LesgoException';
 /**
  * Perform zipping and add neccessary header
  */
-const gzip = async response => {
+export const gzip = async response => {
   return new Promise((resolve, reject) => {
     try {
       zlib.gzip(response.body, (error, gzippedResponse) => {
@@ -21,6 +21,7 @@ const gzip = async response => {
         }
       });
     } catch (err) {
+      /* istanbul ignore next */
       reject(new LesgoException(err.message, 'GZIP_UNKNOWN_ERROR', 500));
     }
   });
@@ -29,7 +30,7 @@ const gzip = async response => {
 /**
  * Determine request origin
  */
-const determineRequestOrigin = handler => {
+export const determineRequestOrigin = handler => {
   const { requestContext } = handler.event;
   let requestFrom = 'APIGATEWAY';
 
@@ -47,7 +48,7 @@ const determineRequestOrigin = handler => {
 /**
  * Determine headers Accept-Encoding exist
  */
-const determineRequestAcceptEncoding = handler => {
+export const determineRequestAcceptEncoding = handler => {
   const { headers } = handler.event;
 
   let acceptEncoding =
@@ -71,7 +72,7 @@ const determineRequestAcceptEncoding = handler => {
   return false;
 };
 
-const gzipHttpResponse = async (handler, options = {}) => {
+export const gzipHttpResponse = async (handler, options = {}) => {
   /*
    * By default we zip on ELB request only, but you also add APIGATEWAY
    * Supported Request [ELB, APIGATEWAY]

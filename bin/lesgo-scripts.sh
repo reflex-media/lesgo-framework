@@ -6,7 +6,7 @@
 #                                                                             #
 ###############################################################################
 
-usage="$(basename "$0") [-f] [-s] [-t] [-h] [-y] -- script to deploy serverless functions
+usage="$(basename "$0") [-f] [-s] [-t] [-h] [-d] [-y] -- script to deploy serverless functions
 
 where:
     -t      define the type of action to be taken (build, deploy, invoke, logs, destroy)
@@ -14,6 +14,7 @@ where:
     -s      specify environment (e.g; development, staging, production)
     -h      show this help text
     -l      to invoke a local function
+    -d      set data parameters for invoke function
     -y      no question/prompt for ci/cd"
 
 # arg options
@@ -25,10 +26,11 @@ DESTROY=0;      # serverless remove entire service
 FUNCTION='';    # specify function to involve
 STAGE='';       # deploy specific stage/environment
 INVOKE_LOCAL=0; # default to non local execution
-NO_QUESTION=0;
+DATA=''         # set the data parameters for invoke function
+NO_QUESTION=0;  # default to prompt
 
 # parse the options
-while getopts "lhs:f:t:y" OPT ; do
+while getopts "lhs:f:t:d:y" OPT ; do
   case ${OPT} in
     f) FUNCTION=${OPTARG} ;;
     s) STAGE=${OPTARG} ;;
@@ -48,6 +50,7 @@ while getopts "lhs:f:t:y" OPT ; do
             exit 1
         fi;;
     l) INVOKE_LOCAL=1 ;;
+    d) DATA=${OPTARG} ;;
     y) NO_QUESTION=1 ;;
     h)
         echo "${usage}"
@@ -99,10 +102,6 @@ function deploy_func ()
 {
     echo -e "${YELLOW}Deploying ${FUNCTION} to ${STAGE}${NC}"
     sls deploy -f ${FUNCTION} --stage ${STAGE} --env ${ENVFILE}
-
-    if [[ ${SENTRY_ENABLED} == "true" ]]; then
-        deploy_sourcemap
-    fi
 }
 
 function prompt_confirmation_deploy_all ()
@@ -137,19 +136,15 @@ function deploy_full ()
 {
     echo -e "${YELLOW}Deploying service to ${STAGE}${NC}"
     sls deploy --stage ${STAGE} --env ${ENVFILE}
-
-    if [[ ${SENTRY_ENABLED} == "true" ]]; then
-        deploy_sourcemap_all
-    fi
 }
 
 function invoke_func ()
 {
     echo -e "${YELLOW}Invoking function ${FUNCTION} on ${STAGE}${NC}"
     if [ ${INVOKE_LOCAL} == 1 ]; then
-        sls invoke local -f ${FUNCTION} --stage ${STAGE} --env ${ENVFILE} -l
+        sls invoke local -f ${FUNCTION} --stage ${STAGE} --env ${ENVFILE} -d ${DATA} -l
     else
-        sls invoke -f ${FUNCTION} --stage ${STAGE} --env ${ENVFILE} -l
+        sls invoke -f ${FUNCTION} --stage ${STAGE} --env ${ENVFILE} -d ${DATA} -l
     fi
 }
 
@@ -157,19 +152,6 @@ function log_stream_func ()
 {
     echo -e "${YELLOW}Log Streaming function ${FUNCTION} on ${STAGE}${NC}"
     sls logs -f ${FUNCTION} --stage ${STAGE} --env ${ENVFILE} -t
-}
-
-function deploy_sourcemap_all ()
-{
-    echo -e "${YELLOW}Deploying all sourcemaps to Sentry${NC}"
-    yes | for z in ./.serverless/*.zip; do unzip -d .webpack/ "$z"; done
-    sentry-cli --auth-token=${SENTRY_AUTHTOKEN} releases --org=${SENTRY_ORG} --project=${SENTRY_PROJECT} files ${SENTRY_RELEASE} upload-sourcemaps "./.webpack/src/handlers" --url-prefix="/var/task/src/handlers" --rewrite=true
-}
-
-function deploy_sourcemap ()
-{
-    echo -e "${YELLOW}Deploying function sourcemap to Sentry${NC}"
-    sentry-cli --auth-token=${SENTRY_AUTHTOKEN} releases --org=${SENTRY_ORG} --project=${SENTRY_PROJECT} files ${SENTRY_RELEASE} upload-sourcemaps "./.webpack/${FUNCTION}/src/handlers" --url-prefix="/var/task/src/handlers" --rewrite=true
 }
 
 function build ()
