@@ -1,7 +1,11 @@
 import {
   generatePaginationSqlSnippet,
   getLimitAndOffsetByPageAndContentPerPage,
+  countData,
 } from '../paginate';
+import { mockData } from '../__mocks__/db';
+
+jest.mock('../db');
 
 const FILE = 'Utils/paginate';
 
@@ -61,6 +65,13 @@ describe('test pagination getLimitAndOffsetByPageAndContentPerPage', () => {
       expect(err.code).toEqual(`${FILE}::INVALID_TYPE_PER_PAGE`);
       expect(err.statusCode).toEqual(500);
     }
+  });
+});
+
+describe('test pagination countData', () => {
+  it('should return the number of records an SQL query contains', async () => {
+    const count = await countData('SELECT * FROM test');
+    expect(count).toEqual(Object.keys(mockData).length);
   });
 });
 

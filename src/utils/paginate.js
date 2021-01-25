@@ -67,7 +67,7 @@ export const getLimitAndOffsetByPageAndContentPerPage = (page, perPage) => {
  */
 export const countData = async (sql, sqlParams) => {
   const resp = await db.select(sql, sqlParams);
-  return resp.length;
+  return Object.keys(resp).length;
 };
 
 /**
