@@ -1,6 +1,16 @@
 import LengthAwarePaginator from '../services/pagination/LengthAwarePaginator';
 import Paginator from '../services/pagination/Paginator';
 
+/**
+ * Create the necessary pagination instance.
+ *
+ * @param sql
+ * @param sqlParams
+ * @param perPage
+ * @param currentPage
+ * @param total - (bool) true, to automatically find the total data. (int) number to supply the total data manually.
+ * @returns {Paginator|LengthAwarePaginator}
+ */
 export const paginatorFactory = (
   sql,
   sqlParams,
@@ -24,6 +34,16 @@ export const paginatorFactory = (
   return paginator;
 };
 
+/**
+ * Create paginated return object.
+ *
+ * @param sql
+ * @param sqlParams
+ * @param perPage
+ * @param currentPage
+ * @param total - (bool) true, to automatically find the total data. (int) number to supply the total data manually.
+ * @returns {Paginator|LengthAwarePaginator}
+ */
 export const paginate = async (
   sql,
   sqlParams,
