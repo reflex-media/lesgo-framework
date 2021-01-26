@@ -29,9 +29,9 @@ export default class Paginator {
         { perPage }
       );
     }
-    if (typeof currentPage !== 'number') {
+    if (currentPage !== null && typeof currentPage !== 'number') {
       throw new LesgoException(
-        "Invalid type for 'page'",
+        "Invalid type for 'currentPage'",
         `${FILE}::INVALID_TYPE_CURRENT_PAGE`,
         500,
         { currentPage }
