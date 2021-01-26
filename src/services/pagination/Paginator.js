@@ -113,6 +113,24 @@ export default class Paginator {
     return this.response;
   }
 
+  /**
+   * Convert to object.
+   *
+   * @returns {Promise<{per_page: *, count: *, items: *, current_page: (*|number)}>}
+   */
+  async toObject() {
+    if (this.response.length <= 0) {
+      await this.executeQuery();
+    }
+
+    return {
+      count: await this.count(),
+      current_page: this.currentPage(),
+      per_page: this.perPage(),
+      items: await this.items(),
+    };
+  }
+
   // They act as protected methods.
 
   getLimitAndOffsetByPageAndContentPerPage() {

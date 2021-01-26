@@ -134,3 +134,22 @@ describe('test items() usage', () => {
     expect(db.select).toHaveBeenCalledTimes(1);
   });
 });
+
+describe('test toObject() usage', () => {
+  it('should return object version of the paginator', async () => {
+    const paginator = new Paginator('SELECT * FROM tests', {}, 5);
+
+    expect(await paginator.toObject()).toMatchObject({
+      count: 5,
+      current_page: 1,
+      per_page: 5,
+      items: [
+        { ...mockDataFirstItem },
+        { ...mockData },
+        { ...mockData },
+        { ...mockData },
+        { ...mockDataLastItem },
+      ],
+    });
+  });
+});
