@@ -25,13 +25,63 @@ export const mockDataLastItem = {
 export default {
   // eslint-disable-next-line no-unused-vars
   select: jest.fn().mockImplementation((sql, sqlParams) => {
-    if (sql.startsWith('SELECT * FROM tests')) {
+    if (sql.startsWith('SELECT * FROM tests LIMIT 5')) {
       return Promise.resolve([
         { ...mockDataFirstItem },
         { ...mockData },
         { ...mockData },
         { ...mockData },
         { ...mockDataLastItem },
+      ]);
+    }
+
+    if (sql.startsWith('SELECT * FROM total_tests')) {
+      return Promise.resolve([
+        { ...mockDataFirstItem },
+        { ...mockData },
+        { ...mockData },
+        { ...mockData },
+        { ...mockData },
+        { ...mockData },
+        { ...mockData },
+        { ...mockData },
+        { ...mockData },
+        { ...mockData },
+        { ...mockData },
+        { ...mockData },
+        { ...mockData },
+        { ...mockData },
+        { ...mockData },
+        { ...mockData },
+        { ...mockData },
+        { ...mockData },
+        { ...mockData },
+        { ...mockData },
+        { ...mockData },
+        { ...mockData },
+        { ...mockData },
+        { ...mockData },
+        { ...mockData },
+        { ...mockData },
+        { ...mockData },
+        { ...mockData },
+        { ...mockData },
+        { ...mockDataLastItem },
+      ]);
+    }
+
+    if (sql.startsWith('SELECT * FROM tests')) {
+      return Promise.resolve([
+        { ...mockData },
+        { ...mockData },
+        { ...mockData },
+        { ...mockData },
+        { ...mockData },
+        { ...mockData },
+        { ...mockData },
+        { ...mockData },
+        { ...mockData },
+        { ...mockData },
       ]);
     }
 
