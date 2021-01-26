@@ -35,7 +35,10 @@ export default {
       ]);
     }
 
-    if (sql.startsWith('SELECT * FROM tests LIMIT 6')) {
+    if (
+      sql.startsWith('SELECT * FROM tests LIMIT 6') ||
+      sql.startsWith('SELECT * FROM total_tests LIMIT 6')
+    ) {
       return Promise.resolve([
         { ...mockDataFirstItem },
         { ...mockData },

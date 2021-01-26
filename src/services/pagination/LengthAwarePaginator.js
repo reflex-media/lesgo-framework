@@ -40,6 +40,19 @@ export default class LengthAwarePaginator extends Paginator {
     return this.totalProp;
   }
 
+  async toObject() {
+    const obj = await super.toObject();
+    const { items } = obj;
+    delete obj.items;
+
+    return {
+      ...obj,
+      last_page: await this.lastPage(),
+      total: await this.total(),
+      items,
+    };
+  }
+
   // They act as protected methods.
 
   /**

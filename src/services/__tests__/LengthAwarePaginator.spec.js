@@ -1,5 +1,9 @@
 import LengthAwarePaginator from '../pagination/LengthAwarePaginator';
-import { mockDataFirstItem, mockDataLastItem } from '../../utils/__mocks__/db';
+import {
+  mockData,
+  mockDataFirstItem,
+  mockDataLastItem,
+} from '../../utils/__mocks__/db';
 import LesgoException from '../../exceptions/LesgoException';
 import db from '../../utils/db';
 
@@ -45,6 +49,29 @@ describe('test LengthAwarePaginator instantiate', () => {
         )
       );
     }
+  });
+  it('should return the object version of the paginator', async () => {
+    const paginator = new LengthAwarePaginator(
+      'SELECT * FROM total_tests',
+      {},
+      5
+    );
+    expect(await paginator.toObject()).toMatchObject({
+      count: 5,
+      previous_page: false,
+      current_page: 1,
+      next_page: 2,
+      per_page: 5,
+      last_page: 6,
+      total: 30,
+      items: [
+        { ...mockDataFirstItem },
+        { ...mockData },
+        { ...mockData },
+        { ...mockData },
+        { ...mockDataLastItem },
+      ],
+    });
   });
 });
 
