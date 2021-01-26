@@ -43,6 +43,8 @@ export default class Paginator {
     this.perPageProp = perPage;
     this.currentPageProp = currentPage || 1;
 
+    this.hasNext = false;
+
     this.response = [];
   }
 
@@ -59,12 +61,42 @@ export default class Paginator {
   }
 
   /**
+   * Previous page
+   *
+   * @returns {null|number}
+   */
+  previousPage() {
+    if (this.currentPage() > 1) {
+      return this.currentPage() - 1;
+    }
+
+    return false;
+  }
+
+  /**
    * The current page.
    *
    * @returns {*|number}
    */
   currentPage() {
     return this.currentPageProp;
+  }
+
+  /**
+   * Next page
+   *
+   * @returns {Promise<boolean|*>}
+   */
+  async nextPage() {
+    if (this.response.length <= 0) {
+      await this.executeQuery();
+    }
+
+    if (this.hasNext) {
+      return this.currentPage() + 1;
+    }
+
+    return false;
   }
 
   /**
@@ -125,7 +157,9 @@ export default class Paginator {
 
     return {
       count: await this.count(),
+      previous_page: this.previousPage(),
       current_page: this.currentPage(),
+      next_page: await this.nextPage(),
       per_page: this.perPage(),
       items: await this.items(),
     };
@@ -145,8 +179,9 @@ export default class Paginator {
 
   generatePaginationSqlSnippet() {
     const values = this.getLimitAndOffsetByPageAndContentPerPage();
+    const limitWithExtraData = values.limit + 1;
     return this.sqlProp.concat(
-      ` LIMIT ${values.limit} OFFSET ${values.offset}`
+      ` LIMIT ${limitWithExtraData} OFFSET ${values.offset}`
     );
   }
 
@@ -155,6 +190,11 @@ export default class Paginator {
       this.generatePaginationSqlSnippet(),
       this.sqlParamsProp
     );
+
+    this.hasNext = this.response.length > this.perPage();
+    if (this.hasNext) {
+      this.response.pop();
+    }
 
     return this.response;
   }

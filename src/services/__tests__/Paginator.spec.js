@@ -71,10 +71,27 @@ describe('test Paginator instantiate', () => {
 
     expect(await paginator.lastItem()).toMatchObject(mockDataLastItem);
   });
-  it('should return the defined per page', async () => {
+  it('should return the defined per page', () => {
     const paginator = new Paginator('SELECT * FROM tests', {}, 5);
 
     expect(paginator.perPage()).toEqual(5);
+  });
+  it('should return the previous page if exist', () => {
+    const paginator1 = new Paginator('SELECT * FROM tests', {}, 5, 2);
+    expect(paginator1.previousPage()).toEqual(1);
+
+    const paginator2 = new Paginator('SELECT * FROM tests', {}, 5, 1);
+    expect(paginator2.previousPage()).toEqual(false);
+  });
+  it('should return the next page if exist', async () => {
+    const paginator1 = new Paginator('SELECT * FROM tests', {}, 5);
+    expect(await paginator1.nextPage()).toEqual(2);
+
+    const paginator2 = new Paginator('SELECT * FROM tests', {}, 5, 2);
+    expect(await paginator2.nextPage()).toEqual(3);
+
+    const paginator3 = new Paginator('SELECT * FROM tests', {}, 5, 3);
+    expect(await paginator3.nextPage()).toEqual(false);
   });
 });
 
@@ -141,7 +158,9 @@ describe('test toObject() usage', () => {
 
     expect(await paginator.toObject()).toMatchObject({
       count: 5,
+      previous_page: false,
       current_page: 1,
+      next_page: 2,
       per_page: 5,
       items: [
         { ...mockDataFirstItem },

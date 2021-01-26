@@ -25,13 +25,24 @@ export const mockDataLastItem = {
 export default {
   // eslint-disable-next-line no-unused-vars
   select: jest.fn().mockImplementation((sql, sqlParams) => {
-    if (sql.startsWith('SELECT * FROM tests LIMIT 5')) {
+    if (sql.startsWith('SELECT * FROM tests LIMIT 6 OFFSET 10')) {
       return Promise.resolve([
         { ...mockDataFirstItem },
         { ...mockData },
         { ...mockData },
         { ...mockData },
         { ...mockDataLastItem },
+      ]);
+    }
+
+    if (sql.startsWith('SELECT * FROM tests LIMIT 6')) {
+      return Promise.resolve([
+        { ...mockDataFirstItem },
+        { ...mockData },
+        { ...mockData },
+        { ...mockData },
+        { ...mockDataLastItem },
+        { ...mockData },
       ]);
     }
 
