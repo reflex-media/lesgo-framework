@@ -1,83 +1,121 @@
-import {
-  generatePaginationSqlSnippet,
-  getLimitAndOffsetByPageAndContentPerPage,
-  countData,
-} from '../paginate';
-import { mockData } from '../__mocks__/db';
+import { paginate, paginatorFactory } from '../paginate';
+import db from '../db';
 
 jest.mock('../db');
 
-const FILE = 'Utils/paginate';
+beforeEach(() => {
+  db.select.mockClear();
+});
 
-describe('test pagination getLimitAndOffsetByPageAndContentPerPage', () => {
-  it('should return an object containing limit and offset', () => {
-    const expected = {
-      limit: 10,
-      offset: 10,
-    };
-    const values = getLimitAndOffsetByPageAndContentPerPage(2, 10);
-    expect(values).toMatchObject(expected);
+describe('test paginate paginatorFactory', () => {
+  it('can create Paginator instance', () => {
+    const paginator = paginatorFactory('SELECT * FROM tests', {}, 5);
+
+    expect(paginator).toHaveProperty('count');
+    expect(paginator).toHaveProperty('previousPage');
+    expect(paginator).toHaveProperty('currentPage');
+    expect(paginator).toHaveProperty('nextPage');
+    expect(paginator).toHaveProperty('firstItem');
+    expect(paginator).toHaveProperty('lastItem');
+    expect(paginator).toHaveProperty('perPage');
+    expect(paginator).toHaveProperty('items');
+    expect(paginator).toHaveProperty('toObject');
+
+    expect(paginator).not.toHaveProperty('lastPage');
+    expect(paginator).not.toHaveProperty('total');
+
+    const paginator2 = paginatorFactory('SELECT * FROM tests', {}, 5, 1);
+
+    expect(paginator2).toHaveProperty('count');
+    expect(paginator2).toHaveProperty('previousPage');
+    expect(paginator2).toHaveProperty('currentPage');
+    expect(paginator2).toHaveProperty('nextPage');
+    expect(paginator2).toHaveProperty('firstItem');
+    expect(paginator2).toHaveProperty('lastItem');
+    expect(paginator2).toHaveProperty('perPage');
+    expect(paginator2).toHaveProperty('items');
+    expect(paginator2).toHaveProperty('toObject');
+
+    expect(paginator2).not.toHaveProperty('lastPage');
+    expect(paginator2).not.toHaveProperty('total');
   });
+  it('can create LengthAwarePaginator instance', async () => {
+    const paginator = paginatorFactory('SELECT * FROM tests', {}, 5, 1, true);
 
-  it('should throw an exception if page is undefined', () => {
-    try {
-      const values = getLimitAndOffsetByPageAndContentPerPage();
-      expect(values).toThrow();
-    } catch (err) {
-      expect(err.name).toEqual('LesgoException');
-      expect(err.message).toEqual("Missing required 'page'");
-      expect(err.code).toEqual(`${FILE}::MISSING_REQUIRED_PAGE`);
-      expect(err.statusCode).toEqual(500);
-    }
-  });
+    expect(paginator).toHaveProperty('count');
+    expect(paginator).toHaveProperty('previousPage');
+    expect(paginator).toHaveProperty('currentPage');
+    expect(paginator).toHaveProperty('nextPage');
+    expect(paginator).toHaveProperty('firstItem');
+    expect(paginator).toHaveProperty('lastItem');
+    expect(paginator).toHaveProperty('perPage');
+    expect(paginator).toHaveProperty('items');
+    expect(paginator).toHaveProperty('toObject');
 
-  it('should throw an exception if page is not a number', () => {
-    try {
-      const values = getLimitAndOffsetByPageAndContentPerPage('sample', 10);
-      expect(values).toThrow();
-    } catch (err) {
-      expect(err.name).toEqual('LesgoException');
-      expect(err.message).toEqual("Invalid type for 'page'");
-      expect(err.code).toEqual(`${FILE}::INVALID_TYPE_PAGE`);
-      expect(err.statusCode).toEqual(500);
-    }
-  });
+    expect(paginator).toHaveProperty('lastPage');
+    expect(paginator).toHaveProperty('total');
 
-  it('should throw an exception if perPage is undefined', () => {
-    try {
-      const values = getLimitAndOffsetByPageAndContentPerPage(1);
-      expect(values).toThrow();
-    } catch (err) {
-      expect(err.name).toEqual('LesgoException');
-      expect(err.message).toEqual("Missing required 'perPage'");
-      expect(err.code).toEqual(`${FILE}::MISSING_REQUIRED_PER_PAGE`);
-      expect(err.statusCode).toEqual(500);
-    }
-  });
+    const paginator2 = paginatorFactory(
+      'SELECT * FROM tests',
+      {},
+      5,
+      null,
+      true
+    );
 
-  it('should throw an exception if perPage is not a number', () => {
-    try {
-      const values = getLimitAndOffsetByPageAndContentPerPage(1, 'sample');
-      expect(values).toThrow();
-    } catch (err) {
-      expect(err.name).toEqual('LesgoException');
-      expect(err.message).toEqual("Invalid type for 'perPage'");
-      expect(err.code).toEqual(`${FILE}::INVALID_TYPE_PER_PAGE`);
-      expect(err.statusCode).toEqual(500);
-    }
+    expect(paginator2).toHaveProperty('count');
+    expect(paginator2).toHaveProperty('previousPage');
+    expect(paginator2).toHaveProperty('currentPage');
+    expect(paginator2).toHaveProperty('nextPage');
+    expect(paginator2).toHaveProperty('firstItem');
+    expect(paginator2).toHaveProperty('lastItem');
+    expect(paginator2).toHaveProperty('perPage');
+    expect(paginator2).toHaveProperty('items');
+    expect(paginator2).toHaveProperty('toObject');
+
+    expect(paginator2).toHaveProperty('lastPage');
+    expect(paginator2).toHaveProperty('total');
+
+    const paginator3 = paginatorFactory('SELECT * FROM tests', {}, 5, null, 30);
+
+    expect(paginator3).toHaveProperty('count');
+    expect(paginator3).toHaveProperty('previousPage');
+    expect(paginator3).toHaveProperty('currentPage');
+    expect(paginator3).toHaveProperty('nextPage');
+    expect(paginator3).toHaveProperty('firstItem');
+    expect(paginator3).toHaveProperty('lastItem');
+    expect(paginator3).toHaveProperty('perPage');
+    expect(paginator3).toHaveProperty('items');
+    expect(paginator3).toHaveProperty('toObject');
+
+    expect(paginator3).toHaveProperty('lastPage');
+    expect(paginator3).toHaveProperty('total');
   });
 });
 
-describe('test pagination countData', () => {
-  it('should return the number of records an SQL query contains', async () => {
-    const count = await countData('SELECT * FROM test');
-    expect(count).toEqual(Object.keys(mockData).length);
-  });
-});
+describe('test paginate function', () => {
+  it('can create Paginator converted object', async () => {
+    const obj = await paginate('SELECT * FROM tests', {}, 5);
+    expect(obj).toHaveProperty('count');
+    expect(obj).toHaveProperty('previous_page');
+    expect(obj).toHaveProperty('current_page');
+    expect(obj).toHaveProperty('next_page');
+    expect(obj).toHaveProperty('per_page');
+    expect(obj).toHaveProperty('items');
 
-describe('test pagination generatePaginationSqlSnippet', () => {
-  it('should return a SQL snippet containing limit and offset code', () => {
-    const sql = generatePaginationSqlSnippet('SELECT * FROM test', 3, 10);
-    expect(sql).toMatch(`SELECT * FROM test LIMIT 10 OFFSET 20`);
+    expect(obj).not.toHaveProperty('last_page');
+    expect(obj).not.toHaveProperty('total');
+  });
+  it('can create LengthAwarePaginator converted object', async () => {
+    const obj = await paginate('SELECT * FROM tests', {}, 5, 1, true);
+    expect(obj).toHaveProperty('count');
+    expect(obj).toHaveProperty('previous_page');
+    expect(obj).toHaveProperty('current_page');
+    expect(obj).toHaveProperty('next_page');
+    expect(obj).toHaveProperty('per_page');
+    expect(obj).toHaveProperty('items');
+
+    expect(obj).toHaveProperty('last_page');
+    expect(obj).toHaveProperty('total');
   });
 });

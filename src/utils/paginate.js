@@ -1,7 +1,7 @@
 import LengthAwarePaginator from '../services/pagination/LengthAwarePaginator';
 import Paginator from '../services/pagination/Paginator';
 
-export const paginatorFactory = async (
+export const paginatorFactory = (
   sql,
   sqlParams,
   perPage,
@@ -9,13 +9,13 @@ export const paginatorFactory = async (
   total = null
 ) => {
   let paginator;
-  if (total !== null) {
+  if (total === true || typeof total === 'number') {
     paginator = new LengthAwarePaginator(
       sql,
       sqlParams,
       perPage,
       currentPage,
-      total
+      typeof total === 'number' ? total : null
     );
   } else {
     paginator = new Paginator(sql, sqlParams, perPage, currentPage);
