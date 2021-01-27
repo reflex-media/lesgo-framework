@@ -42,7 +42,7 @@ export const paginatorFactory = (
  * @param perPage
  * @param currentPage
  * @param total - (bool) true, to automatically find the total data. (int) number to supply the total data manually.
- * @returns {Paginator|LengthAwarePaginator}
+ * @returns {object}
  */
 export const paginate = async (
   sql,
