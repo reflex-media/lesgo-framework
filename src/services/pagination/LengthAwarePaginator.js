@@ -1,11 +1,20 @@
 import Paginator from './Paginator';
 import LesgoException from '../../exceptions/LesgoException';
-import db from '../../utils/db';
 
 const FILE = 'Services/pagination/LengthAwarePaginator';
 
 export default class LengthAwarePaginator extends Paginator {
-  constructor(sql, sqlParams, perPage, currentPage = null, total = null) {
+  /**
+   * Constructor
+   *
+   * @param db
+   * @param sql
+   * @param sqlParams
+   * @param perPage
+   * @param currentPage
+   * @param total
+   */
+  constructor(db, sql, sqlParams, perPage, currentPage = null, total = null) {
     if (total !== null && typeof total !== 'number') {
       throw new LesgoException(
         "Invalid type for 'total'",
@@ -14,7 +23,7 @@ export default class LengthAwarePaginator extends Paginator {
         { perPage }
       );
     }
-    super(sql, sqlParams, perPage, currentPage);
+    super(db, sql, sqlParams, perPage, currentPage);
     this.totalProp = total;
   }
 
@@ -61,7 +70,7 @@ export default class LengthAwarePaginator extends Paginator {
    * @returns {Promise<number>}
    */
   async countTotalItems() {
-    const resp = await db.select(this.sqlProp, this.sqlParamsProp);
+    const resp = await this.dbProp.select(this.sqlProp, this.sqlParamsProp);
     return Object.keys(resp).length;
   }
 

@@ -1,4 +1,3 @@
-import db from '../../utils/db';
 import LesgoException from '../../exceptions/LesgoException';
 
 const FILE = 'Services/pagination/Paginator';
@@ -7,12 +6,13 @@ export default class Paginator {
   /**
    * Constructor
    *
+   * @param db
    * @param sql
    * @param sqlParams
    * @param perPage
    * @param currentPage
    */
-  constructor(sql, sqlParams, perPage, currentPage = null) {
+  constructor(db, sql, sqlParams, perPage, currentPage = null) {
     if (typeof perPage === 'undefined') {
       throw new LesgoException(
         "Missing required 'perPage'",
@@ -21,6 +21,7 @@ export default class Paginator {
         { perPage }
       );
     }
+
     if (typeof perPage !== 'number') {
       throw new LesgoException(
         "Invalid type for 'perPage'",
@@ -29,6 +30,7 @@ export default class Paginator {
         { perPage }
       );
     }
+
     if (currentPage !== null && typeof currentPage !== 'number') {
       throw new LesgoException(
         "Invalid type for 'currentPage'",
@@ -38,6 +40,7 @@ export default class Paginator {
       );
     }
 
+    this.dbProp = db;
     this.sqlProp = sql;
     this.sqlParamsProp = sqlParams;
     this.perPageProp = perPage;
@@ -57,6 +60,7 @@ export default class Paginator {
     if (this.response.length <= 0) {
       await this.executeQuery();
     }
+
     return this.response.length;
   }
 
@@ -186,7 +190,7 @@ export default class Paginator {
   }
 
   async executeQuery() {
-    this.response = await db.select(
+    this.response = await this.dbProp.select(
       this.generatePaginationSqlSnippet(),
       this.sqlParamsProp
     );

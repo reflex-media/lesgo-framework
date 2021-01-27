@@ -4,6 +4,7 @@ import Paginator from '../services/pagination/Paginator';
 /**
  * Create the necessary pagination instance.
  *
+ * @param db
  * @param sql
  * @param sqlParams
  * @param perPage
@@ -12,6 +13,7 @@ import Paginator from '../services/pagination/Paginator';
  * @returns {Paginator|LengthAwarePaginator}
  */
 export const paginatorFactory = (
+  db,
   sql,
   sqlParams,
   perPage,
@@ -21,6 +23,7 @@ export const paginatorFactory = (
   let paginator;
   if (total === true || typeof total === 'number') {
     paginator = new LengthAwarePaginator(
+      db,
       sql,
       sqlParams,
       perPage,
@@ -28,7 +31,7 @@ export const paginatorFactory = (
       typeof total === 'number' ? total : null
     );
   } else {
-    paginator = new Paginator(sql, sqlParams, perPage, currentPage);
+    paginator = new Paginator(db, sql, sqlParams, perPage, currentPage);
   }
 
   return paginator;
@@ -37,6 +40,7 @@ export const paginatorFactory = (
 /**
  * Create paginated return object.
  *
+ * @param db
  * @param sql
  * @param sqlParams
  * @param perPage
@@ -45,6 +49,7 @@ export const paginatorFactory = (
  * @returns {object}
  */
 export const paginate = async (
+  db,
   sql,
   sqlParams,
   perPage,
@@ -52,6 +57,7 @@ export const paginate = async (
   total = null
 ) => {
   const paginator = paginatorFactory(
+    db,
     sql,
     sqlParams,
     perPage,
