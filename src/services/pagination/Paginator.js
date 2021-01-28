@@ -12,7 +12,7 @@ export default class Paginator {
    * @param perPage
    * @param currentPage
    */
-  constructor(db, sql, sqlParams, perPage = null, currentPage = null) {
+  constructor(db, sql, sqlParams, perPage = 10, currentPage = 1) {
     if (perPage !== null && typeof perPage !== 'number') {
       throw new LesgoException(
         "Invalid type for 'perPage'",

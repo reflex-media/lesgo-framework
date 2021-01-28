@@ -12,14 +12,7 @@ import Paginator from '../services/pagination/Paginator';
  * @param total - (bool) true, to automatically find the total data. (int) number to supply the total data manually.
  * @returns {Paginator|LengthAwarePaginator}
  */
-export const paginatorFactory = (
-  db,
-  sql,
-  sqlParams,
-  perPage = null,
-  currentPage = null,
-  total = null
-) => {
+export const paginatorFactory = (db, sql, sqlParams, perPage = 10, currentPage = 1, total = null) => {
   let paginator;
   if (total === true || typeof total === 'number') {
     paginator = new LengthAwarePaginator(
@@ -48,14 +41,7 @@ export const paginatorFactory = (
  * @param total - (bool) true, to automatically find the total data. (int) number to supply the total data manually.
  * @returns {object}
  */
-export const paginate = async (
-  db,
-  sql,
-  sqlParams,
-  perPage = null,
-  currentPage = null,
-  total = null
-) => {
+export const paginate = async (db, sql, sqlParams, perPage = 10, currentPage = 1, total = null) => {
   const paginator = paginatorFactory(
     db,
     sql,

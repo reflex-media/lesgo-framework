@@ -14,7 +14,7 @@ export default class LengthAwarePaginator extends Paginator {
    * @param currentPage
    * @param total
    */
-  constructor(db, sql, sqlParams, perPage = null, currentPage = null, total = null) {
+  constructor(db, sql, sqlParams, perPage = 10, currentPage = 1, total = null) {
     if (total !== null && typeof total !== 'number') {
       throw new LesgoException(
         "Invalid type for 'total'",
