@@ -25,17 +25,14 @@ describe('test Paginator instantiate', () => {
     expect(await paginator.lastItem()).toMatchObject(mockDataLastItem);
     expect(paginator.perPage()).toEqual(5);
   });
-  it('should throw exception if perPage is undefined', async () => {
-    try {
-      expect(new Paginator(db, 'SELECT * FROM tests', {})).toThrow();
-    } catch (err) {
-      expect(err).toMatchObject(
-        new LesgoException(
-          "Missing required 'perPage'",
-          `${FILE}::MISSING_REQUIRED_PER_PAGE`
-        )
-      );
-    }
+  it('should not throw exception if perPage is undefined', async () => {
+    const paginator = new Paginator(db, 'SELECT * FROM tests', {});
+
+    expect(await paginator.count()).toEqual(10);
+    expect(paginator.currentPage()).toEqual(1);
+    expect(await paginator.firstItem()).toMatchObject(mockData);
+    expect(await paginator.lastItem()).toMatchObject(mockData);
+    expect(paginator.perPage()).toEqual(10);
   });
   it('should throw exception if perPage is not a number', async () => {
     try {

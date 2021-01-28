@@ -16,7 +16,7 @@ export const paginatorFactory = (
   db,
   sql,
   sqlParams,
-  perPage,
+  perPage = null,
   currentPage = null,
   total = null
 ) => {
@@ -52,7 +52,7 @@ export const paginate = async (
   db,
   sql,
   sqlParams,
-  perPage,
+  perPage = null,
   currentPage = null,
   total = null
 ) => {
@@ -64,6 +64,7 @@ export const paginate = async (
     currentPage,
     total
   );
+
   return (await paginator).toObject();
 };
 

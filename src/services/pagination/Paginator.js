@@ -12,17 +12,8 @@ export default class Paginator {
    * @param perPage
    * @param currentPage
    */
-  constructor(db, sql, sqlParams, perPage, currentPage = null) {
-    if (typeof perPage === 'undefined') {
-      throw new LesgoException(
-        "Missing required 'perPage'",
-        `${FILE}::MISSING_REQUIRED_PER_PAGE`,
-        500,
-        { perPage }
-      );
-    }
-
-    if (typeof perPage !== 'number') {
+  constructor(db, sql, sqlParams, perPage = null, currentPage = null) {
+    if (perPage !== null && typeof perPage !== 'number') {
       throw new LesgoException(
         "Invalid type for 'perPage'",
         `${FILE}::INVALID_TYPE_PER_PAGE`,
@@ -43,7 +34,7 @@ export default class Paginator {
     this.dbProp = db;
     this.sqlProp = sql;
     this.sqlParamsProp = sqlParams;
-    this.perPageProp = perPage;
+    this.perPageProp = perPage || 10;
     this.currentPageProp = currentPage || 1;
 
     this.hasNext = false;
