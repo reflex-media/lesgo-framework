@@ -58,7 +58,7 @@ export default class Paginator {
   /**
    * Previous page
    *
-   * @returns {null|number}
+   * @returns {boolean|number}
    */
   previousPage() {
     if (this.currentPage() > 1) {
