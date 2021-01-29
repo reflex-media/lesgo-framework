@@ -1,6 +1,8 @@
 import dataApiClient from 'data-api-client';
 import logger from '../utils/logger';
 import LesgoException from '../exceptions/LesgoException';
+import LengthAwarePaginator from "./pagination/LengthAwarePaginator";
+import Paginator from "./pagination/Paginator";
 
 export default class AuroraDbService {
   constructor(opts = {}) {
@@ -43,6 +45,24 @@ export default class AuroraDbService {
   async selectFirst(sql, sqlParams) {
     const resp = await this.query(sql, sqlParams);
     return resp.records[0];
+  }
+
+  async selectPaginate(sql, sqlParams, perPage = 10, currentPage = 1, total = null) {
+    let paginator;
+    if (total === true || typeof total === 'number') {
+      paginator = new LengthAwarePaginator(
+        this,
+        sql,
+        sqlParams,
+        perPage || 10,
+        currentPage || 1,
+        typeof total === 'number' ? total : null
+      );
+    } else {
+      paginator = new Paginator(this, sql, sqlParams, perPage, currentPage);
+    }
+
+    return (await paginator).toObject();
   }
 
   async insert(sql, sqlParams) {

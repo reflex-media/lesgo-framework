@@ -1,7 +1,7 @@
 const dataApiClient = jest.fn().mockImplementation(opts => {
   return {
     query: jest.fn().mockImplementation((sql, sqlParams) => {
-      if (sql === 'SELECT_QUERY') {
+      if (sql.startsWith('SELECT_QUERY')) {
         return Promise.resolve({
           records: [
             {
