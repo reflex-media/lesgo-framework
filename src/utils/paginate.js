@@ -19,8 +19,8 @@ export const paginatorFactory = (db, sql, sqlParams, perPage = 10, currentPage =
       db,
       sql,
       sqlParams,
-      perPage,
-      currentPage,
+      perPage || 10,
+      currentPage || 1,
       typeof total === 'number' ? total : null
     );
   } else {
@@ -46,8 +46,8 @@ export const paginate = async (db, sql, sqlParams, perPage = 10, currentPage = 1
     db,
     sql,
     sqlParams,
-    perPage,
-    currentPage,
+    perPage || 10,
+    currentPage || 1,
     total
   );
 

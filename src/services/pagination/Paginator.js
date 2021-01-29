@@ -13,7 +13,7 @@ export default class Paginator {
    * @param currentPage
    */
   constructor(db, sql, sqlParams, perPage = 10, currentPage = 1) {
-    if (perPage !== null && typeof perPage !== 'number') {
+    if (typeof perPage !== 'number') {
       throw new LesgoException(
         "Invalid type for 'perPage'",
         `${FILE}::INVALID_TYPE_PER_PAGE`,
@@ -22,7 +22,7 @@ export default class Paginator {
       );
     }
 
-    if (currentPage !== null && typeof currentPage !== 'number') {
+    if (typeof currentPage !== 'number') {
       throw new LesgoException(
         "Invalid type for 'currentPage'",
         `${FILE}::INVALID_TYPE_CURRENT_PAGE`,
@@ -34,8 +34,8 @@ export default class Paginator {
     this.dbProp = db;
     this.sqlProp = sql;
     this.sqlParamsProp = sqlParams;
-    this.perPageProp = perPage || 10;
-    this.currentPageProp = currentPage || 1;
+    this.perPageProp = perPage;
+    this.currentPageProp = currentPage;
 
     this.hasNext = false;
 

@@ -40,14 +40,7 @@ describe('test paginate paginatorFactory', () => {
     expect(paginator2).not.toHaveProperty('total');
   });
   it('can create LengthAwarePaginator instance', async () => {
-    const paginator = paginatorFactory(
-      db,
-      'SELECT * FROM tests',
-      {},
-      5,
-      1,
-      true
-    );
+    const paginator = paginatorFactory(db, 'SELECT * FROM tests', {}, 5, 1, true);
 
     expect(paginator).toHaveProperty('count');
     expect(paginator).toHaveProperty('previousPage');
@@ -62,14 +55,7 @@ describe('test paginate paginatorFactory', () => {
     expect(paginator).toHaveProperty('lastPage');
     expect(paginator).toHaveProperty('total');
 
-    const paginator2 = paginatorFactory(
-      db,
-      'SELECT * FROM tests',
-      {},
-      5,
-      null,
-      true
-    );
+    const paginator2 = paginatorFactory(db, 'SELECT * FROM tests', {}, 5, null, true);
 
     expect(paginator2).toHaveProperty('count');
     expect(paginator2).toHaveProperty('previousPage');
@@ -84,14 +70,7 @@ describe('test paginate paginatorFactory', () => {
     expect(paginator2).toHaveProperty('lastPage');
     expect(paginator2).toHaveProperty('total');
 
-    const paginator3 = paginatorFactory(
-      db,
-      'SELECT * FROM tests',
-      {},
-      5,
-      null,
-      30
-    );
+    const paginator3 = paginatorFactory(db, 'SELECT * FROM tests', {}, 5, null, 30);
 
     expect(paginator3).toHaveProperty('count');
     expect(paginator3).toHaveProperty('previousPage');
