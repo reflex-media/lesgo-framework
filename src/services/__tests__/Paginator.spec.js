@@ -16,48 +16,56 @@ beforeEach(() => {
 const FILE = 'Services/pagination/Paginator';
 
 describe('test Paginator instantiate', () => {
-  it('should not throw exception when instantiating', async () => {
-    const paginator = new Paginator(db, 'SELECT * FROM tests', {}, 5);
 
-    expect(await paginator.count()).toEqual(5);
-    expect(paginator.currentPage()).toEqual(1);
-    expect(await paginator.firstItem()).toMatchObject(mockDataFirstItem);
-    expect(await paginator.lastItem()).toMatchObject(mockDataLastItem);
-    expect(paginator.perPage()).toEqual(5);
-  });
-  it('should not throw exception if perPage is undefined', async () => {
-    const paginator = new Paginator(db, 'SELECT * FROM tests', {});
+  it.each`
+    page         | perPage      | expectedCount | firstItem            | lastItem
+    ${undefined} | ${undefined} | ${10}         | ${mockData}          | ${mockData}
+    ${undefined} | ${5}         | ${5}          | ${mockDataFirstItem} | ${mockDataLastItem}
+  `(
+    'should not throw exception if page is $page and perPage is $perPage',
+    async ({
+       page,
+       perPage,
+       expectedCount,
+       firstItem,
+       lastItem,
+     }) => {
+      const paginator = new Paginator(db, 'SELECT * FROM tests', {}, perPage, page);
 
-    expect(await paginator.count()).toEqual(10);
-    expect(paginator.currentPage()).toEqual(1);
-    expect(await paginator.firstItem()).toMatchObject(mockData);
-    expect(await paginator.lastItem()).toMatchObject(mockData);
-    expect(paginator.perPage()).toEqual(10);
-  });
-  it('should throw exception if perPage is not a number', async () => {
-    try {
-      expect(new Paginator(db, 'SELECT * FROM tests', {}, 'test')).toThrow();
-    } catch (err) {
-      expect(err).toMatchObject(
-        new LesgoException(
-          "Invalid type for 'perPage'",
-          `${FILE}::INVALID_TYPE_PER_PAGE`
-        )
-      );
+      expect(await paginator.count()).toEqual(expectedCount);
+      expect(paginator.currentPage()).toEqual(1);
+      expect(await paginator.firstItem()).toMatchObject(firstItem);
+      expect(await paginator.lastItem()).toMatchObject(lastItem);
+      expect(paginator.perPage()).toEqual(expectedCount);
     }
-  });
-  it('should throw exception if currentPage is not a number', async () => {
-    try {
-      expect(new Paginator(db, 'SELECT * FROM tests', {}, 5, 'test')).toThrow();
-    } catch (err) {
-      expect(err).toMatchObject(
-        new LesgoException(
-          "Invalid type for 'currentPage'",
-          `${FILE}::INVALID_TYPE_CURRENT_PAGE`
-        )
-      );
+  );
+
+  it.each`
+    page         | perPage      | errorName           | errorMessage                        | errorCode                               | errorStatusCode
+    ${'sample'}  | ${10}        | ${'LesgoException'} | ${"Invalid type for 'currentPage'"} | ${`${FILE}::INVALID_TYPE_CURRENT_PAGE`} | ${500}
+    ${1}         | ${'sample'}  | ${'LesgoException'} | ${"Invalid type for 'perPage'"}     | ${`${FILE}::INVALID_TYPE_PER_PAGE`}     | ${500}
+  `(
+    'should throw $errorMessage when page is $page and perPage is $perPage',
+    ({
+       page,
+       perPage,
+       errorName,
+       errorMessage,
+       errorCode,
+       errorStatusCode,
+     }) => {
+      try {
+        const values = new Paginator(db, 'SELECT * FROM tests', {}, perPage, page)
+        expect(values).toThrow();
+      } catch (err) {
+        expect(err.name).toEqual(errorName);
+        expect(err.message).toEqual(errorMessage);
+        expect(err.code).toEqual(errorCode);
+        expect(err.statusCode).toEqual(errorStatusCode);
+      }
     }
-  });
+  );
+
   it('should return the first item of the result', async () => {
     const paginator = new Paginator(db, 'SELECT * FROM tests', {}, 5);
 
