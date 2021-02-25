@@ -4,7 +4,6 @@ import {
   mockDataFirstItem,
   mockDataLastItem,
 } from '../../utils/__mocks__/db';
-import LesgoException from '../../exceptions/LesgoException';
 import db from '../../utils/db';
 
 jest.mock('../../utils/db');
@@ -16,21 +15,20 @@ beforeEach(() => {
 const FILE = 'Services/pagination/Paginator';
 
 describe('test Paginator instantiate', () => {
-
   it.each`
     page         | perPage      | expectedCount | firstItem            | lastItem
     ${undefined} | ${undefined} | ${10}         | ${mockData}          | ${mockData}
     ${undefined} | ${5}         | ${5}          | ${mockDataFirstItem} | ${mockDataLastItem}
   `(
     'should not throw exception if page is $page and perPage is $perPage',
-    async ({
-       page,
-       perPage,
-       expectedCount,
-       firstItem,
-       lastItem,
-     }) => {
-      const paginator = new Paginator(db, 'SELECT * FROM tests', {}, perPage, page);
+    async ({ page, perPage, expectedCount, firstItem, lastItem }) => {
+      const paginator = new Paginator(
+        db,
+        'SELECT * FROM tests',
+        {},
+        perPage,
+        page
+      );
 
       expect(await paginator.count()).toEqual(expectedCount);
       expect(paginator.currentPage()).toEqual(1);
@@ -41,21 +39,27 @@ describe('test Paginator instantiate', () => {
   );
 
   it.each`
-    page         | perPage      | errorName           | errorMessage                        | errorCode                               | errorStatusCode
-    ${'sample'}  | ${10}        | ${'LesgoException'} | ${"Invalid type for 'currentPage'"} | ${`${FILE}::INVALID_TYPE_CURRENT_PAGE`} | ${500}
-    ${1}         | ${'sample'}  | ${'LesgoException'} | ${"Invalid type for 'perPage'"}     | ${`${FILE}::INVALID_TYPE_PER_PAGE`}     | ${500}
+    page        | perPage     | errorName           | errorMessage                        | errorCode                               | errorStatusCode
+    ${'sample'} | ${10}       | ${'LesgoException'} | ${"Invalid type for 'currentPage'"} | ${`${FILE}::INVALID_TYPE_CURRENT_PAGE`} | ${500}
+    ${1}        | ${'sample'} | ${'LesgoException'} | ${"Invalid type for 'perPage'"}     | ${`${FILE}::INVALID_TYPE_PER_PAGE`}     | ${500}
   `(
     'should throw $errorMessage when page is $page and perPage is $perPage',
     ({
-       page,
-       perPage,
-       errorName,
-       errorMessage,
-       errorCode,
-       errorStatusCode,
-     }) => {
+      page,
+      perPage,
+      errorName,
+      errorMessage,
+      errorCode,
+      errorStatusCode,
+    }) => {
       try {
-        const values = new Paginator(db, 'SELECT * FROM tests', {}, perPage, page)
+        const values = new Paginator(
+          db,
+          'SELECT * FROM tests',
+          {},
+          perPage,
+          page
+        );
         expect(values).toThrow();
       } catch (err) {
         expect(err.name).toEqual(errorName);

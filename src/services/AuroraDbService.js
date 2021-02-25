@@ -1,8 +1,8 @@
 import dataApiClient from 'data-api-client';
 import logger from '../utils/logger';
 import LesgoException from '../exceptions/LesgoException';
-import LengthAwarePaginator from "./pagination/LengthAwarePaginator";
-import Paginator from "./pagination/Paginator";
+import LengthAwarePaginator from './pagination/LengthAwarePaginator';
+import Paginator from './pagination/Paginator';
 
 export default class AuroraDbService {
   constructor(opts = {}) {
@@ -47,7 +47,13 @@ export default class AuroraDbService {
     return resp.records[0];
   }
 
-  async selectPaginate(sql, sqlParams, perPage = 10, currentPage = 1, total = null) {
+  async selectPaginate(
+    sql,
+    sqlParams,
+    perPage = 10,
+    currentPage = 1,
+    total = null
+  ) {
     let paginator;
     if (total === true || typeof total === 'number') {
       paginator = new LengthAwarePaginator(

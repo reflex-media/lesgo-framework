@@ -109,23 +109,25 @@ describe('test AuroraDbService select', () => {
 describe('test AuroraDbService selectPaginate', () => {
   it('should return paginated records when calling selectPaginate function', async () => {
     const db = new AuroraDbService(auroraConfig);
-    return expect(db.selectPaginate('SELECT_QUERY', {})).resolves.toMatchObject({
-      count: 2,
-      previous_page: false,
-      current_page: 1,
-      next_page: false,
-      per_page: 10,
-      items: [
-        {
-          id: 1,
-          uid: 'some-uid-1',
-        },
-        {
-          id: 2,
-          uid: 'some-uid-2',
-        },
-      ]
-    });
+    return expect(db.selectPaginate('SELECT_QUERY', {})).resolves.toMatchObject(
+      {
+        count: 2,
+        previous_page: false,
+        current_page: 1,
+        next_page: false,
+        per_page: 10,
+        items: [
+          {
+            id: 1,
+            uid: 'some-uid-1',
+          },
+          {
+            id: 2,
+            uid: 'some-uid-2',
+          },
+        ],
+      }
+    );
   });
 });
 
