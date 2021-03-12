@@ -129,6 +129,25 @@ describe('test AuroraDbService selectPaginate', () => {
       }
     );
   });
+
+  it('should return paginated records when calling selectPaginate with defined total', async () => {
+    const db = new AuroraDbService(auroraConfig);
+    return expect(
+      db.selectPaginate('SELECT_QUERY', {}, 1, 2, 1)
+    ).resolves.toMatchObject({
+      count: 1,
+      previous_page: 1,
+      current_page: 2,
+      next_page: 3,
+      per_page: 1,
+      items: [
+        {
+          id: 1,
+          uid: 'some-uid-1',
+        },
+      ],
+    });
+  });
 });
 
 describe('test AuroraDbService selectFirst', () => {

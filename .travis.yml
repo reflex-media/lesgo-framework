@@ -9,4 +9,5 @@ cache:
   directories:
     - node_modules
 script:
-    - yarn coveralls
+    - npm run lint
+    - npm run coveralls

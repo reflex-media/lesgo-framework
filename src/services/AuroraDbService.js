@@ -55,14 +55,14 @@ export default class AuroraDbService {
     total = null
   ) {
     let paginator;
-    if (total === true || typeof total === 'number') {
+    if (typeof total === 'number') {
       paginator = new LengthAwarePaginator(
         this,
         sql,
         sqlParams,
-        perPage || 10,
-        currentPage || 1,
-        typeof total === 'number' ? total : null
+        perPage,
+        currentPage,
+        total
       );
     } else {
       paginator = new Paginator(this, sql, sqlParams, perPage, currentPage);

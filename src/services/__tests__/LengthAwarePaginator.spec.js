@@ -47,6 +47,14 @@ describe('test LengthAwarePaginator instantiate', () => {
     expect(paginator.perPage()).toEqual(5);
     expect(await paginator.total()).toEqual(10);
   });
+  it('should default perPage to 10 when instantiating without perPage', async () => {
+    const paginator = new LengthAwarePaginator(db, 'SELECT * FROM tests', {});
+
+    expect(await paginator.count()).toEqual(10);
+    expect(paginator.currentPage()).toEqual(1);
+    expect(paginator.perPage()).toEqual(10);
+    expect(await paginator.total()).toEqual(10);
+  });
   it('should throw exception if total is not a number', async () => {
     try {
       expect(
