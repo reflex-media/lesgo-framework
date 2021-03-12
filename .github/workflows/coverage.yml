@@ -23,6 +23,9 @@ jobs:
       - name: NPM Install
         run: npm ci
       
+      - name: Lint check
+        run: npm run lint
+      
       - name: Jest test run with coverage
         run: npm run coverage
 
