@@ -4,6 +4,7 @@ import logger from './logger';
 import { getObject } from './objectStore';
 import { dispatch } from './queue';
 import isEmpty from './isEmpty';
+import isDecimal from './isDecimal';
 import crypto from './crypto';
 import generateUid from './generateUid';
 import db from './db';
@@ -17,6 +18,7 @@ export {
   getObject,
   logger,
   isEmpty,
+  isDecimal,
   crypto,
   generateUid,
   db,

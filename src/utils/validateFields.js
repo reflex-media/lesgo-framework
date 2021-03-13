@@ -1,5 +1,6 @@
 import LesgoException from '../exceptions/LesgoException';
 import isEmail from './isEmail';
+import isDecimal from './isDecimal';
 
 const FILE = 'Utils/validateFields';
 
@@ -26,6 +27,9 @@ export default (params, validFields) => {
       (field.type === 'number' &&
         typeof params[field.key] !== 'undefined' &&
         typeof params[field.key] !== 'number') ||
+      (field.type === 'decimal' &&
+        typeof params[field.key] !== 'undefined' &&
+        !isDecimal(params[field.key])) ||
       (field.type === 'email' &&
         typeof params[field.key] !== 'undefined' &&
         !isEmail(params[field.key])) ||
