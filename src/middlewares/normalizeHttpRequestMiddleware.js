@@ -42,14 +42,13 @@ export const normalizeHttpRequestBeforeHandler = (handler, next) => {
   // eslint-disable-next-line no-param-reassign
   handler.event.input = normalizeRequest(options);
 
-  // eslint-disable-next-line no-param-reassign
-  handler.event.auth = {};
+  const auth = {};
   if (handler.event.headers.Authorization) {
-    // eslint-disable-next-line no-param-reassign
-    handler.event.auth = {
-      sub: getJwtSubFromAuthHeader(handler.event.headers.Authorization),
-    };
+    auth.sub = getJwtSubFromAuthHeader(handler.event.headers.Authorization);
   }
+
+  // eslint-disable-next-line no-param-reassign
+  handler.event.auth = auth;
 
   logger.addMeta({
     requestId: handler.event.requestContext
