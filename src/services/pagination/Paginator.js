@@ -1,4 +1,5 @@
 import LesgoException from '../../exceptions/LesgoException';
+import validateFields from '../../utils/validateFields';
 
 const FILE = 'Services/pagination/Paginator';
 
@@ -9,33 +10,47 @@ export default class Paginator {
    * @param db
    * @param sql
    * @param sqlParams
-   * @param perPage
-   * @param currentPage
+   * @param options
    */
-  constructor(db, sql, sqlParams, perPage = 10, currentPage = 1) {
-    if (typeof perPage !== 'number') {
+  constructor(db, sql, sqlParams, options = {}) {
+    const validFields = [
+      { key: 'db', type: 'object', required: true },
+      { key: 'sql', type: 'string', required: true },
+      { key: 'sqlParams', type: 'object', required: true },
+      { key: 'perPage', type: 'number', required: false },
+      { key: 'currentPage', type: 'number', required: false },
+    ];
+
+    let validated = {};
+    try {
+      validated = validateFields(
+        {
+          db,
+          sql,
+          sqlParams,
+          ...options,
+        },
+        validFields
+      );
+    } catch (error) {
       throw new LesgoException(
-        "Invalid type for 'perPage'",
-        `${FILE}::INVALID_TYPE_PER_PAGE`,
+        error.message,
+        `${FILE}::FIELD_VALIDATION_EXCEPTION`,
         500,
-        { perPage }
+        {
+          ...options,
+          error,
+        }
       );
     }
 
-    if (typeof currentPage !== 'number') {
-      throw new LesgoException(
-        "Invalid type for 'currentPage'",
-        `${FILE}::INVALID_TYPE_CURRENT_PAGE`,
-        500,
-        { currentPage }
-      );
-    }
+    const { perPage, currentPage } = validated;
 
     this.dbProp = db;
     this.sqlProp = sql;
     this.sqlParamsProp = sqlParams;
-    this.perPageProp = perPage;
-    this.currentPageProp = currentPage;
+    this.perPageProp = perPage || 10;
+    this.currentPageProp = currentPage || 1;
 
     this.hasNext = false;
 
@@ -128,6 +143,24 @@ export default class Paginator {
   }
 
   /**
+   * Get the last page.
+   *
+   * @returns {Promise<number>}
+   */
+  async lastPage() {
+    return this.calculateTotalNumberOfPages();
+  }
+
+  /**
+   * Total items in all pages.
+   *
+   * @returns {null|number}
+   */
+  async total() {
+    return this.countTotalItems();
+  }
+
+  /**
    * All items in the current page.
    *
    * @returns {[]}
@@ -155,7 +188,9 @@ export default class Paginator {
       previous_page: this.previousPage(),
       current_page: this.currentPage(),
       next_page: await this.nextPage(),
+      last_page: await this.lastPage(),
       per_page: this.perPage(),
+      total: await this.total(),
       items: await this.items(),
     };
   }
@@ -192,5 +227,20 @@ export default class Paginator {
     }
 
     return this.response;
+  }
+
+  /**
+   * Count total items with basic implementation.
+   *
+   * @returns {Promise<number>}
+   */
+  async countTotalItems() {
+    const resp = await this.dbProp.select(this.sqlProp, this.sqlParamsProp);
+    return Object.keys(resp).length;
+  }
+
+  async calculateTotalNumberOfPages() {
+    const total = await this.total();
+    return Math.ceil(total / this.perPage());
   }
 }

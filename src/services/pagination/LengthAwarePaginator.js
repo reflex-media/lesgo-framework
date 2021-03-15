@@ -1,5 +1,6 @@
 import Paginator from './Paginator';
 import LesgoException from '../../exceptions/LesgoException';
+import validateFields from '../../utils/validateFields';
 
 const FILE = 'Services/pagination/LengthAwarePaginator';
 
@@ -10,30 +11,30 @@ export default class LengthAwarePaginator extends Paginator {
    * @param db
    * @param sql
    * @param sqlParams
-   * @param perPage
-   * @param currentPage
-   * @param total
+   * @param options
    */
-  constructor(db, sql, sqlParams, perPage = 10, currentPage = 1, total = null) {
-    if (total !== null && typeof total !== 'number') {
+  constructor(db, sql, sqlParams, options) {
+    const validFields = [{ key: 'total', type: 'number', required: true }];
+
+    let validated = {};
+    try {
+      validated = validateFields(options, validFields);
+    } catch (error) {
       throw new LesgoException(
-        "Invalid type for 'total'",
-        `${FILE}::INVALID_TYPE_TOTAL`,
+        error.message,
+        `${FILE}::FIELD_VALIDATION_EXCEPTION`,
         500,
-        { perPage }
+        {
+          ...options,
+          error,
+        }
       );
     }
-    super(db, sql, sqlParams, perPage, currentPage);
-    this.totalProp = total;
-  }
 
-  /**
-   * Get the last page.
-   *
-   * @returns {Promise<number>}
-   */
-  async lastPage() {
-    return this.calculateTotalNumberOfPages();
+    const { total } = validated;
+
+    super(db, sql, sqlParams, options);
+    this.totalProp = total;
   }
 
   /**
@@ -42,40 +43,6 @@ export default class LengthAwarePaginator extends Paginator {
    * @returns {null|number}
    */
   async total() {
-    if (this.totalProp === null) {
-      this.totalProp = await this.countTotalItems();
-    }
-
     return this.totalProp;
-  }
-
-  async toObject() {
-    const obj = await super.toObject();
-    const { items } = obj;
-    delete obj.items;
-
-    return {
-      ...obj,
-      last_page: await this.lastPage(),
-      total: await this.total(),
-      items,
-    };
-  }
-
-  // They act as protected methods.
-
-  /**
-   * Count total items with basic implementation.
-   *
-   * @returns {Promise<number>}
-   */
-  async countTotalItems() {
-    const resp = await this.dbProp.select(this.sqlProp, this.sqlParamsProp);
-    return Object.keys(resp).length;
-  }
-
-  async calculateTotalNumberOfPages() {
-    const total = await this.total();
-    return Math.ceil(total / this.perPage());
   }
 }
