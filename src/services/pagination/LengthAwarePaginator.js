@@ -1,5 +1,6 @@
 import Paginator from './Paginator';
 import LesgoException from '../../exceptions/LesgoException';
+import validateFields from '../../utils/validateFields';
 
 const FILE = 'Services/pagination/LengthAwarePaginator';
 
@@ -10,20 +11,29 @@ export default class LengthAwarePaginator extends Paginator {
    * @param db
    * @param sql
    * @param sqlParams
-   * @param perPage
-   * @param currentPage
-   * @param total
+   * @param options
    */
-  constructor(db, sql, sqlParams, perPage = 10, currentPage = 1, total) {
-    if (typeof total !== 'number') {
+  constructor(db, sql, sqlParams, options) {
+    const validFields = [{ key: 'total', type: 'number', required: true }];
+
+    let validated = {};
+    try {
+      validated = validateFields(options, validFields);
+    } catch (error) {
       throw new LesgoException(
-        "Invalid type for 'total'",
-        `${FILE}::INVALID_TYPE_TOTAL`,
+        error.message,
+        `${FILE}::FIELD_VALIDATION_EXCEPTION`,
         500,
-        { perPage }
+        {
+          ...options,
+          error,
+        }
       );
     }
-    super(db, sql, sqlParams, perPage, currentPage);
+
+    const { total } = validated;
+
+    super(db, sql, sqlParams, options);
     this.totalProp = total;
   }
 
