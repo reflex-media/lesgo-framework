@@ -55,6 +55,7 @@ export default class Paginator {
     this.hasNext = false;
 
     this.response = [];
+    this.totalProp = false;
   }
 
   /**
@@ -63,11 +64,7 @@ export default class Paginator {
    * @returns {number}
    */
   async count() {
-    if (this.response.length <= 0) {
-      await this.executeQuery();
-    }
-
-    return this.response.length;
+    return this.response.length || (await this.executeQuery()).length;
   }
 
   /**
@@ -157,7 +154,7 @@ export default class Paginator {
    * @returns {null|number}
    */
   async total() {
-    return this.countTotalItems();
+    return this.totalProp || this.countTotalItems();
   }
 
   /**
@@ -236,7 +233,9 @@ export default class Paginator {
    */
   async countTotalItems() {
     const resp = await this.dbProp.select(this.sqlProp, this.sqlParamsProp);
-    return Object.keys(resp).length;
+    this.totalProp = Object.keys(resp).length;
+
+    return this.totalProp;
   }
 
   async calculateTotalNumberOfPages() {
