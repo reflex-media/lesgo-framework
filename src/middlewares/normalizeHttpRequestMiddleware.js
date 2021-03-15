@@ -1,3 +1,5 @@
+import app from 'Config/app'; // eslint-disable-line import/no-unresolved
+import getJwtSubFromAuthHeader from '../utils/getJwtSubFromAuthHeader';
 import logger from '../utils/logger';
 
 export const normalizeRequest = opts => {
@@ -40,9 +42,15 @@ export const normalizeHttpRequestBeforeHandler = (handler, next) => {
   // eslint-disable-next-line no-param-reassign
   handler.event.input = normalizeRequest(options);
 
+  const auth = {};
+  if (handler.event.headers.Authorization) {
+    auth.sub = getJwtSubFromAuthHeader(handler.event.headers.Authorization);
+  }
+
+  // eslint-disable-next-line no-param-reassign
+  handler.event.auth = auth;
+
   logger.addMeta({
-    queryStringParameters: options.qs,
-    body: options.body,
     requestId: handler.event.requestContext
       ? handler.event.requestContext.requestId
       : null,
@@ -51,6 +59,14 @@ export const normalizeHttpRequestBeforeHandler = (handler, next) => {
       httpMethod: handler.event.httpMethod,
     },
   });
+
+  if (app.debug) {
+    logger.addMeta({
+      auth: handler.event.auth,
+      queryStringParameters: options.qs,
+      body: options.body,
+    });
+  }
 
   /* istanbul ignore next */
   next();

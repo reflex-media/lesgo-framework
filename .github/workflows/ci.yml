@@ -1,0 +1,29 @@
+name: Continuous Integration
+
+on:
+  pull_request:
+    branches:
+      - 'feature/**'
+
+jobs:
+  test:
+    name: Running jest test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Use Node.js 12.x
+        uses: actions/setup-node@v1
+        with:
+          node-version: 12.x
+
+      - name: NPM Install
+        run: npm ci
+      
+      - name: Lint check
+        run: npm run lint
+      
+      - name: Test run
+        run: npm test
