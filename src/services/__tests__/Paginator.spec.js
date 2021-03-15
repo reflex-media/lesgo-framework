@@ -41,6 +41,17 @@ describe('test Paginator instantiate', () => {
     }
   );
 
+  it('should be instantiated without options', async () => {
+    const paginator = new Paginator(db, 'SELECT * FROM tests', {});
+
+    expect(await paginator.count()).toEqual(10);
+    expect(paginator.currentPage()).toEqual(1);
+    expect(await paginator.firstItem()).toMatchObject(mockData);
+    expect(await paginator.lastItem()).toMatchObject(mockData);
+    expect(paginator.perPage()).toEqual(10);
+    expect(await paginator.total()).toEqual(10);
+  });
+
   it.each`
     currentPage | perPage     | errorName           | errorMessage                                            | errorCode                                | errorStatusCode
     ${'sample'} | ${10}       | ${'LesgoException'} | ${"Invalid type for 'currentPage', expecting 'number'"} | ${`${FILE}::FIELD_VALIDATION_EXCEPTION`} | ${500}
@@ -296,6 +307,24 @@ describe('test toObject() usage', () => {
         { ...mockDataLastItem },
       ],
     });
+  });
+
+  it('should only run executeQuery trice', async () => {
+    const paginator = new Paginator(
+      db,
+      'SELECT * FROM tests',
+      {},
+      {
+        perPage: 5,
+      }
+    );
+
+    await paginator.toObject();
+    await paginator.toObject();
+    await paginator.toObject();
+    await paginator.toObject();
+
+    expect(db.select).toHaveBeenCalledTimes(2);
   });
 });
 
