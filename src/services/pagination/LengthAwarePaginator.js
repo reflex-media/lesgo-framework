@@ -14,24 +14,11 @@ export default class LengthAwarePaginator extends Paginator {
    * @param options
    */
   constructor(db, sql, sqlParams, options) {
-    const validFields = [
-      { key: 'db', type: 'object', required: true },
-      { key: 'sql', type: 'string', required: true },
-      { key: 'sqlParams', type: 'object', required: true },
-      { key: 'total', type: 'number', required: true },
-    ];
+    const validFields = [{ key: 'total', type: 'number', required: true }];
 
     let validated = {};
     try {
-      validated = validateFields(
-        {
-          db,
-          sql,
-          sqlParams,
-          ...options,
-        },
-        validFields
-      );
+      validated = validateFields(options, validFields);
     } catch (error) {
       throw new LesgoException(
         error.message,
