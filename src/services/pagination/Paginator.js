@@ -14,13 +14,24 @@ export default class Paginator {
    */
   constructor(db, sql, sqlParams, options = {}) {
     const validFields = [
+      { key: 'db', type: 'object', required: true },
+      { key: 'sql', type: 'string', required: true },
+      { key: 'sqlParams', type: 'object', required: true },
       { key: 'perPage', type: 'number', required: false },
       { key: 'currentPage', type: 'number', required: false },
     ];
 
     let validated = {};
     try {
-      validated = validateFields(options, validFields);
+      validated = validateFields(
+        {
+          db,
+          sql,
+          sqlParams,
+          ...options,
+        },
+        validFields
+      );
     } catch (error) {
       throw new LesgoException(
         error.message,
