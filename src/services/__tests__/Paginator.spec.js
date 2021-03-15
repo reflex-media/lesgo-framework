@@ -309,7 +309,7 @@ describe('test toObject() usage', () => {
     });
   });
 
-  it('should only run executeQuery trice', async () => {
+  it('should only run executeQuery twice', async () => {
     const paginator = new Paginator(
       db,
       'SELECT * FROM tests',
