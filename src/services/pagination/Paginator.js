@@ -128,6 +128,24 @@ export default class Paginator {
   }
 
   /**
+   * Get the last page.
+   *
+   * @returns {Promise<number>}
+   */
+  async lastPage() {
+    return this.calculateTotalNumberOfPages();
+  }
+
+  /**
+   * Total items in all pages.
+   *
+   * @returns {null|number}
+   */
+  async total() {
+    return this.countTotalItems();
+  }
+
+  /**
    * All items in the current page.
    *
    * @returns {[]}
@@ -155,7 +173,9 @@ export default class Paginator {
       previous_page: this.previousPage(),
       current_page: this.currentPage(),
       next_page: await this.nextPage(),
+      last_page: await this.lastPage(),
       per_page: this.perPage(),
+      total: await this.total(),
       items: await this.items(),
     };
   }
@@ -192,5 +212,20 @@ export default class Paginator {
     }
 
     return this.response;
+  }
+
+  /**
+   * Count total items with basic implementation.
+   *
+   * @returns {Promise<number>}
+   */
+  async countTotalItems() {
+    const resp = await this.dbProp.select(this.sqlProp, this.sqlParamsProp);
+    return Object.keys(resp).length;
+  }
+
+  async calculateTotalNumberOfPages() {
+    const total = await this.total();
+    return Math.ceil(total / this.perPage());
   }
 }

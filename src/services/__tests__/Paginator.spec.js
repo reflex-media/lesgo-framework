@@ -35,6 +35,7 @@ describe('test Paginator instantiate', () => {
       expect(await paginator.firstItem()).toMatchObject(firstItem);
       expect(await paginator.lastItem()).toMatchObject(lastItem);
       expect(paginator.perPage()).toEqual(expectedCount);
+      expect(await paginator.total()).toEqual(10);
     }
   );
 
@@ -170,7 +171,9 @@ describe('test toObject() usage', () => {
       previous_page: false,
       current_page: 1,
       next_page: 2,
+      last_page: 2,
       per_page: 5,
+      total: 10,
       items: [
         { ...mockDataFirstItem },
         { ...mockData },
@@ -179,5 +182,35 @@ describe('test toObject() usage', () => {
         { ...mockDataLastItem },
       ],
     });
+  });
+});
+
+describe('test total() usage', () => {
+  it('should get total number of data using default countTotalItems method', async () => {
+    const paginator = new Paginator(db, 'SELECT * FROM total_tests', {}, 10, 1);
+
+    expect(await paginator.total()).toEqual(30);
+    expect(db.select).toHaveBeenCalled();
+  });
+});
+
+describe('test lastPage() usage', () => {
+  it('should get the last page using default countTotalItems method when getting total data', async () => {
+    const paginator1 = new Paginator(
+      db,
+      'SELECT * FROM total_tests',
+      {},
+      10,
+      1
+    );
+    expect(await paginator1.lastPage()).toEqual(3);
+
+    const paginator2 = new Paginator(db, 'SELECT * FROM total_tests', {}, 5, 1);
+    expect(await paginator2.lastPage()).toEqual(6);
+
+    const paginator3 = new Paginator(db, 'SELECT * FROM total_tests', {}, 7, 1);
+    expect(await paginator3.lastPage()).toEqual(5);
+
+    expect(db.select).toHaveBeenCalled();
   });
 });

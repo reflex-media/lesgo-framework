@@ -14,8 +14,8 @@ export default class LengthAwarePaginator extends Paginator {
    * @param currentPage
    * @param total
    */
-  constructor(db, sql, sqlParams, perPage = 10, currentPage = 1, total = null) {
-    if (total !== null && typeof total !== 'number') {
+  constructor(db, sql, sqlParams, perPage = 10, currentPage = 1, total) {
+    if (typeof total !== 'number') {
       throw new LesgoException(
         "Invalid type for 'total'",
         `${FILE}::INVALID_TYPE_TOTAL`,
@@ -28,54 +28,11 @@ export default class LengthAwarePaginator extends Paginator {
   }
 
   /**
-   * Get the last page.
-   *
-   * @returns {Promise<number>}
-   */
-  async lastPage() {
-    return this.calculateTotalNumberOfPages();
-  }
-
-  /**
    * Total items in all pages.
    *
    * @returns {null|number}
    */
   async total() {
-    if (this.totalProp === null) {
-      this.totalProp = await this.countTotalItems();
-    }
-
     return this.totalProp;
-  }
-
-  async toObject() {
-    const obj = await super.toObject();
-    const { items } = obj;
-    delete obj.items;
-
-    return {
-      ...obj,
-      last_page: await this.lastPage(),
-      total: await this.total(),
-      items,
-    };
-  }
-
-  // They act as protected methods.
-
-  /**
-   * Count total items with basic implementation.
-   *
-   * @returns {Promise<number>}
-   */
-  async countTotalItems() {
-    const resp = await this.dbProp.select(this.sqlProp, this.sqlParamsProp);
-    return Object.keys(resp).length;
-  }
-
-  async calculateTotalNumberOfPages() {
-    const total = await this.total();
-    return Math.ceil(total / this.perPage());
   }
 }

@@ -21,7 +21,9 @@ describe('test LengthAwarePaginator instantiate', () => {
       db,
       'SELECT * FROM tests',
       {},
-      5
+      5,
+      undefined,
+      30
     );
 
     expect(await paginator.count()).toEqual(5);
@@ -29,7 +31,7 @@ describe('test LengthAwarePaginator instantiate', () => {
     expect(await paginator.firstItem()).toMatchObject(mockDataFirstItem);
     expect(await paginator.lastItem()).toMatchObject(mockDataLastItem);
     expect(paginator.perPage()).toEqual(5);
-    expect(await paginator.total()).toEqual(10);
+    expect(await paginator.total()).toEqual(30);
   });
   it('should not throw exception when instantiating with current page', async () => {
     const paginator = new LengthAwarePaginator(
@@ -37,7 +39,8 @@ describe('test LengthAwarePaginator instantiate', () => {
       'SELECT * FROM tests',
       {},
       5,
-      2
+      2,
+      30
     );
 
     expect(await paginator.count()).toEqual(5);
@@ -45,15 +48,22 @@ describe('test LengthAwarePaginator instantiate', () => {
     expect(await paginator.firstItem()).toMatchObject(mockDataFirstItem);
     expect(await paginator.lastItem()).toMatchObject(mockDataLastItem);
     expect(paginator.perPage()).toEqual(5);
-    expect(await paginator.total()).toEqual(10);
+    expect(await paginator.total()).toEqual(30);
   });
   it('should default perPage to 10 when instantiating without perPage', async () => {
-    const paginator = new LengthAwarePaginator(db, 'SELECT * FROM tests', {});
+    const paginator = new LengthAwarePaginator(
+      db,
+      'SELECT * FROM tests',
+      {},
+      undefined,
+      undefined,
+      30
+    );
 
     expect(await paginator.count()).toEqual(10);
     expect(paginator.currentPage()).toEqual(1);
     expect(paginator.perPage()).toEqual(10);
-    expect(await paginator.total()).toEqual(10);
+    expect(await paginator.total()).toEqual(30);
   });
   it('should throw exception if total is not a number', async () => {
     try {
@@ -74,7 +84,9 @@ describe('test LengthAwarePaginator instantiate', () => {
       db,
       'SELECT * FROM total_tests',
       {},
-      5
+      5,
+      undefined,
+      30
     );
     expect(await paginator.toObject()).toMatchObject({
       count: 5,
@@ -96,18 +108,6 @@ describe('test LengthAwarePaginator instantiate', () => {
 });
 
 describe('test total() usage', () => {
-  it('should get total number of data using default countTotalItems method', async () => {
-    const paginator = new LengthAwarePaginator(
-      db,
-      'SELECT * FROM total_tests',
-      {},
-      10,
-      1
-    );
-
-    expect(await paginator.total()).toEqual(30);
-    expect(db.select).toHaveBeenCalled();
-  });
   it('should get total number of data using supplied paramater', async () => {
     const paginator = new LengthAwarePaginator(
       db,
@@ -124,36 +124,6 @@ describe('test total() usage', () => {
 });
 
 describe('test lastPage() usage', () => {
-  it('should get the last page using default countTotalItems method when getting total data', async () => {
-    const paginator1 = new LengthAwarePaginator(
-      db,
-      'SELECT * FROM total_tests',
-      {},
-      10,
-      1
-    );
-    expect(await paginator1.lastPage()).toEqual(3);
-
-    const paginator2 = new LengthAwarePaginator(
-      db,
-      'SELECT * FROM total_tests',
-      {},
-      5,
-      1
-    );
-    expect(await paginator2.lastPage()).toEqual(6);
-
-    const paginator3 = new LengthAwarePaginator(
-      db,
-      'SELECT * FROM total_tests',
-      {},
-      7,
-      1
-    );
-    expect(await paginator3.lastPage()).toEqual(5);
-
-    expect(db.select).toHaveBeenCalled();
-  });
   it('should get the last page using supplied paramater as total data', async () => {
     const paginator1 = new LengthAwarePaginator(
       db,
