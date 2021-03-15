@@ -1,6 +1,6 @@
 {
   "name": "lesgo",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "description": "Core framework for lesgo node.js serverless framework.",
   "main": "./src/index.js",
   "author": "Sufiyan Rahmat",
@@ -22,7 +22,9 @@
     "test": "jest",
     "coverage": "jest --coverage",
     "coveralls": "npm run coverage && cat ./coverage/lcov.info | coveralls",
-    "prepublishOnly": "npm run test"
+    "prepublishOnly": "npm run test",
+    "lint": "eslint '**/*.{js,ts,jsx,tsx}' --quiet",
+    "lint-fix": "eslint '**/*.{js,ts,jsx,tsx}' --fix"
   },
   "bin": {
     "lesgo-scripts": "./bin/lesgo-scripts.sh"
@@ -63,8 +65,9 @@
     }
   },
   "lint-staged": {
-    "*.js": [
-      "eslint --fix",
+    "*.{js,ts,jsx,tsx}": [
+      "prettier --write",
+      "npm run lint",
       "git add"
     ]
   }

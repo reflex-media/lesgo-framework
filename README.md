@@ -13,16 +13,22 @@ This framework uses Jest test framework for unit testing.
 
 All test files exist in the respective `src/__tests__/` directory.
 
+**Install dependencies**
+
+```bash
+$ npm ci
+```
+
 **Run test**
 
 ```bash
-$ yarn test
+$ npm test
 ```
 
 **Run code coverage report**
 
 ```bash
-$ yarn coverage
+$ npm run coverage
 ```
 
 View the generated html report in `coverage/index.html`.
