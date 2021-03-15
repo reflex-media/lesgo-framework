@@ -10,6 +10,7 @@ const params = {
   roles: { admin: 'admin' },
   listItem: ['apple', 'banana'],
   status: 'active',
+  decimalCheck: 1.99,
 };
 
 const validFields = [
@@ -22,6 +23,11 @@ const validFields = [
     key: 'status',
     type: 'enum',
     enumValues: ['active', 'inactive'],
+    required: true,
+  },
+  {
+    key: 'decimalCheck',
+    type: 'decimal',
     required: true,
   },
 ];
