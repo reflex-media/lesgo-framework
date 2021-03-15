@@ -63,11 +63,7 @@ export default class Paginator {
    * @returns {number}
    */
   async count() {
-    if (this.response.length <= 0) {
-      await this.executeQuery();
-    }
-
-    return this.response.length;
+    return this.response.length || (await this.executeQuery()).length;
   }
 
   /**
