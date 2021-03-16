@@ -42,9 +42,12 @@ export const normalizeHttpRequestBeforeHandler = (handler, next) => {
   // eslint-disable-next-line no-param-reassign
   handler.event.input = normalizeRequest(options);
 
+  const authHeader =
+    options.headers.Authorization || options.headers.authorization;
+
   const auth = {};
-  if (handler.event.headers.Authorization) {
-    auth.sub = getJwtSubFromAuthHeader(handler.event.headers.Authorization);
+  if (authHeader) {
+    auth.sub = getJwtSubFromAuthHeader(authHeader);
   }
 
   // eslint-disable-next-line no-param-reassign

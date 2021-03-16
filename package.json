@@ -1,6 +1,6 @@
 {
   "name": "lesgo",
-  "version": "0.6.1",
+  "version": "0.6.2",
   "description": "Core framework for lesgo node.js serverless framework.",
   "main": "./src/index.js",
   "author": "Sufiyan Rahmat",
