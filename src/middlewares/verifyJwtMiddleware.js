@@ -26,7 +26,7 @@ export const token = headers => {
   return parsed[1];
 };
 
-export const verifyJwtMiddlewareBeforeHandler = handler => {
+export const verifyJwtMiddlewareBeforeHandler = (handler, next) => {
   const { headers } = handler.event;
 
   try {
@@ -34,6 +34,8 @@ export const verifyJwtMiddlewareBeforeHandler = handler => {
 
     // eslint-disable-next-line no-param-reassign
     handler.event.decodedJwt = service.validate().decoded;
+
+    next();
   } catch (err) {
     if (err.name === 'JsonWebTokenError') {
       throw new LesgoException(err.message, 'JWT_ERROR', 403);
@@ -47,7 +49,7 @@ export const verifyJwtMiddlewareBeforeHandler = handler => {
 
 const verifyJwtMiddleware /* istanbul ignore next */ = () => {
   return {
-    before: handler => verifyJwtMiddlewareBeforeHandler(handler),
+    before: (handler, next) => verifyJwtMiddlewareBeforeHandler(handler, next),
   };
 };
 
