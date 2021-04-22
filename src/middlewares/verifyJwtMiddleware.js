@@ -3,7 +3,9 @@ import JwtService from '../services/JwtService';
 import LesgoException from '../exceptions/LesgoException';
 
 export const token = headers => {
-  if (!headers.Authorization) {
+  const authorizationHeader = headers.Authorization || headers.authorization;
+
+  if (!authorizationHeader) {
     throw new LesgoException(
       'Authorization Header is required!',
       'JWT_MISSING_AUTHORIZATION_HEADER',
@@ -11,7 +13,7 @@ export const token = headers => {
     );
   }
 
-  const parsed = headers.Authorization.split(' ');
+  const parsed = authorizationHeader.split(' ');
 
   if (!parsed[1]) {
     throw new LesgoException(
