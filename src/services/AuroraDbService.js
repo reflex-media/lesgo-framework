@@ -4,6 +4,8 @@ import LesgoException from '../exceptions/LesgoException';
 import LengthAwarePaginator from './pagination/LengthAwarePaginator';
 import Paginator from './pagination/Paginator';
 
+const FILE = 'Lesgo/services/AuroraDbService';
+
 export default class AuroraDbService {
   constructor(opts = {}) {
     this.client = null;
@@ -22,9 +24,9 @@ export default class AuroraDbService {
 
   async query(sql, sqlParams) {
     try {
-      logger.info('QUERYING AURORA DB', { sql, sqlParams });
+      logger.debug(`${FILE}::QUERYING_DB`, { sql, sqlParams });
       const resp = await this.client.query(sql, sqlParams);
-      logger.info('AURORA DB RESPONSE', { resp });
+      logger.debug(`${FILE}::DB_RESPONSE`, { resp });
 
       return resp;
     } catch (err) {
