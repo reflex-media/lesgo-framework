@@ -11,6 +11,7 @@ const params = {
   listItem: ['apple', 'banana'],
   status: 'active',
   decimalCheck: 1.99,
+  totalRecord: 99,
 };
 
 const validFields = [
@@ -25,11 +26,8 @@ const validFields = [
     enumValues: ['active', 'inactive'],
     required: true,
   },
-  {
-    key: 'decimalCheck',
-    type: 'decimal',
-    required: true,
-  },
+  { key: 'decimalCheck', type: 'decimal', required: true },
+  { key: 'totalRecord', type: 'number', required: true },
 ];
 
 describe('test Utils/validateFields', () => {
@@ -123,5 +121,14 @@ describe('test Utils/validateFields', () => {
     expect(validated).toMatchObject(newParams);
     expect(validated.Id).toBeDefined();
     expect(validated.listItem).toBeUndefined();
+  });
+
+  it('should return success with validated data for 0 number', () => {
+    const newParams = { ...params, totalRecord: 0 };
+    const validated = validateFields(newParams, validFields);
+
+    expect(validated).toMatchObject(newParams);
+    expect(validated.totalRecord).toBeDefined();
+    expect(validated.totalRecord).toEqual(0);
   });
 });
