@@ -9,12 +9,14 @@ export default (params, validFields) => {
 
   validFields.forEach(field => {
     if (field.required && !params[field.key]) {
-      throw new LesgoException(
-        `Missing required '${field.key}'`,
-        `${FILE}::MISSING_REQUIRED_${field.key.toUpperCase()}`,
-        500,
-        { field }
-      );
+      if (typeof params[field.key] !== 'number') {
+        throw new LesgoException(
+          `Missing required '${field.key}'`,
+          `${FILE}::MISSING_REQUIRED_${field.key.toUpperCase()}`,
+          500,
+          { field }
+        );
+      }
     }
 
     if (
