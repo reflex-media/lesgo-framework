@@ -121,6 +121,8 @@ describe('test Utils/validateFields', () => {
     expect(validated).toMatchObject(newParams);
     expect(validated.Id).toBeDefined();
     expect(validated.listItem).toBeUndefined();
+
+    validFields[4].required = true;
   });
 
   it('should return success with validated data for 0 number', () => {
@@ -130,5 +132,30 @@ describe('test Utils/validateFields', () => {
     expect(validated).toMatchObject(newParams);
     expect(validated.totalRecord).toBeDefined();
     expect(validated.totalRecord).toEqual(0);
+  });
+
+  it('should return success with validated data for number without required', () => {
+    const newParams = { ...params };
+    validFields[7].required = false;
+
+    const validated = validateFields(newParams, validFields);
+
+    expect(validated).toMatchObject(newParams);
+    expect(validated.totalRecord).toBeDefined();
+    expect(validated.totalRecord).toEqual(99);
+
+    validFields[7].required = true;
+  });
+
+  it('should return error with missing required number', () => {
+    const newParams = { ...params };
+    delete newParams.totalRecord;
+
+    expect(() => validateFields(newParams, validFields)).toThrow(
+      new LesgoException(
+        `Missing required 'totalRecord'`,
+        `${FILE}::MISSING_REQUIRED_TOTALRECORD`
+      )
+    );
   });
 });
