@@ -91,6 +91,28 @@ describe('test Utils/validateFields', () => {
     );
   });
 
+  it('should throw required when array value is empty but required', () => {
+    const newParams = { ...params, listItem: [] };
+
+    expect(() => validateFields(newParams, validFields)).toThrow(
+      new LesgoException(
+        `Missing required 'listItem'`,
+        `${FILE}::MISSING_REQUIRED_LISTITEM`
+      )
+    );
+  });
+
+  it('should not throw invalid type when array value is empty and not required', () => {
+    const newParams = { ...params, listItem: [] };
+    const newValidFields = [
+      { key: 'listItem', type: 'array', required: false },
+    ];
+
+    expect(validateFields(newParams, newValidFields)).toMatchObject({
+      listItem: [],
+    });
+  });
+
   it('should throw invalid type when non-enum value check', async () => {
     const newParams = { ...params, status: 'private' };
 
