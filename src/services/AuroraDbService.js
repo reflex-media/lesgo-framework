@@ -13,13 +13,19 @@ export default class AuroraDbService {
   }
 
   connect(opts) {
-    const { secretArn, resourceArn, database } = opts;
+    const { secretArn, resourceArn, database, region } = opts;
 
-    this.client = dataApiClient({
+    const clientOpts = {
       secretArn,
       resourceArn,
       database,
-    });
+    };
+
+    if (region) {
+      clientOpts.region = region;
+    }
+
+    this.client = dataApiClient(clientOpts);
   }
 
   async query(sql, sqlParams) {
