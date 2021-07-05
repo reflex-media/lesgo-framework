@@ -9,7 +9,10 @@ let db;
  * For a more file size optimized approach,
  * create your own src/utils/db.js and import only
  * the specific Service.
+ *
+ * FIXME: Should test if statement
  */
+/* istanbul ignore if */
 if (config.connectionType === 'rds-proxy') {
   db = new AuroraDbRDSProxyService(config);
 } else {

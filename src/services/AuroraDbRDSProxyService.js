@@ -11,7 +11,7 @@ const FILE = 'Lesgo/services/AuroraDbRDSProxyService';
  * Use Services/AuroraDbServerlessService for the Serverless type via Data API.
  */
 export default class AuroraDbRDSProxyService {
-  constructor(opts) {
+  constructor(opts = {}) {
     const { host, user, password, database } = opts;
 
     this.clientOpts = {
@@ -98,7 +98,7 @@ export default class AuroraDbRDSProxyService {
   async insert(sql, sqlParams) {
     const resp = await this.query(sql, sqlParams);
 
-    if (resp.numberOfRecordsUpdated <= 0) {
+    if (resp.results.affectedRows <= 0) {
       throw new LesgoException(
         'No records inserted from INSERT query',
         `${FILE}::NO_RECORDS_INSERTED`,
