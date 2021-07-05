@@ -3,4 +3,5 @@ export default {
   secretCommandArn: 'secretCommandArn',
   resourceArn: 'resourceArn',
   database: 'database',
+  connectionType: 'data-api',
 };
