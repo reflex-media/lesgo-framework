@@ -23,6 +23,16 @@ describe('test AuroraDbService instantiate', () => {
     expect(dataApiClient).toHaveBeenCalledWith(auroraConfig);
     expect(db.client.mocked).toMatchObject(auroraConfig);
   });
+
+  it('should not throw exception with custom region', () => {
+    const db = new AuroraDbService({
+      ...auroraConfig,
+      region: 'ap-southeast-1',
+    });
+
+    expect(dataApiClient).toHaveBeenCalledWith(auroraConfig);
+    expect(db.client.mocked).toMatchObject(auroraConfig);
+  });
 });
 
 describe('test AuroraDbService connect', () => {
