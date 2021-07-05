@@ -11,6 +11,7 @@ const params = {
   listItem: ['apple', 'banana'],
   status: 'active',
   decimalCheck: 1.99,
+  totalRecord: 99,
 };
 
 const validFields = [
@@ -25,11 +26,8 @@ const validFields = [
     enumValues: ['active', 'inactive'],
     required: true,
   },
-  {
-    key: 'decimalCheck',
-    type: 'decimal',
-    required: true,
-  },
+  { key: 'decimalCheck', type: 'decimal', required: true },
+  { key: 'totalRecord', type: 'number', required: true },
 ];
 
 describe('test Utils/validateFields', () => {
@@ -93,6 +91,28 @@ describe('test Utils/validateFields', () => {
     );
   });
 
+  it('should throw required when array value is empty but required', () => {
+    const newParams = { ...params, listItem: [] };
+
+    expect(() => validateFields(newParams, validFields)).toThrow(
+      new LesgoException(
+        `Missing required 'listItem'`,
+        `${FILE}::MISSING_REQUIRED_LISTITEM`
+      )
+    );
+  });
+
+  it('should not throw invalid type when array value is empty and not required', () => {
+    const newParams = { ...params, listItem: [] };
+    const newValidFields = [
+      { key: 'listItem', type: 'array', required: false },
+    ];
+
+    expect(validateFields(newParams, newValidFields)).toMatchObject({
+      listItem: [],
+    });
+  });
+
   it('should throw invalid type when non-enum value check', async () => {
     const newParams = { ...params, status: 'private' };
 
@@ -123,5 +143,41 @@ describe('test Utils/validateFields', () => {
     expect(validated).toMatchObject(newParams);
     expect(validated.Id).toBeDefined();
     expect(validated.listItem).toBeUndefined();
+
+    validFields[4].required = true;
+  });
+
+  it('should return success with validated data for 0 number', () => {
+    const newParams = { ...params, totalRecord: 0 };
+    const validated = validateFields(newParams, validFields);
+
+    expect(validated).toMatchObject(newParams);
+    expect(validated.totalRecord).toBeDefined();
+    expect(validated.totalRecord).toEqual(0);
+  });
+
+  it('should return success with validated data for number without required', () => {
+    const newParams = { ...params };
+    validFields[7].required = false;
+
+    const validated = validateFields(newParams, validFields);
+
+    expect(validated).toMatchObject(newParams);
+    expect(validated.totalRecord).toBeDefined();
+    expect(validated.totalRecord).toEqual(99);
+
+    validFields[7].required = true;
+  });
+
+  it('should return error with missing required number', () => {
+    const newParams = { ...params };
+    delete newParams.totalRecord;
+
+    expect(() => validateFields(newParams, validFields)).toThrow(
+      new LesgoException(
+        `Missing required 'totalRecord'`,
+        `${FILE}::MISSING_REQUIRED_TOTALRECORD`
+      )
+    );
   });
 });

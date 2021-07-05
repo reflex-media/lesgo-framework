@@ -2,6 +2,8 @@ import { DocumentClient } from 'aws-sdk/clients/dynamodb'; // eslint-disable-lin
 import LesgoException from '../exceptions/LesgoException';
 import logger from '../utils/logger';
 
+const FILE = 'Lesgo/services/DynamoDbService';
+
 export default class DynamoDb {
   constructor(opts = {}) {
     this.client = null;
@@ -35,11 +37,11 @@ export default class DynamoDb {
       projectionExpression
     );
 
-    logger.info('PREPARING TO QUERY DYNAMODB', { params });
+    logger.debug(`${FILE}::PREPARING_QUERY`, { params });
 
     try {
       const data = await this.client.query(params).promise();
-      logger.info('RECEIVED RESPONSE FROM DYNAMODB', { data });
+      logger.debug(`${FILE}::RECEIVED_QUERY_RESPONSE`, { data });
       return data.Items;
     } catch (err) {
       throw new LesgoException(
@@ -62,11 +64,11 @@ export default class DynamoDb {
       expressionAttributeValues
     );
 
-    logger.info('PREPARING TO QUERY COUNT DYNAMODB', { params });
+    logger.debug(`${FILE}::PREPARING_QUERY_COUNT`, { params });
 
     try {
       const data = await this.client.query(params).promise();
-      logger.info('RECEIVED RESPONSE FROM DYNAMODB', { data });
+      logger.debug(`${FILE}::RECEIVED_QUERY_COUNT_RESPONSE`, { data });
       return data.Count;
     } catch (err) {
       throw new LesgoException(
@@ -81,11 +83,11 @@ export default class DynamoDb {
   async put(tableName, item) {
     const params = this.preparePutPayload(tableName, item);
 
-    logger.info('PREPARING TO PUT ITEM TO DYNAMODB', { params });
+    logger.debug(`${FILE}::PREPARING_PUT`, { params });
 
     try {
       const data = await this.client.put(params).promise();
-      logger.info('RECEIVED RESPONSE FROM DYNAMODB', { data });
+      logger.debug(`${FILE}::RECEIVED_PUT_RESPONSE`, { data });
       return data;
     } catch (err) {
       throw new LesgoException(
@@ -105,11 +107,11 @@ export default class DynamoDb {
       expressionAttributeValues
     );
 
-    logger.info('PREPARING TO UPDATE ITEM ON DYNAMODB', { params });
+    logger.debug(`${FILE}::PREPARING_UPDATE`, { params });
 
     try {
       const data = await this.client.update(params).promise();
-      logger.info('RECEIVED RESPONSE FROM DYNAMODB', { data });
+      logger.debug(`${FILE}::RECEIVED_UPDATE_RESPONSE`, { data });
       return data;
     } catch (err) {
       throw new LesgoException(
