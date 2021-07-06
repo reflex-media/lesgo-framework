@@ -1,5 +1,6 @@
 import mysql from 'mysql2/promise';
 import logger from '../utils/logger';
+import isEmpty from '../utils/isEmpty';
 import LesgoException from '../exceptions/LesgoException';
 import LengthAwarePaginator from './pagination/LengthAwarePaginator';
 import Paginator from './pagination/Paginator';
@@ -22,11 +23,13 @@ export default class AuroraDbRDSProxyService {
     };
   }
 
-  async connect() {
+  async connect(connection = {}) {
+    const clientOpts = isEmpty(connection) ? this.clientOpts : connection;
     logger.debug(`${FILE}::PREPARING DB CONNECTION`, {
-      clientOpts: this.clientOpts,
+      clientOpts,
     });
-    const conn = await mysql.createConnection(this.clientOpts);
+
+    const conn = await mysql.createConnection(clientOpts);
     conn.config.namedPlaceholders = true;
     logger.debug(`${FILE}::DB CONNECTED`);
 
@@ -40,8 +43,8 @@ export default class AuroraDbRDSProxyService {
     logger.debug(`${FILE}::DB DISCONNECTED`);
   }
 
-  async query(sql, sqlParams) {
-    const conn = await this.connect();
+  async query(sql, sqlParams, connection = {}) {
+    const conn = await this.connect(connection);
 
     try {
       logger.debug(`${FILE}::QUERYING_DB`, { sql, sqlParams });
@@ -61,13 +64,13 @@ export default class AuroraDbRDSProxyService {
     }
   }
 
-  async select(sql, sqlParams) {
-    const resp = await this.query(sql, sqlParams);
+  async select(sql, sqlParams, connection = {}) {
+    const resp = await this.query(sql, sqlParams, connection);
     return resp.results;
   }
 
-  async selectFirst(sql, sqlParams) {
-    const resp = await this.query(sql, sqlParams);
+  async selectFirst(sql, sqlParams, connection = {}) {
+    const resp = await this.query(sql, sqlParams, connection);
     return resp.results[0];
   }
 
@@ -76,27 +79,40 @@ export default class AuroraDbRDSProxyService {
     sqlParams,
     perPage = 10,
     currentPage = 1,
-    total = null
+    total = null,
+    connection = {}
   ) {
     let paginator;
     if (typeof total === 'number') {
-      paginator = new LengthAwarePaginator(this, sql, sqlParams, {
-        perPage,
-        currentPage,
-        total,
-      });
+      paginator = new LengthAwarePaginator(
+        this,
+        sql,
+        sqlParams,
+        {
+          perPage,
+          currentPage,
+          total,
+        },
+        connection
+      );
     } else {
-      paginator = new Paginator(this, sql, sqlParams, {
-        perPage,
-        currentPage,
-      });
+      paginator = new Paginator(
+        this,
+        sql,
+        sqlParams,
+        {
+          perPage,
+          currentPage,
+        },
+        connection
+      );
     }
 
     return (await paginator).toObject();
   }
 
-  async insert(sql, sqlParams) {
-    const resp = await this.query(sql, sqlParams);
+  async insert(sql, sqlParams, connection = {}) {
+    const resp = await this.query(sql, sqlParams, connection);
 
     if (resp.results.affectedRows <= 0) {
       throw new LesgoException(
@@ -110,8 +126,8 @@ export default class AuroraDbRDSProxyService {
     return resp.results.insertId;
   }
 
-  async update(sql, sqlParams) {
-    const resp = await this.query(sql, sqlParams);
+  async update(sql, sqlParams, connection = {}) {
+    const resp = await this.query(sql, sqlParams, connection);
 
     if (resp.results.changedRows <= 0) {
       throw new LesgoException(

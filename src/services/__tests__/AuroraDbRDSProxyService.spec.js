@@ -9,6 +9,13 @@ const auroraConfig = {
   database: 'fakeDbName',
 };
 
+const customConfig = {
+  host: 'some-fake-host-2',
+  user: 'fakeUsername2',
+  password: 'fakePassword2',
+  database: 'fakeDbName2',
+};
+
 describe('test AuroraDbRDSProxyService instantiate', () => {
   it('should not throw exception when instantiating', () => {
     const db = new AuroraDbRDSProxyService(auroraConfig);
@@ -18,6 +25,22 @@ describe('test AuroraDbRDSProxyService instantiate', () => {
   it('should allow for empty config', () => {
     const db = new AuroraDbRDSProxyService();
     expect(db.clientOpts).toMatchObject({});
+  });
+});
+
+describe('test AuroraDbRDSProxyService connect', () => {
+  it('should be able to connect without custom config', async () => {
+    const db = new AuroraDbRDSProxyService(auroraConfig);
+    const conn = await db.connect();
+
+    expect(conn.mocked).toMatchObject(auroraConfig);
+  });
+
+  it('should be able to connect with custom config', async () => {
+    const db = new AuroraDbRDSProxyService(auroraConfig);
+    const conn = await db.connect(customConfig);
+
+    expect(conn.mocked).toMatchObject(customConfig);
   });
 });
 
