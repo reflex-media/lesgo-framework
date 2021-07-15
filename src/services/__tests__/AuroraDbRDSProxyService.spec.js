@@ -193,19 +193,11 @@ describe('test AuroraDbRDSProxyService insert', () => {
 describe('test AuroraDbRDSProxyService update', () => {
   it('should return success when making update query', async () => {
     const db = new AuroraDbRDSProxyService(auroraConfig);
-    return db.update('UPDATE_QUERY', {});
+    return expect(db.update('UPDATE_QUERY', {})).resolves.not.toThrow();
   });
 
-  it('should throw exception when caliing update with invalid query', async () => {
-    const error = new LesgoException(
-      'No records updated from UPDATE query',
-      'AURORADBSERVICE_NO_RECORDS_UPDATED',
-      400
-    );
-
+  it('should throw not exception when caliing update with invalid query', async () => {
     const db = new AuroraDbRDSProxyService(auroraConfig);
-    return expect(db.update('INVALID_UPDATE_QUERY', {})).rejects.toMatchObject(
-      error
-    );
+    return expect(db.update('INVALID_UPDATE_QUERY', {})).resolves.not.toThrow();
   });
 });
