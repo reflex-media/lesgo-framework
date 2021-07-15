@@ -130,12 +130,10 @@ export default class AuroraDbRDSProxyService {
     const resp = await this.query(sql, sqlParams, connection);
 
     if (resp.results.changedRows <= 0) {
-      throw new LesgoException(
-        'No records updated from UPDATE query',
-        `${FILE}::NO_RECORDS_UPDATED`,
-        400,
-        { resp, sql, sqlParams }
-      );
+      logger.warn(`${FILE}::No records updated from UPDATE query`, {
+        sql,
+        sqlParams,
+      });
     }
 
     return Promise.resolve();
