@@ -1,6 +1,7 @@
 import logger from '../utils/logger';
+import isEmpty from '../utils/isEmpty';
 
-export const errorHttpResponseHandler = opts => {
+export const errorHttpResponseHandler = async opts => {
   const defaults = {
     response: '',
     statusCode: 500,
@@ -47,6 +48,12 @@ export const errorHttpResponseHandler = opts => {
     logger.warn(options.error);
   }
 
+  try {
+    if (!isEmpty(opts.db)) await opts.db.end();
+  } catch (err) {
+    // do nothing
+  }
+
   return {
     headers: options.headers,
     statusCode,
@@ -54,7 +61,7 @@ export const errorHttpResponseHandler = opts => {
   };
 };
 
-export const errorHttpResponseAfterHandler = (handler, next, opts) => {
+export const errorHttpResponseAfterHandler = async (handler, next, opts) => {
   const defaults = {
     error: handler.error,
     event: handler.event,
@@ -64,7 +71,7 @@ export const errorHttpResponseAfterHandler = (handler, next, opts) => {
   const options = { ...defaults, ...opts };
 
   // eslint-disable-next-line no-param-reassign
-  handler.response = errorHttpResponseHandler(options);
+  handler.response = await errorHttpResponseHandler(options);
   /* istanbul ignore next */
   next();
 };
