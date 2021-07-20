@@ -13,38 +13,80 @@ const FILE = 'Lesgo/services/AuroraDbRDSProxyService';
  */
 export default class AuroraDbRDSProxyService {
   constructor(opts = {}) {
-    const { host, user, password, database } = opts;
+    const { host, user, password, database, persists } = opts;
 
     this.clientOpts = {
       host,
       user,
       password,
       database,
+      persists,
     };
+
+    this.conn = {};
   }
 
-  async connect(connection = {}) {
-    const clientOpts = isEmpty(connection) ? this.clientOpts : connection;
+  /**
+   * Persists the database connection for later use
+   *
+   * @param {*} connectionOpts
+   * @returns
+   */
+  pConnect(connectionOpts = {}) {
+    return this.connect({ ...connectionOpts, persists: true });
+  }
+
+  async connect(connectionOpts = {}) {
+    const clientOpts = {
+      host: connectionOpts.host ? connectionOpts.host : this.clientOpts.host,
+      user: connectionOpts.user ? connectionOpts.user : this.clientOpts.user,
+      password: connectionOpts.password
+        ? connectionOpts.password
+        : this.clientOpts.password,
+      database: connectionOpts.database
+        ? connectionOpts.database
+        : this.clientOpts.database,
+    };
+
+    const persistentConn = connectionOpts.persists || this.clientOpts.persists;
+
     logger.debug(`${FILE}::PREPARING DB CONNECTION`, {
       clientOpts,
+      persistentConn,
     });
 
     const conn = await mysql.createConnection(clientOpts);
     conn.config.namedPlaceholders = true;
     logger.debug(`${FILE}::DB CONNECTED`);
 
+    if (persistentConn) {
+      this.conn = conn;
+    }
+
     return conn;
   }
 
   /* eslint-disable-next-line class-methods-use-this */
-  end(conn) {
+  end(conn = {}) {
     logger.debug(`${FILE}::ENDING DB CONNECTION`);
-    conn.end();
-    logger.debug(`${FILE}::DB DISCONNECTED`);
+    if (!isEmpty(conn)) {
+      conn.end();
+      logger.debug(`${FILE}::DB DISCONNECTED`);
+    } else {
+      this.conn.end();
+      logger.debug(`${FILE}::PERSISTED DB DISCONNECTED`);
+    }
   }
 
-  async query(sql, sqlParams, connection = {}) {
-    const conn = await this.connect(connection);
+  async query(sql, sqlParams, connectionOpts = {}) {
+    let conn = {};
+    if (!isEmpty(connectionOpts)) {
+      conn = await this.connect(connectionOpts);
+    } else if (isEmpty(this.conn)) {
+      conn = await this.connect();
+    } else {
+      conn = this.conn;
+    }
 
     try {
       logger.debug(`${FILE}::QUERYING_DB`, { sql, sqlParams });
@@ -60,17 +102,17 @@ export default class AuroraDbRDSProxyService {
         { err }
       );
     } finally {
-      this.end(conn);
+      if (isEmpty(this.conn) || !isEmpty(connectionOpts)) this.end(conn);
     }
   }
 
-  async select(sql, sqlParams, connection = {}) {
-    const resp = await this.query(sql, sqlParams, connection);
+  async select(sql, sqlParams, connectionOpts = {}) {
+    const resp = await this.query(sql, sqlParams, connectionOpts);
     return resp.results;
   }
 
-  async selectFirst(sql, sqlParams, connection = {}) {
-    const resp = await this.query(sql, sqlParams, connection);
+  async selectFirst(sql, sqlParams, connectionOpts = {}) {
+    const resp = await this.query(sql, sqlParams, connectionOpts);
     return resp.results[0];
   }
 
@@ -80,7 +122,7 @@ export default class AuroraDbRDSProxyService {
     perPage = 10,
     currentPage = 1,
     total = null,
-    connection = {}
+    connectionOpts = {}
   ) {
     let paginator;
     if (typeof total === 'number') {
@@ -93,7 +135,7 @@ export default class AuroraDbRDSProxyService {
           currentPage,
           total,
         },
-        connection
+        connectionOpts
       );
     } else {
       paginator = new Paginator(
@@ -104,15 +146,15 @@ export default class AuroraDbRDSProxyService {
           perPage,
           currentPage,
         },
-        connection
+        connectionOpts
       );
     }
 
     return (await paginator).toObject();
   }
 
-  async insert(sql, sqlParams, connection = {}) {
-    const resp = await this.query(sql, sqlParams, connection);
+  async insert(sql, sqlParams, connectionOpts = {}) {
+    const resp = await this.query(sql, sqlParams, connectionOpts);
 
     if (resp.results.affectedRows <= 0) {
       throw new LesgoException(
@@ -126,8 +168,8 @@ export default class AuroraDbRDSProxyService {
     return resp.results.insertId;
   }
 
-  async update(sql, sqlParams, connection = {}) {
-    const resp = await this.query(sql, sqlParams, connection);
+  async update(sql, sqlParams, connectionOpts = {}) {
+    const resp = await this.query(sql, sqlParams, connectionOpts);
 
     if (resp.results.changedRows <= 0) {
       logger.warn(`${FILE}::No records updated from UPDATE query`, {
