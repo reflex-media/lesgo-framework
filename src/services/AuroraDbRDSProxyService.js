@@ -32,8 +32,8 @@ export default class AuroraDbRDSProxyService {
    * @param {*} connectionOpts
    * @returns
    */
-  pConnect(connectionOpts = {}) {
-    return this.connect({ ...connectionOpts, persists: true });
+  async pConnect(connectionOpts = {}) {
+    await this.connect({ ...connectionOpts, persists: true });
   }
 
   async connect(connectionOpts = {}) {
@@ -67,13 +67,13 @@ export default class AuroraDbRDSProxyService {
   }
 
   /* eslint-disable-next-line class-methods-use-this */
-  end(conn = {}) {
+  async end(conn = {}) {
     logger.debug(`${FILE}::ENDING DB CONNECTION`);
     if (!isEmpty(conn)) {
-      conn.end();
+      await conn.end();
       logger.debug(`${FILE}::DB DISCONNECTED`);
     } else {
-      this.conn.end();
+      await this.conn.end();
       logger.debug(`${FILE}::PERSISTED DB DISCONNECTED`);
     }
   }
@@ -102,7 +102,7 @@ export default class AuroraDbRDSProxyService {
         { err }
       );
     } finally {
-      if (isEmpty(this.conn) || !isEmpty(connectionOpts)) this.end(conn);
+      if (isEmpty(this.conn) || !isEmpty(connectionOpts)) await this.end(conn);
     }
   }
 
