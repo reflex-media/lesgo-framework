@@ -53,14 +53,27 @@ export const normalizeHttpRequestBeforeHandler = (handler, next) => {
   // eslint-disable-next-line no-param-reassign
   handler.event.auth = auth;
 
+  const tags = {};
+  switch (handler.event.version) {
+    case '1.0':
+      tags.path = handler.event.path;
+      tags.httpMethod = handler.event.httpMethod;
+      break;
+
+    default: {
+      if (handler.event.requestContext && handler.event.requestContext.http) {
+        tags.path = handler.event.requestContext.http.path;
+        tags.httpMethod = handler.event.requestContext.http.method;
+      }
+      break;
+    }
+  }
+
   logger.addMeta({
     requestId: handler.event.requestContext
       ? handler.event.requestContext.requestId
       : null,
-    tags: {
-      path: handler.event.path,
-      httpMethod: handler.event.httpMethod,
-    },
+    tags,
   });
 
   if (app.debug) {
