@@ -12,8 +12,9 @@ export default class LengthAwarePaginator extends Paginator {
    * @param sql
    * @param sqlParams
    * @param options
+   * @param connection
    */
-  constructor(db, sql, sqlParams, options) {
+  constructor(db, sql, sqlParams, options, connection = {}) {
     const validFields = [{ key: 'total', type: 'number', required: true }];
 
     let validated = {};
@@ -33,7 +34,7 @@ export default class LengthAwarePaginator extends Paginator {
 
     const { total } = validated;
 
-    super(db, sql, sqlParams, options);
+    super(db, sql, sqlParams, options, connection);
     this.totalProp = total;
   }
 

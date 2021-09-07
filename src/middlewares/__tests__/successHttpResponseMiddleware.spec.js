@@ -4,8 +4,8 @@ import {
 } from '../successHttpResponseMiddleware';
 
 describe('MiddlewareGroup: test successHttpResponseHandler middleware', () => {
-  it('test default without parameters', () => {
-    const data = successHttpResponseHandler();
+  it('test default without parameters', async () => {
+    const data = await successHttpResponseHandler();
 
     expect(data.headers['Access-Control-Allow-Origin']).toBe('*');
     expect(data.headers['Cache-Control']).toBe('no-cache');
@@ -20,8 +20,8 @@ describe('MiddlewareGroup: test successHttpResponseHandler middleware', () => {
     expect(dataBody).toHaveProperty('_meta', {});
   });
 
-  it('test default', () => {
-    const data = successHttpResponseHandler({ response: 'Some message' });
+  it('test default', async () => {
+    const data = await successHttpResponseHandler({ response: 'Some message' });
 
     expect(data.headers['Access-Control-Allow-Origin']).toBe('*');
     expect(data.headers['Cache-Control']).toBe('no-cache');
@@ -36,8 +36,8 @@ describe('MiddlewareGroup: test successHttpResponseHandler middleware', () => {
     expect(dataBody).toHaveProperty('_meta', {});
   });
 
-  it('test with status code and event', () => {
-    const data = successHttpResponseHandler({
+  it('test with status code and event', async () => {
+    const data = await successHttpResponseHandler({
       response: 'Some message',
       statusCode: 201,
       event: {
@@ -53,8 +53,8 @@ describe('MiddlewareGroup: test successHttpResponseHandler middleware', () => {
     expect(dataBody).toHaveProperty('_meta', {});
   });
 
-  it('test with status code and event in debug mode', () => {
-    const data = successHttpResponseHandler({
+  it('test with status code and event in debug mode', async () => {
+    const data = await successHttpResponseHandler({
       response: 'Some message',
       statusCode: 201,
       event: {
@@ -73,8 +73,8 @@ describe('MiddlewareGroup: test successHttpResponseHandler middleware', () => {
     });
   });
 
-  it('test with configurable header', () => {
-    const data = successHttpResponseHandler({
+  it('test with configurable header', async () => {
+    const data = await successHttpResponseHandler({
       response: 'Some message',
       headers: {
         'Access-Control-Allow-Credentials': false,
@@ -99,13 +99,13 @@ describe('MiddlewareGroup: test successHttpResponseHandler middleware', () => {
 });
 
 describe('MiddlewareGroup: test successHttpResponseAfterHandler', () => {
-  it('test with default parameters', () => {
+  it('test with default parameters', async () => {
     const handler = {
       response: {},
       event: {},
     };
 
-    successHttpResponseAfterHandler(handler, () => {});
+    await successHttpResponseAfterHandler(handler, () => {});
     expect(handler.response).toHaveProperty('statusCode', 200);
   });
 });

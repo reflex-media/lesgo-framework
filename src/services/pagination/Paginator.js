@@ -12,13 +12,14 @@ export default class Paginator {
    * @param sqlParams
    * @param options
    */
-  constructor(db, sql, sqlParams, options = {}) {
+  constructor(db, sql, sqlParams, options = {}, connection = {}) {
     const validFields = [
       { key: 'db', type: 'object', required: true },
       { key: 'sql', type: 'string', required: true },
       { key: 'sqlParams', type: 'object', required: true },
       { key: 'perPage', type: 'number', required: false },
       { key: 'currentPage', type: 'number', required: false },
+      { key: 'connection', type: 'object', required: false },
     ];
 
     let validated = {};
@@ -29,6 +30,7 @@ export default class Paginator {
           sql,
           sqlParams,
           ...options,
+          connection,
         },
         validFields
       );
@@ -56,6 +58,8 @@ export default class Paginator {
 
     this.response = [];
     this.totalProp = false;
+
+    this.connection = connection;
   }
 
   /**
@@ -215,7 +219,8 @@ export default class Paginator {
   async executeQuery() {
     this.response = await this.dbProp.select(
       this.generatePaginationSqlSnippet(),
-      this.sqlParamsProp
+      this.sqlParamsProp,
+      this.connection
     );
 
     this.hasNext = this.response.length > this.perPage();
@@ -232,7 +237,11 @@ export default class Paginator {
    * @returns {Promise<number>}
    */
   async countTotalItems() {
-    const resp = await this.dbProp.select(this.sqlProp, this.sqlParamsProp);
+    const resp = await this.dbProp.select(
+      this.sqlProp,
+      this.sqlParamsProp,
+      this.connection
+    );
     this.totalProp = Object.keys(resp).length;
 
     return this.totalProp;

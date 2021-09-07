@@ -8,13 +8,31 @@ export default (params, validFields) => {
   const validated = {};
 
   validFields.forEach(field => {
-    if (field.required && !params[field.key]) {
-      throw new LesgoException(
-        `Missing required '${field.key}'`,
-        `${FILE}::MISSING_REQUIRED_${field.key.toUpperCase()}`,
-        500,
-        { field }
-      );
+    if (field.required) {
+      if (typeof params[field.key] === 'object') {
+        if (
+          Array.isArray(params[field.key]) &&
+          params[field.key].length === 0
+        ) {
+          throw new LesgoException(
+            `Missing required '${field.key}'`,
+            `${FILE}::MISSING_REQUIRED_${field.key.toUpperCase()}`,
+            500,
+            { field }
+          );
+        }
+      }
+
+      if (!params[field.key]) {
+        if (typeof params[field.key] !== 'number') {
+          throw new LesgoException(
+            `Missing required '${field.key}'`,
+            `${FILE}::MISSING_REQUIRED_${field.key.toUpperCase()}`,
+            500,
+            { field }
+          );
+        }
+      }
     }
 
     if (
@@ -35,7 +53,7 @@ export default (params, validFields) => {
         !isEmail(params[field.key])) ||
       (field.type === 'array' &&
         typeof params[field.key] !== 'undefined' &&
-        (!Array.isArray(params[field.key]) || !params[field.key].length)) ||
+        !Array.isArray(params[field.key])) ||
       (field.type === 'enum' &&
         typeof params[field.key] !== 'undefined' &&
         !field.enumValues.includes(params[field.key]))

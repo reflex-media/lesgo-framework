@@ -3,6 +3,8 @@ import logger from '../utils/logger';
 import isEmpty from '../utils/isEmpty';
 import LesgoException from '../exceptions/LesgoException';
 
+const FILE = 'Lesgo/services/FirebaseAdminService';
+
 export default class FirebaseAdmin {
   constructor(opts = {}) {
     this.app = null;
@@ -30,13 +32,13 @@ export default class FirebaseAdmin {
     const max = !isEmpty(maxResults) ? maxResults : 25;
 
     try {
-      logger.info('FETCHING FIREBASE USERS', {
+      logger.debug(`${FILE}::FETCHING_USERS`, {
         max,
         maxResults,
         nextPageToken,
       });
       const users = await this.app.auth().listUsers(max, nextPageToken);
-      logger.info('FETCHED FIREBASE USERS', { users });
+      logger.debug(`${FILE}::USERS_FETCHED`, { users });
       return users.users;
     } catch (err) {
       throw new LesgoException(
@@ -58,9 +60,9 @@ export default class FirebaseAdmin {
         displayName: username,
       };
 
-      logger.info('CREATING USER ON FIREBASE', { userData, data });
+      logger.debug(`${FILE}::CREATING_USER`, { userData, data });
       const user = await this.app.auth().createUser(userData);
-      logger.info('USER CREATED ON FIREBASE', { user });
+      logger.debug(`${FILE}::USER_CREATED`, { user });
       return user;
     } catch (err) {
       throw new LesgoException(
@@ -74,9 +76,9 @@ export default class FirebaseAdmin {
 
   async deleteUser(uid) {
     try {
-      logger.info('DELETING FIREBASE USER');
+      logger.debug(`${FILE}::DELETING_USER`);
       const deleted = await this.app.auth().deleteUser(uid);
-      logger.info('DELETED FIREBASE USER', { deleted, uid });
+      logger.debug(`${FILE}::USER_DELETED`, { deleted, uid });
       return deleted;
     } catch (err) {
       throw new LesgoException(
@@ -90,8 +92,9 @@ export default class FirebaseAdmin {
 
   async delete() {
     try {
-      logger.info('DELETING FIREBASE APP');
+      logger.debug(`${FILE}::DELETING_APP`);
       const resp = await this.app.delete();
+      logger.debug(`${FILE}::APP_DELETED`, { resp });
       return resp;
     } catch (err) {
       throw new LesgoException(
