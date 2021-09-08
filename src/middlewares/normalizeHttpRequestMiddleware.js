@@ -55,18 +55,17 @@ export const normalizeHttpRequestBeforeHandler = (handler, next) => {
 
   const tags = {};
   switch (handler.event.version) {
-    case '1.0':
-      tags.path = handler.event.path;
-      tags.httpMethod = handler.event.httpMethod;
-      break;
-
-    default: {
+    case '2.0': {
       if (handler.event.requestContext && handler.event.requestContext.http) {
         tags.path = handler.event.requestContext.http.path;
         tags.httpMethod = handler.event.requestContext.http.method;
       }
       break;
     }
+    default:
+      tags.path = handler.event.path;
+      tags.httpMethod = handler.event.httpMethod;
+      break;
   }
 
   logger.addMeta({
