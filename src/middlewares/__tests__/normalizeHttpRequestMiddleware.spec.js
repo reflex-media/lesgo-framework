@@ -1,7 +1,9 @@
+import app from 'Config/app'; // eslint-disable-line import/no-unresolved
 import {
   normalizeRequest,
   normalizeHttpRequestBeforeHandler,
 } from '../normalizeHttpRequestMiddleware';
+import logger from '../../utils/logger';
 
 describe('MiddlewareGroup: test normalizeRequest', () => {
   it('test with default parameters', () => {
@@ -115,5 +117,27 @@ describe('MiddlewareGroup: test normalizeHttpRequestBeforeHandler', () => {
 
     normalizeHttpRequestBeforeHandler(handler, () => {});
     expect(handler.event.auth.sub).toBe('f2b5349d-f5e3-44f5-9c08-ae6b01e95434');
+  });
+
+  it('should not set meta on debug', () => {
+    app.debug = true;
+    const handler = {
+      event: {
+        headers: {},
+        auth: '1',
+        queryStringParameters: {
+          foo: 'bar',
+        },
+        body: {
+          test: 'body',
+        },
+      },
+    };
+    normalizeHttpRequestBeforeHandler(handler, () => {});
+    expect(logger.meta.auth).toBe(handler.event.auth);
+    expect(logger.meta.queryStringParameters).toStrictEqual(
+      handler.event.queryStringParameters
+    );
+    expect(logger.meta.body).toStrictEqual(handler.event.body);
   });
 });

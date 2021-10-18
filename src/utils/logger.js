@@ -4,7 +4,7 @@ import LoggerService from '../services/LoggerService';
 const transports = [
   {
     logType: 'console',
-    level: app.debug ? 'debug' : 'info',
+    level: /* istanbul ignore next */ app.debug ? 'debug' : 'info',
     config: {
       getCreatedAt: true,
       tags: {

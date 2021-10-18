@@ -1,6 +1,7 @@
 import gzipHttpResponse from './gzipHttpResponse';
+import isEmpty from '../utils/isEmpty';
 
-export const successHttpResponseHandler = opts => {
+export const successHttpResponseHandler = async opts => {
   const defaults = {
     response: '',
     statusCode: 200,
@@ -23,6 +24,12 @@ export const successHttpResponseHandler = opts => {
 
   const options = { ...defaults, ...optionsHeadersMerged };
 
+  try {
+    if (!isEmpty(opts.db)) await opts.db.end();
+  } catch (err) {
+    // do nothing
+  }
+
   return {
     headers: options.headers,
     statusCode: options.statusCode,
@@ -43,7 +50,7 @@ export const successHttpResponseAfterHandler = async (handler, next, opts) => {
   const options = { ...defaults, ...opts };
 
   // eslint-disable-next-line no-param-reassign
-  handler.response = successHttpResponseHandler(options);
+  handler.response = await successHttpResponseHandler(options);
 
   // eslint-disable-next-line no-param-reassign
   handler.response = await gzipHttpResponse(handler, opts);
