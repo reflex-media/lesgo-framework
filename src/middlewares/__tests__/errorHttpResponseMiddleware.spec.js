@@ -130,6 +130,21 @@ describe('MiddlewareGroup: test errorHandler middleware', () => {
     expect(dataBody).toHaveProperty('error.message', '');
     expect(dataBody).toHaveProperty('error.details', '');
   });
+
+  it('should call db.end() whenever a db options is set', async () => {
+    const end = jest.fn().mockResolvedValue();
+    await errorHttpResponseHandler({
+      error: 'Test error message',
+      event: {
+        someEventKey: 'someEventValue',
+      },
+      db: {
+        end,
+      },
+    });
+
+    expect(end).toHaveBeenCalledTimes(1);
+  });
 });
 
 describe('MiddlewareGroup: test errorHttpResponseAfterHandler', () => {
