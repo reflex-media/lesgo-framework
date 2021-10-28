@@ -34,7 +34,7 @@ NO_QUESTION=0;              # default to prompt
 CONFIG='./serverless.yml';  # specify serverless config file to deploy, default to root
 
 # parse the options
-while getopts "lhs:f:t:d:y" OPT ; do
+while getopts "lhs:f:t:d:c:y" OPT ; do
   case ${OPT} in
     f) FUNCTION=${OPTARG} ;;
     s) STAGE=${OPTARG} ;;
