@@ -171,4 +171,35 @@ describe('MiddlewareGroup: test verifyJwtMiddleware middleware', () => {
       iss: config.iss.data[0],
     });
   });
+
+  it('test with custom config', () => {
+    const newHandler = {
+      event: {
+        ...handler.event,
+        headers: {
+          Authorization:
+            'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJpc3MiOiJkb21haW4uY29tIiwiZGVwYXJ0bWVudF9pZCI6MX0.pa2TBRqdVSFUhmiglB8SD8ImthqhqZBn0stAdNRcJ3w',
+        },
+      },
+    };
+
+    verifyJwtMiddlewareBeforeHandler(newHandler, () => {}, {
+      jwtConfig: {
+        secret:
+          'c4156b94c80b7f163feabd4ff268c99eb11ce8995df370a4fd872afb4377b273',
+        iss: {
+          validate: true,
+          data: ['domain.com'],
+        },
+        customClaims: {
+          validate: true,
+          data: ['department_id'],
+        },
+      },
+    });
+    expect(newHandler.event.decodedJwt).toMatchObject({
+      sub: '1234567890',
+      iss: config.iss.data[0],
+    });
+  });
 });

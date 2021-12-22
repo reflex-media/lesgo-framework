@@ -26,11 +26,16 @@ export const token = headers => {
   return parsed[1];
 };
 
-export const verifyJwtMiddlewareBeforeHandler = (handler, next) => {
+export const verifyJwtMiddlewareBeforeHandler = (handler, next, opts) => {
   const { headers } = handler.event;
 
+  const finalConfig =
+    typeof opts !== 'undefined' && 'jwtConfig' in opts
+      ? opts.jwtConfig
+      : config;
+
   try {
-    const service = new JwtService(token(headers), config);
+    const service = new JwtService(token(headers), finalConfig);
 
     // eslint-disable-next-line no-param-reassign
     handler.event.decodedJwt = service.validate().decoded;
@@ -47,10 +52,10 @@ export const verifyJwtMiddlewareBeforeHandler = (handler, next) => {
   }
 };
 
-/* istanbul ignore next */
-const verifyJwtMiddleware = () => {
+const verifyJwtMiddleware /* istanbul ignore next */ = opts => {
   return {
-    before: (handler, next) => verifyJwtMiddlewareBeforeHandler(handler, next),
+    before: (handler, next) =>
+      verifyJwtMiddlewareBeforeHandler(handler, next, opts),
   };
 };
 
