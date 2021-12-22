@@ -21,8 +21,6 @@ export const generateBasicAuthorizationHash = (key, secret) => {
 };
 
 const getSiteId = event => {
-  const { site } = event;
-
   let siteId;
 
   if (event.site && event.site.id) {
@@ -46,7 +44,7 @@ const getSiteId = event => {
     );
   }
 
-  return site.id;
+  return siteId;
 };
 
 const getClient = opts => {
