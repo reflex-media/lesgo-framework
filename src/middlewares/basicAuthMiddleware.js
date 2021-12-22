@@ -2,6 +2,7 @@ import client from 'Config/client'; // eslint-disable-line import/no-unresolved
 import crypto from 'crypto';
 import LesgoException from '../exceptions/LesgoException';
 import { errorHttpResponseAfterHandler } from './errorHttpResponseMiddleware';
+import logger from '../utils/logger';
 
 const FILE = 'Middlewares/basicAuthMiddleware';
 
@@ -129,6 +130,9 @@ const validateBasicAuth = (hash, siteId, clientObject, opts) => {
 export const verifyBasicAuthBeforeHandler = (handler, next, opts) => {
   const siteId = getSiteId(handler.event);
   const finalClient = getClient(opts);
+
+  logger.info('PRINT HANDLER', { handler });
+
   const hashFromHeader = getHashFromHeaders(handler.event.headers, opts);
 
   validateBasicAuth(hashFromHeader, siteId, finalClient, opts);
