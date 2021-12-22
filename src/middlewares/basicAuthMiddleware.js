@@ -23,7 +23,21 @@ export const generateBasicAuthorizationHash = (key, secret) => {
 const getSiteId = event => {
   const { site } = event;
 
-  if (typeof site === 'undefined') {
+  let siteId;
+
+  if (event.site && event.site.id) {
+    siteId = event.site.id;
+  } else if (
+    event.requestContext &&
+    event.requestContext.site &&
+    event.requestContext.site.id
+  ) {
+    siteId = event.requestContext.site.id;
+  } else if (event.platform) {
+    siteId = event.platform;
+  }
+
+  if (typeof siteId === 'undefined') {
     throw new LesgoException(
       'Site ID could not be found',
       `${FILE}::SITE_ID_NOT_FOUND`,
