@@ -32,7 +32,11 @@ const getClientKey = event => {
   return undefined;
 };
 
-export const clientAuthMiddlewareBeforeHandler = (handler, next) => {
+export const clientAuthMiddlewareBeforeHandler = (
+  handler,
+  next,
+  func = undefined
+) => {
   const validated = validateParams({
     'x-client-id': getClientKey(handler.event),
     client,
@@ -53,6 +57,8 @@ export const clientAuthMiddlewareBeforeHandler = (handler, next) => {
     );
   }
 
+  if (typeof func === 'function') func(handler);
+
   // eslint-disable-next-line no-param-reassign,prefer-destructuring
   handler.event.platform = platform[0];
 
@@ -60,9 +66,10 @@ export const clientAuthMiddlewareBeforeHandler = (handler, next) => {
 };
 
 /* istanbul ignore next */
-const clientAuthMiddleware = () => {
+const clientAuthMiddleware = func => {
   return {
-    before: (handler, next) => clientAuthMiddlewareBeforeHandler(handler, next),
+    before: (handler, next) =>
+      clientAuthMiddlewareBeforeHandler(handler, next, func),
     onError: (handler, next) => errorHttpResponseAfterHandler(handler, next),
   };
 };
