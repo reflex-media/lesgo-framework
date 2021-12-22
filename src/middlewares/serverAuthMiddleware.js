@@ -16,7 +16,9 @@ export const serverAuthBeforeHandler = (handler, next, opts) => {
   } catch (e) {
     if (
       e.code !==
-      `Middlewares/basicAuthMiddleware::AUTH_INVALID_AUTHORIZATION_TYPE`
+        `Middlewares/basicAuthMiddleware::AUTH_INVALID_AUTHORIZATION_TYPE` &&
+      e.code !==
+        `Middlewares/basicAuthMiddleware::AUTHORIZATION_HEADER_NOT_FOUND`
     )
       throw e;
   }
