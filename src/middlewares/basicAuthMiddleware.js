@@ -2,6 +2,7 @@ import client from 'Config/client'; // eslint-disable-line import/no-unresolved
 import crypto from 'crypto';
 import LesgoException from '../exceptions/LesgoException';
 import { errorHttpResponseAfterHandler } from './errorHttpResponseMiddleware';
+import logger from '../utils/logger';
 
 const FILE = 'Middlewares/basicAuthMiddleware';
 
@@ -22,6 +23,8 @@ export const generateBasicAuthorizationHash = (key, secret) => {
 
 const getSiteId = event => {
   let siteId;
+
+  logger.info('TEST', { event });
 
   if (event.site) {
     if (event.site.id) {
