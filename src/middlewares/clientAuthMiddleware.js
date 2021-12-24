@@ -57,10 +57,10 @@ export const clientAuthMiddlewareBeforeHandler = (
     );
   }
 
-  if (typeof func === 'function') func(handler);
-
   // eslint-disable-next-line no-param-reassign,prefer-destructuring
   handler.event.platform = platform[0];
+
+  if (typeof func === 'function') func(handler);
 
   next();
 };
