@@ -23,12 +23,9 @@ export const generateBasicAuthorizationHash = (key, secret) => {
 const getSiteId = event => {
   let siteId;
 
-  if (event.site && typeof event.site.id === 'string') {
+  if (event.site && 'id' in event.site) {
     siteId = event.site.id;
-  } else if (
-    event.requestContext &&
-    typeof event.requestContext.site !== 'undefined'
-  ) {
+  } else if (event.requestContext && 'site' in event.requestContext) {
     const { id } = event.requestContext.site;
     siteId = id;
   } else if (event.platform) {
