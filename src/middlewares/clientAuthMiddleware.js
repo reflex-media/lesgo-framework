@@ -45,9 +45,6 @@ export const clientAuthMiddlewareBeforeHandler = (
 
   const clientKey = validated['x-client-id'];
 
-  logger.info('CLIENT KEY', { clientKey });
-  logger.info('CHECK CLIENT', { client: validated.client });
-
   const platform = Object.keys(validated.client).filter(clientPlatform => {
     return validated.client[clientPlatform].key === clientKey;
   });
@@ -63,6 +60,8 @@ export const clientAuthMiddlewareBeforeHandler = (
 
   // eslint-disable-next-line no-param-reassign,prefer-destructuring
   handler.event.platform = platform[0];
+
+  logger.info('CHECK HANDLER', { handler });
 
   if (typeof func === 'function') func(handler);
 
