@@ -2,6 +2,7 @@ import client from 'Config/client'; // eslint-disable-line import/no-unresolved
 import crypto from 'crypto';
 import LesgoException from '../exceptions/LesgoException';
 import { errorHttpResponseAfterHandler } from './errorHttpResponseMiddleware';
+import logger from '../utils/logger';
 
 const FILE = 'Middlewares/basicAuthMiddleware';
 
@@ -23,6 +24,8 @@ export const generateBasicAuthorizationHash = (key, secret) => {
 const getSiteId = event => {
   let siteId;
 
+  logger.info('PRINT EVENT', { event });
+
   if (event.site) {
     if (event.site.id) {
       siteId = event.site.id;
@@ -41,7 +44,7 @@ const getSiteId = event => {
       'Site ID could not be found',
       `${FILE}::SITE_ID_NOT_FOUND`,
       403,
-      'Ensure that serverAuthMiddleware() is called before this Middleware'
+      'Ensure that clientAuthMiddleware() is called before this Middleware'
     );
   }
 
