@@ -2,6 +2,7 @@ import client from 'Config/client'; // eslint-disable-line import/no-unresolved
 import { errorHttpResponseAfterHandler } from './errorHttpResponseMiddleware';
 import validateFields from '../utils/validateFields';
 import { LesgoException } from '../exceptions';
+import logger from '../utils/logger';
 
 const FILE = 'Middlewares/clientAuthMiddleware';
 
@@ -43,6 +44,8 @@ export const clientAuthMiddlewareBeforeHandler = (
   });
 
   const clientKey = validated['x-client-id'];
+
+  logger.info('CHECK CLIENT', { client: validated.client });
 
   const platform = Object.keys(validated.client).filter(clientPlatform => {
     return validated.client[clientPlatform].key === clientKey;
