@@ -75,9 +75,11 @@ describe('test verifyBasicAuthBeforeHandler error handling', () => {
       };
 
       try {
-        verifyBasicAuthBeforeHandler(handler, next, {
-          blacklistMode,
-        });
+        expect(
+          verifyBasicAuthBeforeHandler(handler, next, {
+            blacklistMode,
+          })
+        ).toThrow();
       } catch (error) {
         expect(error.name).toBe(errorName);
         expect(error.message).toBe(errorMessage);
@@ -166,17 +168,24 @@ describe('test verifyBasicAuthBeforeHandler with valid credentials', () => {
     }
   );
 
-  test('test Exception with no site ID', () => {
+  test.each`
+    siteObjects
+    ${{}}
+    ${{ site: { id: undefined } }}
+    ${{ requestContext: { site: { id: undefined } } }}
+    ${{ platform: undefined }}
+  `('test Exception with no site ID', ({ siteObjects }) => {
     const handler = {
       event: {
         headers: {
           Authorization: `basic ${validBasicAuth}`,
         },
+        ...siteObjects,
       },
     };
 
     try {
-      verifyBasicAuthBeforeHandler(handler, next);
+      expect(verifyBasicAuthBeforeHandler(handler, next)).toThrow();
     } catch (error) {
       expect(error.name).toBe('LesgoException');
       expect(error.message).toBe('Site ID could not be found');
@@ -185,5 +194,31 @@ describe('test verifyBasicAuthBeforeHandler with valid credentials', () => {
         'Middlewares/basicAuthMiddleware::SITE_ID_NOT_FOUND'
       );
     }
+  });
+
+  test.each`
+    siteObjects
+    ${{ site: { id: 'platform_2' } }}
+    ${{ requestContext: { site: { id: 'platform_2' } } }}
+    ${{ platform: 'platform_2' }}
+  `('valid site ids', ({ siteObjects }) => {
+    const handler = {
+      event: {
+        headers: {
+          Authorization: `basic ${validBasicAuth}`,
+        },
+        ...siteObjects,
+      },
+    };
+
+    let hasError = false;
+
+    try {
+      verifyBasicAuthBeforeHandler(handler, next);
+    } catch (e) {
+      hasError = true;
+    }
+
+    expect(hasError).toBeFalsy();
   });
 });

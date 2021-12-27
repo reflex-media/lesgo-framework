@@ -117,13 +117,13 @@ describe('test serverAuthBeforeHandler error handling', () => {
 
   test.each`
     headers                                           | errorName           | errorMessage                                  | errorStatusCode | errorCode                                                               | blacklistMode
-    ${{}}                                             | ${'LesgoException'} | ${'Authorization header not found'}           | ${403}          | ${'Middlewares/basicAuthMiddleware::AUTHORIZATION_HEADER_NOT_FOUND'}    | ${undefined}
+    ${{}}                                             | ${'LesgoException'} | ${'Authorization Header is required!'}        | ${403}          | ${'JWT_MISSING_AUTHORIZATION_HEADER'}                                   | ${undefined}
     ${{ Authorization: 'auth' }}                      | ${'LesgoException'} | ${'Missing Bearer token!'}                    | ${403}          | ${'JWT_MISSING_BEARER_TOKEN'}                                           | ${undefined}
     ${{ Authorization: 'basic ' }}                    | ${'LesgoException'} | ${'Empty basic authentication hash provided'} | ${403}          | ${'Middlewares/basicAuthMiddleware::AUTH_EMPTY_BASIC_HASH'}             | ${undefined}
     ${{ Authorization: `basic ${invalidClientKey}` }} | ${'LesgoException'} | ${'Invalid client key or secret provided'}    | ${403}          | ${'Middlewares/basicAuthMiddleware::AUTH_INVALID_CLIENT_OR_SECRET_KEY'} | ${undefined}
     ${{ Authorization: `basic ${invalidSecretKey}` }} | ${'LesgoException'} | ${'Invalid client key or secret provided'}    | ${403}          | ${'Middlewares/basicAuthMiddleware::AUTH_INVALID_CLIENT_OR_SECRET_KEY'} | ${undefined}
     ${{ Authorization: `Basic ${invalidSecretKey}` }} | ${'LesgoException'} | ${'Invalid client key or secret provided'}    | ${403}          | ${'Middlewares/basicAuthMiddleware::AUTH_INVALID_CLIENT_OR_SECRET_KEY'} | ${undefined}
-    ${{}}                                             | ${'LesgoException'} | ${'Authorization header not found'}           | ${403}          | ${'Middlewares/basicAuthMiddleware::AUTHORIZATION_HEADER_NOT_FOUND'}    | ${true}
+    ${{}}                                             | ${'LesgoException'} | ${'Authorization Header is required!'}        | ${403}          | ${'JWT_MISSING_AUTHORIZATION_HEADER'}                                   | ${true}
     ${{ Authorization: 'auth' }}                      | ${'LesgoException'} | ${'Missing Bearer token!'}                    | ${403}          | ${'JWT_MISSING_BEARER_TOKEN'}                                           | ${true}
     ${{ Authorization: 'basic ' }}                    | ${'LesgoException'} | ${'Empty basic authentication hash provided'} | ${403}          | ${'Middlewares/basicAuthMiddleware::AUTH_EMPTY_BASIC_HASH'}             | ${true}
     ${{ Authorization: `basic ${invalidClientKey}` }} | ${'LesgoException'} | ${'Invalid client key or secret provided'}    | ${403}          | ${'Middlewares/basicAuthMiddleware::AUTH_INVALID_CLIENT_OR_SECRET_KEY'} | ${true}
@@ -154,9 +154,11 @@ describe('test serverAuthBeforeHandler error handling', () => {
       };
 
       try {
-        serverAuthBeforeHandler(handler, next, {
-          blacklistMode,
-        });
+        expect(
+          serverAuthBeforeHandler(handler, next, {
+            blacklistMode,
+          })
+        ).toThrow();
       } catch (error) {
         expect(error.name).toBe(errorName);
         expect(error.message).toBe(errorMessage);
