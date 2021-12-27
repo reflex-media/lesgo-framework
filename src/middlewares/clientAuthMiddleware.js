@@ -61,7 +61,7 @@ export const clientAuthMiddlewareBeforeHandler = (
   // eslint-disable-next-line no-param-reassign,prefer-destructuring
   handler.event.platform = platform[0];
 
-  logger.info('CHECK HANDLER', { handler });
+  logger.info('CHECK HANDLER', { ...handler.event });
 
   if (typeof func === 'function') func(handler);
 
