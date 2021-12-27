@@ -2,7 +2,6 @@ import client from 'Config/client'; // eslint-disable-line import/no-unresolved
 import crypto from 'crypto';
 import LesgoException from '../exceptions/LesgoException';
 import { errorHttpResponseAfterHandler } from './errorHttpResponseMiddleware';
-import logger from '../utils/logger';
 
 const FILE = 'Middlewares/basicAuthMiddleware';
 
@@ -24,17 +23,14 @@ export const generateBasicAuthorizationHash = (key, secret) => {
 const getSiteId = event => {
   let siteId;
 
-  logger.info('PRINT EVENT', { event });
-
-  if (event.site) {
-    if (event.site.id) {
-      siteId = event.site.id;
-    }
-  } else if (event.requestContext) {
-    if (event.requestContext.site) {
-      const { id } = event.requestContext.site;
-      siteId = id;
-    }
+  if (event.site && event.site.id) {
+    siteId = event.site.id;
+  } else if (
+    event.requestContext &&
+    event.requestContext.site &&
+    event.requestContext.site.id
+  ) {
+    siteId = event.requestContext.site.id;
   } else if (event.platform) {
     siteId = event.platform;
   }
