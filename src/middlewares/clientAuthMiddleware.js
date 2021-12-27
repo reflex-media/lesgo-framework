@@ -45,6 +45,7 @@ export const clientAuthMiddlewareBeforeHandler = (
 
   const clientKey = validated['x-client-id'];
 
+  logger.info('CLIENT KEY', { clientKey });
   logger.info('CHECK CLIENT', { client: validated.client });
 
   const platform = Object.keys(validated.client).filter(clientPlatform => {
