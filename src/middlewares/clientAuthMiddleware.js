@@ -2,7 +2,6 @@ import client from 'Config/client'; // eslint-disable-line import/no-unresolved
 import { errorHttpResponseAfterHandler } from './errorHttpResponseMiddleware';
 import validateFields from '../utils/validateFields';
 import { LesgoException } from '../exceptions';
-import logger from '../utils/logger';
 
 const FILE = 'Middlewares/clientAuthMiddleware';
 
@@ -60,8 +59,6 @@ export const clientAuthMiddlewareBeforeHandler = (
 
   // eslint-disable-next-line no-param-reassign,prefer-destructuring
   handler.event.platform = platform[0];
-
-  logger.info('CHECK HANDLER', { ...handler.event });
 
   if (typeof func === 'function') func(handler);
 
