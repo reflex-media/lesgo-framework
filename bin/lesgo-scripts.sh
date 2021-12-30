@@ -8,7 +8,7 @@ set -Eeuo pipefail
 #                                                                             #
 ###############################################################################
 
-usage="$(basename "$0") [-f] [-s] [-t] [-h] [-d] [-y] -- script to deploy serverless functions
+usage="$(basename "$0") [-f] [-s] [-t] [-h] [-d] [-c] [-y] -- script to deploy serverless functions
 
 where:
     -t      define the type of action to be taken (build, deploy, invoke, logs, destroy)
@@ -17,22 +17,24 @@ where:
     -h      show this help text
     -l      to invoke a local function
     -d      set data parameters for invoke function
+    -c      set config as per --config path-to-serverless-yml
     -y      no question/prompt for ci/cd"
 
 # arg options
-BUILD=0;        # serverless build without deploy
-DEPLOY=0;       # serverless deploy
-INVOKE=0;       # serverless invoke of specific function
-LOGS=0;         # serverless stream log of specific function
-DESTROY=0;      # serverless remove entire service
-FUNCTION='';    # specify function to involve
-STAGE='';       # deploy specific stage/environment
-INVOKE_LOCAL=0; # default to non local execution
-DATA=''         # set the data parameters for invoke function
-NO_QUESTION=0;  # default to prompt
+BUILD=0;                    # serverless build without deploy
+DEPLOY=0;                   # serverless deploy
+INVOKE=0;                   # serverless invoke of specific function
+LOGS=0;                     # serverless stream log of specific function
+DESTROY=0;                  # serverless remove entire service
+FUNCTION='';                # specify function to involve
+STAGE='';                   # deploy specific stage/environment
+INVOKE_LOCAL=0;             # default to non local execution
+DATA=''                     # set the data parameters for invoke function
+NO_QUESTION=0;              # default to prompt
+CONFIG='./serverless.yml';  # specify serverless config file to deploy, default to root
 
 # parse the options
-while getopts "lhs:f:t:d:y" OPT ; do
+while getopts "lhs:f:t:d:c:y" OPT ; do
   case ${OPT} in
     f) FUNCTION=${OPTARG} ;;
     s) STAGE=${OPTARG} ;;
@@ -53,6 +55,7 @@ while getopts "lhs:f:t:d:y" OPT ; do
         fi;;
     l) INVOKE_LOCAL=1 ;;
     d) DATA=${OPTARG} ;;
+    c) CONFIG=${OPTARG} ;;
     y) NO_QUESTION=1 ;;
     h)
         echo "${usage}"
@@ -102,8 +105,8 @@ function deploy_func_check ()
 
 function deploy_func ()
 {
-    echo -e "${YELLOW}Deploying ${FUNCTION} to ${STAGE}${NC}"
-    sls deploy -f ${FUNCTION} --stage ${STAGE} --env ${ENVFILE}
+    echo -e "${YELLOW}Deploying ${FUNCTION} to ${STAGE}${NC} using ${CONFIG}"
+    sls deploy -f ${FUNCTION} --stage ${STAGE} --env ${ENVFILE} --config ${CONFIG}
 }
 
 function prompt_confirmation_deploy_all ()
@@ -112,7 +115,7 @@ function prompt_confirmation_deploy_all ()
         deploy_full;
     else
         while true; do
-            read -p "Confirm deploy service to ${STAGE} with .env.${ENVFILE}? [Y|N] " yn
+            read -p "Confirm deploy service to ${STAGE} with .env.${ENVFILE} using ${CONFIG}? [Y|N] " yn
             case ${yn} in
                 [Yy] | yes | Yes | YES ) deploy_full; break;;
                 [Nn] | no | No | NO ) echo -e "${YELLOW}Cancelled deploying service to [${STAGE}]${NC}"; exit;;
@@ -125,7 +128,7 @@ function prompt_confirmation_deploy_all ()
 function prompt_confirmation_deploy_function ()
 {
     while true; do
-        read -p "Confirm deploy function ${FUNCTION} to ${STAGE} with .env.${ENVFILE}? [Y|N] " yn
+        read -p "Confirm deploy function ${FUNCTION} to ${STAGE} with .env.${ENVFILE} using ${CONFIG}? [Y|N] " yn
         case ${yn} in
             [Yy] | yes | Yes | YES ) deploy_func; break;;
             [Nn] | no | No | NO ) echo -e "${YELLOW}Cancelled deploying function ${FUNCTION} to [${STAGE}]${NC}"; exit;;
@@ -137,35 +140,35 @@ function prompt_confirmation_deploy_function ()
 function deploy_full ()
 {
     echo -e "${YELLOW}Deploying service to ${STAGE}${NC}"
-    sls deploy --stage ${STAGE} --env ${ENVFILE}
+    sls deploy --stage ${STAGE} --env ${ENVFILE} --config ${CONFIG}
 }
 
 function invoke_func ()
 {
-    echo -e "${YELLOW}Invoking function ${FUNCTION} on ${STAGE}${NC}"
+    echo -e "${YELLOW}Invoking function ${FUNCTION} on ${STAGE}${NC} using ${CONFIG}"
     if [ ${INVOKE_LOCAL} == 1 ]; then
-        sls invoke local -f ${FUNCTION} --stage ${STAGE} --env ${ENVFILE} -d ${DATA} -l
+        sls invoke local -f ${FUNCTION} --stage ${STAGE} --env ${ENVFILE} -d ${DATA} -l --config ${CONFIG}
     else
-        sls invoke -f ${FUNCTION} --stage ${STAGE} --env ${ENVFILE} -d ${DATA} -l
+        sls invoke -f ${FUNCTION} --stage ${STAGE} --env ${ENVFILE} -d ${DATA} -l --config ${CONFIG}
     fi
 }
 
 function log_stream_func ()
 {
-    echo -e "${YELLOW}Log Streaming function ${FUNCTION} on ${STAGE}${NC}"
-    sls logs -f ${FUNCTION} --stage ${STAGE} --env ${ENVFILE} -t
+    echo -e "${YELLOW}Log Streaming function ${FUNCTION} on ${STAGE}${NC} using ${CONFIG}"
+    sls logs -f ${FUNCTION} --stage ${STAGE} --env ${ENVFILE} -t --config ${CONFIG}
 }
 
 function build ()
 {
-    echo -e "${YELLOW}Building bundle without deployment${NC}"
-    sls webpack --stage ${STAGE} --env ${ENVFILE}
+    echo -e "${YELLOW}Building bundle without deployment${NC} using ${CONFIG}"
+    sls webpack --stage ${STAGE} --env ${ENVFILE} --config ${CONFIG}
 }
 
 function prompt_confirmation_destroy_service ()
 {
     while true; do
-        read -p "Confirm destroy service to ${STAGE} with .env.${ENVFILE}? Note: This action will remove entire service from AWS. Ensure no other applications are using this service. [Y|N] " yn
+        read -p "Confirm destroy service to ${STAGE} with .env.${ENVFILE} using ${CONFIG}? Note: This action will remove entire service from AWS. Ensure no other applications are using this service. [Y|N] " yn
         case ${yn} in
             [Yy] | yes | Yes | YES ) destroy_service; break;;
             [Nn] | no | No | NO ) echo -e "${YELLOW}Cancelled destroying service to [${STAGE}]${NC}"; exit;;
@@ -177,7 +180,7 @@ function prompt_confirmation_destroy_service ()
 function destroy_service ()
 {
     echo -e "${YELLOW}Removing service to ${STAGE}${NC}"
-    sls remove --stage ${STAGE} --env ${ENVFILE}
+    sls remove --stage ${STAGE} --env ${ENVFILE} --config ${CONFIG}
 }
 
 ###############################################################################
