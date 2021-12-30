@@ -64,6 +64,47 @@ describe('test AuroraDbRDSProxyService query', () => {
 
     expect(mysql.createConnection).toHaveBeenCalled();
   });
+
+  it('should return results object when calling querying with connection options passed', async () => {
+    const db = new AuroraDbRDSProxyService(auroraConfig);
+    const resp = await db.query('SELECT_QUERY', {}, auroraConfig);
+
+    expect(resp).toMatchObject({
+      results: [
+        {
+          id: 1,
+          uid: 'some-uid-1',
+        },
+        {
+          id: 2,
+          uid: 'some-uid-2',
+        },
+      ],
+    });
+
+    expect(mysql.createConnection).toHaveBeenCalled();
+  });
+
+  it('should return results object when calling querying with no connection options passed and persistent conn', async () => {
+    const db = new AuroraDbRDSProxyService(auroraConfig);
+    await db.pConnect();
+    const resp = await db.query('SELECT_QUERY', {});
+
+    expect(resp).toMatchObject({
+      results: [
+        {
+          id: 1,
+          uid: 'some-uid-1',
+        },
+        {
+          id: 2,
+          uid: 'some-uid-2',
+        },
+      ],
+    });
+
+    expect(mysql.createConnection).toHaveBeenCalled();
+  });
 });
 
 describe('test AuroraDbRDSProxyService select', () => {
@@ -199,5 +240,39 @@ describe('test AuroraDbRDSProxyService update', () => {
   it('should throw not exception when caliing update with invalid query', async () => {
     const db = new AuroraDbRDSProxyService(auroraConfig);
     return expect(db.update('INVALID_UPDATE_QUERY', {})).resolves.not.toThrow();
+  });
+});
+
+describe('test AuroraDbRDSProxyService pConnect', () => {
+  it('should be able to connect without custom config', async () => {
+    const db = new AuroraDbRDSProxyService(auroraConfig);
+    await db.pConnect();
+
+    expect(db.conn.mocked).toMatchObject(auroraConfig);
+  });
+
+  it('should be able to connect with custom config', async () => {
+    const db = new AuroraDbRDSProxyService(auroraConfig);
+    await db.pConnect(customConfig);
+
+    expect(db.conn.mocked).toMatchObject(customConfig);
+  });
+});
+
+describe('test AuroraDbRDSProxyService end', () => {
+  it('should end the connection when passed', async () => {
+    const db = new AuroraDbRDSProxyService(auroraConfig);
+    const conn = await db.connect();
+    await db.end(conn);
+
+    expect(conn.end).toHaveBeenCalledTimes(1);
+  });
+
+  it('should end the persisted connection when none is passed', async () => {
+    const db = new AuroraDbRDSProxyService(auroraConfig);
+    await db.pConnect();
+    await db.end();
+
+    expect(db.conn.end).toHaveBeenCalledTimes(1);
   });
 });

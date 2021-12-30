@@ -96,6 +96,22 @@ describe('MiddlewareGroup: test successHttpResponseHandler middleware', () => {
     expect(dataBody).toHaveProperty('data', 'Some message');
     expect(dataBody).toHaveProperty('_meta', {});
   });
+
+  it('should call db.end() whenever a db options is set', async () => {
+    const end = jest.fn().mockResolvedValue();
+    await successHttpResponseHandler({
+      response: 'Some message',
+      headers: {
+        'Access-Control-Allow-Credentials': false,
+        'X-Token-Id': 'token',
+      },
+      db: {
+        end,
+      },
+    });
+
+    expect(end).toHaveBeenCalledTimes(1);
+  });
 });
 
 describe('MiddlewareGroup: test successHttpResponseAfterHandler', () => {

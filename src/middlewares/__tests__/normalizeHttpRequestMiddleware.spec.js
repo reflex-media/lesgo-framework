@@ -130,12 +130,11 @@ describe('MiddlewareGroup: test normalizeHttpRequestBeforeHandler', () => {
         event: {
           version,
           headers: {},
-          path: '/v1/path',
-          httpMethod: 'GET',
+          ...tags,
           requestContext: {
             http: {
-              path: '/v2/path',
-              method: 'POST',
+              ...tags,
+              method: tags.httpMethod,
             },
           },
         },

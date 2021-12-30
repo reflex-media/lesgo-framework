@@ -5,13 +5,13 @@ export default {
   resourceArn: 'resourceArn',
   database: 'database',
   // use the below for the latest db connections
-  default: 'dataApi',
+  default: 'legacy',
   connections: {
     dataApi: {
-      secretArn: 'secretArn',
-      secretCommandArn: 'secretCommandArn',
-      resourceArn: 'resourceArn',
-      database: 'database',
+      secretArn: 'secretArnDataApi',
+      secretCommandArn: 'secretCommandArnDataApi',
+      resourceArn: 'resourceArnDataApi',
+      database: 'databaseDataApi',
     },
     rdsProxy: {
       host: 'some-fake-host',
