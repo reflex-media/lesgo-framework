@@ -2,14 +2,6 @@ import { verifyBasicAuthBeforeHandler } from './basicAuthMiddleware';
 import { verifyJwtMiddlewareBeforeHandler } from './verifyJwtMiddleware';
 import { errorHttpResponseAfterHandler } from './errorHttpResponseMiddleware';
 
-const blacklistMode = opts => {
-  if (opts && typeof opts.blacklistMode !== 'undefined') {
-    return !!opts.blacklistMode;
-  }
-
-  return true;
-};
-
 export const serverAuthBeforeHandler = (handler, next, opts) => {
   try {
     return verifyBasicAuthBeforeHandler(handler, next, opts);
@@ -23,13 +15,7 @@ export const serverAuthBeforeHandler = (handler, next, opts) => {
       throw e;
   }
 
-  try {
-    return verifyJwtMiddlewareBeforeHandler(handler, next, opts);
-  } catch (e) {
-    if (!blacklistMode(opts) && e.code !== 'JWT_MISSING_AUTHORIZATION_HEADER')
-      throw e;
-    else throw e;
-  }
+  return verifyJwtMiddlewareBeforeHandler(handler, next, opts);
 };
 
 /* istanbul ignore next */
