@@ -217,7 +217,11 @@ export default class Paginator {
   }
 
   async executeQuery() {
-    if ((await this.total()) > 0) {
+    const total = this.totalProp;
+    if (
+      (typeof total === 'number' && total > 0) ||
+      (typeof total !== 'number' && !total)
+    ) {
       this.response = await this.dbProp.select(
         this.generatePaginationSqlSnippet(),
         this.sqlParamsProp,
