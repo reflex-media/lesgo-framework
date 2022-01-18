@@ -45,7 +45,7 @@ class ElasticsearchService {
       body,
     };
 
-    this.client.search(param, (err, response) => {
+    return this.client.search(param, (err, response) => {
       if (err) return Promise.reject(err);
 
       this.result = response;
@@ -70,7 +70,7 @@ class ElasticsearchService {
       body: settings,
     };
 
-    this.client.indices.create(params, (err, response) => {
+    return this.client.indices.create(params, (err, response) => {
       if (err) return Promise.reject(err);
       return Promise.resolve(response);
     });
@@ -82,7 +82,7 @@ class ElasticsearchService {
       ...options,
     };
 
-    this.client.indices.delete(params, (err, response) => {
+    return this.client.indices.delete(params, (err, response) => {
       if (err) return Promise.reject(err);
       return Promise.resolve(response);
     });
@@ -91,7 +91,7 @@ class ElasticsearchService {
   existIndices(index, options = {}) {
     const params = { index, ...options };
 
-    this.client.indices.exists(params, (err, response) => {
+    return this.client.indices.exists(params, (err, response) => {
       if (err) return Promise.reject(err);
       return Promise.resolve(response.body);
     });
@@ -100,7 +100,7 @@ class ElasticsearchService {
   putMapping(index, type, body) {
     const params = { index, type, body: { properties: body } };
 
-    this.client.indices.putMapping(params, (err, response) => {
+    return this.client.indices.putMapping(params, (err, response) => {
       if (err) return Promise.reject(err);
       return Promise.resolve(response);
     });
@@ -113,7 +113,7 @@ class ElasticsearchService {
       id,
     };
 
-    this.client.get(params, (err, response) => {
+    return this.client.get(params, (err, response) => {
       if (err) return Promise.reject(err);
       return Promise.resolve(response);
     });
@@ -128,14 +128,14 @@ class ElasticsearchService {
       refresh,
     };
 
-    this.client.index(params, (err, response) => {
+    return this.client.index(params, (err, response) => {
       if (err) return Promise.reject(err);
       return Promise.resolve(response);
     });
   }
 
   bulkIndex(bodies) {
-    this.client.bulk(
+    return this.client.bulk(
       { body: this.constructBulkIndex(bodies) },
       (err, response) => {
         if (err) return Promise.reject(err);
@@ -152,7 +152,7 @@ class ElasticsearchService {
       body,
     };
 
-    this.client.index(params, (err, response) => {
+    return this.client.index(params, (err, response) => {
       if (err) return Promise.reject(err);
       return Promise.resolve(response);
     });
@@ -165,7 +165,7 @@ class ElasticsearchService {
       id,
     };
 
-    this.client.get(params, (err, response) => {
+    return this.client.get(params, (err, response) => {
       if (err) return Promise.reject(err);
       return Promise.resolve(response);
     });
