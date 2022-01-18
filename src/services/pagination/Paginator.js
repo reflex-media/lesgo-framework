@@ -217,11 +217,17 @@ export default class Paginator {
   }
 
   async executeQuery() {
-    this.response = await this.dbProp.select(
-      this.generatePaginationSqlSnippet(),
-      this.sqlParamsProp,
-      this.connection
-    );
+    const total = this.totalProp;
+    if (
+      (typeof total === 'number' && total > 0) ||
+      (typeof total !== 'number' && !total)
+    ) {
+      this.response = await this.dbProp.select(
+        this.generatePaginationSqlSnippet(),
+        this.sqlParamsProp,
+        this.connection
+      );
+    }
 
     this.hasNext = this.response.length > this.perPage();
     if (this.hasNext) {
