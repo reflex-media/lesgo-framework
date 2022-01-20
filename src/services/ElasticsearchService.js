@@ -38,19 +38,18 @@ class ElasticsearchService {
     return this.client;
   }
 
-  search(body) {
+  async search(body) {
     const param = {
       index: this.index,
       type: this.type,
       body,
     };
 
-    return this.client.search(param, (err, response) => {
-      if (err) return Promise.reject(err);
+    const response = await this.client.search(param);
 
-      this.result = response;
-      return Promise.resolve(response);
-    });
+    this.result = response;
+
+    return response;
   }
 
   /**
@@ -70,10 +69,7 @@ class ElasticsearchService {
       body: settings,
     };
 
-    return this.client.indices.create(params, (err, response) => {
-      if (err) return Promise.reject(err);
-      return Promise.resolve(response);
-    });
+    return this.client.indices.create(params);
   }
 
   deleteIndices(index, options = {}) {
@@ -82,28 +78,20 @@ class ElasticsearchService {
       ...options,
     };
 
-    return this.client.indices.delete(params, (err, response) => {
-      if (err) return Promise.reject(err);
-      return Promise.resolve(response);
-    });
+    return this.client.indices.delete(params);
   }
 
-  existIndices(index, options = {}) {
+  async existIndices(index, options = {}) {
     const params = { index, ...options };
 
-    return this.client.indices.exists(params, (err, response) => {
-      if (err) return Promise.reject(err);
-      return Promise.resolve(response.body);
-    });
+    const response = await this.client.indices.exists(params);
+    return response.body;
   }
 
   putMapping(index, type, body) {
     const params = { index, type, body: { properties: body } };
 
-    return this.client.indices.putMapping(params, (err, response) => {
-      if (err) return Promise.reject(err);
-      return Promise.resolve(response);
-    });
+    return this.client.indices.putMapping(params);
   }
 
   get(id) {
@@ -113,10 +101,7 @@ class ElasticsearchService {
       id,
     };
 
-    return this.client.get(params, (err, response) => {
-      if (err) return Promise.reject(err);
-      return Promise.resolve(response);
-    });
+    return this.client.get(params);
   }
 
   indexOrCreateById(body, refresh = false) {
@@ -128,20 +113,11 @@ class ElasticsearchService {
       refresh,
     };
 
-    return this.client.index(params, (err, response) => {
-      if (err) return Promise.reject(err);
-      return Promise.resolve(response);
-    });
+    return this.client.index(params);
   }
 
   bulkIndex(bodies) {
-    return this.client.bulk(
-      { body: this.constructBulkIndex(bodies) },
-      (err, response) => {
-        if (err) return Promise.reject(err);
-        return Promise.resolve(response);
-      }
-    );
+    return this.client.bulk({ body: this.constructBulkIndex(bodies) });
   }
 
   create(id, body) {
@@ -152,10 +128,7 @@ class ElasticsearchService {
       body,
     };
 
-    return this.client.index(params, (err, response) => {
-      if (err) return Promise.reject(err);
-      return Promise.resolve(response);
-    });
+    return this.client.index(params);
   }
 
   updateById(id) {
@@ -165,10 +138,7 @@ class ElasticsearchService {
       id,
     };
 
-    return this.client.get(params, (err, response) => {
-      if (err) return Promise.reject(err);
-      return Promise.resolve(response);
-    });
+    return this.client.get(params);
   }
 
   /**
