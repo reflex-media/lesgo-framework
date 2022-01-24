@@ -42,9 +42,13 @@ export const errorHttpResponseHandler = async opts => {
 
   const statusCode = options.error.statusCode || options.statusCode;
 
-  logger.log(statusCode === 500 ? 'error' : 'warn', jsonBody.error.message, {
-    error: jsonBody.error,
-  });
+  if (!isEmpty(options.error)) {
+    logger.log(statusCode === 500 ? 'error' : 'warn', options.error);
+  } else {
+    logger.log(statusCode === 500 ? 'error' : 'warn', jsonBody.error.message, {
+      error: jsonBody.error,
+    });
+  }
 
   try {
     if (!isEmpty(opts.db)) await opts.db.end();
