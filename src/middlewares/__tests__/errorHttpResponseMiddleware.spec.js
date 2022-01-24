@@ -21,7 +21,7 @@ describe('MiddlewareGroup: test errorHandler middleware', () => {
     expect(dataBody).toHaveProperty('status', 'error');
     expect(dataBody).toHaveProperty('data', null);
     expect(dataBody).toHaveProperty('error');
-    expect(dataBody).toHaveProperty('error.code', 'UNKNOWN_ERROR');
+    expect(dataBody).toHaveProperty('error.code', 'UNHANDLED_ERROR');
     expect(dataBody).toHaveProperty(
       'error.message',
       'Error: Test validation error'
@@ -78,7 +78,7 @@ describe('MiddlewareGroup: test errorHandler middleware', () => {
 
     expect(data.statusCode).toBe(500);
 
-    expect(dataBody).toHaveProperty('error.code', 'UNKNOWN_ERROR');
+    expect(dataBody).toHaveProperty('error.code', 'UNHANDLED_ERROR');
     expect(dataBody).toHaveProperty('error.message', 'Test error message');
     expect(dataBody).toHaveProperty('error.details', '');
   });
@@ -126,7 +126,7 @@ describe('MiddlewareGroup: test errorHandler middleware', () => {
     expect(dataBody).toHaveProperty('status', 'error');
     expect(dataBody).toHaveProperty('data', null);
     expect(dataBody).toHaveProperty('error');
-    expect(dataBody).toHaveProperty('error.code', 'UNKNOWN_ERROR');
+    expect(dataBody).toHaveProperty('error.code', 'UNHANDLED_ERROR');
     expect(dataBody).toHaveProperty('error.message', '');
     expect(dataBody).toHaveProperty('error.details', '');
   });

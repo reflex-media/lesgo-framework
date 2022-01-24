@@ -102,7 +102,6 @@ describe('MiddlewareGroup: test normalizeHttpRequestBeforeHandler', () => {
     };
 
     normalizeHttpRequestBeforeHandler(handler, () => {});
-    expect(handler.event.requestContext.requestId).toBe('requestId');
   });
 
   it('should return auth.sub if Authorization exists', () => {
@@ -119,6 +118,44 @@ describe('MiddlewareGroup: test normalizeHttpRequestBeforeHandler', () => {
     expect(handler.event.auth.sub).toBe('f2b5349d-f5e3-44f5-9c08-ae6b01e95434');
   });
 
+  it.each`
+    version  | tags
+    ${'1.0'} | ${{ path: '/v1/path', httpMethod: 'GET' }}
+    ${'2.0'} | ${{ path: '/v2/path', httpMethod: 'POST' }}
+    ${'3.0'} | ${{ path: '/v2/path', httpMethod: 'POST' }}
+  `(
+    'should identify path and httpMethod based on version',
+    ({ version, tags }) => {
+      const handler = {
+        event: {
+          version,
+          headers: {},
+          ...tags,
+          requestContext: {
+            http: {
+              ...tags,
+              method: tags.httpMethod,
+            },
+          },
+        },
+      };
+      normalizeHttpRequestBeforeHandler(handler, () => {});
+      expect(logger.meta.tags).toStrictEqual(tags);
+    }
+  );
+
+  it('should not set tags when using API Gateway v2 and requestContext is empty', () => {
+    const handler = {
+      event: {
+        version: '2.0',
+        headers: {},
+      },
+    };
+
+    normalizeHttpRequestBeforeHandler(handler, () => {});
+    expect(logger.meta.tags).toStrictEqual({});
+  });
+
   it('should not set meta on debug', () => {
     app.debug = true;
     const handler = {
@@ -133,6 +170,7 @@ describe('MiddlewareGroup: test normalizeHttpRequestBeforeHandler', () => {
         },
       },
     };
+
     normalizeHttpRequestBeforeHandler(handler, () => {});
     expect(logger.meta.auth).toBe(handler.event.auth);
     expect(logger.meta.queryStringParameters).toStrictEqual(
