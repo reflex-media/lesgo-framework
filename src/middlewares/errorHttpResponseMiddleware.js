@@ -1,6 +1,8 @@
 import logger from '../utils/logger';
 import isEmpty from '../utils/isEmpty';
 
+const FILE = 'Lesgo/middlewares/errorHttpResponseMiddleware';
+
 export const errorHttpResponseHandler = async opts => {
   const defaults = {
     response: '',
@@ -29,7 +31,7 @@ export const errorHttpResponseHandler = async opts => {
     status: 'error',
     data: null,
     error: {
-      code: options.error.code || 'UNKNOWN_ERROR',
+      code: options.error.code || 'UNHANDLED_ERROR',
       message: options.error.name
         ? `${options.error.name}: ${options.error.message}`
         : options.error.message || options.error,
@@ -40,18 +42,14 @@ export const errorHttpResponseHandler = async opts => {
 
   const statusCode = options.error.statusCode || options.statusCode;
 
-  /* istanbul ignore next */
-  if (statusCode === 500) {
-    // this is likely an unhandled exception, log it
-    logger.error(options.error);
-  } else {
-    logger.warn(options.error);
-  }
+  logger.log(statusCode === 500 ? 'error' : 'warn', jsonBody.error.message, {
+    error: jsonBody.error,
+  });
 
   try {
     if (!isEmpty(opts.db)) await opts.db.end();
   } catch (err) {
-    // do nothing
+    logger.error(`${FILE}::Failed to end db connection`, err);
   }
 
   return {
