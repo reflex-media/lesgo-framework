@@ -38,24 +38,18 @@ class ElasticsearchService {
     return this.client;
   }
 
-  search(body) {
-    return new Promise((resolve, reject) => {
-      const param = {
-        index: this.index,
-        type: this.type,
-        body,
-      };
-      this.client.search(param, (err, response) => {
-        /* istanbul ignore next */
-        if (err) {
-          reject(err);
-        }
+  async search(body) {
+    const param = {
+      index: this.index,
+      type: this.type,
+      body,
+    };
 
-        this.result = response;
+    const response = await this.client.search(param);
 
-        resolve(response);
-      });
-    });
+    this.result = response;
+
+    return response;
   }
 
   /**
@@ -75,12 +69,7 @@ class ElasticsearchService {
       body: settings,
     };
 
-    return new Promise((resolve, reject) => {
-      this.client.indices.create(params, (err, response) => {
-        // eslint-disable-next-line no-unused-expressions
-        err ? /* istanbul ignore next */ reject(err) : resolve(response);
-      });
-    });
+    return this.client.indices.create(params);
   }
 
   deleteIndices(index, options = {}) {
@@ -89,32 +78,20 @@ class ElasticsearchService {
       ...options,
     };
 
-    return new Promise((resolve, reject) => {
-      this.client.indices.delete(params, (err, response) => {
-        // eslint-disable-next-line no-unused-expressions
-        err ? /* istanbul ignore next */ reject(err) : resolve(response);
-      });
-    });
+    return this.client.indices.delete(params);
   }
 
-  existIndices(index, options = {}) {
+  async existIndices(index, options = {}) {
     const params = { index, ...options };
-    return new Promise((resolve, reject) => {
-      this.client.indices.exists(params, (err, response) => {
-        // eslint-disable-next-line no-unused-expressions
-        err ? /* istanbul ignore next */ reject(err) : resolve(response.body);
-      });
-    });
+
+    const response = await this.client.indices.exists(params);
+    return response.body;
   }
 
   putMapping(index, type, body) {
     const params = { index, type, body: { properties: body } };
-    return new Promise((resolve, reject) => {
-      this.client.indices.putMapping(params, (err, response) => {
-        // eslint-disable-next-line no-unused-expressions
-        err ? /* istanbul ignore next */ reject(err) : resolve(response);
-      });
-    });
+
+    return this.client.indices.putMapping(params);
   }
 
   get(id) {
@@ -124,12 +101,7 @@ class ElasticsearchService {
       id,
     };
 
-    return new Promise((resolve, reject) => {
-      this.client.get(params, (err, response) => {
-        // eslint-disable-next-line no-unused-expressions
-        err ? /* istanbul ignore next */ reject(err) : resolve(response);
-      });
-    });
+    return this.client.get(params);
   }
 
   indexOrCreateById(body, refresh = false) {
@@ -141,24 +113,11 @@ class ElasticsearchService {
       refresh,
     };
 
-    return new Promise((resolve, reject) => {
-      this.client.index(params, (err, response) => {
-        // eslint-disable-next-line no-unused-expressions
-        err ? /* istanbul ignore next */ reject(err) : resolve(response);
-      });
-    });
+    return this.client.index(params);
   }
 
   bulkIndex(bodies) {
-    return new Promise((resolve, reject) => {
-      this.client.bulk(
-        { body: this.constructBulkIndex(bodies) },
-        (err, response) => {
-          // eslint-disable-next-line no-unused-expressions
-          err ? /* istanbul ignore next */ reject(err) : resolve(response);
-        }
-      );
-    });
+    return this.client.bulk({ body: this.constructBulkIndex(bodies) });
   }
 
   create(id, body) {
@@ -169,12 +128,7 @@ class ElasticsearchService {
       body,
     };
 
-    return new Promise((resolve, reject) => {
-      this.client.index(params, (err, response) => {
-        // eslint-disable-next-line no-unused-expressions
-        err ? /* istanbul ignore next */ reject(err) : resolve(response);
-      });
-    });
+    return this.client.index(params);
   }
 
   updateById(id) {
@@ -184,12 +138,7 @@ class ElasticsearchService {
       id,
     };
 
-    return new Promise((resolve, reject) => {
-      this.client.get(params, (err, response) => {
-        // eslint-disable-next-line no-unused-expressions
-        err ? /* istanbul ignore next */ reject(err) : resolve(response);
-      });
-    });
+    return this.client.get(params);
   }
 
   /**
