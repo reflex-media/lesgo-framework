@@ -104,6 +104,17 @@ class ElasticsearchService {
     return this.client.get(params);
   }
 
+  /**
+   * Multi search API
+   *
+   * Executes several searches with a single API request.
+   *
+   * @see https://www.elastic.co/guide/en/elasticsearch/reference/7.16/search-multi-search.html
+   */
+  msearch(body) {
+    return this.client.msearch(body);
+  }
+
   indexOrCreateById(body, refresh = false) {
     const params = {
       index: this.index,
