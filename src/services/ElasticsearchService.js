@@ -112,7 +112,7 @@ class ElasticsearchService {
    * @see https://www.elastic.co/guide/en/elasticsearch/reference/7.16/search-multi-search.html
    */
   msearch(body) {
-    return this.client.msearch(body);
+    return this.client.msearch({ body });
   }
 
   indexOrCreateById(body, refresh = false) {
