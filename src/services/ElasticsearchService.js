@@ -88,13 +88,8 @@ class ElasticsearchService {
     return response.body;
   }
 
-  putMapping(index, type, body, include_type_name = true) {
-    const params = {
-      index,
-      type,
-      body: { properties: body },
-      include_type_name,
-    };
+  putMapping(index, type, body) {
+    const params = { index, type, body: { properties: body } };
 
     return this.client.indices.putMapping(params);
   }
