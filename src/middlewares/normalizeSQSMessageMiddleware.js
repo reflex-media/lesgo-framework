@@ -37,6 +37,7 @@ export const disconnectConnections = async opts => {
  * Normalizes handler.event.Records as handler.event.collections Object.
  * This type of request is received by SQS listeners
  */
+/* istanbul ignore next */
 const normalizeSQSMessageMiddleware /* istanbul ignore next */ = opts => {
   return {
     before: (handler, next) => {

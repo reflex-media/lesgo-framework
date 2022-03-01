@@ -62,6 +62,16 @@ const Client = jest.fn().mockImplementation((opts, conn) => {
         });
       });
     }),
+    msearch: jest.fn().mockImplementation(params => {
+      return new Promise(resolve => {
+        return resolve({
+          response: {},
+          mocked: {
+            params,
+          },
+        });
+      });
+    }),
     index: jest.fn().mockImplementation(params => {
       return new Promise(resolve => {
         return resolve({
