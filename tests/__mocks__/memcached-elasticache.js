@@ -30,6 +30,7 @@ const Memcached = jest.fn().mockImplementation((url, options) => {
       mockedCache = { [cacheKey]: true };
       return callback(null, mockedCache[cacheKey]);
     }),
+    end: jest.fn().mockImplementation(() => {}),
     mocked: {
       url,
       options,

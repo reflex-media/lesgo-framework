@@ -1,5 +1,9 @@
 import gzipHttpResponse from './gzipHttpResponse';
 import isEmpty from '../utils/isEmpty';
+import cache from '../utils/cache';
+import logger from '../utils/logger';
+
+const FILE = 'Lesgo/middlewares/successHttpResponseMiddleware';
 
 export const successHttpResponseHandler = async opts => {
   const defaults = {
@@ -25,9 +29,10 @@ export const successHttpResponseHandler = async opts => {
   const options = { ...defaults, ...optionsHeadersMerged };
 
   try {
+    if (!isEmpty(cache.singleton)) await cache.end();
     if (!isEmpty(opts.db)) await opts.db.end();
   } catch (err) {
-    // do nothing
+    logger.error(`${FILE}::Failed to end connection`, err);
   }
 
   return {

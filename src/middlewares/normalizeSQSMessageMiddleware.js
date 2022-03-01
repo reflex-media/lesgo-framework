@@ -1,4 +1,8 @@
 import logger from '../utils/logger';
+import cache from '../utils/cache';
+import isEmpty from '../utils/isEmpty';
+
+const FILE = 'Lesgo/middlewares/normalizeSQSMessageMiddleware';
 
 export const normalizeHandler = records => {
   let recordCount = 0;
@@ -20,16 +24,33 @@ export const normalizeHandler = records => {
   }));
 };
 
+export const disconnectConnections = async opts => {
+  try {
+    if (!isEmpty(cache.singleton)) await cache.end();
+    if (!isEmpty(opts.db)) await opts.db.end();
+  } catch (err) {
+    logger.error(`${FILE}::Failed to end connection`, err);
+  }
+};
+
 /**
  * Normalizes handler.event.Records as handler.event.collections Object.
  * This type of request is received by SQS listeners
  */
-const normalizeSQSMessageMiddleware /* istanbul ignore next */ = () => {
+const normalizeSQSMessageMiddleware /* istanbul ignore next */ = opts => {
   return {
     before: (handler, next) => {
       const { Records } = handler.event;
       // eslint-disable-next-line no-param-reassign
       handler.event.collection = normalizeHandler(Records);
+      next();
+    },
+    after: async (handler, next) => {
+      await disconnectConnections(opts);
+      next();
+    },
+    onError: async (handler, next) => {
+      await disconnectConnections(opts);
       next();
     },
   };

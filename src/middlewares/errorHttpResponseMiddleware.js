@@ -1,5 +1,6 @@
 import logger from '../utils/logger';
 import isEmpty from '../utils/isEmpty';
+import cache from '../utils/cache';
 
 const FILE = 'Lesgo/middlewares/errorHttpResponseMiddleware';
 
@@ -51,9 +52,10 @@ export const errorHttpResponseHandler = async opts => {
   }
 
   try {
+    if (!isEmpty(cache.singleton)) await cache.end();
     if (!isEmpty(opts.db)) await opts.db.end();
   } catch (err) {
-    logger.error(`${FILE}::Failed to end db connection`, err);
+    logger.error(`${FILE}::Failed to end connection`, err);
   }
 
   return {

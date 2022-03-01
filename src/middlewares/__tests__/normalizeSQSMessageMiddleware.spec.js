@@ -1,4 +1,7 @@
-import { normalizeHandler } from '../normalizeSQSMessageMiddleware';
+import {
+  normalizeHandler,
+  disconnectConnections,
+} from '../normalizeSQSMessageMiddleware';
 
 describe('MiddlewareGroup: test normalizeRecords middleware', () => {
   it('test without parameters', () => {
@@ -28,5 +31,25 @@ describe('MiddlewareGroup: test normalizeRecords middleware', () => {
         },
       },
     ]);
+  });
+});
+
+describe('MiddlewareGroup: test disconnectConnections middleware', () => {
+  it('should not call db.end() whenever a db options is not set', async () => {
+    const end = jest.fn().mockResolvedValue();
+    await disconnectConnections();
+
+    expect(end).toHaveBeenCalledTimes(0);
+  });
+
+  it('should call db.end() whenever a db options is set', async () => {
+    const end = jest.fn().mockResolvedValue();
+    await disconnectConnections({
+      db: {
+        end,
+      },
+    });
+
+    expect(end).toHaveBeenCalledTimes(1);
   });
 });
