@@ -18,10 +18,7 @@ const singleton = {};
  */
 const ec = (connectionName = '') => {
   const conn = connectionName || config.default;
-  logger.debug(`${FILE}::Connection driver to establish`, { conn });
-
   if (singleton[conn]) {
-    logger.debug(`${FILE}::Reusing established ES driver`);
     return singleton[conn];
   }
 
@@ -30,7 +27,6 @@ const ec = (connectionName = '') => {
   });
 
   singleton[conn] = driver;
-  logger.debug(`${FILE}::Established new ES driver`);
 
   return driver;
 };
@@ -42,8 +38,6 @@ const ec = (connectionName = '') => {
  * @return {promise} Returns promised.
  */
 const get = key => {
-  logger.debug(`${FILE}::Fetching key from cache`, { key });
-
   return new Promise((res, rej) => {
     try {
       ec().get(key, (err, data) => {
@@ -69,15 +63,13 @@ const get = key => {
  * @return {promise} Returns promised.
  */
 const set = (key, val, lifetime) => {
-  logger.debug(`${FILE}::Setting cache`, { key, val, lifetime });
-
   return new Promise((res, rej) => {
     try {
       ec().set(key, val, lifetime, err => {
         if (err) {
           rej(new LesgoException(err, 'CACHE_SET_ERROR'));
         } else {
-          logger.debug(`${FILE}::Cache stored`);
+          logger.debug(`${FILE}::Cache stored`, { key, val, lifetime });
           res(true);
         }
       });
@@ -94,15 +86,13 @@ const set = (key, val, lifetime) => {
  * @return {promise} Returns promised.
  */
 const del = key => {
-  logger.debug(`${FILE}::Deleting key from cache`, { key });
-
   return new Promise((res, rej) => {
     try {
       ec().del(key, err => {
         if (err) {
           rej(new LesgoException(err, 'CACHE_DEL_ERROR'));
         } else {
-          logger.debug(`${FILE}::Key deleted from cache`);
+          logger.debug(`${FILE}::Key deleted from cache`, { key });
           res(true);
         }
       });
@@ -118,12 +108,9 @@ const del = key => {
  * @return {promise} Returns promised.
  */
 const end = () => {
-  logger.debug(`${FILE}::Ending cache connection`);
-
   return new Promise((res, rej) => {
     try {
       ec().end();
-      logger.debug(`${FILE}::Cache disconnected`);
       return res();
     } catch (err) {
       return rej(
