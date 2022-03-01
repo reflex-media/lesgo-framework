@@ -124,7 +124,7 @@ const end = () => {
     try {
       ec().end();
       logger.debug(`${FILE}::Cache disconnected`);
-      return res(true);
+      return res();
     } catch (err) {
       return rej(
         new LesgoException(err.message, 'CACHE_END_EXCEPTION', 500, err)

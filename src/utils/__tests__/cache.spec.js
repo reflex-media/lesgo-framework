@@ -26,7 +26,7 @@ describe('UtilsGroup: test cache utils', () => {
 
     await expect(cache.del(cacheKey)).resolves.toEqual(true);
 
-    await expect(cache.end()).resolves.toEqual(true);
+    await expect(cache.end()).resolves.toEqual();
   });
 
   it('test setting cache with error', async () => {
