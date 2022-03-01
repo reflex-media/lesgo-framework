@@ -33,32 +33,32 @@
     "node": "12.x"
   },
   "devDependencies": {
-    "@babel/cli": "^7.12.1",
-    "@babel/core": "^7.12.3",
-    "@babel/preset-env": "^7.12.1",
-    "aws-sdk": "^2.541.0",
+    "@babel/cli": "^7.17.6",
+    "@babel/core": "^7.17.5",
+    "@babel/preset-env": "^7.16.11",
+    "aws-sdk": "^2.1083.0",
     "babel-jest": "^24.9.0",
-    "coveralls": "^3.0.6",
-    "eslint": "^6.4.0",
-    "eslint-config-airbnb-base": "^14.0.0",
-    "eslint-config-prettier": "^6.3.0",
-    "eslint-plugin-import": "^2.18.2",
-    "eslint-plugin-jest": "^22.17.0",
-    "eslint-plugin-prettier": "^3.1.1",
-    "husky": "^3.0.5",
+    "coveralls": "^3.1.1",
+    "eslint": "^6.8.0",
+    "eslint-config-airbnb-base": "^14.2.1",
+    "eslint-config-prettier": "^6.15.0",
+    "eslint-plugin-import": "^2.25.4",
+    "eslint-plugin-jest": "^22.21.0",
+    "eslint-plugin-prettier": "^3.4.1",
+    "husky": "^3.1.0",
     "jest": "^24.9.0",
-    "lint-staged": "^9.2.5",
-    "prettier": "^1.18.2"
+    "lint-staged": "^9.5.0",
+    "prettier": "^1.19.1"
   },
   "dependencies": {
-    "@elastic/elasticsearch": "^7.10.0",
-    "@firebase/app": "^0.7.16",
-    "data-api-client": "^1.1.0",
-    "firebase-admin": "^9.3.0",
+    "@elastic/elasticsearch": "^7.17.0",
+    "@firebase/app": "^0.7.17",
+    "data-api-client": "^1.2.0",
+    "firebase-admin": "^9.12.0",
     "jsonwebtoken": "^8.5.1",
     "memcached-elasticache": "^1.1.1",
-    "mysql2": "^2.2.5",
-    "nanoid": "^3.2.0"
+    "mysql2": "^2.3.3",
+    "nanoid": "^3.3.1"
   },
   "husky": {
     "hooks": {
