@@ -36,7 +36,7 @@
     "@babel/cli": "^7.17.6",
     "@babel/core": "^7.17.5",
     "@babel/preset-env": "^7.16.11",
-    "aws-sdk": "^2.1083.0",
+    "aws-sdk": "^2.1084.0",
     "babel-jest": "^24.9.0",
     "coveralls": "^3.1.1",
     "eslint": "^6.8.0",
@@ -56,7 +56,7 @@
     "data-api-client": "^1.2.0",
     "firebase-admin": "^9.12.0",
     "jsonwebtoken": "^8.5.1",
-    "memcached-elasticache": "^1.1.1",
+    "memcache-plus": "^0.2.22",
     "mysql2": "^2.3.3",
     "nanoid": "^3.3.1"
   },

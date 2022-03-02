@@ -2,11 +2,9 @@ export default {
   default: 'memcached',
   connections: {
     memcached: {
-      url: null,
       options: {
+        hosts: [null],
         autoDiscover: true,
-        autoDiscoverInterval: 60000,
-        autoDiscoverOverridesRemove: false,
       },
     },
   },
