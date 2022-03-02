@@ -51,7 +51,7 @@
     "prettier": "^1.19.1"
   },
   "dependencies": {
-    "@elastic/elasticsearch": "^7.17.0",
+    "@elastic/elasticsearch": "7.13.0",
     "@firebase/app": "^0.7.17",
     "data-api-client": "^1.2.0",
     "firebase-admin": "^9.12.0",
