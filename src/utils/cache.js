@@ -82,8 +82,14 @@ const get = async key => {
  */
 const getMulti = async keys => {
   try {
-    const data = await ec().getMulti(keys);
+    const client = ec();
+    const data = await client.getMulti(keys);
     logger.debug(`${FILE}::Fetched cache data`, { keys, data });
+    if (isEmpty(singleton)) {
+      logger.debug(`${FILE}::Ending cache connection`);
+      await client.disconnect();
+      logger.debug(`${FILE}::Ended cache connection`);
+    }
     return data;
   } catch (err) {
     throw new LesgoException(
@@ -126,8 +132,14 @@ const set = async (key, val, lifetime) => {
  */
 const del = async key => {
   try {
-    await ec().delete(key);
+    const client = ec();
+    await client.delete(key);
     logger.debug(`${FILE}::Key deleted from cache`, { key });
+    if (isEmpty(singleton)) {
+      logger.debug(`${FILE}::Ending cache connection`);
+      await client.disconnect();
+      logger.debug(`${FILE}::Ended cache connection`);
+    }
   } catch (err) {
     throw new LesgoException(err.message, 'CACHE_DEL_EXCEPTION', 500, err);
   }
@@ -141,8 +153,14 @@ const del = async key => {
  */
 const delMulti = async keys => {
   try {
-    await ec().deleteMulti(keys);
+    const client = ec();
+    await client.deleteMulti(keys);
     logger.debug(`${FILE}::Keys deleted from cache`, { keys });
+    if (isEmpty(singleton)) {
+      logger.debug(`${FILE}::Ending cache connection`);
+      await client.disconnect();
+      logger.debug(`${FILE}::Ended cache connection`);
+    }
   } catch (err) {
     throw new LesgoException(
       err.message,
