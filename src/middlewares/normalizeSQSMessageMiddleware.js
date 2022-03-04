@@ -28,6 +28,7 @@ export const disconnectConnections = async opts => {
   try {
     if (!isEmpty(cache.singleton)) await cache.end();
     if (!isEmpty(opts.db)) await opts.db.end();
+    if (!isEmpty(opts.dbRead)) await opts.dbRead.end();
   } catch (err) {
     logger.error(`${FILE}::Failed to end connection`, err);
   }
