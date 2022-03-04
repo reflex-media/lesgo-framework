@@ -65,7 +65,6 @@ describe('test db utils instantiate', () => {
       host: config.connections.rdsProxy.host,
       user: config.connections.rdsProxy.user,
       password: config.connections.rdsProxy.password,
-      persists: config.connections.rdsProxy.persists,
     });
   });
 });

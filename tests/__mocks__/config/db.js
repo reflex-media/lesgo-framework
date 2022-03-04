@@ -18,14 +18,12 @@ export default {
       user: 'someFakeUser',
       password: 'someFakePassword',
       database: 'database',
-      persists: true,
     },
     rdsProxyRead: {
       host: 'some-fake-host',
       user: 'someFakeUser',
       password: 'someFakePassword',
       database: 'database',
-      persists: false,
     },
   },
 };

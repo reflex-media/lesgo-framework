@@ -28,9 +28,14 @@ export const successHttpResponseHandler = async opts => {
   const options = { ...defaults, ...optionsHeadersMerged };
 
   try {
-    if (!isEmpty(opts.cache)) await opts.cache.end();
-    if (!isEmpty(opts.db)) await opts.db.end();
-    if (!isEmpty(opts.dbRead)) await opts.dbRead.end();
+    const disconnect = [];
+    if (!isEmpty(opts.cache)) disconnect.push(opts.cache.end());
+    if (!isEmpty(opts.db)) disconnect.push(opts.db.end());
+    if (!isEmpty(opts.dbRead)) disconnect.push(opts.dbRead.end());
+
+    if (disconnect.length > 0) {
+      await Promise.all(disconnect);
+    }
   } catch (err) {
     logger.error(`${FILE}::Failed to end connection`, err);
   }
