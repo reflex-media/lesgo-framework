@@ -1,6 +1,5 @@
 import gzipHttpResponse from './gzipHttpResponse';
 import isEmpty from '../utils/isEmpty';
-import cache from '../utils/cache';
 import logger from '../utils/logger';
 
 const FILE = 'Lesgo/middlewares/successHttpResponseMiddleware';
@@ -29,7 +28,7 @@ export const successHttpResponseHandler = async opts => {
   const options = { ...defaults, ...optionsHeadersMerged };
 
   try {
-    if (!isEmpty(cache.singleton)) await cache.end();
+    if (!isEmpty(opts.cache)) await opts.cache.end();
     if (!isEmpty(opts.db)) await opts.db.end();
     if (!isEmpty(opts.dbRead)) await opts.dbRead.end();
   } catch (err) {

@@ -1,6 +1,5 @@
 import logger from '../utils/logger';
 import isEmpty from '../utils/isEmpty';
-import cache from '../utils/cache';
 
 const FILE = 'Lesgo/middlewares/errorHttpResponseMiddleware';
 
@@ -52,7 +51,7 @@ export const errorHttpResponseHandler = async opts => {
   }
 
   try {
-    if (!isEmpty(cache.singleton)) await cache.end();
+    if (!isEmpty(opts.cache)) await opts.cache.end();
     if (!isEmpty(opts.db)) await opts.db.end();
     if (!isEmpty(opts.dbRead)) await opts.dbRead.end();
   } catch (err) {

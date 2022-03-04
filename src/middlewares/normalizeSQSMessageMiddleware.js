@@ -1,5 +1,4 @@
 import logger from '../utils/logger';
-import cache from '../utils/cache';
 import isEmpty from '../utils/isEmpty';
 
 const FILE = 'Lesgo/middlewares/normalizeSQSMessageMiddleware';
@@ -26,7 +25,7 @@ export const normalizeHandler = records => {
 
 export const disconnectConnections = async opts => {
   try {
-    if (!isEmpty(cache.singleton)) await cache.end();
+    if (!isEmpty(opts.cache)) await opts.cache.end();
     if (!isEmpty(opts.db)) await opts.db.end();
     if (!isEmpty(opts.dbRead)) await opts.dbRead.end();
   } catch (err) {

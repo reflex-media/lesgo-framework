@@ -2,6 +2,7 @@ import config from 'Config/cache'; // eslint-disable-line import/no-unresolved
 import ElastiCacheService from '../services/ElastiCacheService';
 import LesgoException from '../exceptions/LesgoException';
 import logger from './logger';
+import isEmpty from './isEmpty';
 
 const FILE = 'Lesgo/utils/cache';
 
@@ -14,9 +15,11 @@ const singleton = {};
  * Instantiate the Cache Service
  *
  * @param {String} connectionName The name of the driver config to connect to
+ * @param {boolean} persists To use persistent connection or otherwise
+ *
  * @return {object} Returns the driver
  */
-const ec = (connectionName = '') => {
+const ec = (connectionName = '', persists = false) => {
   const conn = connectionName || config.default;
   if (singleton[conn]) {
     return singleton[conn];
@@ -35,9 +38,18 @@ const ec = (connectionName = '') => {
 
   const { driver } = new ElastiCacheService(options);
 
-  singleton[conn] = driver;
+  if (persists) {
+    singleton[conn] = driver;
+  }
 
   return driver;
+};
+
+/**
+ * Persistent connection if declared in the handler
+ */
+const pConnect = (connectionName = '') => {
+  return ec(connectionName, true);
 };
 
 /**
@@ -48,8 +60,14 @@ const ec = (connectionName = '') => {
  */
 const get = async key => {
   try {
-    const data = await ec().get(key);
+    const client = ec();
+    const data = await client.get(key);
     logger.debug(`${FILE}::Fetched cache data`, { key, data });
+    if (isEmpty(singleton)) {
+      logger.debug(`${FILE}::Ending cache connection`);
+      await client.disconnect();
+      logger.debug(`${FILE}::Ended cache connection`);
+    }
     return data;
   } catch (err) {
     throw new LesgoException(err.message, 'CACHE_GET_EXCEPTION', 500, err);
@@ -87,8 +105,14 @@ const getMulti = async keys => {
  */
 const set = async (key, val, lifetime) => {
   try {
-    await ec().set(key, val, lifetime);
+    const client = ec();
+    await client.set(key, val, lifetime);
     logger.debug(`${FILE}::Cache stored`, { key, val, lifetime });
+    if (isEmpty(singleton)) {
+      logger.debug(`${FILE}::Ending cache connection`);
+      await client.disconnect();
+      logger.debug(`${FILE}::Ended cache connection`);
+    }
   } catch (err) {
     throw new LesgoException(err.message, 'CACHE_SET_EXCEPTION', 500, err);
   }
@@ -136,10 +160,15 @@ const delMulti = async keys => {
  */
 const end = async () => {
   try {
+    logger.debug(`${FILE}::Ending cache connection`);
     await ec().disconnect();
+    logger.debug(`${FILE}::Ended cache connection`);
 
-    // TODO: Should loop through all the possible connection objects
-    delete singleton.memcached;
+    if (!isEmpty(Object.keys(singleton))) {
+      Object.keys(singleton).forEach(key => {
+        delete singleton[key];
+      });
+    }
   } catch (err) {
     throw new LesgoException(err.message, 'CACHE_END_EXCEPTION', 500, err);
   }
@@ -155,6 +184,7 @@ const disconnect = () => {
 };
 
 export default {
+  pConnect,
   ec,
   get,
   getMulti,
