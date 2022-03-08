@@ -51,9 +51,16 @@ export const errorHttpResponseHandler = async opts => {
   }
 
   try {
-    if (!isEmpty(opts.db)) await opts.db.end();
+    const disconnect = [];
+    if (!isEmpty(opts.cache)) disconnect.push(opts.cache.end());
+    if (!isEmpty(opts.db)) disconnect.push(opts.db.end());
+    if (!isEmpty(opts.dbRead)) disconnect.push(opts.dbRead.end());
+
+    if (disconnect.length > 0) {
+      await Promise.all(disconnect);
+    }
   } catch (err) {
-    logger.error(`${FILE}::Failed to end db connection`, err);
+    logger.error(`${FILE}::Failed to end connection`, err);
   }
 
   return {

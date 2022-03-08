@@ -91,7 +91,8 @@ export const normalizeHttpRequestBeforeHandler = (handler, next) => {
  * Normalizes handler.event.body and handler.event.queryStringParameters
  * as handler.event.input Object
  */
-const normalizeHttpRequestMiddleware /* istanbul ignore next */ = () => {
+/* istanbul ignore next */
+const normalizeHttpRequestMiddleware = () => {
   return {
     before: (handler, next) => normalizeHttpRequestBeforeHandler(handler, next),
   };

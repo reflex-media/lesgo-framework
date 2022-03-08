@@ -13,14 +13,13 @@ const FILE = 'Lesgo/services/AuroraDbRDSProxyService';
  */
 export default class AuroraDbRDSProxyService {
   constructor(opts = {}) {
-    const { host, user, password, database, persists } = opts;
+    const { host, user, password, database } = opts;
 
     this.clientOpts = {
       host,
       user,
       password,
       database,
-      persists,
     };
 
     this.conn = {};
@@ -48,7 +47,7 @@ export default class AuroraDbRDSProxyService {
         : this.clientOpts.database,
     };
 
-    const persistentConn = connectionOpts.persists || this.clientOpts.persists;
+    const persistentConn = connectionOpts.persists;
 
     logger.debug(`${FILE}::PREPARING DB CONNECTION`, {
       clientOpts,
