@@ -1,4 +1,4 @@
-name: Release Report
+name: Build
 
 on:
   push:
@@ -26,11 +26,9 @@ jobs:
         run: npm run lint
 
       - name: Jest test run with coverage and submit to Coveralls
-        run: npm run coveralls
+        run: npm run coverage
 
-      - name: Upload code coverage report
-        uses: actions/upload-artifact@v1
-        if: failure()
+      - name: Coveralls
+        uses: coverallsapp/github-action@master
         with:
-          name: coverage
-          path: coverage
+          github-token: ${{ secrets.GITHUB_TOKEN }}

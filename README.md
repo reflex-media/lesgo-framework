@@ -1,6 +1,6 @@
 # Lesgo!
 
-[![Build Status]](https://github.com/reflex-media/lesgo-framework/actions/workflows/release.yml/badge.svg)
+![Build Status](https://github.com/reflex-media/lesgo-framework/actions/workflows/release.yml/badge.svg)
 [![Coverage Status](https://coveralls.io/repos/github/reflex-media/lesgo-framework/badge.svg?branch=master)](https://coveralls.io/github/reflex-media/lesgo-framework?branch=master)
 
 Bootstrap your next microservice with a lightweight node.js serverless framework.
