@@ -47,7 +47,8 @@ export const verifyJwtMiddlewareBeforeHandler = (handler, next) => {
   }
 };
 
-const verifyJwtMiddleware /* istanbul ignore next */ = () => {
+/* istanbul ignore next */
+const verifyJwtMiddleware = () => {
   return {
     before: (handler, next) => verifyJwtMiddlewareBeforeHandler(handler, next),
   };

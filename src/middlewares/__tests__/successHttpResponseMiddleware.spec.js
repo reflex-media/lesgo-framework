@@ -112,6 +112,38 @@ describe('MiddlewareGroup: test successHttpResponseHandler middleware', () => {
 
     expect(end).toHaveBeenCalledTimes(1);
   });
+
+  it('should call dbRead.end() whenever a dbRead options is set', async () => {
+    const end = jest.fn().mockResolvedValue();
+    await successHttpResponseHandler({
+      response: 'Some message',
+      headers: {
+        'Access-Control-Allow-Credentials': false,
+        'X-Token-Id': 'token',
+      },
+      dbRead: {
+        end,
+      },
+    });
+
+    expect(end).toHaveBeenCalledTimes(1);
+  });
+
+  it('should call cache.end() whenever a cache options is set', async () => {
+    const end = jest.fn().mockResolvedValue();
+    await successHttpResponseHandler({
+      response: 'Some message',
+      headers: {
+        'Access-Control-Allow-Credentials': false,
+        'X-Token-Id': 'token',
+      },
+      cache: {
+        end,
+      },
+    });
+
+    expect(end).toHaveBeenCalledTimes(1);
+  });
 });
 
 describe('MiddlewareGroup: test successHttpResponseAfterHandler', () => {

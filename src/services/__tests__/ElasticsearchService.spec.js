@@ -28,6 +28,39 @@ describe('ServicesGroup: test ElasticsearchService', () => {
     });
   });
 
+  it('test msearch', () => {
+    const es = new ElasticsearchService(config.adapters.aws);
+    const params = [
+      { index: config.adapters.aws.index },
+      {
+        query: {
+          bool: {
+            must: { id: 123 },
+            must_not: { is_deleted: 1 },
+          },
+        },
+      },
+    ];
+
+    return expect(es.msearch(params)).resolves.toMatchObject({
+      mocked: {
+        params: {
+          body: [
+            { index: config.adapters.aws.index },
+            {
+              query: {
+                bool: {
+                  must: { id: 123 },
+                  must_not: { is_deleted: 1 },
+                },
+              },
+            },
+          ],
+        },
+      },
+    });
+  });
+
   it('test get', () => {
     const es = new ElasticsearchService(config.adapters.aws);
     return expect(es.get(1)).resolves.toMatchObject({
