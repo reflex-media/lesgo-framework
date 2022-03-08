@@ -1,10 +1,11 @@
-name: Code Coverage Report
+name: Commit Tests
 
 on:
   push:
     branches:
-      - develop
-      - 'release/**'
+      - '!develop'
+      - '!master'
+      - '!release'
 
 jobs:
   test:
@@ -26,12 +27,5 @@ jobs:
       - name: Lint check
         run: npm run lint
       
-      - name: Jest test run with coverage
-        run: npm run coverage
-
-      - name: Upload code coverage report
-        uses: actions/upload-artifact@v1
-        if: failure()
-        with:
-          name: coverage
-          path: coverage
+      - name: Jest test run
+        run: npm test
