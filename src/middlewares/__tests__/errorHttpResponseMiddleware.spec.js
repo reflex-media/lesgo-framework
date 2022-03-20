@@ -145,6 +145,36 @@ describe('MiddlewareGroup: test errorHandler middleware', () => {
 
     expect(end).toHaveBeenCalledTimes(1);
   });
+
+  it('should call cache.end() whenever a cache options is set', async () => {
+    const end = jest.fn().mockResolvedValue();
+    await errorHttpResponseHandler({
+      error: 'Test error message',
+      event: {
+        someEventKey: 'someEventValue',
+      },
+      cache: {
+        end,
+      },
+    });
+
+    expect(end).toHaveBeenCalledTimes(1);
+  });
+
+  it('should call dbRead.end() whenever a dbRead options is set', async () => {
+    const end = jest.fn().mockResolvedValue();
+    await errorHttpResponseHandler({
+      error: 'Test error message',
+      event: {
+        someEventKey: 'someEventValue',
+      },
+      dbRead: {
+        end,
+      },
+    });
+
+    expect(end).toHaveBeenCalledTimes(1);
+  });
 });
 
 describe('MiddlewareGroup: test errorHttpResponseAfterHandler', () => {
