@@ -73,6 +73,7 @@ export const errorHttpNoOutputResponseAfterHandler = async (
   next();
 };
 
+/* istanbul ignore next */
 const httpNoOutputMiddleware = opts => {
   return {
     before: (handler, next) => normalizeHttpRequestBeforeHandler(handler, next),
