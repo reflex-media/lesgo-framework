@@ -2,7 +2,6 @@ import client from 'Config/client'; // eslint-disable-line import/no-unresolved
 import crypto from 'crypto';
 import LesgoException from '../exceptions/LesgoException';
 import { errorHttpResponseAfterHandler } from './errorHttpResponseMiddleware';
-import logger from '../utils/logger';
 
 const FILE = 'Middlewares/basicAuthMiddleware';
 
@@ -57,7 +56,7 @@ const getClient = opts => {
 };
 
 const getHashFromHeaders = (headers, opts) => {
-  const basicAuth = headers.Authorization;
+  const basicAuth = headers.Authorization || headers.authorization;
 
   if (typeof basicAuth === 'undefined') {
     if (blacklistMode(opts)) {
@@ -128,10 +127,6 @@ const validateBasicAuth = (hash, siteId, clientObject, opts) => {
 };
 
 export const verifyBasicAuthBeforeHandler = (handler, next, opts) => {
-  logger.debug('SHOW EVENT', {
-    event: handler.event,
-  });
-
   const siteId = getSiteId(handler.event);
   const finalClient = getClient(opts);
   const hashFromHeader = getHashFromHeaders(handler.event.headers, opts);
