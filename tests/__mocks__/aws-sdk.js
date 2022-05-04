@@ -26,6 +26,64 @@ const SQS = jest.fn().mockImplementation(opts => {
   };
 });
 
+const SNS = jest.fn().mockImplementation(opts => {
+  return {
+    publish: jest.fn().mockImplementation(params => {
+      return {
+        promise: jest.fn().mockImplementation(() => {
+          return new Promise((resolve, reject) => {
+            if (params.Message === 'throw') {
+              return reject(new Error('test error'));
+            }
+
+            const response = {
+              ResponseMetadata: {
+                RequestId: 'RequestId',
+              },
+              MD5OfMessageBody: 'MD5OfMessageBody',
+              MessageId: 'MessageId',
+              mocked: {
+                opts,
+                params,
+              },
+            };
+            resolve(response);
+          });
+        }),
+      };
+    }),
+    getSMSAttributes: jest.fn().mockImplementation(() => {
+      return {
+        promise: jest.fn().mockImplementation(() => {
+          return new Promise(resolve => {
+            const response = {
+              attributes: {
+                key: 'value',
+              },
+            };
+            resolve(response);
+          });
+        }),
+      };
+    }),
+    setSMSAttributes: jest.fn().mockImplementation(params => {
+      return {
+        promise: jest.fn().mockImplementation(() => {
+          return new Promise(resolve => {
+            const response = {
+              mocked: params,
+            };
+            resolve(response);
+          });
+        }),
+      };
+    }),
+    mocked: {
+      ...opts,
+    },
+  };
+});
+
 const S3 = jest.fn().mockImplementation(opts => {
   return {
     getObject: jest.fn().mockImplementation(params => {
@@ -118,6 +176,7 @@ class EnvironmentCredentials {
 export {
   SQS,
   S3,
+  SNS,
   config,
   Endpoint,
   HttpRequest,
@@ -129,6 +188,7 @@ export {
 export default {
   SQS,
   S3,
+  SNS,
   config,
   Endpoint,
   HttpRequest,
