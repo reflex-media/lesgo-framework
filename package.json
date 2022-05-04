@@ -27,7 +27,8 @@
     "lint-fix": "eslint '**/*.{js,ts,jsx,tsx}' --fix"
   },
   "bin": {
-    "lesgo-scripts": "./bin/lesgo-scripts.sh"
+    "lesgo-scripts": "./bin/lesgo-scripts.sh",
+    "lesgo": "./bin/lesgo.js"
   },
   "engines": {
     "node": "12.x"
