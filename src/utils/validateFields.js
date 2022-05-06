@@ -4,30 +4,44 @@ import isDecimal from './isDecimal';
 
 const FILE = 'Utils/validateFields';
 
-export default (params, validFields) => {
+const isValidJSON = json => {
+  if (typeof json !== 'string') {
+    return false;
+  }
+
+  // Cannot find a regex solution to this
+  try {
+    JSON.parse(json);
+
+    return true;
+  } catch (_) {
+    return false;
+  }
+};
+
+const validateFields = (params, validFields) => {
   const validated = {};
 
   validFields.forEach(field => {
-    if (field.required) {
-      if (typeof params[field.key] === 'object') {
-        if (
-          Array.isArray(params[field.key]) &&
-          params[field.key].length === 0
-        ) {
+    const { required, type, key, isCollection, enumValues } = field;
+
+    if (required) {
+      if (typeof params[key] === 'object') {
+        if (Array.isArray(params[key]) && params[key].length === 0) {
           throw new LesgoException(
-            `Missing required '${field.key}'`,
-            `${FILE}::MISSING_REQUIRED_${field.key.toUpperCase()}`,
+            `Missing required '${key}'`,
+            `${FILE}::MISSING_REQUIRED_${key.toUpperCase()}`,
             500,
             { field }
           );
         }
       }
 
-      if (!params[field.key]) {
-        if (typeof params[field.key] !== 'number') {
+      if (!params[key]) {
+        if (typeof params[key] !== 'number') {
           throw new LesgoException(
-            `Missing required '${field.key}'`,
-            `${FILE}::MISSING_REQUIRED_${field.key.toUpperCase()}`,
+            `Missing required '${key}'`,
+            `${FILE}::MISSING_REQUIRED_${key.toUpperCase()}`,
             500,
             { field }
           );
@@ -35,41 +49,66 @@ export default (params, validFields) => {
       }
     }
 
-    if (
-      (field.type === 'string' &&
-        typeof params[field.key] !== 'undefined' &&
-        typeof params[field.key] !== 'string') ||
-      (field.type === 'object' &&
-        typeof params[field.key] !== 'undefined' &&
-        typeof params[field.key] !== 'object') ||
-      (field.type === 'number' &&
-        typeof params[field.key] !== 'undefined' &&
-        typeof params[field.key] !== 'number') ||
-      (field.type === 'decimal' &&
-        typeof params[field.key] !== 'undefined' &&
-        !isDecimal(params[field.key])) ||
-      (field.type === 'email' &&
-        typeof params[field.key] !== 'undefined' &&
-        !isEmail(params[field.key])) ||
-      (field.type === 'array' &&
-        typeof params[field.key] !== 'undefined' &&
-        !Array.isArray(params[field.key])) ||
-      (field.type === 'enum' &&
-        typeof params[field.key] !== 'undefined' &&
-        !field.enumValues.includes(params[field.key]))
-    ) {
-      throw new LesgoException(
-        `Invalid type for '${field.key}', expecting '${field.type}'`,
-        `${FILE}::INVALID_TYPE_${field.key.toUpperCase()}`,
-        500,
-        { field, value: params[field.key] }
-      );
+    if (isCollection) {
+      try {
+        validateFields({ [key]: params[key] }, [
+          { key, required: true, type: 'array' },
+        ]);
+      } catch (_) {
+        throw new LesgoException(
+          `Invalid type for '${key}', expecting collection of '${type}'`,
+          `${FILE}::INVALID_TYPE_${key.toUpperCase()}`,
+          500,
+          { field, value: params[key] }
+        );
+      }
     }
 
-    if (typeof params[field.key] !== 'undefined') {
-      validated[field.key] = params[field.key];
+    (isCollection ? params[key] : [params[key]]).forEach(paramsItem => {
+      if (
+        (type === 'string' &&
+          typeof paramsItem !== 'undefined' &&
+          typeof paramsItem !== 'string') ||
+        (type === 'object' &&
+          typeof paramsItem !== 'undefined' &&
+          typeof paramsItem !== 'object') ||
+        (type === 'number' &&
+          typeof paramsItem !== 'undefined' &&
+          typeof paramsItem !== 'number') ||
+        (type === 'decimal' &&
+          typeof paramsItem !== 'undefined' &&
+          !isDecimal(paramsItem)) ||
+        (type === 'email' &&
+          typeof paramsItem !== 'undefined' &&
+          !isEmail(paramsItem)) ||
+        (type === 'array' &&
+          typeof paramsItem !== 'undefined' &&
+          !Array.isArray(paramsItem)) ||
+        (type === 'enum' &&
+          typeof paramsItem !== 'undefined' &&
+          !enumValues.includes(paramsItem)) ||
+        (type === 'function' &&
+          typeof paramsItem !== 'undefined' &&
+          {}.toString.call(paramsItem) !== '[object Function]') ||
+        (type === 'json' &&
+          typeof paramsItem !== 'undefined' &&
+          !isValidJSON(paramsItem))
+      ) {
+        throw new LesgoException(
+          `Invalid type for '${key}', expecting '${type}'`,
+          `${FILE}::INVALID_TYPE_${key.toUpperCase()}`,
+          500,
+          { field, value: paramsItem }
+        );
+      }
+    });
+
+    if (typeof params[key] !== 'undefined') {
+      validated[key] = params[key];
     }
   });
 
   return validated;
 };
+
+export default validateFields;
