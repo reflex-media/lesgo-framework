@@ -25,12 +25,9 @@ if (['-h', '--help', 'help', undefined].includes(process.argv[2])) {
 
 findAndRequireCommands(function(group, commandName, command) {
   if (process.argv[2] === commandName) {
-    const signatureRegex = command.signature.replace(
-      /\{([^\}]+)\}/g,
-      '(?<$1>[^\\s]+)?'
-    );
+    const commandParams = getCommandParams(command);
 
-    console.log(signatureRegex);
+    command.handle(...commandParams);
 
     return false;
   }
@@ -107,6 +104,75 @@ function help() {
       );
     });
   }
+}
+
+function getCommandParams(command) {
+  const summary = {};
+  const optsArgs = [{}, {}];
+  const processArgs = process.argv.splice(2).join(' ');
+  const paddingRegex = '(--[^ ]+( |$))*';
+  let matches = [];
+
+  /**
+   * Created a pattern to match options in order
+   */
+  const signatureRegex = new RegExp(
+    command.signature.replace(/\{([^\}]+)\}(?:\s|$)/g, function(matched) {
+      let key = matched.trim().slice(1, -1);
+      let isArgs = false;
+
+      if ((matches = /(--)?([^\s=]+)(=)?([^\s]+)?/.exec(key))) {
+        key = matches[2];
+        const argsEquals = matches[3],
+          argsDefault = matches[4];
+        isArgs = !!matches[1];
+
+        summary[key] = {
+          boolean: isArgs && !argsEquals ? true : false,
+          default: argsDefault,
+          type: isArgs ? 'args' : 'opts',
+        };
+
+        if (isArgs) {
+          // Extract the value right away if this is an argument
+          const argsSignatureRegex = new RegExp(`.*--${key}=?([^\\s]+)?.*`);
+          let filteredValue = summary[key].boolean ? false : undefined;
+          if ((matches = argsSignatureRegex.exec(processArgs))) {
+            summary[key].value = summary[key].boolean ? true : matches[1];
+          }
+        }
+      } else {
+        throw new Error(`Invalid key '${key}' present in signature`);
+      }
+
+      return !isArgs ? `${paddingRegex}((?<${key}>(?!--)[^ ]+)( |$))?` : '';
+    }) + paddingRegex
+  );
+
+  // Match the pattern specific ones
+  if ((matches = signatureRegex.exec(processArgs))) {
+    for (var key in matches.groups) {
+      summary[key].value = matches.groups[key];
+    }
+  }
+
+  for (var key in summary) {
+    const property = summary[key];
+    let index = 0;
+    let filteredValue = property.value;
+
+    if (property.type === 'args') {
+      index = 1;
+    }
+
+    if (filteredValue === undefined) {
+      filteredValue = property.default;
+    }
+
+    optsArgs[index][key] = filteredValue;
+  }
+
+  return optsArgs;
 }
 
 function findAndRequireCommands(callback) {
