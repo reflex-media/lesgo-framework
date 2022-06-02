@@ -59,6 +59,17 @@ describe('MiddlewareGroup: test disconnectConnections db middleware', () => {
 
     expect(end).toHaveBeenCalledTimes(1);
   });
+
+  it('should return exception if failure is detected', async () => {
+    const end = jest.fn().mockImplementationOnce(() => {
+      throw new Error('Test Error');
+    });
+    await disconnectConnections({
+      db: {
+        end,
+      },
+    });
+  });
 });
 
 describe('MiddlewareGroup: test disconnectConnections dbRead middleware', () => {
