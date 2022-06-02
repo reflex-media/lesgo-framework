@@ -1,5 +1,7 @@
 import config from 'Config/jwt'; // eslint-disable-line import/no-unresolved
-import { verifyJwtMiddlewareBeforeHandler } from '../verifyJwtMiddleware';
+import verifyJwtMiddleware, {
+  verifyJwtMiddlewareBeforeHandler,
+} from '../verifyJwtMiddleware';
 import LesgoException from '../../exceptions/LesgoException';
 
 describe('MiddlewareGroup: test verifyJwtMiddleware middleware', () => {
@@ -10,6 +12,21 @@ describe('MiddlewareGroup: test verifyJwtMiddleware middleware', () => {
       body: null,
     },
   };
+
+  it('should return before object', () => {
+    const newHandler = {
+      event: {
+        ...handler.event,
+        headers: {
+          Authorization:
+            'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJpc3MiOiJkb21haW4uY29tIiwiZGVwYXJ0bWVudF9pZCI6MX0.pa2TBRqdVSFUhmiglB8SD8ImthqhqZBn0stAdNRcJ3w',
+        },
+      },
+    };
+    const result = verifyJwtMiddleware(newHandler, () => {});
+
+    expect(result).toHaveProperty('before');
+  });
 
   it('test without authorization header', () => {
     expect(() => verifyJwtMiddlewareBeforeHandler(handler, () => {})).toThrow(
