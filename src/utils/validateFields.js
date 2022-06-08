@@ -52,7 +52,7 @@ const validateFields = (params, validFields) => {
     if (isCollection) {
       try {
         validateFields({ [key]: params[key] }, [
-          { key, required: true, type: 'array' },
+          { key, required, type: 'array' },
         ]);
       } catch (_) {
         throw new LesgoException(
@@ -64,7 +64,7 @@ const validateFields = (params, validFields) => {
       }
     }
 
-    (isCollection ? params[key] : [params[key]]).forEach(paramsItem => {
+    (isCollection ? params[key] || [] : [params[key]]).forEach(paramsItem => {
       if (
         (type === 'string' &&
           typeof paramsItem !== 'undefined' &&
@@ -95,7 +95,9 @@ const validateFields = (params, validFields) => {
           !isValidJSON(paramsItem))
       ) {
         throw new LesgoException(
-          `Invalid type for '${key}', expecting '${type}'`,
+          `Invalid type for '${key}', expecting ${
+            isCollection ? 'collection of ' : ''
+          }'${type}'`,
           `${FILE}::INVALID_TYPE_${key.toUpperCase()}`,
           500,
           { field, value: paramsItem }

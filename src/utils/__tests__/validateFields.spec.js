@@ -281,6 +281,17 @@ describe('test Utils/validateFields', () => {
     }
   });
 
+  it('should ignore type when collection value check is non-required', async () => {
+    const newParams = { ...params };
+    const newValidFields = [...validFields];
+    delete newParams.statusCollection;
+    newValidFields[10].required = false;
+
+    const validated = validateFields(newParams, newValidFields);
+
+    expect(validated).toStrictEqual(newParams);
+  });
+
   it('should throw invalid type when non-enum collection value check', async () => {
     const newParams = {
       ...params,
@@ -294,7 +305,7 @@ describe('test Utils/validateFields', () => {
     } catch (e) {
       expect(e.name).toEqual('LesgoException');
       expect(e.message).toEqual(
-        `Invalid type for 'statusCollection', expecting 'enum'`
+        `Invalid type for 'statusCollection', expecting collection of 'enum'`
       );
       expect(e.code).toEqual(`${FILE}::INVALID_TYPE_STATUSCOLLECTION`);
       expect(e.extra).toStrictEqual({
