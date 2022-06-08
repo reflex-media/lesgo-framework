@@ -23,7 +23,7 @@ const validateFields = (params, validFields) => {
   const validated = {};
 
   validFields.forEach(field => {
-    const { required, type, key, isCollection, enumValues } = field;
+    const { required, type, key, isCollection, enumValues = [] } = field;
 
     if (required) {
       if (typeof params[key] === 'object') {
