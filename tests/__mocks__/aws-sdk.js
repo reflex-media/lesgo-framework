@@ -66,6 +66,17 @@ const SNS = jest.fn().mockImplementation(opts => {
         }),
       };
     }),
+    checkIfPhoneNumberIsOptedOut: jest.fn().mockImplementation(() => {
+      return {
+        promise: jest.fn().mockImplementation(() => {
+          return new Promise(resolve => {
+            resolve({
+              isOptedOut: true,
+            });
+          });
+        }),
+      };
+    }),
     setSMSAttributes: jest.fn().mockImplementation(params => {
       return {
         promise: jest.fn().mockImplementation(() => {
@@ -73,6 +84,107 @@ const SNS = jest.fn().mockImplementation(opts => {
             const response = {
               mocked: params,
             };
+            resolve(response);
+          });
+        }),
+      };
+    }),
+    createTopic: jest.fn().mockImplementation(params => {
+      return {
+        promise: jest.fn().mockImplementation(() => {
+          return new Promise(resolve => {
+            const response = {
+              TopicArn: `arn:121212/${params.Name}`,
+              mocked: params,
+            };
+            resolve(response);
+          });
+        }),
+      };
+    }),
+    listTopics: jest.fn().mockImplementation(params => {
+      return {
+        promise: jest.fn().mockImplementation(() => {
+          return new Promise(resolve => {
+            const response = {
+              Topics:
+                params.NextToken === 'next-token'
+                  ? [{ TopicArn: 'arn:343434/my-topic2' }]
+                  : [
+                      { TopicArn: 'arn:121212/my-topic' },
+                      { TopicArn: 'arn:232323/my-topic1' },
+                    ],
+            };
+
+            if (params.NextToken !== 'next-token') {
+              response.NextToken = 'next-token';
+            }
+            resolve(response);
+          });
+        }),
+      };
+    }),
+    deleteTopic: jest.fn().mockImplementation(params => {
+      return {
+        promise: jest.fn().mockImplementation(() => {
+          return new Promise(resolve => {
+            resolve({ mocked: params });
+          });
+        }),
+      };
+    }),
+    getTopicAttributes: jest.fn().mockImplementation(params => {
+      return {
+        promise: jest.fn().mockImplementation(() => {
+          return new Promise(resolve => {
+            resolve({
+              Attributes: {
+                DisplayName: `Test Topic: ${params.TopicArn}`,
+              },
+              mocked: params,
+            });
+          });
+        }),
+      };
+    }),
+    setTopicAttributes: jest.fn().mockImplementation(params => {
+      return {
+        promise: jest.fn().mockImplementation(() => {
+          return new Promise(resolve => {
+            resolve({
+              mocked: params,
+            });
+          });
+        }),
+      };
+    }),
+    subscribe: jest.fn().mockImplementation(() => {
+      return {
+        promise: jest.fn(),
+      };
+    }),
+    unsubscribe: jest.fn().mockImplementation(() => {
+      return {
+        promise: jest.fn(),
+      };
+    }),
+    listSubscriptionsByTopic: jest.fn().mockImplementation(params => {
+      return {
+        promise: jest.fn().mockImplementation(() => {
+          return new Promise(resolve => {
+            const response = {
+              Subscriptions:
+                params.NextToken === 'next-token'
+                  ? [{ SubscriptionArn: 'arn:343434/my-sub2' }]
+                  : [
+                      { SubscriptionArn: 'arn:121212/my-sub' },
+                      { SubscriptionArn: 'arn:232323/my-sub1' },
+                    ],
+            };
+
+            if (params.NextToken !== 'next-token') {
+              response.NextToken = 'next-token';
+            }
             resolve(response);
           });
         }),

@@ -97,4 +97,121 @@ export default class SNSService {
       })
       .promise();
   }
+
+  async checkIfPhoneNumberIsOptedOut(phoneNumber) {
+    return (
+      await this.snsClient
+        .checkIfPhoneNumberIsOptedOut({
+          phoneNumber,
+        })
+        .promise()
+    ).isOptedOut;
+  }
+
+  createTopic(name, attributes, tags) {
+    return this.snsClient
+      .createTopic({
+        Name: name,
+        Attributes: attributes,
+        Tags: Object.keys(tags).map(key => ({
+          Key: key,
+          Value: tags[key],
+        })),
+      })
+      .promise();
+  }
+
+  listTopics(nextToken) {
+    const params = {};
+    if (nextToken) {
+      params.NextToken = nextToken;
+    }
+
+    return this.snsClient.listTopics(params).promise();
+  }
+
+  deleteTopic(topicArn) {
+    return this.snsClient
+      .deleteTopic({
+        TopicArn: topicArn,
+      })
+      .promise();
+  }
+
+  async getTopicAttributes(topicArn) {
+    const data = await this.snsClient
+      .getTopicAttributes({
+        TopicArn: topicArn,
+      })
+      .promise();
+
+    return data.Attributes;
+  }
+
+  setTopicAttributes(topicArn, attributes) {
+    return Promise.all(
+      Object.keys(attributes).map(key =>
+        this.snsClient
+          .setTopicAttributes({
+            TopicArn: topicArn,
+            AttributeName: key,
+            AttributeValue: attributes[key],
+          })
+          .promise()
+      )
+    );
+  }
+
+  async sendToTopic(topicArn, message, attributes) {
+    console.log(attributes);
+
+    try {
+      return await this.snsClient
+        .publish({
+          Message: message,
+          TopicArn: topicArn,
+          MessageAttributes: Object.keys(attributes).reduce(
+            (acc, key) => ({
+              ...acc,
+              [key]: {
+                DataType: 'String',
+                StringValue: attributes[key],
+              },
+            }),
+            {}
+          ),
+        })
+        .promise();
+    } catch (error) {
+      throw new LesgoException(
+        'sending to Topic via SNS Class failed',
+        `SNSSERVICE_SENDING_TO_TOPIC_FAILED`,
+        500,
+        error
+      );
+    }
+  }
+
+  subscribe(topicArn, attributes, options) {
+    return this.snsClient.subscribe({
+      TopicArn: topicArn,
+      Attributes: attributes,
+      ...options,
+    });
+  }
+
+  listSubscriptionsByTopic(topicArn, nextToken) {
+    const params = {
+      TopicArn: topicArn,
+    };
+    if (nextToken) {
+      params.NextToken = nextToken;
+    }
+
+    return this.snsClient.listSubscriptionsByTopic(params).promise();
+  }
+
+  unsubscribe(subArn) {
+    return this.snsClient.unsubscribe({ SubscriptionArn: subArn }).promise();
+  }
 }
