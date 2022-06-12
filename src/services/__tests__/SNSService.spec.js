@@ -242,12 +242,12 @@ describe('ServicesGroup: test SNSService setTopicAttributes', () => {
   });
 });
 
-describe('ServicesGroup: test SNSService sendToTopic', () => {
+describe('ServicesGroup: test SNSService sendNotification', () => {
   it('should be able to send correct parameters', async () => {
     const sns = new SNSService({});
 
     expect(
-      await sns.sendToTopic('arn:1234', 'This is a message', {
+      await sns.sendNotification('arn:1234', 'This is a message', {
         Owner: '1234',
         ConfirmationWasAuthenticated: true,
       })
@@ -261,7 +261,7 @@ describe('ServicesGroup: test SNSService sendToTopic', () => {
         opts: {},
         params: {
           Message: 'This is a message',
-          TopicArn: 'arn:1234',
+          TargetArn: 'arn:1234',
           MessageAttributes: {
             Owner: {
               DataType: 'String',
@@ -277,12 +277,12 @@ describe('ServicesGroup: test SNSService sendToTopic', () => {
     });
   });
 
-  it('should throw error when sendToTopic fails', async () => {
+  it('should throw error when sendNotification fails', async () => {
     const sns = new SNSService({});
 
     try {
       expect(
-        await sns.sendToTopic('arn:1234', 'throw', { Owner: '1234' })
+        await sns.sendNotification('arn:1234', 'throw', { Owner: '1234' })
       ).toThrow();
     } catch (err) {
       expect(err.name).toEqual('LesgoException');

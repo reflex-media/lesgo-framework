@@ -29,7 +29,7 @@ export default class SNSService {
    * @param {string} message
    * @param {object} messageAttrs
    */
-  async sendSMS(toNumber, message, messageAttrs) {
+  async sendSMS(toNumber, message, messageAttrs = {}) {
     const resolvedAttrs = {
       smsType: 'AWS.SNS.SMS.SMSType',
       senderId: 'AWS.SNS.SMS.SenderID',
@@ -162,14 +162,12 @@ export default class SNSService {
     );
   }
 
-  async sendToTopic(topicArn, message, attributes) {
-    console.log(attributes);
-
+  async sendNotification(targetArn, message, attributes = {}) {
     try {
       return await this.snsClient
         .publish({
           Message: message,
-          TopicArn: topicArn,
+          TargetArn: targetArn,
           MessageAttributes: Object.keys(attributes).reduce(
             (acc, key) => ({
               ...acc,
