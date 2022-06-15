@@ -112,7 +112,6 @@ function deploy_func_check ()
 
 function deploy_func ()
 {
-    
     echo -e "${YELLOW}Deploying ${FUNCTION} to ${STAGE}${NC} using ${CONFIG}"
 
      if [ ${SERVERLESS_VERSION_NUMBER} -ge ${LATEST_SERVERLESS_VERSION_NUMBER} ]; then
@@ -164,7 +163,6 @@ function invoke_func ()
 {
     echo -e "${YELLOW}Invoking function ${FUNCTION} on ${STAGE}${NC} using ${CONFIG}"
     if [ ${INVOKE_LOCAL} == 1 ]; then
-
         if [ ${SERVERLESS_VERSION_NUMBER} -ge ${LATEST_SERVERLESS_VERSION_NUMBER} ]; then
             sls invoke local function -f ${FUNCTION} --stage ${STAGE} --param="env=${ENVFILE}" -d ${DATA} -l --config ${CONFIG}
         else
@@ -172,7 +170,6 @@ function invoke_func ()
         fi
 
     else
-
         if [ ${SERVERLESS_VERSION_NUMBER} -ge ${LATEST_SERVERLESS_VERSION_NUMBER} ]; then
             sls invoke function -f ${FUNCTION} --stage ${STAGE} --param="env=${ENVFILE}" -d ${DATA} -l --config ${CONFIG}
         else
@@ -194,7 +191,6 @@ function log_stream_func ()
 function build ()
 {
     echo -e "${YELLOW}Building bundle without deployment${NC} using ${CONFIG}"
-
     if [ ${SERVERLESS_VERSION_NUMBER} -ge ${LATEST_SERVERLESS_VERSION_NUMBER} ]; then
         sls webpack --stage ${STAGE} --param="env=${ENVFILE}" --config ${CONFIG}
     else
