@@ -25,9 +25,11 @@ export const normalizeHandler = records => {
 export const disconnectConnections = async opts => {
   try {
     const disconnect = [];
-    if (!isEmpty(opts.cache)) disconnect.push(opts.cache.end());
-    if (!isEmpty(opts.db)) disconnect.push(opts.db.end());
-    if (!isEmpty(opts.dbRead)) disconnect.push(opts.dbRead.end());
+    if (opts) {
+      if (!isEmpty(opts.cache)) disconnect.push(opts.cache.end());
+      if (!isEmpty(opts.db)) disconnect.push(opts.db.end());
+      if (!isEmpty(opts.dbRead)) disconnect.push(opts.dbRead.end());
+    }
 
     if (disconnect.length > 0) {
       await Promise.all(disconnect);

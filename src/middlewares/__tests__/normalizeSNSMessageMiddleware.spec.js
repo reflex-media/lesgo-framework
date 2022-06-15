@@ -56,6 +56,13 @@ describe('MiddlewareGroup: test disconnectConnections db middleware', () => {
     expect(end).toHaveBeenCalledTimes(0);
   });
 
+  it('should not call anything whenever no options is passed', async () => {
+    const end = jest.fn().mockResolvedValue();
+    await disconnectConnections();
+
+    expect(end).toHaveBeenCalledTimes(0);
+  });
+
   it('should not call db.end() whenever a db options is not set', async () => {
     const end = jest.fn().mockResolvedValue();
     await disconnectConnections({ db: {} });
