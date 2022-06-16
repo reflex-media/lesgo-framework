@@ -1,6 +1,10 @@
 import dataApiClient from 'data-api-client';
 import logger from '../utils/logger';
 import LesgoException from '../exceptions/LesgoException';
+import LengthAwarePaginator from './pagination/LengthAwarePaginator';
+import Paginator from './pagination/Paginator';
+
+const FILE = 'Lesgo/services/AuroraDbService';
 
 export default class AuroraDbService {
   constructor(opts = {}) {
@@ -9,20 +13,26 @@ export default class AuroraDbService {
   }
 
   connect(opts) {
-    const { secretArn, resourceArn, database } = opts;
+    const { secretArn, resourceArn, database, region } = opts;
 
-    this.client = dataApiClient({
+    const clientOpts = {
       secretArn,
       resourceArn,
       database,
-    });
+    };
+
+    if (region) {
+      clientOpts.region = region;
+    }
+
+    this.client = dataApiClient(clientOpts);
   }
 
   async query(sql, sqlParams) {
     try {
-      logger.info('QUERYING AURORA DB', { sql, sqlParams });
+      logger.debug(`${FILE}::QUERYING_DB`, { sql, sqlParams });
       const resp = await this.client.query(sql, sqlParams);
-      logger.info('AURORA DB RESPONSE', { resp });
+      logger.debug(`${FILE}::DB_RESPONSE`, { resp });
 
       return resp;
     } catch (err) {
@@ -43,6 +53,30 @@ export default class AuroraDbService {
   async selectFirst(sql, sqlParams) {
     const resp = await this.query(sql, sqlParams);
     return resp.records[0];
+  }
+
+  async selectPaginate(
+    sql,
+    sqlParams,
+    perPage = 10,
+    currentPage = 1,
+    total = null
+  ) {
+    let paginator;
+    if (typeof total === 'number') {
+      paginator = new LengthAwarePaginator(this, sql, sqlParams, {
+        perPage,
+        currentPage,
+        total,
+      });
+    } else {
+      paginator = new Paginator(this, sql, sqlParams, {
+        perPage,
+        currentPage,
+      });
+    }
+
+    return (await paginator).toObject();
   }
 
   async insert(sql, sqlParams) {

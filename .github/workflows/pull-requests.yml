@@ -1,0 +1,36 @@
+name: Pull Requests (CI)
+
+on:
+  pull_request:
+    branches:
+      - '**'
+
+jobs:
+  test:
+    name: Running jest test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Use Node.js 12.x
+        uses: actions/setup-node@v1
+        with:
+          node-version: 12.x
+
+      - name: NPM Install
+        run: npm ci
+      
+      - name: Lint check
+        run: npm run lint
+      
+      - name: Test run with coverage check
+        run: npm run coverage
+
+      - name: Upload code coverage report
+        uses: actions/upload-artifact@v1
+        if: failure()
+        with:
+          name: coverage
+          path: coverage

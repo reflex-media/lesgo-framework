@@ -1,6 +1,9 @@
 import logger from '../utils/logger';
+import isEmpty from '../utils/isEmpty';
 
-export const errorHttpResponseHandler = opts => {
+const FILE = 'Lesgo/middlewares/errorHttpResponseMiddleware';
+
+export const errorHttpResponseHandler = async opts => {
   const defaults = {
     response: '',
     statusCode: 500,
@@ -28,7 +31,7 @@ export const errorHttpResponseHandler = opts => {
     status: 'error',
     data: null,
     error: {
-      code: options.error.code || 'UNKNOWN_ERROR',
+      code: options.error.code || 'UNHANDLED_ERROR',
       message: options.error.name
         ? `${options.error.name}: ${options.error.message}`
         : options.error.message || options.error,
@@ -39,12 +42,25 @@ export const errorHttpResponseHandler = opts => {
 
   const statusCode = options.error.statusCode || options.statusCode;
 
-  /* istanbul ignore next */
-  if (statusCode === 500) {
-    // this is likely an unhandled exception, log it
-    logger.error(options.error);
+  if (!isEmpty(options.error)) {
+    logger.log(statusCode === 500 ? 'error' : 'warn', options.error);
   } else {
-    logger.warn(options.error);
+    logger.log(statusCode === 500 ? 'error' : 'warn', jsonBody.error.message, {
+      error: jsonBody.error,
+    });
+  }
+
+  try {
+    const disconnect = [];
+    if (!isEmpty(opts.cache)) disconnect.push(opts.cache.end());
+    if (!isEmpty(opts.db)) disconnect.push(opts.db.end());
+    if (!isEmpty(opts.dbRead)) disconnect.push(opts.dbRead.end());
+
+    if (disconnect.length > 0) {
+      await Promise.all(disconnect);
+    }
+  } catch (err) {
+    logger.error(`${FILE}::Failed to end connection`, err);
   }
 
   return {
@@ -54,7 +70,7 @@ export const errorHttpResponseHandler = opts => {
   };
 };
 
-export const errorHttpResponseAfterHandler = (handler, next, opts) => {
+export const errorHttpResponseAfterHandler = async (handler, next, opts) => {
   const defaults = {
     error: handler.error,
     event: handler.event,
@@ -64,7 +80,7 @@ export const errorHttpResponseAfterHandler = (handler, next, opts) => {
   const options = { ...defaults, ...opts };
 
   // eslint-disable-next-line no-param-reassign
-  handler.response = errorHttpResponseHandler(options);
+  handler.response = await errorHttpResponseHandler(options);
   /* istanbul ignore next */
   next();
 };

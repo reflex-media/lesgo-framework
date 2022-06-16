@@ -23,6 +23,16 @@ describe('test AuroraDbService instantiate', () => {
     expect(dataApiClient).toHaveBeenCalledWith(auroraConfig);
     expect(db.client.mocked).toMatchObject(auroraConfig);
   });
+
+  it('should not throw exception with custom region', () => {
+    const db = new AuroraDbService({
+      ...auroraConfig,
+      region: 'ap-southeast-1',
+    });
+
+    expect(dataApiClient).toHaveBeenCalledWith(auroraConfig);
+    expect(db.client.mocked).toMatchObject(auroraConfig);
+  });
 });
 
 describe('test AuroraDbService connect', () => {
@@ -103,6 +113,50 @@ describe('test AuroraDbService select', () => {
     return expect(
       db.select('RANDOM_QUERY', 'INVALID_QUERY_PARAMETERS')
     ).rejects.toMatchObject(error);
+  });
+});
+
+describe('test AuroraDbService selectPaginate', () => {
+  it('should return paginated records when calling selectPaginate function', async () => {
+    const db = new AuroraDbService(auroraConfig);
+    return expect(db.selectPaginate('SELECT_QUERY', {})).resolves.toMatchObject(
+      {
+        count: 2,
+        previous_page: false,
+        current_page: 1,
+        next_page: false,
+        per_page: 10,
+        items: [
+          {
+            id: 1,
+            uid: 'some-uid-1',
+          },
+          {
+            id: 2,
+            uid: 'some-uid-2',
+          },
+        ],
+      }
+    );
+  });
+
+  it('should return paginated records when calling selectPaginate with defined total', async () => {
+    const db = new AuroraDbService(auroraConfig);
+    return expect(
+      db.selectPaginate('SELECT_QUERY', {}, 1, 2, 1)
+    ).resolves.toMatchObject({
+      count: 1,
+      previous_page: 1,
+      current_page: 2,
+      next_page: 3,
+      per_page: 1,
+      items: [
+        {
+          id: 1,
+          uid: 'some-uid-1',
+        },
+      ],
+    });
   });
 });
 

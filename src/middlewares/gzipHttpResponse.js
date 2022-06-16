@@ -31,7 +31,7 @@ export const gzip = async response => {
  * Determine request origin
  */
 export const determineRequestOrigin = handler => {
-  const { requestContext } = handler.event;
+  const { requestContext = {} } = handler.event;
   let requestFrom = 'APIGATEWAY';
 
   if (requestContext.elb) {

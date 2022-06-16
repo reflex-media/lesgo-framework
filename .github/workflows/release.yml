@@ -1,0 +1,34 @@
+name: Build
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  test:
+    name: Running jest test with code coverage report
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Use Node.js 12.x
+        uses: actions/setup-node@v1
+        with:
+          node-version: 12.x
+
+      - name: NPM Install
+        run: npm ci
+
+      - name: Lint check
+        run: npm run lint
+
+      - name: Jest test run with coverage and submit to Coveralls
+        run: npm run coverage
+
+      - name: Coveralls
+        uses: coverallsapp/github-action@master
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}

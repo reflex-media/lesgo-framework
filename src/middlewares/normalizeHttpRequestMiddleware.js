@@ -1,3 +1,5 @@
+import app from 'Config/app'; // eslint-disable-line import/no-unresolved
+import getJwtSubFromAuthHeader from '../utils/getJwtSubFromAuthHeader';
 import logger from '../utils/logger';
 
 export const normalizeRequest = opts => {
@@ -40,17 +42,46 @@ export const normalizeHttpRequestBeforeHandler = (handler, next) => {
   // eslint-disable-next-line no-param-reassign
   handler.event.input = normalizeRequest(options);
 
+  const authHeader =
+    options.headers.Authorization || options.headers.authorization;
+
+  const auth = {};
+  if (authHeader) {
+    auth.sub = getJwtSubFromAuthHeader(authHeader);
+  }
+
+  // eslint-disable-next-line no-param-reassign
+  handler.event.auth = auth;
+
+  const tags = {};
+  switch (handler.event.version) {
+    case '2.0': {
+      if (handler.event.requestContext && handler.event.requestContext.http) {
+        tags.path = handler.event.requestContext.http.path;
+        tags.httpMethod = handler.event.requestContext.http.method;
+      }
+      break;
+    }
+    default:
+      tags.path = handler.event.path;
+      tags.httpMethod = handler.event.httpMethod;
+      break;
+  }
+
   logger.addMeta({
-    queryStringParameters: options.qs,
-    body: options.body,
     requestId: handler.event.requestContext
       ? handler.event.requestContext.requestId
       : null,
-    tags: {
-      path: handler.event.path,
-      httpMethod: handler.event.httpMethod,
-    },
+    tags,
   });
+
+  if (app.debug) {
+    logger.addMeta({
+      auth: handler.event.auth,
+      queryStringParameters: options.qs,
+      body: options.body,
+    });
+  }
 
   /* istanbul ignore next */
   next();
@@ -60,7 +91,8 @@ export const normalizeHttpRequestBeforeHandler = (handler, next) => {
  * Normalizes handler.event.body and handler.event.queryStringParameters
  * as handler.event.input Object
  */
-const normalizeHttpRequestMiddleware /* istanbul ignore next */ = () => {
+/* istanbul ignore next */
+const normalizeHttpRequestMiddleware = () => {
   return {
     before: (handler, next) => normalizeHttpRequestBeforeHandler(handler, next),
   };
