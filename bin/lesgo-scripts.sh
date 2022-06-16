@@ -114,7 +114,7 @@ function deploy_func ()
 {
     echo -e "${YELLOW}Deploying ${FUNCTION} to ${STAGE}${NC} using ${CONFIG}"
 
-     if [ ${SERVERLESS_VERSION_NUMBER} -ge ${LATEST_SERVERLESS_VERSION_NUMBER} ]; then
+    if [ ${SERVERLESS_VERSION_NUMBER} -ge ${LATEST_SERVERLESS_VERSION_NUMBER} ]; then
         sls deploy function -f ${FUNCTION} --stage ${STAGE} --param="env=${ENVFILE}" --config ${CONFIG}
     else
         sls deploy  -f ${FUNCTION} --stage ${STAGE} --env ${ENVFILE} --config ${CONFIG}
@@ -213,7 +213,11 @@ function prompt_confirmation_destroy_service ()
 function destroy_service ()
 {
     echo -e "${YELLOW}Removing service to ${STAGE}${NC}"
-    sls remove --stage ${STAGE} --param="env=${ENVFILE}" --config ${CONFIG}
+    if [ ${SERVERLESS_VERSION_NUMBER} -ge ${LATEST_SERVERLESS_VERSION_NUMBER} ]; then
+        sls remove --stage ${STAGE} --param="env=${ENVFILE}" --config ${CONFIG}
+    else
+        sls remove --stage ${STAGE} --env ${ENVFILE} --config ${CONFIG}
+    fi
 }
 
 ###############################################################################
