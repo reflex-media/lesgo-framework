@@ -103,7 +103,7 @@ const getHashFromHeaders = (headers, opts) => {
 };
 
 const validateBasicAuth = (hash, siteId, clientObject, opts) => {
-  const site = Object.keys(clientObject).filter(clientCode => {
+  const site = Object.keys(clientObject).find(clientCode => {
     const hashIsEquals =
       generateBasicAuthorizationHash(
         clientObject[clientCode].key,
@@ -113,10 +113,7 @@ const validateBasicAuth = (hash, siteId, clientObject, opts) => {
     return siteId === clientCode && hashIsEquals;
   });
 
-  if (
-    site.length <= 0 &&
-    (hash.length > 0 || (hash.length <= 0 && blacklistMode(opts)))
-  ) {
+  if (!site && (hash.length > 0 || (hash.length <= 0 && blacklistMode(opts)))) {
     throw new LesgoException(
       'Invalid client key or secret provided',
       `${FILE}::AUTH_INVALID_CLIENT_OR_SECRET_KEY`,
