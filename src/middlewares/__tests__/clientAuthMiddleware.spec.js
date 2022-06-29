@@ -4,6 +4,7 @@ import clientAuthMiddleware, {
 
 describe('test authMiddleware', () => {
   test('should return object', async () => {
+    // eslint-disable-next-line no-unused-vars
     const result = clientAuthMiddleware();
     expect(result).toHaveProperty('before');
     expect(result).toHaveProperty('onError');
@@ -94,5 +95,43 @@ describe('test clientMiddlewareBeforeHandler', () => {
     }
 
     expect(hasError).toBe(false);
+  });
+
+  test('should execute passed callback function', async () => {
+    const handler = {
+      event: {
+        headers: {},
+        input: {
+          clientid: '1111-1111-1111-1111',
+        },
+      },
+    };
+
+    await clientAuthMiddlewareBeforeHandler(handler, next, h => {
+      // eslint-disable-next-line no-param-reassign
+      h.event.created_obj = 'created_obj';
+    });
+
+    expect(handler.event).toHaveProperty('created_obj');
+  });
+
+  test('should execute passed top object with callback function', async () => {
+    const handler = {
+      event: {
+        headers: {},
+        input: {
+          clientid: '1111-1111-1111-1111',
+        },
+      },
+    };
+
+    await clientAuthMiddlewareBeforeHandler(handler, next, {
+      callback: h => {
+        // eslint-disable-next-line no-param-reassign
+        h.event.created_obj = 'created_obj';
+      },
+    });
+
+    expect(handler.event).toHaveProperty('created_obj');
   });
 });

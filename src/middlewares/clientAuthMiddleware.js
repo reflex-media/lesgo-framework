@@ -32,7 +32,11 @@ const getClientKey = event => {
   return undefined;
 };
 
-export const clientAuthMiddlewareBeforeHandler = (handler, next, opt = {}) => {
+export const clientAuthMiddlewareBeforeHandler = (
+  handler,
+  next,
+  opt = undefined
+) => {
   const validated = validateParams({
     'x-client-id': getClientKey(handler.event),
     client,
