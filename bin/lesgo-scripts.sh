@@ -93,23 +93,21 @@ NC='\033[0m';
 # FUNCTION DECLARATIONS                                                       #
 #                                                                             #
 ###############################################################################
-
-GET_SERVERLESS_VERSION=`npm ls serverless`
+CURRENT_SERVERLESS_VERSION=`npm ls serverless`
+GET_SERVERLESS_VERSION=`npm ll -p serverless | grep -o "@.*"`
 LATEST_SERVERLESS_VERSION_NUMBER=3
 
 if [ -z "$GET_SERVERLESS_VERSION" ]
 then
-    GET_SERVERLESS_VERSION=`npm view serverless version`
-    SERVERLESS_VERSION_NUMBER=$((${GET_SERVERLESS_VERSION:0:1}  + 0))
+    CURRENT_SERVERLESS_VERSION=`npm view serverless version`
+    SERVERLESS_VERSION_NUMBER=$((${CURRENT_SERVERLESS_VERSION:0:1}  + 0))
 else
-    SERVERLESS_VERSION=${GET_SERVERLESS_VERSION#*└──}
-    SERVERLESS_VERSION_TMP=${SERVERLESS_VERSION#*@}
-    SERVERLESS_VERSION_NUMBER=${SERVERLESS_VERSION_TMP%%.*}
+    SERVERLESS_VERSION=${GET_SERVERLESS_VERSION#*@}
+    SERVERLESS_VERSION_NUMBER=${SERVERLESS_VERSION%%.*}
 fi
 
-echo -e "Running Serverless version:\n${GET_SERVERLESS_VERSION}\n"
+echo -e "Running Serverless version:\n${CURRENT_SERVERLESS_VERSION}\n"
 echo -e "Current Serverless version: ${SERVERLESS_VERSION_NUMBER}\n"
-
 
 function deploy_func_check ()
 {
