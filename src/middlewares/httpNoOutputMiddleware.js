@@ -10,7 +10,7 @@ const successHttpNoOutputResponseHandler = async opts => {
   const response = await successHttpResponseHandler(opts);
 
   /* istanbul ignore next */
-  if (!debug || !opts.allowDebug(opts)) {
+  if (!debug && !opts.allowResponse(opts)) {
     response.body = null;
   }
 
@@ -25,7 +25,7 @@ export const successHttpNoOutputResponseAfterHandler = async (
   const defaults = {
     response: handler.response,
     event: handler.event,
-    allowDebug: () => true,
+    allowResponse: () => false,
   };
   const options = { ...defaults, ...opts };
 
@@ -45,7 +45,7 @@ const errorHttpResponseNoOutputHandler = async opts => {
     debugMode: opts.debugMode || debug,
   });
 
-  if (!debug || !opts.allowDebug(opts)) {
+  if (!debug && !opts.allowResponse(opts)) {
     response.statusCode = 200;
     response.body = null;
   }
@@ -62,7 +62,7 @@ export const errorHttpNoOutputResponseAfterHandler = async (
     error: handler.error,
     event: handler.event,
     logger: console.error, // eslint-disable-line no-console
-    allowDebug: () => true,
+    allowResponse: () => false,
   };
 
   const options = { ...defaults, ...opts };
