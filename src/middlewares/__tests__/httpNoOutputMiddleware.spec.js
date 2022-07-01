@@ -9,7 +9,6 @@ describe('MiddlewareGroup: test successHttpNoOutputResponseAfterHandler', () => 
     const handler = {
       response: {},
       event: {},
-      allowDebug: () => true,
     };
 
     await successHttpNoOutputResponseAfterHandler(handler, () => {}, {
@@ -28,7 +27,6 @@ describe('MiddlewareGroup: test successHttpNoOutputResponseAfterHandler', () => 
         },
         someEventKey: 'someEventValue',
       },
-      allowDebug: () => true,
     };
 
     await successHttpNoOutputResponseAfterHandler(handler, () => {}, {
@@ -56,7 +54,6 @@ describe('MiddlewareGroup: test successHttpNoOutputResponseAfterHandler', () => 
         },
         someEventKey: 'someEventValue',
       },
-      allowDebug: () => true,
     };
 
     await successHttpNoOutputResponseAfterHandler(handler, () => {}, {
@@ -67,24 +64,31 @@ describe('MiddlewareGroup: test successHttpNoOutputResponseAfterHandler', () => 
     app.debug = true;
   });
 
-  it('should return no response when allowDebug overrides to return false via options', async () => {
+  it('should return a response when allowResponse override is passed via options', async () => {
+    app.debug = false;
+
     const handler = {
       response: {},
       event: {
-        queryStringParameters: {
-          debug: '1',
-        },
         someEventKey: 'someEventValue',
       },
-      allowDebug: () => true,
     };
 
     await successHttpNoOutputResponseAfterHandler(handler, () => {}, {
       response: 'Some message',
-      allowDebug: () => false,
+      allowResponse: () => true,
     });
     expect(handler.response).toHaveProperty('statusCode', 200);
-    expect(handler.response).toHaveProperty('body', null);
+    expect(handler.response).toHaveProperty(
+      'body',
+      JSON.stringify({
+        status: 'success',
+        data: 'Some message',
+        _meta: {},
+      })
+    );
+
+    app.debug = true;
   });
 });
 
@@ -93,7 +97,6 @@ describe('MiddlewareGroup: test errorHttpNoOutputResponseAfterHandler', () => {
     const handler = {
       response: {},
       event: {},
-      allowDebug: () => true,
     };
 
     await errorHttpNoOutputResponseAfterHandler(handler, () => {}, {
@@ -112,7 +115,6 @@ describe('MiddlewareGroup: test errorHttpNoOutputResponseAfterHandler', () => {
         },
         someEventKey: 'someEventValue',
       },
-      allowDebug: () => true,
     };
 
     await errorHttpNoOutputResponseAfterHandler(handler, () => {}, {
@@ -150,7 +152,6 @@ describe('MiddlewareGroup: test errorHttpNoOutputResponseAfterHandler', () => {
         },
         someEventKey: 'someEventValue',
       },
-      allowDebug: () => true,
     };
 
     await errorHttpNoOutputResponseAfterHandler(handler, () => {}, {
@@ -161,7 +162,9 @@ describe('MiddlewareGroup: test errorHttpNoOutputResponseAfterHandler', () => {
     app.debug = true;
   });
 
-  it('should return no response when allowDebug overrides to return false via options', async () => {
+  it('should return a response when allowResponse override is passed via options', async () => {
+    app.debug = false;
+
     const handler = {
       response: {},
       event: {
@@ -170,14 +173,27 @@ describe('MiddlewareGroup: test errorHttpNoOutputResponseAfterHandler', () => {
         },
         someEventKey: 'someEventValue',
       },
-      allowDebug: () => true,
     };
 
     await errorHttpNoOutputResponseAfterHandler(handler, () => {}, {
       error: new Error('Test validation error'),
-      allowDebug: () => false,
+      allowResponse: () => true,
     });
-    expect(handler.response).toHaveProperty('statusCode', 200);
-    expect(handler.response).toHaveProperty('body', null);
+    expect(handler.response).toHaveProperty('statusCode', 500);
+    expect(handler.response).toHaveProperty(
+      'body',
+      JSON.stringify({
+        status: 'error',
+        data: null,
+        error: {
+          code: 'UNHANDLED_ERROR',
+          message: 'Error: Test validation error',
+          details: '',
+        },
+        _meta: {},
+      })
+    );
+
+    app.debug = false;
   });
 });
