@@ -30,7 +30,7 @@
     "lesgo-scripts": "./bin/lesgo-scripts.sh"
   },
   "engines": {
-    "node": "12.x"
+    "node": ">=12.0.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.17.6",
