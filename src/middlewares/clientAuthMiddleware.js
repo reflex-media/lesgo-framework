@@ -1,5 +1,4 @@
 import client from 'Config/client'; // eslint-disable-line import/no-unresolved
-import { errorHttpResponseAfterHandler } from './errorHttpResponseMiddleware';
 import validateFields from '../utils/validateFields';
 import { LesgoException } from '../exceptions';
 
@@ -75,7 +74,6 @@ const clientAuthMiddleware = opt => {
   return {
     before: (handler, next) =>
       clientAuthMiddlewareBeforeHandler(handler, next, opt),
-    onError: (handler, next) => errorHttpResponseAfterHandler(handler, next),
   };
 };
 
