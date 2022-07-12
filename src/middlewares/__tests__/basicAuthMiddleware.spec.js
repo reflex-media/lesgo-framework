@@ -21,7 +21,6 @@ describe('test basicAuthMiddleware middleware', () => {
     });
 
     expect(result).toHaveProperty('before');
-    expect(result).toHaveProperty('onError');
   });
 });
 
