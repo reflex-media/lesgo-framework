@@ -42,7 +42,7 @@ const getClient = opts => {
     return opts.client;
   }
 
-  return client;
+  return client.clients;
 };
 
 const getHashFromHeaders = (headers, opts) => {

@@ -6,7 +6,7 @@ const FILE = 'Middlewares/clientAuthMiddleware';
 
 const validateParams = params => {
   const validFields = [
-    { key: 'x-client-id', type: 'string', required: true },
+    { key: client.headerKey, type: 'string', required: true },
     { key: 'client', type: 'object', required: true },
   ];
 
@@ -20,8 +20,8 @@ const validateParams = params => {
 };
 
 const getClientKey = event => {
-  if (typeof event.headers['x-client-id'] === 'string') {
-    return event.headers['x-client-id'];
+  if (typeof event.headers[client.headerKey] === 'string') {
+    return event.headers[client.headerKey];
   }
 
   if (event.input && typeof event.input.clientid === 'string') {
@@ -37,11 +37,11 @@ export const clientAuthMiddlewareBeforeHandler = (
   opt = undefined
 ) => {
   const validated = validateParams({
-    'x-client-id': getClientKey(handler.event),
-    client,
+    [client.headerKey]: getClientKey(handler.event),
+    client: client.clients,
   });
 
-  const clientKey = validated['x-client-id'];
+  const clientKey = validated[client.headerKey];
 
   const platform = Object.keys(validated.client).filter(clientPlatform => {
     return validated.client[clientPlatform].key === clientKey;
