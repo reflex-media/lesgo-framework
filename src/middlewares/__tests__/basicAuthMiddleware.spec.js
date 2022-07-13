@@ -170,38 +170,11 @@ describe('test verifyBasicAuthBeforeHandler with valid credentials', () => {
 
   test.each`
     siteObjects
-    ${{}}
-    ${{ site: { id: undefined } }}
-    ${{ requestContext: { site: { id: undefined } } }}
-    ${{ platform: undefined }}
-  `('test Exception with no site ID', ({ siteObjects }) => {
-    const handler = {
-      event: {
-        headers: {
-          Authorization: `basic ${validBasicAuth}`,
-        },
-        ...siteObjects,
-      },
-    };
-
-    try {
-      expect(verifyBasicAuthBeforeHandler(handler, next)).toThrow();
-    } catch (error) {
-      expect(error.name).toBe('LesgoException');
-      expect(error.message).toBe('Site ID could not be found');
-      expect(error.statusCode).toBe(403);
-      expect(error.code).toBe(
-        'Middlewares/basicAuthMiddleware::SITE_ID_NOT_FOUND'
-      );
-    }
-  });
-
-  test.each`
-    siteObjects
     ${{ site: { id: 'platform_2' } }}
     ${{ requestContext: { site: { id: 'platform_2' } } }}
     ${{ requestContext: { site: { id: undefined } }, platform: 'platform_2' }}
     ${{ platform: 'platform_2' }}
+    ${{}}
   `('valid site ids', ({ siteObjects }) => {
     const handler = {
       event: {
