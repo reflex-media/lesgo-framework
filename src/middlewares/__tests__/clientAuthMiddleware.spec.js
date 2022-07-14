@@ -7,7 +7,6 @@ describe('test authMiddleware', () => {
     // eslint-disable-next-line no-unused-vars
     const result = clientAuthMiddleware();
     expect(result).toHaveProperty('before');
-    expect(result).toHaveProperty('onError');
   });
 });
 

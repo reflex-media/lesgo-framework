@@ -21,7 +21,6 @@ describe('test basicAuthMiddleware middleware', () => {
     });
 
     expect(result).toHaveProperty('before');
-    expect(result).toHaveProperty('onError');
   });
 });
 
@@ -33,7 +32,7 @@ describe('test verifyBasicAuthBeforeHandler error handling', () => {
     'base64'
   );
   const invalidSecretKey = Buffer.from(
-    `${client.platform_2.key}:secret_key`
+    `${client.clients.platform_2.key}:secret_key`
   ).toString('base64');
 
   test.each`
@@ -93,8 +92,8 @@ describe('test verifyBasicAuthBeforeHandler error handling', () => {
 describe('test verifyBasicAuthBeforeHandler with valid credentials', () => {
   const validBasicAuth = Buffer.from(
     generateBasicAuthorizationHash(
-      client.platform_2.key,
-      client.platform_2.secret
+      client.clients.platform_2.key,
+      client.clients.platform_2.secret
     )
   ).toString('base64');
 

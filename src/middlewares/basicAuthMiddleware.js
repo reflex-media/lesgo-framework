@@ -1,7 +1,6 @@
 import client from 'Config/client'; // eslint-disable-line import/no-unresolved
 import crypto from 'crypto';
 import LesgoException from '../exceptions/LesgoException';
-import { errorHttpResponseAfterHandler } from './errorHttpResponseMiddleware';
 
 const FILE = 'Middlewares/basicAuthMiddleware';
 
@@ -43,7 +42,7 @@ const getClient = opts => {
     return opts.client;
   }
 
-  return client;
+  return client.clients;
 };
 
 const getHashFromHeaders = (headers, opts) => {
@@ -129,7 +128,6 @@ const basicAuthMiddleware = opts => {
   return {
     before: (handler, next) =>
       verifyBasicAuthBeforeHandler(handler, next, opts),
-    onError: (handler, next) => errorHttpResponseAfterHandler(handler, next),
   };
 };
 

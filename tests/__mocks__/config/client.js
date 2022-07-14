@@ -1,26 +1,47 @@
 export default {
-  platform_1: {
-    key: '1111-1111-1111-1111',
-    secret: '1111-1111-1111-1111',
-  },
-  platform_2: {
-    key: '2222-2222-2222-2222',
-    secret: '2222-2222-2222-2222',
-  },
-  platform_3: {
-    key: '3333-3333-3333-3333',
-    secret: '3333-3333-3333-3333',
-  },
-  platform_4: {
-    key: '4444-4444-4444-4444',
-    secret: '4444-4444-4444-4444',
-  },
-  platform_5: {
-    key: '5555-5555-5555-5555',
-    secret: '5555-5555-5555-5555',
-  },
-  platform_6: {
-    key: '6666-6666-6666-6666',
-    secret: '6666-6666-6666-6666',
+  /*
+   *--------------------------------------------------------------------------
+   * Default Header value
+   *--------------------------------------------------------------------------
+   *
+   * Here you may specify what header key to use to pass for client identificaiton.
+   */
+  headerKey: 'x-client-id',
+
+  /*
+   *--------------------------------------------------------------------------
+   * Clients
+   *--------------------------------------------------------------------------
+   *
+   * Here are each of the clients setup to have access to your application.
+   * `key` property is used for external identification, while the key is used for internal.
+   * Both `key` and `secret` are used for Basic authentication.
+   * Other user-defined propoerties can defined as well for access under `handler.event.platform`, when a match exists.
+   */
+  clients: {
+    platform_1: {
+      key: '1111-1111-1111-1111',
+      secret: '1111-1111-1111-1111',
+    },
+    platform_2: {
+      key: '2222-2222-2222-2222',
+      secret: '2222-2222-2222-2222',
+    },
+    platform_3: {
+      key: '3333-3333-3333-3333',
+      secret: '3333-3333-3333-3333',
+    },
+    platform_4: {
+      key: '4444-4444-4444-4444',
+      secret: '4444-4444-4444-4444',
+    },
+    platform_5: {
+      key: '5555-5555-5555-5555',
+      secret: '5555-5555-5555-5555',
+    },
+    platform_6: {
+      key: '6666-6666-6666-6666',
+      secret: '6666-6666-6666-6666',
+    },
   },
 };
