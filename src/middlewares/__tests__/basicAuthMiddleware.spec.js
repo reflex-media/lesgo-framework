@@ -169,9 +169,6 @@ describe('test verifyBasicAuthBeforeHandler with valid credentials', () => {
 
   test.each`
     siteObjects
-    ${{ site: { id: 'platform_2' } }}
-    ${{ requestContext: { site: { id: 'platform_2' } } }}
-    ${{ requestContext: { site: { id: undefined } }, platform: 'platform_2' }}
     ${{ platform: 'platform_2' }}
     ${{}}
   `('valid site ids', ({ siteObjects }) => {

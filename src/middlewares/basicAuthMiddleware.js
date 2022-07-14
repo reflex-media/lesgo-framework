@@ -19,24 +19,6 @@ export const generateBasicAuthorizationHash = (key, secret) => {
     .digest('hex');
 };
 
-const getSiteId = event => {
-  let siteId;
-
-  if (event.site && event.site.id) {
-    siteId = event.site.id;
-  } else if (
-    event.requestContext &&
-    event.requestContext.site &&
-    event.requestContext.site.id
-  ) {
-    siteId = event.requestContext.site.id;
-  } else if (event.platform) {
-    siteId = event.platform;
-  }
-
-  return siteId;
-};
-
 const getClient = opts => {
   if (opts && opts.client && Object.keys(opts.client).length > 0) {
     return opts.client;
@@ -114,11 +96,10 @@ const validateBasicAuth = (hash, clientObject, opts, siteId = undefined) => {
 };
 
 export const verifyBasicAuthBeforeHandler = (handler, next, opts) => {
-  const siteId = getSiteId(handler.event);
   const finalClient = getClient(opts);
   const hashFromHeader = getHashFromHeaders(handler.event.headers, opts);
 
-  validateBasicAuth(hashFromHeader, finalClient, opts, siteId);
+  validateBasicAuth(hashFromHeader, finalClient, opts, handler.event.platform);
 
   next();
 };
