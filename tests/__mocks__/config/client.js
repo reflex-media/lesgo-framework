@@ -6,7 +6,19 @@ export default {
    *
    * Here you may specify what header key to use to pass for client identificaiton.
    */
-  headerKey: 'x-client-id',
+  headerKeys: ['x-client-id', 'X-Client-Id'],
+
+  /*
+   *--------------------------------------------------------------------------
+   * Callback on Success
+   *--------------------------------------------------------------------------
+   *
+   * Here you may call a callback after a successful verification is confirmed
+   */
+  callback: h => {
+    // eslint-disable-next-line no-param-reassign
+    h.event.created_obj = 'created_obj';
+  },
 
   /*
    *--------------------------------------------------------------------------

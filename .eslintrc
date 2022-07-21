@@ -11,5 +11,8 @@
     "import/no-extraneous-dependencies": "off",
     "consistent-return": "off",
     "no-plusplus": [2, { "allowForLoopAfterthoughts": true }]
+  },
+  "parserOptions": {
+    "ecmaVersion": 2020
   }
 }
