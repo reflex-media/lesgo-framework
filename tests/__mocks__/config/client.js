@@ -28,7 +28,16 @@ export default {
    * Here are each of the clients setup to have access to your application.
    * `key` property is used for external identification, while the key is used for internal.
    * Both `key` and `secret` are used for Basic authentication.
-   * Other user-defined propoerties can defined as well for access under `handler.event.platform`, when a match exists.
+   *
+   * `isAuthOptional` propoerty can be passed as well, which skips authentication whenever basic auth is not provided,
+   * and only throws an authentication error when a basic auth is provided with incorrect credentials
+   *
+   * Other user-defined propoerties can defined as well for access when a match exists
+   * ```
+   * import client from 'Config/client';
+   *
+   * console.log(client[handler.event.platform]);
+   * ```
    */
   clients: {
     platform_1: {
@@ -54,6 +63,10 @@ export default {
     platform_6: {
       key: '6666-6666-6666-6666',
       secret: '6666-6666-6666-6666',
+    },
+    blacklist_platform: {
+      key: '7777-7777-7777-7777',
+      isAuthOptional: true,
     },
   },
 };

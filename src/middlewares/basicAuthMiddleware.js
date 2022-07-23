@@ -4,14 +4,6 @@ import LesgoException from '../exceptions/LesgoException';
 
 const FILE = 'Middlewares/basicAuthMiddleware';
 
-const blacklistMode = opts => {
-  if (opts && typeof opts.blacklistMode !== 'undefined') {
-    return !!opts.blacklistMode;
-  }
-
-  return true;
-};
-
 export const generateBasicAuthorizationHash = (key, secret) => {
   return crypto
     .createHash('sha1')
@@ -27,19 +19,10 @@ const getClient = opts => {
   return client.clients;
 };
 
-const getHashFromHeaders = (headers, opts) => {
+const getHashFromHeaders = headers => {
   const basicAuth = headers.Authorization || headers.authorization;
 
   if (typeof basicAuth === 'undefined') {
-    if (blacklistMode(opts)) {
-      throw new LesgoException(
-        'Authorization header not found',
-        `${FILE}::AUTHORIZATION_HEADER_NOT_FOUND`,
-        403,
-        'Ensure you are have provided the basic authentication code using Authorization header'
-      );
-    }
-
     return '';
   }
 
@@ -85,7 +68,7 @@ const validateBasicAuth = (hash, clientObject, opts, siteId = undefined) => {
     return siteId ? siteId === clientCode && hashIsEquals : hashIsEquals;
   });
 
-  if (!site && (hash.length > 0 || (hash.length <= 0 && blacklistMode(opts)))) {
+  if (!site) {
     throw new LesgoException(
       'Invalid client key or secret provided',
       `${FILE}::AUTH_INVALID_CLIENT_OR_SECRET_KEY`,
@@ -96,10 +79,29 @@ const validateBasicAuth = (hash, clientObject, opts, siteId = undefined) => {
 };
 
 export const verifyBasicAuthBeforeHandler = (handler, next, opts) => {
+  const { headers, platform } = handler.event;
   const finalClient = getClient(opts);
-  const hashFromHeader = getHashFromHeaders(handler.event.headers, opts);
+  const hashFromHeader = getHashFromHeaders(headers);
 
-  validateBasicAuth(hashFromHeader, finalClient, opts, handler.event.platform);
+  if (hashFromHeader) {
+    validateBasicAuth(
+      hashFromHeader,
+      finalClient,
+      opts,
+      handler.event.platform
+    );
+  } else if (!platform || !finalClient[platform]?.isAuthOptional) {
+    /**
+     * An error will occur only when either the platform could not be determined, assuming a basic auth is needed.
+     * Or whenever the platform could be determined, but `isAuthOptional` is not set for that platform
+     */
+    throw new LesgoException(
+      'Authorization header not found',
+      `${FILE}::AUTHORIZATION_HEADER_NOT_FOUND`,
+      403,
+      'Ensure you are have provided the basic authentication code using Authorization header'
+    );
+  }
 
   next();
 };
