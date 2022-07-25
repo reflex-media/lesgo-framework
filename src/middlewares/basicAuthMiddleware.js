@@ -78,10 +78,14 @@ const validateBasicAuth = (hash, clientObject, opts, siteId = undefined) => {
   }
 };
 
-export const verifyBasicAuthBeforeHandler = (handler, next, opts) => {
+export const verifyBasicAuthBeforeHandler = async (handler, next, opts) => {
   const { headers, platform } = handler.event;
   const finalClient = getClient(opts);
   const hashFromHeader = getHashFromHeaders(headers);
+  const isAuthOptional =
+    typeof finalClient[platform]?.isAuthOptional?.then === 'function'
+      ? await finalClient[platform].isAuthOptional
+      : finalClient[platform]?.isAuthOptional;
 
   if (hashFromHeader) {
     validateBasicAuth(
@@ -90,10 +94,10 @@ export const verifyBasicAuthBeforeHandler = (handler, next, opts) => {
       opts,
       handler.event.platform
     );
-  } else if (!platform || !finalClient[platform]?.isAuthOptional) {
+  } else if (!platform || !isAuthOptional) {
     /**
      * An error will occur only when either the platform could not be determined, assuming a basic auth is needed.
-     * Or whenever the platform could be determined, but `isAuthOptional` is not set for that platform
+     * Or whenever the platform could be determined, but `isAuthOptional` is not true for that platform
      */
     throw new LesgoException(
       'Authorization header not found',

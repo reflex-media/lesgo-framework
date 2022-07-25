@@ -54,6 +54,11 @@ describe('test verifyBasicAuthBeforeHandler error handling', () => {
     ${{ Authorization: `basic ${invalidClientKey}` }} | ${'LesgoException'} | ${'Invalid client key or secret provided'}    | ${403}          | ${'Middlewares/basicAuthMiddleware::AUTH_INVALID_CLIENT_OR_SECRET_KEY'} | ${'blacklist_platform'}
     ${{ Authorization: `basic ${invalidSecretKey}` }} | ${'LesgoException'} | ${'Invalid client key or secret provided'}    | ${403}          | ${'Middlewares/basicAuthMiddleware::AUTH_INVALID_CLIENT_OR_SECRET_KEY'} | ${'blacklist_platform'}
     ${{ Authorization: `Basic ${invalidSecretKey}` }} | ${'LesgoException'} | ${'Invalid client key or secret provided'}    | ${403}          | ${'Middlewares/basicAuthMiddleware::AUTH_INVALID_CLIENT_OR_SECRET_KEY'} | ${'blacklist_platform'}
+    ${{ Authorization: 'auth' }}                      | ${'LesgoException'} | ${'Invalid authorization type provided'}      | ${403}          | ${'Middlewares/basicAuthMiddleware::AUTH_INVALID_AUTHORIZATION_TYPE'}   | ${'blacklist_platform_1'}
+    ${{ Authorization: 'basic ' }}                    | ${'LesgoException'} | ${'Empty basic authentication hash provided'} | ${403}          | ${'Middlewares/basicAuthMiddleware::AUTH_EMPTY_BASIC_HASH'}             | ${'blacklist_platform_1'}
+    ${{ Authorization: `basic ${invalidClientKey}` }} | ${'LesgoException'} | ${'Invalid client key or secret provided'}    | ${403}          | ${'Middlewares/basicAuthMiddleware::AUTH_INVALID_CLIENT_OR_SECRET_KEY'} | ${'blacklist_platform_1'}
+    ${{ Authorization: `basic ${invalidSecretKey}` }} | ${'LesgoException'} | ${'Invalid client key or secret provided'}    | ${403}          | ${'Middlewares/basicAuthMiddleware::AUTH_INVALID_CLIENT_OR_SECRET_KEY'} | ${'blacklist_platform_1'}
+    ${{ Authorization: `Basic ${invalidSecretKey}` }} | ${'LesgoException'} | ${'Invalid client key or secret provided'}    | ${403}          | ${'Middlewares/basicAuthMiddleware::AUTH_INVALID_CLIENT_OR_SECRET_KEY'} | ${'blacklist_platform_1'}
   `(
     'should throw $errorMessage when authorization header is $headers',
     async ({
@@ -72,7 +77,7 @@ describe('test verifyBasicAuthBeforeHandler error handling', () => {
       };
 
       try {
-        expect(verifyBasicAuthBeforeHandler(handler, next)).toThrow();
+        expect(await verifyBasicAuthBeforeHandler(handler, next)).toThrow();
       } catch (error) {
         expect(error.name).toBe(errorName);
         expect(error.message).toBe(errorMessage);
@@ -101,7 +106,7 @@ describe('test verifyBasicAuthBeforeHandler with valid credentials', () => {
     secret: '2222-2222-2222-2222',
   },
 }}
-  `('should return undefined when successful', ({ clientObj }) => {
+  `('should return undefined when successful', async ({ clientObj }) => {
     const handler = {
       event: {
         headers: {
@@ -116,7 +121,7 @@ describe('test verifyBasicAuthBeforeHandler with valid credentials', () => {
     let hasError = false;
 
     try {
-      verifyBasicAuthBeforeHandler(handler, next, {
+      await verifyBasicAuthBeforeHandler(handler, next, {
         client: clientObj,
       });
     } catch (e) {
@@ -129,36 +134,40 @@ describe('test verifyBasicAuthBeforeHandler with valid credentials', () => {
   test.each`
     Authorization                | platform
     ${undefined}                 | ${'blacklist_platform'}
+    ${undefined}                 | ${'blacklist_platform_1'}
     ${`basic ${validBasicAuth}`} | ${'platform_2'}
     ${`Basic ${validBasicAuth}`} | ${'platform_2'}
     ${`basic ${validBasicAuth}`} | ${'platform_2'}
     ${`Basic ${validBasicAuth}`} | ${'platform_2'}
-  `('test Exception with valid credentials', ({ Authorization, platform }) => {
-    const handler = {
-      event: {
-        headers: {
-          Authorization,
+  `(
+    'test Exception with valid credentials',
+    async ({ Authorization, platform }) => {
+      const handler = {
+        event: {
+          headers: {
+            Authorization,
+          },
+          platform,
         },
-        platform,
-      },
-    };
+      };
 
-    let hasError = false;
+      let hasError = false;
 
-    try {
-      verifyBasicAuthBeforeHandler(handler, next);
-    } catch (e) {
-      hasError = true;
+      try {
+        await verifyBasicAuthBeforeHandler(handler, next);
+      } catch (e) {
+        hasError = true;
+      }
+
+      expect(hasError).toBeFalsy();
     }
-
-    expect(hasError).toBeFalsy();
-  });
+  );
 
   test.each`
     siteObjects
     ${{ platform: 'platform_2' }}
     ${{}}
-  `('valid site ids', ({ siteObjects }) => {
+  `('valid site ids', async ({ siteObjects }) => {
     const handler = {
       event: {
         headers: {
@@ -171,7 +180,7 @@ describe('test verifyBasicAuthBeforeHandler with valid credentials', () => {
     let hasError = false;
 
     try {
-      verifyBasicAuthBeforeHandler(handler, next);
+      await verifyBasicAuthBeforeHandler(handler, next);
     } catch (e) {
       hasError = true;
     }
