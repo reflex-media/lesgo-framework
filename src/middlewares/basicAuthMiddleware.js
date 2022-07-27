@@ -82,20 +82,13 @@ export const verifyBasicAuthBeforeHandler = async (handler, next, opts) => {
   const { headers, platform } = handler.event;
   const finalClient = getClient(opts);
   const hashFromHeader = getHashFromHeaders(headers);
-  let isAuthOptional = finalClient[platform]
-    ? finalClient[platform].isAuthOptional
-    : false;
+  let isAuthOptional = platform ? platform.isAuthOptional : false;
   if (isAuthOptional && typeof isAuthOptional.then === 'function') {
     isAuthOptional = await isAuthOptional;
   }
 
   if (hashFromHeader) {
-    validateBasicAuth(
-      hashFromHeader,
-      finalClient,
-      opts,
-      handler.event.platform
-    );
+    validateBasicAuth(hashFromHeader, finalClient, opts, platform.id);
   } else if (!platform || !isAuthOptional) {
     /**
      * An error will occur only when either the platform could not be determined, assuming a basic auth is needed.
