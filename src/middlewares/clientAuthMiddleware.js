@@ -80,7 +80,10 @@ export const clientAuthMiddlewareBeforeHandler = async (
   }
 
   // eslint-disable-next-line no-param-reassign,prefer-destructuring
-  handler.event.platform = platform[0];
+  handler.event.platform = {
+    id: platform[0],
+    ...client.clients[platform[0]],
+  };
 
   if (typeof callback === 'function') {
     await callback(handler);

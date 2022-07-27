@@ -32,7 +32,7 @@ export default {
    * `isAuthOptional` boolean or promise property can be passed as well, which skips authentication whenever basic auth is not provided,
    * and only throws an authentication error when a basic auth is provided with incorrect credentials
    *
-   * Other user-defined propoerties can defined as well for access when a match exists
+   * Other user-defined propoerties can defined as well for access when a match exists. These are all set to `handler.event.platform`
    * ```
    * import client from 'Config/client';
    *

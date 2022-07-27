@@ -136,6 +136,32 @@ describe('test clientMiddlewareBeforeHandler', () => {
     expect(hasError).toBe(false);
   });
 
+  test('should set handler.event.platform with valid client id on input', async () => {
+    const handler = {
+      event: {
+        headers: {},
+        input: {
+          clientid: '1111-1111-1111-1111',
+        },
+      },
+    };
+
+    let hasError = false;
+
+    try {
+      await clientAuthMiddlewareBeforeHandler(handler, next);
+    } catch (e) {
+      hasError = true;
+    }
+
+    expect(hasError).toBe(false);
+    expect(handler.event.platform).toStrictEqual({
+      id: 'platform_1',
+      key: '1111-1111-1111-1111',
+      secret: '1111-1111-1111-1111',
+    });
+  });
+
   test('should execute passed callback function', async () => {
     const handler = {
       event: {
