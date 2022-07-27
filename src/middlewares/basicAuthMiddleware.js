@@ -82,10 +82,12 @@ export const verifyBasicAuthBeforeHandler = async (handler, next, opts) => {
   const { headers, platform } = handler.event;
   const finalClient = getClient(opts);
   const hashFromHeader = getHashFromHeaders(headers);
-  const isAuthOptional =
-    typeof finalClient[platform]?.isAuthOptional?.then === 'function'
-      ? await finalClient[platform].isAuthOptional
-      : finalClient[platform]?.isAuthOptional;
+  let isAuthOptional = finalClient[platform]
+    ? finalClient[platform].isAuthOptional
+    : false;
+  if (isAuthOptional && typeof isAuthOptional.then === 'function') {
+    isAuthOptional = await isAuthOptional;
+  }
 
   if (hashFromHeader) {
     validateBasicAuth(

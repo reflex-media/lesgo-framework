@@ -13,6 +13,6 @@
     "no-plusplus": [2, { "allowForLoopAfterthoughts": true }]
   },
   "parserOptions": {
-    "ecmaVersion": 2020
+    "ecmaVersion": 2019
   }
 }

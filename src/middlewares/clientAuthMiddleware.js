@@ -20,17 +20,28 @@ const validateParams = params => {
 };
 
 const getClientKey = event => {
-  const foundExistingKey = client.headerKeys.find(
-    headerKey =>
-      typeof event.headers?.[headerKey] === 'string' ||
-      typeof event.queryStringParameters?.[headerKey] === 'string'
-  );
+  const foundExistingKey = client.headerKeys.find(headerKey => {
+    if (event.headers && typeof event.headers[headerKey] === 'string') {
+      return true;
+    }
+
+    if (
+      event.queryStringParameters &&
+      typeof event.queryStringParameters[headerKey] === 'string'
+    ) {
+      return true;
+    }
+
+    return false;
+  });
 
   if (foundExistingKey) {
-    return (
-      event.headers?.[foundExistingKey] ??
-      event.queryStringParameters?.[foundExistingKey]
-    );
+    if (event.headers && event.headers[foundExistingKey]) {
+      return event.headers[foundExistingKey];
+    }
+
+    // There will always be one where this is found existing
+    return event.queryStringParameters[foundExistingKey];
   }
 
   if (event.input && typeof event.input.clientid === 'string') {
