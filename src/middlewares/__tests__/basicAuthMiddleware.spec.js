@@ -72,7 +72,10 @@ describe('test verifyBasicAuthBeforeHandler error handling', () => {
       const handler = {
         event: {
           headers,
-          platform,
+          platform: {
+            id: platform,
+            ...client.clients[platform],
+          },
         },
       };
 
@@ -147,7 +150,10 @@ describe('test verifyBasicAuthBeforeHandler with valid credentials', () => {
           headers: {
             Authorization,
           },
-          platform,
+          platform: {
+            id: platform,
+            ...client.clients[platform],
+          },
         },
       };
 
@@ -165,7 +171,10 @@ describe('test verifyBasicAuthBeforeHandler with valid credentials', () => {
 
   test.each`
     siteObjects
-    ${{ platform: 'platform_2' }}
+    ${{ platform: {
+    id: 'platform_2',
+    ...client.clients.platform_2,
+  } }}
     ${{}}
   `('valid site ids', async ({ siteObjects }) => {
     const handler = {
