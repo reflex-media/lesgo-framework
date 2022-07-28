@@ -1,3 +1,5 @@
+import crypto from 'crypto';
+
 export default {
   /*
    *--------------------------------------------------------------------------
@@ -18,6 +20,26 @@ export default {
   callback: h => {
     // eslint-disable-next-line no-param-reassign
     h.event.created_obj = 'created_obj';
+  },
+
+  /*
+   *--------------------------------------------------------------------------
+   * Get Basic Auth Hash
+   *--------------------------------------------------------------------------
+   *
+   * Here you may override how the basic auth hash is derived.
+   * Defaults to
+   *
+   * ````
+   * const getAuthHash = (key, secret) => Buffer.from(`${key}:${secret}`).toString('base64');
+   * ````
+   *
+   */
+  getAuthHash: (key, secret) => {
+    return crypto
+      .createHash('sha1')
+      .update(`${key}:${secret}`)
+      .digest('hex');
   },
 
   /*

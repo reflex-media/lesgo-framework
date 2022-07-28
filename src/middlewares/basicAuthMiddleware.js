@@ -1,14 +1,18 @@
 import client from 'Config/client'; // eslint-disable-line import/no-unresolved
-import crypto from 'crypto';
 import LesgoException from '../exceptions/LesgoException';
 
 const FILE = 'Middlewares/basicAuthMiddleware';
 
-export const generateBasicAuthorizationHash = (key, secret) => {
-  return crypto
-    .createHash('sha1')
-    .update(`${key}:${secret}`)
-    .digest('hex');
+export const generateBasicAuthorizationHash = (key, secret, opts = {}) => {
+  const { getAuthHash } = {
+    ...client,
+    ...opts,
+  };
+  if (getAuthHash) {
+    return getAuthHash(key, secret);
+  }
+
+  return Buffer.from(`${key}:${secret}`).toString('base64');
 };
 
 const getClient = opts => {
@@ -62,7 +66,8 @@ const validateBasicAuth = (hash, clientObject, opts, siteId = undefined) => {
     const hashIsEquals =
       generateBasicAuthorizationHash(
         clientObject[clientCode].key,
-        clientObject[clientCode].secret
+        clientObject[clientCode].secret,
+        opts
       ) === hash;
 
     return siteId ? siteId === clientCode && hashIsEquals : hashIsEquals;

@@ -4,6 +4,38 @@ import basicAuthMiddleware, {
 } from '../basicAuthMiddleware';
 import client from '../../../tests/__mocks__/config/client';
 
+describe('test generateBasicAuthorizationHash', () => {
+  test('should return custom when overriden through opts', () => {
+    expect(
+      generateBasicAuthorizationHash(
+        'e5bb52b012ad4a4e9d862a3410e7013d',
+        '4cd19af8f7ca4448bcb2c427754095b5',
+        {
+          getAuthHash: key => {
+            return `=${key}=`;
+          },
+        }
+      )
+    ).toBe('=e5bb52b012ad4a4e9d862a3410e7013d=');
+  });
+
+  test('should return basic auth by default', () => {
+    const { getAuthHash } = client;
+    client.getAuthHash = null;
+
+    expect(
+      generateBasicAuthorizationHash(
+        'e5bb52b012ad4a4e9d862a3410e7013d',
+        '4cd19af8f7ca4448bcb2c427754095b5'
+      )
+    ).toBe(
+      'ZTViYjUyYjAxMmFkNGE0ZTlkODYyYTM0MTBlNzAxM2Q6NGNkMTlhZjhmN2NhNDQ0OGJjYjJjNDI3NzU0MDk1YjU='
+    );
+
+    client.getAuthHash = getAuthHash;
+  });
+});
+
 describe('test basicAuthMiddleware middleware', () => {
   test.each`
     clientObj
@@ -98,6 +130,41 @@ describe('test verifyBasicAuthBeforeHandler with valid credentials', () => {
       client.clients.platform_2.secret
     )
   ).toString('base64');
+
+  test.each`
+    clientObj
+    ${undefined}
+    ${{}}
+    ${{
+  platform_2: {
+    key: '2222-2222-2222-2222',
+    secret: '2222-2222-2222-2222',
+  },
+}}
+  `('should return undefined when successful', async ({ clientObj }) => {
+    const handler = {
+      event: {
+        headers: {
+          Authorization: `basic ${validBasicAuth}`,
+        },
+        site: {
+          id: 'platform_2',
+        },
+      },
+    };
+
+    let hasError = false;
+
+    try {
+      await verifyBasicAuthBeforeHandler(handler, next, {
+        client: clientObj,
+      });
+    } catch (e) {
+      hasError = true;
+    }
+
+    expect(hasError).toBeFalsy();
+  });
 
   test.each`
     clientObj
