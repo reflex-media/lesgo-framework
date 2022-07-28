@@ -56,9 +56,7 @@ const getHashFromHeaders = headers => {
     );
   }
 
-  const buff = Buffer.from(authEncoded, 'base64');
-
-  return buff.toString('utf-8');
+  return authEncoded;
 };
 
 const validateBasicAuth = (hash, clientObject, opts, siteId = undefined) => {

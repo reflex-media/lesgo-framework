@@ -124,12 +124,10 @@ describe('test verifyBasicAuthBeforeHandler error handling', () => {
 });
 
 describe('test verifyBasicAuthBeforeHandler with valid credentials', () => {
-  const validBasicAuth = Buffer.from(
-    generateBasicAuthorizationHash(
-      client.clients.platform_2.key,
-      client.clients.platform_2.secret
-    )
-  ).toString('base64');
+  const validBasicAuth = generateBasicAuthorizationHash(
+    client.clients.platform_2.key,
+    client.clients.platform_2.secret
+  );
 
   test.each`
     clientObj
