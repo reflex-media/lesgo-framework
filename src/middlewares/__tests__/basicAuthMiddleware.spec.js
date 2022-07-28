@@ -11,17 +11,17 @@ describe('test generateBasicAuthorizationHash', () => {
         'e5bb52b012ad4a4e9d862a3410e7013d',
         '4cd19af8f7ca4448bcb2c427754095b5',
         {
-          getAuthHash: key => {
+          getPreHashString: key => {
             return `=${key}=`;
           },
         }
       )
-    ).toBe('=e5bb52b012ad4a4e9d862a3410e7013d=');
+    ).toBe('PWU1YmI1MmIwMTJhZDRhNGU5ZDg2MmEzNDEwZTcwMTNkPQ==');
   });
 
   test('should return basic auth by default', () => {
-    const { getAuthHash } = client;
-    client.getAuthHash = null;
+    const { getPreHashString } = client;
+    client.getPreHashString = null;
 
     expect(
       generateBasicAuthorizationHash(
@@ -32,7 +32,7 @@ describe('test generateBasicAuthorizationHash', () => {
       'ZTViYjUyYjAxMmFkNGE0ZTlkODYyYTM0MTBlNzAxM2Q6NGNkMTlhZjhmN2NhNDQ0OGJjYjJjNDI3NzU0MDk1YjU='
     );
 
-    client.getAuthHash = getAuthHash;
+    client.getPreHashString = getPreHashString;
   });
 });
 

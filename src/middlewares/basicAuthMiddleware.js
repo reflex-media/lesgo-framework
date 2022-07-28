@@ -4,15 +4,16 @@ import LesgoException from '../exceptions/LesgoException';
 const FILE = 'Middlewares/basicAuthMiddleware';
 
 export const generateBasicAuthorizationHash = (key, secret, opts = {}) => {
-  const { getAuthHash } = {
+  const { getPreHashString } = {
     ...client,
     ...opts,
   };
-  if (getAuthHash) {
-    return getAuthHash(key, secret);
-  }
+  const preHashString =
+    typeof getPreHashString === 'function'
+      ? getPreHashString(key, secret)
+      : `${key}:${secret}`;
 
-  return Buffer.from(`${key}:${secret}`).toString('base64');
+  return Buffer.from(preHashString).toString('base64');
 };
 
 const getClient = opts => {

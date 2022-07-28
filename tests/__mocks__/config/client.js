@@ -24,18 +24,18 @@ export default {
 
   /*
    *--------------------------------------------------------------------------
-   * Get Basic Auth Hash
+   * Get String Pre-Base64 Hashing
    *--------------------------------------------------------------------------
    *
    * Here you may override how the basic auth hash is derived.
    * Defaults to
    *
    * ````
-   * const getAuthHash = (key, secret) => Buffer.from(`${key}:${secret}`).toString('base64');
+   * const getPreHashString = (key, secret) => `${key}:${secret}`;
    * ````
    *
    */
-  getAuthHash: (key, secret) => {
+  getPreHashString: (key, secret) => {
     return crypto
       .createHash('sha1')
       .update(`${key}:${secret}`)
