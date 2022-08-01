@@ -3,14 +3,18 @@ import { normalizeHttpRequestBeforeHandler } from './normalizeHttpRequestMiddlew
 import { successHttpResponseHandler } from './successHttpResponseMiddleware';
 import { errorHttpResponseHandler } from './errorHttpResponseMiddleware';
 
+const allowResponse = () => {
+  return app.debug;
+};
+
 const successHttpNoOutputResponseHandler = async opts => {
   const { queryStringParameters } = opts.event;
-  const debug =
-    queryStringParameters && queryStringParameters.debug && app.debug;
+  const debug = queryStringParameters && queryStringParameters.debug;
   const response = await successHttpResponseHandler(opts);
+  const shouldAllowResponse = opts.allowResponse || allowResponse;
 
   /* istanbul ignore next */
-  if (!debug && !opts.allowResponse(opts)) {
+  if (!debug || !shouldAllowResponse(opts)) {
     response.body = null;
   }
 
@@ -25,7 +29,7 @@ export const successHttpNoOutputResponseAfterHandler = async (
   const defaults = {
     response: handler.response,
     event: handler.event,
-    allowResponse: () => false,
+    allowResponse,
   };
   const options = { ...defaults, ...opts };
 
@@ -38,14 +42,14 @@ export const successHttpNoOutputResponseAfterHandler = async (
 
 const errorHttpResponseNoOutputHandler = async opts => {
   const { queryStringParameters } = opts.event;
-  const debug =
-    queryStringParameters && queryStringParameters.debug && app.debug;
+  const debug = queryStringParameters && queryStringParameters.debug;
   const response = await errorHttpResponseHandler({
     ...opts,
     debugMode: opts.debugMode || debug,
   });
+  const shouldAllowResponse = opts.allowResponse || allowResponse;
 
-  if (!debug && !opts.allowResponse(opts)) {
+  if (!debug || !shouldAllowResponse(opts)) {
     response.statusCode = 200;
     response.body = null;
   }
@@ -62,7 +66,7 @@ export const errorHttpNoOutputResponseAfterHandler = async (
     error: handler.error,
     event: handler.event,
     logger: console.error, // eslint-disable-line no-console
-    allowResponse: () => false,
+    allowResponse,
   };
 
   const options = { ...defaults, ...opts };
