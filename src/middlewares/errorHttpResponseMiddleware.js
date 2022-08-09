@@ -66,7 +66,9 @@ export const errorHttpResponseHandler = async opts => {
   return {
     headers: options.headers,
     statusCode,
-    body: JSON.stringify(jsonBody),
+    body: options.formatError
+      ? options.formatError(options)
+      : JSON.stringify(jsonBody),
   };
 };
 
