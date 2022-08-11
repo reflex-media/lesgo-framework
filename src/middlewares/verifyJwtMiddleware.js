@@ -26,7 +26,7 @@ export const token = headers => {
   return parsed[1];
 };
 
-export const verifyJwtMiddlewareBeforeHandler = (handler, next, opts) => {
+export const verifyJwtMiddlewareBeforeHandler = async (handler, next, opts) => {
   const { headers } = handler.event;
 
   const finalConfig =
@@ -34,8 +34,19 @@ export const verifyJwtMiddlewareBeforeHandler = (handler, next, opts) => {
       ? opts.jwtConfig
       : config;
 
+  const { secret, callback } = finalConfig;
+
   try {
-    const service = new JwtService(token(headers), finalConfig);
+    const service = new JwtService(token(headers), {
+      ...finalConfig,
+      ...{
+        secret: typeof secret === 'function' ? secret() : secret,
+      },
+    });
+
+    if (typeof callback === 'function') {
+      await callback(handler);
+    }
 
     // eslint-disable-next-line no-param-reassign
     handler.event.decodedJwt = service.validate().decoded;
