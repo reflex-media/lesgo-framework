@@ -220,10 +220,11 @@ describe('MiddlewareGroup: test verifyJwtMiddleware middleware', () => {
 
   it('test with secret as a function argument', async () => {
     const { secret } = config;
-    config.secret = () => {
-      return '1111';
+    config.secret = secretHandler => {
+      return `111${secretHandler.key}`;
     };
     const newHandler = {
+      key: '1',
       event: {
         ...handler.event,
         headers: {
@@ -260,7 +261,7 @@ describe('MiddlewareGroup: test verifyJwtMiddleware middleware', () => {
       sub: '1234567890',
       iss: config.iss.data[0],
     });
-    expect(callback).toHaveBeenCalledTimes(1);
+    expect(callback).toHaveBeenCalledWith(newHandler);
   });
 
   it('test with custom config', async () => {
