@@ -54,9 +54,9 @@ export const verifyJwtMiddlewareBeforeHandler = async (handler, next, opts) => {
     next();
   } catch (err) {
     if (err.name === 'JsonWebTokenError') {
-      throw new LesgoException(err.message, 'JWT_ERROR', 403);
+      throw new LesgoException(err.message, 'JWT_ERROR', 403, err);
     } else if (err.name === 'TokenExpiredError') {
-      throw new LesgoException(err.message, 'JWT_EXPIRED', 403);
+      throw new LesgoException(err.message, 'JWT_EXPIRED', 403, err);
     } else {
       throw err;
     }
