@@ -63,6 +63,10 @@ export default class LoggerService {
     this.log('debug', message, extra);
   }
 
+  notice(message, extra = {}) {
+    this.log('notice', message, extra);
+  }
+
   addMeta(meta = {}) {
     this.meta = {
       ...this.meta,
