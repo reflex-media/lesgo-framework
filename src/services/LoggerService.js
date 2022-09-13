@@ -30,8 +30,9 @@ export default class LoggerService {
     this.logLevels = {
       error: 0,
       warn: 1,
-      info: 2,
-      debug: 3,
+      notice: 2,
+      info: 3,
+      debug: 4,
     };
   }
 
@@ -77,7 +78,9 @@ export default class LoggerService {
   consoleLogger(level, message) {
     if (!this.checkIsLogRequired('console', level)) return null;
     const refinedMessage = this.refineMessagePerTransport('console', message);
-    return console[level](JSON.stringify(refinedMessage)); // eslint-disable-line no-console
+    const consoleFunc = level === 'notice' ? 'log' : level;
+
+    return console[consoleFunc](JSON.stringify(refinedMessage)); // eslint-disable-line no-console
   }
 
   checkIsLogRequired(transportName, level) {
