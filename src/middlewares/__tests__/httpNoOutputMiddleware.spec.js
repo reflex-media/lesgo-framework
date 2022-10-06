@@ -15,7 +15,7 @@ describe('MiddlewareGroup: test successHttpNoOutputResponseAfterHandler', () => 
       response: 'Some message',
     });
     expect(handler.response).toHaveProperty('statusCode', 200);
-    expect(handler.response).toHaveProperty('body', null);
+    expect(handler.response).toHaveProperty('body', '');
   });
 
   it('should return the body when debug is enabled via query string parameters', async () => {
@@ -43,7 +43,7 @@ describe('MiddlewareGroup: test successHttpNoOutputResponseAfterHandler', () => 
     );
   });
 
-  it('should have null body even when enabled when configuration has is disabled', async () => {
+  it('should have empty body even when enabled when configuration has is disabled', async () => {
     app.debug = false;
 
     const handler = {
@@ -60,7 +60,7 @@ describe('MiddlewareGroup: test successHttpNoOutputResponseAfterHandler', () => 
       response: 'Some message',
     });
     expect(handler.response).toHaveProperty('statusCode', 200);
-    expect(handler.response).toHaveProperty('body', null);
+    expect(handler.response).toHaveProperty('body', '');
     app.debug = true;
   });
 
@@ -68,10 +68,10 @@ describe('MiddlewareGroup: test successHttpNoOutputResponseAfterHandler', () => 
     debug    | allowResponse  | body
     ${false} | ${() => true}  | ${JSON.stringify({ status: 'success', data: 'Some message', _meta: {} })}
     ${true}  | ${() => true}  | ${JSON.stringify({ status: 'success', data: 'Some message', _meta: {} })}
-    ${false} | ${() => false} | ${null}
-    ${true}  | ${() => false} | ${null}
+    ${false} | ${() => false} | ${''}
+    ${true}  | ${() => false} | ${''}
     ${true}  | ${undefined}   | ${JSON.stringify({ status: 'success', data: 'Some message', _meta: {} })}
-    ${false} | ${undefined}   | ${null}
+    ${false} | ${undefined}   | ${''}
   `(
     'should return a specific response when allowResponse is $allowResponse and debug is $debug passed via options',
     async ({ debug, allowResponse, body }) => {
@@ -110,7 +110,7 @@ describe('MiddlewareGroup: test errorHttpNoOutputResponseAfterHandler', () => {
       error: new Error('Test validation error'),
     });
     expect(handler.response).toHaveProperty('statusCode', 200);
-    expect(handler.response).toHaveProperty('body', null);
+    expect(handler.response).toHaveProperty('body', '');
   });
 
   it('should return the body when debug is enabled via query string parameters', async () => {
@@ -148,7 +148,7 @@ describe('MiddlewareGroup: test errorHttpNoOutputResponseAfterHandler', () => {
     );
   });
 
-  it('should have null body even when enabled when configuration has is disabled', async () => {
+  it('should have empty body even when enabled when configuration has is disabled', async () => {
     app.debug = false;
 
     const handler = {
@@ -165,7 +165,7 @@ describe('MiddlewareGroup: test errorHttpNoOutputResponseAfterHandler', () => {
       error: new Error('Test validation error'),
     });
     expect(handler.response).toHaveProperty('statusCode', 200);
-    expect(handler.response).toHaveProperty('body', null);
+    expect(handler.response).toHaveProperty('body', '');
     app.debug = true;
   });
 

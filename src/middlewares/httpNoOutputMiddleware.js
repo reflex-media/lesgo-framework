@@ -15,7 +15,7 @@ const successHttpNoOutputResponseHandler = async opts => {
 
   /* istanbul ignore next */
   if (!debug || !shouldAllowResponse(opts)) {
-    response.body = null;
+    response.body = '';
   }
 
   return response;
@@ -51,7 +51,7 @@ const errorHttpResponseNoOutputHandler = async opts => {
 
   if (!debug || !shouldAllowResponse(opts)) {
     response.statusCode = 200;
-    response.body = null;
+    response.body = '';
   }
 
   return response;
