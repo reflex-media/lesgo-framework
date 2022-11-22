@@ -93,18 +93,18 @@ NC='\033[0m';
 # FUNCTION DECLARATIONS                                                       #
 #                                                                             #
 ###############################################################################
-CURRENT_SERVERLESS_VERSION=`npm ls serverless`
-GET_SERVERLESS_VERSION=`npm ll -p serverless | grep -o "@.*"`
+LOCAL_SERVERLESS_VERSION=`npm ls --depth=0 serverless | grep -o "serverless@.*" || true`
+GLOBAL_SERVERLESS_VERSION=`npm ls -g --depth=0 serverless | grep -o "serverless@.*" || true`
 LATEST_SERVERLESS_VERSION_NUMBER=3
 
-if [ -z "$GET_SERVERLESS_VERSION" ]
+if [ -z "$LOCAL_SERVERLESS_VERSION" ]
 then
-    CURRENT_SERVERLESS_VERSION=`npm view serverless version`
-    SERVERLESS_VERSION_NUMBER=$((${CURRENT_SERVERLESS_VERSION:0:1}  + 0))
+    CURRENT_SERVERLESS_VERSION=$GLOBAL_SERVERLESS_VERSION
 else
-    SERVERLESS_VERSION=${GET_SERVERLESS_VERSION#*@}
-    SERVERLESS_VERSION_NUMBER=${SERVERLESS_VERSION%%.*}
+    CURRENT_SERVERLESS_VERSION=$LOCAL_SERVERLESS_VERSION
 fi
+SERVERLESS_VERSION=${CURRENT_SERVERLESS_VERSION#*@}
+SERVERLESS_VERSION_NUMBER=${SERVERLESS_VERSION%%.*}
 
 echo -e "Running Serverless version:\n${CURRENT_SERVERLESS_VERSION}\n"
 echo -e "Current Serverless version: ${SERVERLESS_VERSION_NUMBER}\n"
