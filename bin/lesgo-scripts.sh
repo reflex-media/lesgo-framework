@@ -93,6 +93,21 @@ NC='\033[0m';
 # FUNCTION DECLARATIONS                                                       #
 #                                                                             #
 ###############################################################################
+LOCAL_SERVERLESS_VERSION=`npm ls --depth=0 serverless | grep -o "serverless@.*" || true`
+GLOBAL_SERVERLESS_VERSION=`npm ls -g --depth=0 serverless | grep -o "serverless@.*" || true`
+LATEST_SERVERLESS_VERSION_NUMBER=3
+
+if [ -z "$LOCAL_SERVERLESS_VERSION" ]
+then
+    CURRENT_SERVERLESS_VERSION=$GLOBAL_SERVERLESS_VERSION
+else
+    CURRENT_SERVERLESS_VERSION=$LOCAL_SERVERLESS_VERSION
+fi
+SERVERLESS_VERSION=${CURRENT_SERVERLESS_VERSION#*@}
+SERVERLESS_VERSION_NUMBER=${SERVERLESS_VERSION%%.*}
+
+echo -e "Running Serverless version:\n${CURRENT_SERVERLESS_VERSION}\n"
+echo -e "Current Serverless version: ${SERVERLESS_VERSION_NUMBER}\n"
 
 function deploy_func_check ()
 {
@@ -106,7 +121,12 @@ function deploy_func_check ()
 function deploy_func ()
 {
     echo -e "${YELLOW}Deploying ${FUNCTION} to ${STAGE}${NC} using ${CONFIG}"
-    sls deploy -f ${FUNCTION} --stage ${STAGE} --env ${ENVFILE} --config ${CONFIG}
+
+    if [ ${SERVERLESS_VERSION_NUMBER} -ge ${LATEST_SERVERLESS_VERSION_NUMBER} ]; then
+        sls deploy function -f ${FUNCTION} --stage ${STAGE} --param="env=${ENVFILE}" --config ${CONFIG}
+    else
+        sls deploy  -f ${FUNCTION} --stage ${STAGE} --env ${ENVFILE} --config ${CONFIG}
+    fi
 }
 
 function prompt_confirmation_deploy_all ()
@@ -140,29 +160,50 @@ function prompt_confirmation_deploy_function ()
 function deploy_full ()
 {
     echo -e "${YELLOW}Deploying service to ${STAGE}${NC}"
-    sls deploy --stage ${STAGE} --env ${ENVFILE} --config ${CONFIG}
+    if [ ${SERVERLESS_VERSION_NUMBER} -ge ${LATEST_SERVERLESS_VERSION_NUMBER} ]; then
+        sls deploy --stage ${STAGE} --param="env=${ENVFILE}" --config ${CONFIG}
+    else
+        sls deploy --stage ${STAGE} --env ${ENVFILE} --config ${CONFIG}
+    fi
 }
 
 function invoke_func ()
 {
     echo -e "${YELLOW}Invoking function ${FUNCTION} on ${STAGE}${NC} using ${CONFIG}"
     if [ ${INVOKE_LOCAL} == 1 ]; then
-        sls invoke local -f ${FUNCTION} --stage ${STAGE} --env ${ENVFILE} -d ${DATA} -l --config ${CONFIG}
+        if [ ${SERVERLESS_VERSION_NUMBER} -ge ${LATEST_SERVERLESS_VERSION_NUMBER} ]; then
+            sls invoke local function -f ${FUNCTION} --stage ${STAGE} --param="env=${ENVFILE}" -d ${DATA} -l --config ${CONFIG}
+        else
+            sls invoke local -f ${FUNCTION} --stage ${STAGE} --env ${ENVFILE} -d ${DATA} -l --config ${CONFIG}
+        fi
+
     else
-        sls invoke -f ${FUNCTION} --stage ${STAGE} --env ${ENVFILE} -d ${DATA} -l --config ${CONFIG}
+        if [ ${SERVERLESS_VERSION_NUMBER} -ge ${LATEST_SERVERLESS_VERSION_NUMBER} ]; then
+            sls invoke function -f ${FUNCTION} --stage ${STAGE} --param="env=${ENVFILE}" -d ${DATA} -l --config ${CONFIG}
+        else
+            sls invoke -f ${FUNCTION} --stage ${STAGE} --env ${ENVFILE} -d ${DATA} -l --config ${CONFIG}
+        fi
     fi
 }
 
 function log_stream_func ()
 {
     echo -e "${YELLOW}Log Streaming function ${FUNCTION} on ${STAGE}${NC} using ${CONFIG}"
-    sls logs -f ${FUNCTION} --stage ${STAGE} --env ${ENVFILE} -t --config ${CONFIG}
+    if [ ${SERVERLESS_VERSION_NUMBER} -ge ${LATEST_SERVERLESS_VERSION_NUMBER} ]; then
+        sls logs function -f ${FUNCTION} --stage ${STAGE} --param="env=${ENVFILE}" -t --config ${CONFIG}
+    else
+        sls logs -f ${FUNCTION} --stage ${STAGE} --env ${ENVFILE} -t --config ${CONFIG}
+    fi
 }
 
 function build ()
 {
     echo -e "${YELLOW}Building bundle without deployment${NC} using ${CONFIG}"
-    sls webpack --stage ${STAGE} --env ${ENVFILE} --config ${CONFIG}
+    if [ ${SERVERLESS_VERSION_NUMBER} -ge ${LATEST_SERVERLESS_VERSION_NUMBER} ]; then
+        sls webpack --stage ${STAGE} --param="env=${ENVFILE}" --config ${CONFIG}
+    else
+        sls webpack --stage ${STAGE} --env ${ENVFILE} --config ${CONFIG}
+    fi
 }
 
 function prompt_confirmation_destroy_service ()
@@ -180,7 +221,11 @@ function prompt_confirmation_destroy_service ()
 function destroy_service ()
 {
     echo -e "${YELLOW}Removing service to ${STAGE}${NC}"
-    sls remove --stage ${STAGE} --env ${ENVFILE} --config ${CONFIG}
+    if [ ${SERVERLESS_VERSION_NUMBER} -ge ${LATEST_SERVERLESS_VERSION_NUMBER} ]; then
+        sls remove --stage ${STAGE} --param="env=${ENVFILE}" --config ${CONFIG}
+    else
+        sls remove --stage ${STAGE} --env ${ENVFILE} --config ${CONFIG}
+    fi
 }
 
 ###############################################################################
