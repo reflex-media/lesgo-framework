@@ -1,7 +1,6 @@
 import client from 'Config/client'; // eslint-disable-line import/no-unresolved
 import crypto from 'crypto';
 import LesgoException from '../exceptions/LesgoException';
-import { errorHttpResponseAfterHandler } from './errorHttpResponseMiddleware';
 
 const FILE = 'Middlewares/basicAuthMiddleware';
 
@@ -20,39 +19,12 @@ export const generateBasicAuthorizationHash = (key, secret) => {
     .digest('hex');
 };
 
-const getSiteId = event => {
-  let siteId;
-
-  if (event.site && event.site.id) {
-    siteId = event.site.id;
-  } else if (
-    event.requestContext &&
-    event.requestContext.site &&
-    event.requestContext.site.id
-  ) {
-    siteId = event.requestContext.site.id;
-  } else if (event.platform) {
-    siteId = event.platform;
-  }
-
-  if (typeof siteId === 'undefined') {
-    throw new LesgoException(
-      'Site ID could not be found',
-      `${FILE}::SITE_ID_NOT_FOUND`,
-      403,
-      'Ensure that clientAuthMiddleware() is called before this Middleware'
-    );
-  }
-
-  return siteId;
-};
-
 const getClient = opts => {
   if (opts && opts.client && Object.keys(opts.client).length > 0) {
     return opts.client;
   }
 
-  return client;
+  return client.clients;
 };
 
 const getHashFromHeaders = (headers, opts) => {
@@ -102,7 +74,7 @@ const getHashFromHeaders = (headers, opts) => {
   return buff.toString('utf-8');
 };
 
-const validateBasicAuth = (hash, siteId, clientObject, opts) => {
+const validateBasicAuth = (hash, clientObject, opts, siteId = undefined) => {
   const site = Object.keys(clientObject).find(clientCode => {
     const hashIsEquals =
       generateBasicAuthorizationHash(
@@ -110,7 +82,7 @@ const validateBasicAuth = (hash, siteId, clientObject, opts) => {
         clientObject[clientCode].secret
       ) === hash;
 
-    return siteId === clientCode && hashIsEquals;
+    return siteId ? siteId === clientCode && hashIsEquals : hashIsEquals;
   });
 
   if (!site && (hash.length > 0 || (hash.length <= 0 && blacklistMode(opts)))) {
@@ -124,11 +96,10 @@ const validateBasicAuth = (hash, siteId, clientObject, opts) => {
 };
 
 export const verifyBasicAuthBeforeHandler = (handler, next, opts) => {
-  const siteId = getSiteId(handler.event);
   const finalClient = getClient(opts);
   const hashFromHeader = getHashFromHeaders(handler.event.headers, opts);
 
-  validateBasicAuth(hashFromHeader, siteId, finalClient, opts);
+  validateBasicAuth(hashFromHeader, finalClient, opts, handler.event.platform);
 
   next();
 };
@@ -138,7 +109,6 @@ const basicAuthMiddleware = opts => {
   return {
     before: (handler, next) =>
       verifyBasicAuthBeforeHandler(handler, next, opts),
-    onError: (handler, next) => errorHttpResponseAfterHandler(handler, next),
   };
 };
 

@@ -7,7 +7,6 @@ describe('test authMiddleware', () => {
     // eslint-disable-next-line no-unused-vars
     const result = clientAuthMiddleware();
     expect(result).toHaveProperty('before');
-    expect(result).toHaveProperty('onError');
   });
 });
 
@@ -115,7 +114,7 @@ describe('test clientMiddlewareBeforeHandler', () => {
     expect(handler.event).toHaveProperty('created_obj');
   });
 
-  test('should execute passed top object with callback function', async () => {
+  test('should execute passed opt object with callback function', async () => {
     const handler = {
       event: {
         headers: {},
@@ -133,5 +132,22 @@ describe('test clientMiddlewareBeforeHandler', () => {
     });
 
     expect(handler.event).toHaveProperty('created_obj');
+  });
+
+  test('should not execute passed opt object with callback function if not a function', async () => {
+    const handler = {
+      event: {
+        headers: {},
+        input: {
+          clientid: '1111-1111-1111-1111',
+        },
+      },
+    };
+
+    await clientAuthMiddlewareBeforeHandler(handler, next, {
+      callback: 'not_function',
+    });
+
+    expect(handler.event).not.toHaveProperty('created_obj');
   });
 });
