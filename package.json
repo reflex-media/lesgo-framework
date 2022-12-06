@@ -1,6 +1,6 @@
 {
   "name": "lesgo",
-  "version": "0.7.7",
+  "version": "0.7.8",
   "description": "Core framework for lesgo node.js serverless framework.",
   "main": "./src/index.js",
   "author": "Sufiyan Rahmat",
@@ -30,7 +30,7 @@
     "lesgo-scripts": "./bin/lesgo-scripts.sh"
   },
   "engines": {
-    "node": "12.x"
+    "node": ">=12.0.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.17.6",
