@@ -73,6 +73,19 @@ describe('MiddlewareGroup: test successHttpResponseHandler middleware', () => {
     });
   });
 
+  it('test with formatSuccess argument', async () => {
+    const data = await successHttpResponseHandler({
+      response: 'Some message',
+      formatSuccess: options => {
+        return options.response;
+      },
+    });
+
+    expect(data.statusCode).toBe(200);
+
+    expect(data.body).toBe('Some message');
+  });
+
   it('test with configurable header', async () => {
     const data = await successHttpResponseHandler({
       response: 'Some message',
