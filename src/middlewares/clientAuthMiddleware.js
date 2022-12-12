@@ -6,7 +6,7 @@ const FILE = 'Middlewares/clientAuthMiddleware';
 
 const validateParams = params => {
   const validFields = [
-    { key: client.headerKey, type: 'string', required: true },
+    { key: 'clientKey', type: 'string', required: true },
     { key: 'client', type: 'object', required: true },
   ];
 
@@ -20,8 +20,28 @@ const validateParams = params => {
 };
 
 const getClientKey = event => {
-  if (typeof event.headers[client.headerKey] === 'string') {
-    return event.headers[client.headerKey];
+  const foundExistingKey = client.headerKeys.find(headerKey => {
+    if (event.headers && typeof event.headers[headerKey] === 'string') {
+      return true;
+    }
+
+    if (
+      event.queryStringParameters &&
+      typeof event.queryStringParameters[headerKey] === 'string'
+    ) {
+      return true;
+    }
+
+    return false;
+  });
+
+  if (foundExistingKey) {
+    if (event.headers && event.headers[foundExistingKey]) {
+      return event.headers[foundExistingKey];
+    }
+
+    // There will always be one where this is found existing
+    return event.queryStringParameters[foundExistingKey];
   }
 
   if (event.input && typeof event.input.clientid === 'string') {
@@ -31,20 +51,23 @@ const getClientKey = event => {
   return undefined;
 };
 
-export const clientAuthMiddlewareBeforeHandler = (
+export const clientAuthMiddlewareBeforeHandler = async (
   handler,
   next,
-  opt = undefined
+  opt = {}
 ) => {
-  const validated = validateParams({
-    [client.headerKey]: getClientKey(handler.event),
-    client: client.clients,
+  const { clients, callback } = {
+    ...client,
+    ...(typeof opt === 'function' ? { callback: opt } : opt),
+  };
+
+  const { client: validatedClient, clientKey } = validateParams({
+    clientKey: getClientKey(handler.event),
+    client: clients,
   });
 
-  const clientKey = validated[client.headerKey];
-
-  const platform = Object.keys(validated.client).filter(clientPlatform => {
-    return validated.client[clientPlatform].key === clientKey;
+  const platform = Object.keys(validatedClient).filter(clientPlatform => {
+    return validatedClient[clientPlatform].key === clientKey;
   });
 
   if (platform.length === 0) {
@@ -57,13 +80,13 @@ export const clientAuthMiddlewareBeforeHandler = (
   }
 
   // eslint-disable-next-line no-param-reassign,prefer-destructuring
-  handler.event.platform = platform[0];
+  handler.event.platform = {
+    id: platform[0],
+    ...client.clients[platform[0]],
+  };
 
-  if (typeof opt === 'function') {
-    opt(handler);
-  } else if (typeof opt === 'object') {
-    const { callback } = opt;
-    if (typeof callback === 'function') callback(handler);
+  if (typeof callback === 'function') {
+    await callback(handler);
   }
 
   next();
