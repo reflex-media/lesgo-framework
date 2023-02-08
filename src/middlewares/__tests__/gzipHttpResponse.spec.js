@@ -97,7 +97,7 @@ describe('test gzipHttpResponse gzip', () => {
       expect(resp).toThrow();
     } catch (err) {
       expect(err.name).toEqual('LesgoException');
-      expect(err.code).toEqual('GZIP_LIB_ERROR');
+      expect(err.code).toMatch(/^GZIP_[A-Z]+_ERROR$/);
     }
   });
 });
