@@ -7,7 +7,6 @@ describe('test authMiddleware', () => {
     // eslint-disable-next-line no-unused-vars
     const result = clientAuthMiddleware();
     expect(result).toHaveProperty('before');
-    expect(result).toHaveProperty('onError');
   });
 });
 
@@ -27,7 +26,7 @@ describe('test clientMiddlewareBeforeHandler', () => {
       expect(await clientAuthMiddlewareBeforeHandler(handler, next)).toThrow();
     } catch (error) {
       expect(error.name).toBe('LesgoException');
-      expect(error.message).toBe("Missing required 'x-client-id'");
+      expect(error.message).toBe("Missing required 'clientKey'");
       expect(error.statusCode).toBe(403);
       expect(error.code).toBe(
         'Middlewares/clientAuthMiddleware::INVALID_AUTH_DATA'
@@ -54,6 +53,46 @@ describe('test clientMiddlewareBeforeHandler', () => {
         'Middlewares/clientAuthMiddleware::INVALID_CLIENT_ID'
       );
     }
+  });
+
+  test('should be able to validate from multiple header keys', async () => {
+    const handler = {
+      event: {
+        headers: {
+          'X-Client-Id': '1111-1111-1111-1111',
+        },
+      },
+    };
+
+    let hasError = false;
+
+    try {
+      await clientAuthMiddlewareBeforeHandler(handler, next);
+    } catch (e) {
+      hasError = e;
+    }
+
+    expect(hasError).toBe(false);
+  });
+
+  test('should allow getting from query string parameters', async () => {
+    const handler = {
+      event: {
+        queryStringParameters: {
+          'x-client-id': '1111-1111-1111-1111',
+        },
+      },
+    };
+
+    let hasError = false;
+
+    try {
+      await clientAuthMiddlewareBeforeHandler(handler, next);
+    } catch (e) {
+      hasError = e;
+    }
+
+    expect(hasError).toBe(false);
   });
 
   test('should return success with valid client id', async () => {
@@ -97,6 +136,32 @@ describe('test clientMiddlewareBeforeHandler', () => {
     expect(hasError).toBe(false);
   });
 
+  test('should set handler.event.platform with valid client id on input', async () => {
+    const handler = {
+      event: {
+        headers: {},
+        input: {
+          clientid: '1111-1111-1111-1111',
+        },
+      },
+    };
+
+    let hasError = false;
+
+    try {
+      await clientAuthMiddlewareBeforeHandler(handler, next);
+    } catch (e) {
+      hasError = true;
+    }
+
+    expect(hasError).toBe(false);
+    expect(handler.event.platform).toStrictEqual({
+      id: 'platform_1',
+      key: '1111-1111-1111-1111',
+      secret: '1111-1111-1111-1111',
+    });
+  });
+
   test('should execute passed callback function', async () => {
     const handler = {
       event: {
@@ -115,7 +180,22 @@ describe('test clientMiddlewareBeforeHandler', () => {
     expect(handler.event).toHaveProperty('created_obj');
   });
 
-  test('should execute passed top object with callback function', async () => {
+  test('should execute with callback function from config', async () => {
+    const handler = {
+      event: {
+        headers: {},
+        input: {
+          clientid: '1111-1111-1111-1111',
+        },
+      },
+    };
+
+    await clientAuthMiddlewareBeforeHandler(handler, next);
+
+    expect(handler.event).toHaveProperty('created_obj');
+  });
+
+  test('should execute passed opt object with async callback function', async () => {
     const handler = {
       event: {
         headers: {},
@@ -126,12 +206,30 @@ describe('test clientMiddlewareBeforeHandler', () => {
     };
 
     await clientAuthMiddlewareBeforeHandler(handler, next, {
-      callback: h => {
+      callback: async h => {
+        await new Promise(resolve => setTimeout(resolve, 500));
         // eslint-disable-next-line no-param-reassign
-        h.event.created_obj = 'created_obj';
+        h.event.created_obj_async = 'created_obj_async';
       },
     });
 
-    expect(handler.event).toHaveProperty('created_obj');
+    expect(handler.event).toHaveProperty('created_obj_async');
+  });
+
+  test('should not execute passed opt object with callback function if not a function', async () => {
+    const handler = {
+      event: {
+        headers: {},
+        input: {
+          clientid: '1111-1111-1111-1111',
+        },
+      },
+    };
+
+    await clientAuthMiddlewareBeforeHandler(handler, next, {
+      callback: 'not_function',
+    });
+
+    expect(handler.event).not.toHaveProperty('created_obj');
   });
 });

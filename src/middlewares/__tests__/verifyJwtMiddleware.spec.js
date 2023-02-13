@@ -2,7 +2,6 @@ import config from 'Config/jwt'; // eslint-disable-line import/no-unresolved
 import verifyJwtMiddleware, {
   verifyJwtMiddlewareBeforeHandler,
 } from '../verifyJwtMiddleware';
-import LesgoException from '../../exceptions/LesgoException';
 
 describe('MiddlewareGroup: test verifyJwtMiddleware middleware', () => {
   const handler = {
@@ -28,17 +27,20 @@ describe('MiddlewareGroup: test verifyJwtMiddleware middleware', () => {
     expect(result).toHaveProperty('before');
   });
 
-  it('test without authorization header', () => {
-    expect(() => verifyJwtMiddlewareBeforeHandler(handler, () => {})).toThrow(
-      new LesgoException(
-        'Authorization Header is required!',
-        'JWT_MISSING_AUTHORIZATION_HEADER',
-        403
-      )
-    );
+  it('test without authorization header', async () => {
+    try {
+      expect(
+        await verifyJwtMiddlewareBeforeHandler(handler, () => {})
+      ).toThrow();
+    } catch (e) {
+      expect(e.name).toEqual('LesgoException');
+      expect(e.message).toEqual('Authorization Header is required!');
+      expect(e.code).toEqual('JWT_MISSING_AUTHORIZATION_HEADER');
+      expect(e.statusCode).toEqual(403);
+    }
   });
 
-  it('test with missing bearer token', () => {
+  it('test with missing bearer token', async () => {
     const newHandler = {
       event: {
         ...handler.event,
@@ -48,18 +50,19 @@ describe('MiddlewareGroup: test verifyJwtMiddleware middleware', () => {
       },
     };
 
-    expect(() =>
-      verifyJwtMiddlewareBeforeHandler(newHandler, () => {})
-    ).toThrow(
-      new LesgoException(
-        'Authorization Header is required!',
-        'JWT_MISSING_AUTHORIZATION_HEADER',
-        403
-      )
-    );
+    try {
+      expect(
+        await verifyJwtMiddlewareBeforeHandler(newHandler, () => {})
+      ).toThrow();
+    } catch (e) {
+      expect(e.name).toEqual('LesgoException');
+      expect(e.message).toEqual('Authorization Header is required!');
+      expect(e.code).toEqual('JWT_MISSING_AUTHORIZATION_HEADER');
+      expect(e.statusCode).toEqual(403);
+    }
   });
 
-  it('test with invalid token', () => {
+  it('test with invalid token', async () => {
     const newHandler = {
       event: {
         ...handler.event,
@@ -69,18 +72,19 @@ describe('MiddlewareGroup: test verifyJwtMiddleware middleware', () => {
       },
     };
 
-    expect(() =>
-      verifyJwtMiddlewareBeforeHandler(newHandler, () => {})
-    ).toThrow(
-      new LesgoException(
-        'Missing Bearer token!',
-        'JWT_MISSING_BEARER_TOKEN',
-        403
-      )
-    );
+    try {
+      expect(
+        await verifyJwtMiddlewareBeforeHandler(newHandler, () => {})
+      ).toThrow();
+    } catch (e) {
+      expect(e.name).toEqual('LesgoException');
+      expect(e.message).toEqual('Missing Bearer token!');
+      expect(e.code).toEqual('JWT_MISSING_BEARER_TOKEN');
+      expect(e.statusCode).toEqual(403);
+    }
   });
 
-  it('test with malformed token', () => {
+  it('test with malformed token', async () => {
     const newHandler = {
       event: {
         ...handler.event,
@@ -90,12 +94,19 @@ describe('MiddlewareGroup: test verifyJwtMiddleware middleware', () => {
       },
     };
 
-    expect(() =>
-      verifyJwtMiddlewareBeforeHandler(newHandler, () => {})
-    ).toThrow(new LesgoException('jwt malformed', 'JWT_ERROR', 403));
+    try {
+      expect(
+        await verifyJwtMiddlewareBeforeHandler(newHandler, () => {})
+      ).toThrow();
+    } catch (e) {
+      expect(e.name).toEqual('LesgoException');
+      expect(e.message).toEqual('jwt malformed');
+      expect(e.code).toEqual('JWT_ERROR');
+      expect(e.statusCode).toEqual(403);
+    }
   });
 
-  it('test with incorrect secret key', () => {
+  it('test with incorrect secret key', async () => {
     const newHandler = {
       event: {
         ...handler.event,
@@ -106,12 +117,19 @@ describe('MiddlewareGroup: test verifyJwtMiddleware middleware', () => {
       },
     };
 
-    expect(() =>
-      verifyJwtMiddlewareBeforeHandler(newHandler, () => {})
-    ).toThrow(new LesgoException('invalid signature', 'JWT_ERROR', 403));
+    try {
+      expect(
+        await verifyJwtMiddlewareBeforeHandler(newHandler, () => {})
+      ).toThrow();
+    } catch (e) {
+      expect(e.name).toEqual('LesgoException');
+      expect(e.message).toEqual('invalid signature');
+      expect(e.code).toEqual('JWT_ERROR');
+      expect(e.statusCode).toEqual(403);
+    }
   });
 
-  it('test with invalid ISS', () => {
+  it('test with invalid ISS', async () => {
     const newHandler = {
       event: {
         ...handler.event,
@@ -122,18 +140,19 @@ describe('MiddlewareGroup: test verifyJwtMiddleware middleware', () => {
       },
     };
 
-    expect(() =>
-      verifyJwtMiddlewareBeforeHandler(newHandler, () => {})
-    ).toThrow(
-      new LesgoException(
-        "Token's [iss] is not valid!",
-        'JWT_ISS_NOT_VALID',
-        403
-      )
-    );
+    try {
+      expect(
+        await verifyJwtMiddlewareBeforeHandler(newHandler, () => {})
+      ).toThrow();
+    } catch (e) {
+      expect(e.name).toEqual('LesgoException');
+      expect(e.message).toEqual("Token's [iss] is not valid!");
+      expect(e.code).toEqual('JWT_ISS_NOT_VALID');
+      expect(e.statusCode).toEqual(403);
+    }
   });
 
-  it('test with missing custom claim', () => {
+  it('test with missing custom claim', async () => {
     const newHandler = {
       event: {
         ...handler.event,
@@ -144,18 +163,21 @@ describe('MiddlewareGroup: test verifyJwtMiddleware middleware', () => {
       },
     };
 
-    expect(() =>
-      verifyJwtMiddlewareBeforeHandler(newHandler, () => {})
-    ).toThrow(
-      new LesgoException(
-        `Token's custom claim [${config.customClaims.data[0]}] not found!`,
-        'JWT_CUSTOM_CLAIM_NOT_FOUND',
-        403
-      )
-    );
+    try {
+      expect(
+        await verifyJwtMiddlewareBeforeHandler(newHandler, () => {})
+      ).toThrow();
+    } catch (e) {
+      expect(e.name).toEqual('LesgoException');
+      expect(e.message).toEqual(
+        `Token's custom claim [${config.customClaims.data[0]}] not found!`
+      );
+      expect(e.code).toEqual('JWT_CUSTOM_CLAIM_NOT_FOUND');
+      expect(e.statusCode).toEqual(403);
+    }
   });
 
-  it('test with expired token', () => {
+  it('test with expired token', async () => {
     const newHandler = {
       event: {
         ...handler.event,
@@ -166,12 +188,19 @@ describe('MiddlewareGroup: test verifyJwtMiddleware middleware', () => {
       },
     };
 
-    expect(() =>
-      verifyJwtMiddlewareBeforeHandler(newHandler, () => {})
-    ).toThrow(new LesgoException('jwt expired', 'JWT_EXPIRED', 403));
+    try {
+      expect(
+        await verifyJwtMiddlewareBeforeHandler(newHandler, () => {})
+      ).toThrow();
+    } catch (e) {
+      expect(e.name).toEqual('LesgoException');
+      expect(e.message).toEqual('jwt expired');
+      expect(e.code).toEqual('JWT_EXPIRED');
+      expect(e.statusCode).toEqual(403);
+    }
   });
 
-  it('test with valid token', () => {
+  it('test with valid token', async () => {
     const newHandler = {
       event: {
         ...handler.event,
@@ -182,14 +211,41 @@ describe('MiddlewareGroup: test verifyJwtMiddleware middleware', () => {
       },
     };
 
-    verifyJwtMiddlewareBeforeHandler(newHandler, () => {});
+    await verifyJwtMiddlewareBeforeHandler(newHandler, () => {});
     expect(newHandler.event.decodedJwt).toMatchObject({
       sub: '1234567890',
       iss: config.iss.data[0],
     });
   });
 
-  it('test with custom config', () => {
+  it('test with secret as a function argument', async () => {
+    const { secret } = config;
+    config.secret = secretHandler => {
+      return `111${secretHandler.key}`;
+    };
+    const newHandler = {
+      key: '1',
+      event: {
+        ...handler.event,
+        headers: {
+          Authorization:
+            'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJpc3MiOiJkb21haW4uY29tIiwiZGVwYXJ0bWVudF9pZCI6MX0.7RdbXJhzrn_yV7CPqkuX0Yvtms0xaIw1q4LPe8O0BDY',
+        },
+      },
+    };
+
+    await verifyJwtMiddlewareBeforeHandler(newHandler, () => {});
+    expect(newHandler.event.decodedJwt).toMatchObject({
+      sub: '1234567890',
+      iss: config.iss.data[0],
+    });
+
+    config.secret = secret;
+  });
+
+  it('test with callback argument', async () => {
+    const callback = jest.fn();
+    config.callback = callback;
     const newHandler = {
       event: {
         ...handler.event,
@@ -200,7 +256,26 @@ describe('MiddlewareGroup: test verifyJwtMiddleware middleware', () => {
       },
     };
 
-    verifyJwtMiddlewareBeforeHandler(newHandler, () => {}, {
+    await verifyJwtMiddlewareBeforeHandler(newHandler, () => {});
+    expect(newHandler.event.decodedJwt).toMatchObject({
+      sub: '1234567890',
+      iss: config.iss.data[0],
+    });
+    expect(callback).toHaveBeenCalledWith(newHandler);
+  });
+
+  it('test with custom config', async () => {
+    const newHandler = {
+      event: {
+        ...handler.event,
+        headers: {
+          Authorization:
+            'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJpc3MiOiJkb21haW4uY29tIiwiZGVwYXJ0bWVudF9pZCI6MX0.pa2TBRqdVSFUhmiglB8SD8ImthqhqZBn0stAdNRcJ3w',
+        },
+      },
+    };
+
+    await verifyJwtMiddlewareBeforeHandler(newHandler, () => {}, {
       jwtConfig: {
         secret:
           'c4156b94c80b7f163feabd4ff268c99eb11ce8995df370a4fd872afb4377b273',

@@ -43,11 +43,13 @@ export const successHttpResponseHandler = async opts => {
   return {
     headers: options.headers,
     statusCode: options.statusCode,
-    body: JSON.stringify({
-      status: 'success',
-      data: options.response,
-      _meta: options.debugMode ? options.event : {},
-    }),
+    body: options.formatSuccess
+      ? options.formatSuccess(options)
+      : JSON.stringify({
+          status: 'success',
+          data: options.response,
+          _meta: options.debugMode ? options.event : {},
+        }),
   };
 };
 

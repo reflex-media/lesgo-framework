@@ -26,7 +26,7 @@ export const token = headers => {
   return parsed[1];
 };
 
-export const verifyJwtMiddlewareBeforeHandler = (handler, next, opts) => {
+export const verifyJwtMiddlewareBeforeHandler = async (handler, next, opts) => {
   const { headers } = handler.event;
 
   const finalConfig =
@@ -34,18 +34,29 @@ export const verifyJwtMiddlewareBeforeHandler = (handler, next, opts) => {
       ? opts.jwtConfig
       : config;
 
+  const { secret, callback } = finalConfig;
+
   try {
-    const service = new JwtService(token(headers), finalConfig);
+    const service = new JwtService(token(headers), {
+      ...finalConfig,
+      ...{
+        secret: typeof secret === 'function' ? secret(handler) : secret,
+      },
+    });
 
     // eslint-disable-next-line no-param-reassign
     handler.event.decodedJwt = service.validate().decoded;
 
+    if (typeof callback === 'function') {
+      await callback(handler);
+    }
+
     next();
   } catch (err) {
     if (err.name === 'JsonWebTokenError') {
-      throw new LesgoException(err.message, 'JWT_ERROR', 403);
+      throw new LesgoException(err.message, 'JWT_ERROR', 403, err);
     } else if (err.name === 'TokenExpiredError') {
-      throw new LesgoException(err.message, 'JWT_EXPIRED', 403);
+      throw new LesgoException(err.message, 'JWT_EXPIRED', 403, err);
     } else {
       throw err;
     }
