@@ -13,8 +13,9 @@ describe('ServicesGroup: test LoggerService instantiation', () => {
     expect(logger.logLevels).toMatchObject({
       error: 0,
       warn: 1,
-      info: 2,
-      debug: 3,
+      notice: 2,
+      info: 3,
+      debug: 4,
     });
   });
 
@@ -140,6 +141,20 @@ describe('ServicesGroup: test log LoggerService with console transport', () => {
       JSON.stringify({
         level: 'warn',
         message: 'some warn log',
+        logger: 'lesgo-logger',
+        extra: {},
+      })
+    );
+  });
+
+  it('test log with notice level', () => {
+    const logger = new LoggerService({ transports: [{ logType: 'console' }] });
+    logger.notice('some notice log');
+
+    expect(console.log).toHaveBeenCalledWith(
+      JSON.stringify({
+        level: 'notice',
+        message: 'some notice log',
         logger: 'lesgo-logger',
         extra: {},
       })

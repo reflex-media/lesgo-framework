@@ -59,12 +59,30 @@ describe('MiddlewareGroup: test disconnectConnections db middleware', () => {
 
     expect(end).toHaveBeenCalledTimes(1);
   });
+
+  it('should return exception if failure is detected', async () => {
+    const end = jest.fn().mockImplementationOnce(() => {
+      throw new Error('Test Error');
+    });
+    await disconnectConnections({
+      db: {
+        end,
+      },
+    });
+  });
 });
 
 describe('MiddlewareGroup: test disconnectConnections dbRead middleware', () => {
   it('should not call dbRead.end() whenever a dbRead options is not set', async () => {
     const end = jest.fn().mockResolvedValue();
     await disconnectConnections({ dbRead: {} });
+
+    expect(end).toHaveBeenCalledTimes(0);
+  });
+
+  it('should not call anything whenever no options is passed', async () => {
+    const end = jest.fn().mockResolvedValue();
+    await disconnectConnections();
 
     expect(end).toHaveBeenCalledTimes(0);
   });

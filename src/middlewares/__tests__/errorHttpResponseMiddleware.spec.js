@@ -45,6 +45,19 @@ describe('MiddlewareGroup: test errorHandler middleware', () => {
     expect(dataBody).toHaveProperty('error.details', '');
   });
 
+  it('test with formatSuccess argument', async () => {
+    const data = await errorHttpResponseHandler({
+      error: new ValidationErrorException('Test validation error'),
+      formatError: options => {
+        return options.error.code;
+      },
+    });
+
+    expect(data.statusCode).toBe(400);
+
+    expect(data.body).toBe('VALIDATION_ERROR');
+  });
+
   it('test with thrown custom Error with given parameters', async () => {
     const data = await errorHttpResponseHandler({
       error: new ValidationErrorException(
@@ -139,6 +152,36 @@ describe('MiddlewareGroup: test errorHandler middleware', () => {
         someEventKey: 'someEventValue',
       },
       db: {
+        end,
+      },
+    });
+
+    expect(end).toHaveBeenCalledTimes(1);
+  });
+
+  it('should call cache.end() whenever a cache options is set', async () => {
+    const end = jest.fn().mockResolvedValue();
+    await errorHttpResponseHandler({
+      error: 'Test error message',
+      event: {
+        someEventKey: 'someEventValue',
+      },
+      cache: {
+        end,
+      },
+    });
+
+    expect(end).toHaveBeenCalledTimes(1);
+  });
+
+  it('should call dbRead.end() whenever a dbRead options is set', async () => {
+    const end = jest.fn().mockResolvedValue();
+    await errorHttpResponseHandler({
+      error: 'Test error message',
+      event: {
+        someEventKey: 'someEventValue',
+      },
+      dbRead: {
         end,
       },
     });

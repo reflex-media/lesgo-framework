@@ -4,6 +4,8 @@ import successHttpResponseMiddleware from './successHttpResponseMiddleware';
 import errorHttpResponseMiddleware from './errorHttpResponseMiddleware';
 import normalizeSQSMessageMiddleware from './normalizeSQSMessageMiddleware';
 import verifyJwtMiddleware from './verifyJwtMiddleware';
+import basicAuthMiddleware from './basicAuthMiddleware';
+import clientAuthMiddleware from './clientAuthMiddleware';
 
 export {
   httpMiddleware,
@@ -12,4 +14,6 @@ export {
   errorHttpResponseMiddleware,
   normalizeSQSMessageMiddleware,
   verifyJwtMiddleware,
+  basicAuthMiddleware,
+  clientAuthMiddleware,
 };
