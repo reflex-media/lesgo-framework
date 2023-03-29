@@ -11,15 +11,15 @@ describe('test DynamoDbService connect', () => {
   });
 
   it('should throw an error when instantiating DynamoDbService with missing region', () => {
+    let err = {};
     try {
       expect(new DynamoDbService()).toThrow();
-    } catch (err) {
-      expect(err).toMatchObject(
-        new LesgoException(
-          'Missing required parameter region',
-          'DYNAMODB_MISSING_PARAMETER'
-        )
-      );
+    } catch (e) {
+      err = { ...e };
+    } finally {
+      expect(err.name).toEqual('LesgoException');
+      expect(err.message).toEqual('Missing required parameter region');
+      expect(err.code).toEqual('DYNAMODB_MISSING_PARAMETER');
     }
   });
 });

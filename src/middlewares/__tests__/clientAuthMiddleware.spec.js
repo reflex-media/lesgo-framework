@@ -22,9 +22,12 @@ describe('test clientMiddlewareBeforeHandler', () => {
       },
     };
 
+    let error = {};
     try {
       expect(await clientAuthMiddlewareBeforeHandler(handler, next)).toThrow();
-    } catch (error) {
+    } catch (err) {
+      error = { ...err };
+    } finally {
       expect(error.name).toBe('LesgoException');
       expect(error.message).toBe("Missing required 'clientKey'");
       expect(error.statusCode).toBe(403);
@@ -43,9 +46,12 @@ describe('test clientMiddlewareBeforeHandler', () => {
       },
     };
 
+    let error = {};
     try {
       expect(await clientAuthMiddlewareBeforeHandler(handler, next)).toThrow();
-    } catch (error) {
+    } catch (err) {
+      error = { ...err };
+    } finally {
       expect(error.name).toBe('LesgoException');
       expect(error.message).toBe('Invalid ClientId provided');
       expect(error.statusCode).toBe(403);

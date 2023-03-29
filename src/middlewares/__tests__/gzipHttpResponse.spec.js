@@ -92,10 +92,13 @@ describe('test gzipHttpResponse gzip', () => {
       body: { someKey: 'someValue' },
     };
 
+    let err = {};
     try {
       const resp = await gzip(response);
       expect(resp).toThrow();
-    } catch (err) {
+    } catch (e) {
+      err = { ...e };
+    } finally {
       expect(err.name).toEqual('LesgoException');
       expect(err.code).toMatch(/^GZIP_[A-Z]+_ERROR$/);
     }

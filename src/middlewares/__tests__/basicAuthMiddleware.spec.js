@@ -111,13 +111,16 @@ describe('test verifyBasicAuthBeforeHandler error handling', () => {
         },
       };
 
+      let errObj = {};
       try {
         expect(await verifyBasicAuthBeforeHandler(handler, next)).toThrow();
       } catch (error) {
-        expect(error.name).toBe(errorName);
-        expect(error.message).toBe(errorMessage);
-        expect(error.statusCode).toBe(errorStatusCode);
-        expect(error.code).toBe(errorCode);
+        errObj = { ...error };
+      } finally {
+        expect(errObj.name).toBe(errorName);
+        expect(errObj.message).toBe(errorMessage);
+        expect(errObj.statusCode).toBe(errorStatusCode);
+        expect(errObj.code).toBe(errorCode);
       }
     }
   );

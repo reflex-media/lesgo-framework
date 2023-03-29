@@ -67,11 +67,14 @@ describe('test Utils/validateFields', () => {
     const newParams = { ...params };
     delete newParams.email;
 
+    let e = {};
     try {
       const validated = validateFields(newParams, validFields);
 
       expect(validated).toThrow();
-    } catch (e) {
+    } catch (err) {
+      e = { ...err };
+    } finally {
       expect(e.name).toEqual('LesgoException');
       expect(e.message).toEqual("Missing required 'email'");
       expect(e.code).toEqual(`${FILE}::MISSING_REQUIRED_EMAIL`);
@@ -84,11 +87,14 @@ describe('test Utils/validateFields', () => {
   it('should throw invalid type when non-string value check', () => {
     const newParams = { ...params, name: 123 };
 
+    let e = {};
     try {
       const validated = validateFields(newParams, validFields);
 
       expect(validated).toThrow();
-    } catch (e) {
+    } catch (err) {
+      e = { ...err };
+    } finally {
       expect(e.name).toEqual('LesgoException');
       expect(e.message).toEqual(`Invalid type for 'name', expecting 'string'`);
       expect(e.code).toEqual(`${FILE}::INVALID_TYPE_NAME`);
@@ -102,11 +108,14 @@ describe('test Utils/validateFields', () => {
   it('should throw invalid type when non-object value check', () => {
     const newParams = { ...params, roles: 1597929335 };
 
+    let e = {};
     try {
       const validated = validateFields(newParams, validFields);
 
       expect(validated).toThrow();
-    } catch (e) {
+    } catch (err) {
+      e = { ...err };
+    } finally {
       expect(e.name).toEqual('LesgoException');
       expect(e.message).toEqual(`Invalid type for 'roles', expecting 'object'`);
       expect(e.code).toEqual(`${FILE}::INVALID_TYPE_ROLES`);
@@ -120,11 +129,14 @@ describe('test Utils/validateFields', () => {
   it('should throw invalid type when non-number value check', () => {
     const newParams = { ...params, Id: '123' };
 
+    let e = {};
     try {
       const validated = validateFields(newParams, validFields);
 
       expect(validated).toThrow();
-    } catch (e) {
+    } catch (err) {
+      e = { ...err };
+    } finally {
       expect(e.name).toEqual('LesgoException');
       expect(e.message).toEqual(`Invalid type for 'Id', expecting 'number'`);
       expect(e.code).toEqual(`${FILE}::INVALID_TYPE_ID`);
@@ -138,11 +150,14 @@ describe('test Utils/validateFields', () => {
   it('should throw invalid type when non-array value check', () => {
     const newParams = { ...params, listItem: { created_at: 1597929335 } };
 
+    let e = {};
     try {
       const validated = validateFields(newParams, validFields);
 
       expect(validated).toThrow();
-    } catch (e) {
+    } catch (err) {
+      e = { ...err };
+    } finally {
       expect(e.name).toEqual('LesgoException');
       expect(e.message).toEqual(
         `Invalid type for 'listItem', expecting 'array'`
@@ -187,11 +202,14 @@ describe('test Utils/validateFields', () => {
       )
     );
 
+    let e = {};
     try {
       const validated = validateFields(newParams, validFields);
 
       expect(validated).toThrow();
-    } catch (e) {
+    } catch (err) {
+      e = { ...err };
+    } finally {
       expect(e.name).toEqual('LesgoException');
       expect(e.message).toEqual(`Invalid type for 'status', expecting 'enum'`);
       expect(e.code).toEqual(`${FILE}::INVALID_TYPE_STATUS`);
@@ -208,11 +226,14 @@ describe('test Utils/validateFields', () => {
       functionCheck: { not: 'function' },
     };
 
+    let e = {};
     try {
       const validated = validateFields(newParams, validFields);
 
       expect(validated).toThrow();
-    } catch (e) {
+    } catch (err) {
+      e = { ...err };
+    } finally {
       expect(e.name).toEqual('LesgoException');
       expect(e.message).toEqual(
         `Invalid type for 'functionCheck', expecting 'function'`
@@ -240,11 +261,14 @@ describe('test Utils/validateFields', () => {
         jsonCheck: value,
       };
 
+      let e = {};
       try {
         const validated = validateFields(newParams, validFields);
 
         expect(validated).toThrow();
-      } catch (e) {
+      } catch (err) {
+        e = { ...err };
+      } finally {
         expect(e.name).toEqual('LesgoException');
         expect(e.message).toEqual(
           `Invalid type for 'jsonCheck', expecting 'json'`
@@ -264,11 +288,14 @@ describe('test Utils/validateFields', () => {
       statusCollection: 'active',
     };
 
+    let e = {};
     try {
       const validated = validateFields(newParams, validFields);
 
       expect(validated).toThrow();
-    } catch (e) {
+    } catch (err) {
+      e = { ...err };
+    } finally {
       expect(e.name).toEqual('LesgoException');
       expect(e.message).toEqual(
         `Invalid type for 'statusCollection', expecting collection of 'enum'`
@@ -298,11 +325,14 @@ describe('test Utils/validateFields', () => {
       statusCollection: ['archive'],
     };
 
+    let e = {};
     try {
       const validated = validateFields(newParams, validFields);
 
       expect(validated).toThrow();
-    } catch (e) {
+    } catch (err) {
+      e = { ...err };
+    } finally {
       expect(e.name).toEqual('LesgoException');
       expect(e.message).toEqual(
         `Invalid type for 'statusCollection', expecting collection of 'enum'`

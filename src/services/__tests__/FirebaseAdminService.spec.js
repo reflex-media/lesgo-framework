@@ -1,7 +1,6 @@
 import * as firebaseAdmin from 'firebase-admin';
 import firebaseConfig from 'config/firebase'; // eslint-disable-line import/no-unresolved
 import FirebaseAdminService from '../FirebaseAdminService';
-import LesgoException from '../../exceptions/LesgoException';
 
 describe('test FirebaseAdminService connect', () => {
   it('should not throw an error when instantiating FirebaseAdminService', () => {
@@ -39,52 +38,58 @@ describe('test FirebaseAdminService connect', () => {
   });
 
   it('should throw an error when instantiating FirebaseAdminService without setting opts', () => {
+    let err = {};
     try {
       expect(new FirebaseAdminService()).toThrow();
-    } catch (err) {
-      expect(err).toMatchObject(
-        new LesgoException(
-          'Missing required parameters serviceAccount and or projectName',
-          'FIREBASEADMIN_MISSING_PARAMETERS',
-          500
-        )
+    } catch (e) {
+      err = { ...e };
+    } finally {
+      expect(err.name).toEqual('LesgoException');
+      expect(err.message).toEqual(
+        'Missing required parameters serviceAccount and or projectName'
       );
+      expect(err.code).toEqual(`FIREBASEADMIN_MISSING_PARAMETERS`);
+      expect(err.statusCode).toEqual(500);
     }
   });
 
   it('should throw an error when instantiating FirebaseAdminService with missing serviceAccount', () => {
+    let err = {};
     try {
       expect(
         new FirebaseAdminService({
           projectName: firebaseConfig.projectName,
         })
       ).toThrow();
-    } catch (err) {
-      expect(err).toMatchObject(
-        new LesgoException(
-          'Missing required parameters serviceAccount and or projectName',
-          'FIREBASEADMIN_MISSING_PARAMETERS',
-          500
-        )
+    } catch (e) {
+      err = { ...e };
+    } finally {
+      expect(err.name).toEqual('LesgoException');
+      expect(err.message).toEqual(
+        'Missing required parameters serviceAccount and or projectName'
       );
+      expect(err.code).toEqual(`FIREBASEADMIN_MISSING_PARAMETERS`);
+      expect(err.statusCode).toEqual(500);
     }
   });
 
   it('should throw an error when instantiating FirebaseAdminService with missing projectName', () => {
+    let err = {};
     try {
       expect(
         new FirebaseAdminService({
           serviceAccount: JSON.stringify({ someCredKey: 'someCredValue' }),
         })
       ).toThrow();
-    } catch (err) {
-      expect(err).toMatchObject(
-        new LesgoException(
-          'Missing required parameters serviceAccount and or projectName',
-          'FIREBASEADMIN_MISSING_PARAMETERS',
-          500
-        )
+    } catch (e) {
+      err = { ...e };
+    } finally {
+      expect(err.name).toEqual('LesgoException');
+      expect(err.message).toEqual(
+        'Missing required parameters serviceAccount and or projectName'
       );
+      expect(err.code).toEqual(`FIREBASEADMIN_MISSING_PARAMETERS`);
+      expect(err.statusCode).toEqual(500);
     }
   });
 });
@@ -189,21 +194,20 @@ describe('test FirebaseAdminService getAllUsers', () => {
       projectName: firebaseConfig.projectName,
     });
 
+    let err = {};
     try {
       await fbAdmin.getAllUsers('asd');
-    } catch (err) {
-      expect(err).toMatchObject(
-        new LesgoException(
-          'Failed to fetch all users from firebase',
-          'FIREBASE_FETCH_USERS',
-          500,
-          {
-            err: {
-              code: 'auth/argument-error',
-              message:
-                'Required "maxResults" must be a positive integer that does not exceed 1000.',
-            },
-          }
+    } catch (e) {
+      err = { ...e };
+    } finally {
+      expect(err.name).toEqual('LesgoException');
+      expect(err.message).toEqual('Failed to fetch all users from firebase');
+      expect(err.code).toEqual('FIREBASE_FETCH_USERS');
+      expect(err.statusCode).toEqual(500);
+      expect(err.extra.err).toMatchObject(
+        new Error(
+          'The page token must be a valid non-empty string.',
+          'auth/invalid-page-token'
         )
       );
     }
@@ -215,22 +219,22 @@ describe('test FirebaseAdminService getAllUsers', () => {
       projectName: firebaseConfig.projectName,
     });
 
+    let err = {};
     try {
       await fbAdmin.getAllUsers(25, {
         token: 'invalidToken',
       });
-    } catch (err) {
-      expect(err).toMatchObject(
-        new LesgoException(
-          'Failed to fetch all users from firebase',
-          'FIREBASE_FETCH_USERS',
-          500,
-          {
-            err: {
-              code: 'auth/invalid-page-token',
-              message: 'The page token must be a valid non-empty string.',
-            },
-          }
+    } catch (e) {
+      err = { ...e };
+    } finally {
+      expect(err.name).toEqual('LesgoException');
+      expect(err.message).toEqual('Failed to fetch all users from firebase');
+      expect(err.code).toEqual('FIREBASE_FETCH_USERS');
+      expect(err.statusCode).toEqual(500);
+      expect(err.extra.err).toMatchObject(
+        new Error(
+          'The page token must be a valid non-empty string.',
+          'auth/invalid-page-token'
         )
       );
     }
@@ -265,6 +269,7 @@ describe('test FirebaseAdminService createUser', () => {
       projectName: firebaseConfig.projectName,
     });
 
+    let err = {};
     try {
       await fbAdmin.createUser({
         uid: 'some-uid',
@@ -272,19 +277,17 @@ describe('test FirebaseAdminService createUser', () => {
         password: 'somePassword',
         username: 'someUsername',
       });
-    } catch (err) {
-      expect(err).toMatchObject(
-        new LesgoException(
-          'Failed to create user on firebase',
-          'FIREBASE_CREATE_USER',
-          400,
-          {
-            err: {
-              code: 'auth/email-already-exists',
-              message:
-                'The email address is already in use by another account.',
-            },
-          }
+    } catch (e) {
+      err = { ...e };
+    } finally {
+      expect(err.name).toEqual('LesgoException');
+      expect(err.message).toEqual('Failed to create user on firebase');
+      expect(err.code).toEqual('FIREBASE_CREATE_USER');
+      expect(err.statusCode).toEqual(400);
+      expect(err.extra.err).toMatchObject(
+        new Error(
+          'The email address is already in use by another account.',
+          'auth/email-already-exists'
         )
       );
     }
@@ -308,9 +311,12 @@ describe('test FirebaseAdminService deleteUser', () => {
       projectName: firebaseConfig.projectName,
     });
 
+    let err = {};
     try {
       await fbAdmin.deleteUser('non-existing-uid');
-    } catch (err) {
+    } catch (e) {
+      err = { ...e };
+    } finally {
       expect(err.name).toBe('LesgoException');
       expect(err.message).toBe('Failed to delete user from firebase');
       expect(err.statusCode).toBe(400);
@@ -341,16 +347,17 @@ describe('test FirebaseAdminService delete', () => {
       projectName: 'fakeError',
     });
 
+    let err = {};
     try {
       const resp = await fbAdmin.delete();
       expect(resp).toThrow();
-    } catch (err) {
-      expect(err).toMatchObject(
-        new LesgoException(
-          'Failed to delete firebase app',
-          'FIREBASE_DELETE_APP'
-        )
-      );
+    } catch (e) {
+      err = { ...e };
+    } finally {
+      expect(err.name).toEqual('LesgoException');
+      expect(err.message).toEqual('Failed to delete firebase app');
+      expect(err.code).toEqual(`FIREBASE_DELETE_APP`);
+      expect(err.statusCode).toEqual(500);
     }
   });
 });

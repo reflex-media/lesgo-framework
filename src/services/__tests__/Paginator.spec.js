@@ -66,6 +66,7 @@ describe('test Paginator instantiate', () => {
       errorCode,
       errorStatusCode,
     }) => {
+      let err = {};
       try {
         const values = new Paginator(
           db,
@@ -77,7 +78,9 @@ describe('test Paginator instantiate', () => {
           }
         );
         expect(values).toThrow();
-      } catch (err) {
+      } catch (e) {
+        err = { ...e };
+      } finally {
         expect(err.name).toEqual(errorName);
         expect(err.message).toEqual(errorMessage);
         expect(err.code).toEqual(errorCode);

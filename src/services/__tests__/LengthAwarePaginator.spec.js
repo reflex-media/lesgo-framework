@@ -74,6 +74,7 @@ describe('test LengthAwarePaginator instantiate', () => {
     expect(db.select).toHaveBeenCalled();
   });
   it('should throw exception if total is not a number', async () => {
+    let err = {};
     try {
       expect(
         new LengthAwarePaginator(
@@ -87,7 +88,9 @@ describe('test LengthAwarePaginator instantiate', () => {
           }
         )
       ).toThrow();
-    } catch (err) {
+    } catch (e) {
+      err = { ...e };
+    } finally {
       expect(err.name).toEqual('LesgoException');
       expect(err.message).toEqual(
         "Invalid type for 'total', expecting 'number'"

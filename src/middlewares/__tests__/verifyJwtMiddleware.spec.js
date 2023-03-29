@@ -28,11 +28,14 @@ describe('MiddlewareGroup: test verifyJwtMiddleware middleware', () => {
   });
 
   it('test without authorization header', async () => {
+    let e = {};
     try {
       expect(
         await verifyJwtMiddlewareBeforeHandler(handler, () => {})
       ).toThrow();
-    } catch (e) {
+    } catch (err) {
+      e = { ...err };
+    } finally {
       expect(e.name).toEqual('LesgoException');
       expect(e.message).toEqual('Authorization Header is required!');
       expect(e.code).toEqual('JWT_MISSING_AUTHORIZATION_HEADER');
@@ -50,11 +53,14 @@ describe('MiddlewareGroup: test verifyJwtMiddleware middleware', () => {
       },
     };
 
+    let e = {};
     try {
       expect(
         await verifyJwtMiddlewareBeforeHandler(newHandler, () => {})
       ).toThrow();
-    } catch (e) {
+    } catch (err) {
+      e = { ...err };
+    } finally {
       expect(e.name).toEqual('LesgoException');
       expect(e.message).toEqual('Authorization Header is required!');
       expect(e.code).toEqual('JWT_MISSING_AUTHORIZATION_HEADER');
@@ -72,11 +78,14 @@ describe('MiddlewareGroup: test verifyJwtMiddleware middleware', () => {
       },
     };
 
+    let e = {};
     try {
       expect(
         await verifyJwtMiddlewareBeforeHandler(newHandler, () => {})
       ).toThrow();
-    } catch (e) {
+    } catch (err) {
+      e = { ...err };
+    } finally {
       expect(e.name).toEqual('LesgoException');
       expect(e.message).toEqual('Missing Bearer token!');
       expect(e.code).toEqual('JWT_MISSING_BEARER_TOKEN');
@@ -94,11 +103,14 @@ describe('MiddlewareGroup: test verifyJwtMiddleware middleware', () => {
       },
     };
 
+    let e = {};
     try {
       expect(
         await verifyJwtMiddlewareBeforeHandler(newHandler, () => {})
       ).toThrow();
-    } catch (e) {
+    } catch (err) {
+      e = { ...err };
+    } finally {
       expect(e.name).toEqual('LesgoException');
       expect(e.message).toEqual('jwt malformed');
       expect(e.code).toEqual('JWT_ERROR');
@@ -117,11 +129,14 @@ describe('MiddlewareGroup: test verifyJwtMiddleware middleware', () => {
       },
     };
 
+    let e = {};
     try {
       expect(
         await verifyJwtMiddlewareBeforeHandler(newHandler, () => {})
       ).toThrow();
-    } catch (e) {
+    } catch (err) {
+      e = { ...err };
+    } finally {
       expect(e.name).toEqual('LesgoException');
       expect(e.message).toEqual('invalid signature');
       expect(e.code).toEqual('JWT_ERROR');
@@ -140,11 +155,14 @@ describe('MiddlewareGroup: test verifyJwtMiddleware middleware', () => {
       },
     };
 
+    let e = {};
     try {
       expect(
         await verifyJwtMiddlewareBeforeHandler(newHandler, () => {})
       ).toThrow();
-    } catch (e) {
+    } catch (err) {
+      e = { ...err };
+    } finally {
       expect(e.name).toEqual('LesgoException');
       expect(e.message).toEqual("Token's [iss] is not valid!");
       expect(e.code).toEqual('JWT_ISS_NOT_VALID');
@@ -163,11 +181,14 @@ describe('MiddlewareGroup: test verifyJwtMiddleware middleware', () => {
       },
     };
 
+    let e = {};
     try {
       expect(
         await verifyJwtMiddlewareBeforeHandler(newHandler, () => {})
       ).toThrow();
-    } catch (e) {
+    } catch (err) {
+      e = { ...err };
+    } finally {
       expect(e.name).toEqual('LesgoException');
       expect(e.message).toEqual(
         `Token's custom claim [${config.customClaims.data[0]}] not found!`
@@ -188,11 +209,14 @@ describe('MiddlewareGroup: test verifyJwtMiddleware middleware', () => {
       },
     };
 
+    let e = {};
     try {
       expect(
         await verifyJwtMiddlewareBeforeHandler(newHandler, () => {})
       ).toThrow();
-    } catch (e) {
+    } catch (err) {
+      e = { ...err };
+    } finally {
       expect(e.name).toEqual('LesgoException');
       expect(e.message).toEqual('jwt expired');
       expect(e.code).toEqual('JWT_EXPIRED');
