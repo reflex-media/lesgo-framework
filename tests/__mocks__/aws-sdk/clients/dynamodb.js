@@ -15,13 +15,13 @@ export const DocumentClient = jest.fn().mockImplementation(opts => {
             } = params;
 
             if (isEmpty(TableName)) {
-              return reject(
+              reject(
                 new Error('FAKER Missing TableName', 'FAKER_MISSING_TABLE_NAME')
               );
             }
 
             if (isEmpty(KeyConditionExpression)) {
-              return reject(
+              reject(
                 new Error(
                   'FAKER Missing KeyConditionExpression',
                   'FAKER_MISSING_KeyConditionExpression'
@@ -33,7 +33,7 @@ export const DocumentClient = jest.fn().mockImplementation(opts => {
               !isEmpty(ProjectionExpression) &&
               !Array.isArray(ProjectionExpression)
             ) {
-              return reject(
+              reject(
                 new Error(
                   'FAKER Missing ProjectionExpression',
                   'FAKER_MISSING_ProjectionExpression'
@@ -45,7 +45,7 @@ export const DocumentClient = jest.fn().mockImplementation(opts => {
               isEmpty(ExpressionAttributeValues) ||
               typeof ExpressionAttributeValues !== 'object'
             ) {
-              return reject(
+              reject(
                 new Error(
                   'FAKER Missing ExpressionAttributeValues',
                   'FAKER_MISSING_ExpressionAttributeValues'
@@ -54,10 +54,10 @@ export const DocumentClient = jest.fn().mockImplementation(opts => {
             }
 
             if (!isEmpty(Select) && Select === 'count') {
-              return resolve(1);
+              resolve(1);
             }
 
-            return resolve({
+            resolve({
               Items: [
                 {
                   key: 123,
@@ -78,18 +78,18 @@ export const DocumentClient = jest.fn().mockImplementation(opts => {
             const { TableName, Item } = params;
 
             if (isEmpty(TableName)) {
-              return reject(
+              reject(
                 new Error('FAKER Missing TableName', 'FAKER_MISSING_TABLE_NAME')
               );
             }
 
             if (isEmpty(Item) || typeof Item !== 'object') {
-              return reject(
+              reject(
                 new Error('FAKER Invalid Item type', 'FAKER_INVALID_ITEM')
               );
             }
 
-            return resolve({
+            resolve({
               recordCount: 1,
               data: {},
             });
@@ -109,7 +109,7 @@ export const DocumentClient = jest.fn().mockImplementation(opts => {
             } = params;
 
             if (isEmpty(TableName)) {
-              return reject(
+              reject(
                 new Error('FAKER Missing TableName', 'FAKER_MISSING_TABLE_NAME')
               );
             }
@@ -118,7 +118,7 @@ export const DocumentClient = jest.fn().mockImplementation(opts => {
               isEmpty(UpdateExpression) ||
               typeof UpdateExpression !== 'string'
             ) {
-              return reject(
+              reject(
                 new Error(
                   'FAKER Missing UpdateExpression',
                   'FAKER_MISSING_UpdateExpression'
@@ -127,16 +127,14 @@ export const DocumentClient = jest.fn().mockImplementation(opts => {
             }
 
             if (isEmpty(Key) || typeof Key !== 'object') {
-              return reject(
-                new Error('FAKER Missing Key', 'FAKER_MISSING_Key')
-              );
+              reject(new Error('FAKER Missing Key', 'FAKER_MISSING_Key'));
             }
 
             if (
               isEmpty(ExpressionAttributeValues) ||
               typeof ExpressionAttributeValues !== 'object'
             ) {
-              return reject(
+              reject(
                 new Error(
                   'FAKER Missing ExpressionAttributeValues',
                   'FAKER_MISSING_ExpressionAttributeValues'
@@ -144,7 +142,7 @@ export const DocumentClient = jest.fn().mockImplementation(opts => {
               );
             }
 
-            return resolve({
+            resolve({
               recordCount: 1,
               data: {},
             });

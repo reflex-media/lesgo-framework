@@ -3,7 +3,7 @@ const Client = jest.fn().mockImplementation((opts, conn) => {
     indices: {
       create: jest.fn().mockImplementation(params => {
         return new Promise(resolve => {
-          return resolve({
+          resolve({
             data: {},
             mocked: {
               params,
@@ -13,7 +13,7 @@ const Client = jest.fn().mockImplementation((opts, conn) => {
       }),
       delete: jest.fn().mockImplementation(params => {
         return new Promise(resolve => {
-          return resolve({
+          resolve({
             data: {},
             mocked: {
               params,
@@ -23,7 +23,7 @@ const Client = jest.fn().mockImplementation((opts, conn) => {
       }),
       exists: jest.fn().mockImplementation(params => {
         return new Promise(resolve => {
-          return resolve({
+          resolve({
             body: {
               mocked: {
                 params,
@@ -34,7 +34,7 @@ const Client = jest.fn().mockImplementation((opts, conn) => {
       }),
       putMapping: jest.fn().mockImplementation(params => {
         return new Promise(resolve => {
-          return resolve({
+          resolve({
             mocked: {
               params,
             },
@@ -44,7 +44,7 @@ const Client = jest.fn().mockImplementation((opts, conn) => {
     },
     search: jest.fn().mockImplementation(param => {
       return new Promise(resolve => {
-        return resolve({
+        resolve({
           response: {},
           mocked: {
             param,
@@ -54,7 +54,7 @@ const Client = jest.fn().mockImplementation((opts, conn) => {
     }),
     get: jest.fn().mockImplementation(params => {
       return new Promise(resolve => {
-        return resolve({
+        resolve({
           response: {},
           mocked: {
             params,
@@ -64,7 +64,7 @@ const Client = jest.fn().mockImplementation((opts, conn) => {
     }),
     msearch: jest.fn().mockImplementation(params => {
       return new Promise(resolve => {
-        return resolve({
+        resolve({
           response: {},
           mocked: {
             params,
@@ -74,7 +74,7 @@ const Client = jest.fn().mockImplementation((opts, conn) => {
     }),
     index: jest.fn().mockImplementation(params => {
       return new Promise(resolve => {
-        return resolve({
+        resolve({
           data: {},
           mocked: {
             params,
@@ -84,7 +84,7 @@ const Client = jest.fn().mockImplementation((opts, conn) => {
     }),
     bulk: jest.fn().mockImplementation(bodies => {
       return new Promise(resolve => {
-        return resolve({
+        resolve({
           data: {},
           mocked: {
             bodies,

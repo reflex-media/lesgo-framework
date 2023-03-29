@@ -9,7 +9,6 @@
     "import/no-named-as-default": "off",
     "import/no-named-as-default-member": "off",
     "import/no-extraneous-dependencies": "off",
-    "no-promise-executor-return": "off", // FIXME: To review
     "jest/no-conditional-expect": "off", // FIXME: To review
     "jest/no-export": "off", // FIXME: Importing from a jest file will also run the same test (duplicate)
     "jest/expect-expect": "off", // FIXME: All jest tests should have assertions

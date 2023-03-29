@@ -46,13 +46,12 @@ export default class AwsElasticsearchConnection extends Connection {
     // eslint-disable-next-line consistent-return
     return new Promise((resolve, reject) => {
       if (AWS.config.credentials === null) {
-        return reject(new Error('Invalid AWS Credentials'));
+        reject(new Error('Invalid AWS Credentials'));
       }
 
       AWS.config.getCredentials((err, creds) => {
-        if (err) return reject(err);
-
-        return resolve(creds);
+        if (err) reject(err);
+        resolve(creds);
       });
     });
   }

@@ -207,7 +207,12 @@ describe('test clientMiddlewareBeforeHandler', () => {
 
     await clientAuthMiddlewareBeforeHandler(handler, next, {
       callback: async h => {
-        await new Promise(resolve => setTimeout(resolve, 500));
+        function timeout(ms) {
+          return new Promise(resolve => {
+            setTimeout(resolve, ms);
+          });
+        }
+        await timeout(500);
         // eslint-disable-next-line no-param-reassign
         h.event.created_obj_async = 'created_obj_async';
       },

@@ -91,7 +91,9 @@ export default {
     blacklist_platform_1: {
       key: '8888-8888-8888-8888',
       get isAuthOptional() {
-        return new Promise(resolve => resolve(true));
+        return new Promise(resolve => {
+          resolve(true);
+        });
       },
     },
   },
