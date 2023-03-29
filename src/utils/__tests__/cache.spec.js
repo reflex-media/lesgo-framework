@@ -3,10 +3,10 @@ import config from 'config/cache'; // eslint-disable-line import/no-unresolved
 import cache from '../cache';
 import isEmpty from '../isEmpty';
 
-export const cacheKey = 'cacheKey';
-export const cacheKey2 = 'cacheKey2';
-export const cacheTime = 10;
-export const cacheData = {
+const cacheKey = 'cacheKey';
+const cacheKey2 = 'cacheKey2';
+const cacheTime = 10;
+const cacheData = {
   someData: [
     {
       someDataKey1: 'someDataValue1',
@@ -16,7 +16,7 @@ export const cacheData = {
     },
   ],
 };
-export const cacheData2 = 'someValue2';
+const cacheData2 = 'someValue2';
 
 describe('UtilsGroup: test cache utils', () => {
   it('test cache utils', async () => {

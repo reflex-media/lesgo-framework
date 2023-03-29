@@ -10,7 +10,6 @@
     "import/no-named-as-default-member": "off",
     "import/no-extraneous-dependencies": "off",
     "jest/no-conditional-expect": "off", // FIXME: To review
-    "jest/no-export": "off", // FIXME: Importing from a jest file will also run the same test (duplicate)
     "jest/expect-expect": "off", // FIXME: All jest tests should have assertions
     "jest/no-mocks-import": "off", // FIXME: To review
     "consistent-return": "off",

@@ -1,4 +1,13 @@
-import { cacheData as cachedData } from '../../src/utils/__tests__/cache.spec';
+const cachedData = {
+  someData: [
+    {
+      someDataKey1: 'someDataValue1',
+    },
+    {
+      someDataKey2: 'someDataValue2',
+    },
+  ],
+};
 
 const MemcachePlus = jest.fn().mockImplementation(options => {
   return {
