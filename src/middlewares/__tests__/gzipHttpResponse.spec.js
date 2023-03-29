@@ -1,8 +1,7 @@
-import {
+import gzipHttpResponse, {
   determineRequestAcceptEncoding,
   determineRequestOrigin,
   gzip,
-  gzipHttpResponse,
 } from '../gzipHttpResponse';
 
 describe('test gzipHttpResponse determineRequestOrigin', () => {

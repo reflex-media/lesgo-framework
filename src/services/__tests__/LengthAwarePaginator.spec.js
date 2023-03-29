@@ -1,10 +1,29 @@
 import LengthAwarePaginator from '../pagination/LengthAwarePaginator';
-import {
-  mockData,
-  mockDataFirstItem,
-  mockDataLastItem,
-} from '../../utils/__mocks__/db';
 import db from '../../utils/db';
+
+const mockData = {
+  index_0: 'data_0',
+  index_1: 'data_1',
+  index_2: 'data_2',
+  index_3: 'data_3',
+  index_4: 'data_4',
+};
+
+const mockDataFirstItem = {
+  index_0: 'data_0_first_item',
+  index_1: 'data_1_first_item',
+  index_2: 'data_2_first_item',
+  index_3: 'data_3_first_item',
+  index_4: 'data_4_first_item',
+};
+
+const mockDataLastItem = {
+  index_0: 'data_0_last_item',
+  index_1: 'data_1_last_item',
+  index_2: 'data_2_last_item',
+  index_3: 'data_3_last_item',
+  index_4: 'data_4_last_item',
+};
 
 jest.mock('../../utils/db');
 

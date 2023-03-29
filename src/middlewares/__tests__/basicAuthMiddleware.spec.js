@@ -2,7 +2,7 @@ import basicAuthMiddleware, {
   generateBasicAuthorizationHash,
   verifyBasicAuthBeforeHandler,
 } from '../basicAuthMiddleware';
-import client from '../../../tests/__mocks__/config/client';
+import client from '../../../tests/__mocks__/config/client'; // eslint-disable-line jest/no-mocks-import
 
 describe('test generateBasicAuthorizationHash', () => {
   test('should return custom when overriden through opts', () => {

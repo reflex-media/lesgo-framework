@@ -2,7 +2,7 @@ import {
   errorHttpResponseHandler,
   errorHttpResponseAfterHandler,
 } from '../errorHttpResponseMiddleware';
-import ValidationErrorException from '../__mocks__/ValidationErrorException';
+import ValidationErrorException from '../__mocks__/ValidationErrorException'; // eslint-disable-line jest/no-mocks-import
 
 describe('MiddlewareGroup: test errorHandler middleware', () => {
   it('test with thrown Error', async () => {

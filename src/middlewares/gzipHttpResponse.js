@@ -69,7 +69,7 @@ export const determineRequestAcceptEncoding = handler => {
   return false;
 };
 
-export const gzipHttpResponse = async (handler, options = {}) => {
+const gzipHttpResponse = async (handler, options = {}) => {
   /*
    * By default we zip on ELB request only, but you also add APIGATEWAY
    * Supported Request [ELB, APIGATEWAY]

@@ -1,4 +1,4 @@
-export const mockData = {
+const mockData = {
   index_0: 'data_0',
   index_1: 'data_1',
   index_2: 'data_2',
@@ -6,7 +6,7 @@ export const mockData = {
   index_4: 'data_4',
 };
 
-export const mockDataFirstItem = {
+const mockDataFirstItem = {
   index_0: 'data_0_first_item',
   index_1: 'data_1_first_item',
   index_2: 'data_2_first_item',
@@ -14,7 +14,7 @@ export const mockDataFirstItem = {
   index_4: 'data_4_first_item',
 };
 
-export const mockDataLastItem = {
+const mockDataLastItem = {
   index_0: 'data_0_last_item',
   index_1: 'data_1_last_item',
   index_2: 'data_2_last_item',
