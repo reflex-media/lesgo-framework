@@ -208,7 +208,8 @@ describe('test verifyBasicAuthBeforeHandler with valid credentials', () => {
     ${`basic ${validBasicAuth}`} | ${'platform_2'}
     ${`Basic ${validBasicAuth}`} | ${'platform_2'}
   `(
-    'test Exception with valid credentials',
+    // FIXME: for the eslint error
+    'test Exception with valid credentials', // eslint-disable-line jest/valid-title
     async ({ Authorization, platform }) => {
       const handler = {
         event: {

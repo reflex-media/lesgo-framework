@@ -1,4 +1,4 @@
-import config from 'Config/cache'; // eslint-disable-line import/no-unresolved
+import config from 'config/cache'; // eslint-disable-line import/no-unresolved
 import ElastiCacheService from '../services/ElastiCacheService';
 import LesgoException from '../exceptions/LesgoException';
 import logger from './logger';

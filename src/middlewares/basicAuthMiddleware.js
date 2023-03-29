@@ -1,4 +1,4 @@
-import client from 'Config/client'; // eslint-disable-line import/no-unresolved
+import client from 'config/client'; // eslint-disable-line import/no-unresolved
 import LesgoException from '../exceptions/LesgoException';
 
 const FILE = 'Middlewares/basicAuthMiddleware';

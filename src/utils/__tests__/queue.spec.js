@@ -1,4 +1,4 @@
-import aws from 'Config/aws'; // eslint-disable-line import/no-unresolved
+import aws from 'config/aws'; // eslint-disable-line import/no-unresolved
 import queue, { dispatch } from '../queue';
 import LesgoException from '../../exceptions/LesgoException';
 

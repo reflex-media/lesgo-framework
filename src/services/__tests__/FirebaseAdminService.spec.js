@@ -1,5 +1,5 @@
 import * as firebaseAdmin from 'firebase-admin';
-import firebaseConfig from 'Config/firebase'; // eslint-disable-line import/no-unresolved
+import firebaseConfig from 'config/firebase'; // eslint-disable-line import/no-unresolved
 import FirebaseAdminService from '../FirebaseAdminService';
 import LesgoException from '../../exceptions/LesgoException';
 

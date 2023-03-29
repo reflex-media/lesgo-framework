@@ -63,7 +63,7 @@ describe('test gzipHttpResponse determineRequestAcceptEncoding', () => {
   //   const handler = {
   //     event: { headers: { 'Accept-Encoding': 'deflate, gzip;q=1.0, *;q=0.5' } },
   //   };
-
+  //
   //   expect(determineRequestAcceptEncoding(handler)).toBeTruthy();
   // });
 

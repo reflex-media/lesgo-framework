@@ -54,7 +54,7 @@ export default {
    * Other user-defined propoerties can defined as well for access when a match exists. These are all set to `handler.event.platform`.
    * The Property `id` is appended as well which contains the matched clients key
    * ```
-   * import client from 'Config/client';
+   * import client from 'config/client';
    *
    * console.log(client[handler.event.platform]);
    * ```

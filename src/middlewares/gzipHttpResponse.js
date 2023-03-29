@@ -59,10 +59,7 @@ export const determineRequestAcceptEncoding = handler => {
   if (acceptEncoding) {
     // normalise header
     const re = / /g;
-    acceptEncoding = acceptEncoding
-      .replace(re, '')
-      .toLowerCase()
-      .split(',');
+    acceptEncoding = acceptEncoding.replace(re, '').toLowerCase().split(',');
 
     if (acceptEncoding.includes('gzip')) {
       return true;

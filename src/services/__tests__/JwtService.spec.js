@@ -1,4 +1,4 @@
-import config from 'Config/jwt'; // eslint-disable-line import/no-unresolved
+import config from 'config/jwt'; // eslint-disable-line import/no-unresolved
 import jwt from 'jsonwebtoken';
 import JwtService from '../JwtService';
 import { token } from '../../middlewares/verifyJwtMiddleware';

@@ -1,4 +1,4 @@
-import dbConfig from 'Config/db'; // eslint-disable-line import/no-unresolved
+import dbConfig from 'config/db'; // eslint-disable-line import/no-unresolved
 import AuroraDbRDSProxyService from '../services/AuroraDbRDSProxyService';
 import AuroraDbService from '../services/AuroraDbService';
 

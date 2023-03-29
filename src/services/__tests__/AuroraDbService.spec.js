@@ -1,5 +1,5 @@
 import dataApiClient from 'data-api-client';
-import dbConfig from 'Config/db'; // eslint-disable-line import/no-unresolved
+import dbConfig from 'config/db'; // eslint-disable-line import/no-unresolved
 import AuroraDbService from '../AuroraDbService';
 import LesgoException from '../../exceptions/LesgoException';
 

@@ -1,4 +1,4 @@
-import isEmpty from '../utils/isEmpty';
+import isEmpty from '../../utils/isEmpty';
 
 export default class ValidationErrorException extends Error {
   constructor(

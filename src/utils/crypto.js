@@ -1,5 +1,5 @@
 import crypto from 'crypto';
-import cryptoConfig from 'Config/crypto'; // eslint-disable-line import/no-unresolved
+import cryptoConfig from 'config/crypto'; // eslint-disable-line import/no-unresolved
 import LesgoException from '../exceptions/LesgoException';
 import isEmpty from './isEmpty';
 
@@ -66,11 +66,7 @@ export const hashMD5 = data => {
     );
   }
 
-  const hashedValue = crypto
-    .createHash('md5')
-    .update(data)
-    .digest('hex');
-
+  const hashedValue = crypto.createHash('md5').update(data).digest('hex');
   return hashedValue;
 };
 

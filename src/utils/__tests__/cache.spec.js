@@ -1,4 +1,4 @@
-import config from 'Config/cache'; // eslint-disable-line import/no-unresolved
+import config from 'config/cache'; // eslint-disable-line import/no-unresolved
 
 import cache from '../cache';
 import isEmpty from '../isEmpty';

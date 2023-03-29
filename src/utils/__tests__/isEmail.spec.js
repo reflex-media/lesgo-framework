@@ -18,7 +18,7 @@ describe('test isEmail util', () => {
     );
   });
 
-  it('isEmail should return false for invalid email ', () => {
+  it('isEmail should return false for invalid email', () => {
     return expect(isEmail('test@g')).toBeFalsy();
   });
 

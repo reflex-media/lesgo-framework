@@ -1,4 +1,4 @@
-import app from 'Config/app'; // eslint-disable-line import/no-unresolved
+import app from 'config/app'; // eslint-disable-line import/no-unresolved
 import {
   normalizeRequest,
   normalizeHttpRequestBeforeHandler,

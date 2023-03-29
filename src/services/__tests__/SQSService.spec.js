@@ -1,4 +1,4 @@
-import aws from 'Config/aws'; // eslint-disable-line import/no-unresolved
+import aws from 'config/aws'; // eslint-disable-line import/no-unresolved
 import { SQS } from 'aws-sdk';
 import SQSService from '../SQSService';
 
