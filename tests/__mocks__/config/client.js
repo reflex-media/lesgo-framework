@@ -36,10 +36,7 @@ export default {
    *
    */
   getPreHashString: (key, secret) => {
-    return crypto
-      .createHash('sha1')
-      .update(`${key}:${secret}`)
-      .digest('hex');
+    return crypto.createHash('sha1').update(`${key}:${secret}`).digest('hex');
   },
 
   /*

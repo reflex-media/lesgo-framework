@@ -1,9 +1,11 @@
+import isEmpty from '../utils/isEmpty';
+
 export default class LesgoException extends Error {
   constructor(
     message,
     errorCode = 'LESGO_EXCEPTION',
     httpStatusCode = 500,
-    extra
+    extra = {}
   ) {
     super();
     this.name = 'LesgoException';
@@ -13,6 +15,6 @@ export default class LesgoException extends Error {
 
     Error.captureStackTrace(this, this.constructor);
 
-    if (extra) this.extra = extra;
+    if (!isEmpty(extra)) this.extra = extra;
   }
 }

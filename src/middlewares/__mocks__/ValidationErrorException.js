@@ -1,9 +1,11 @@
+import isEmpty from '../utils/isEmpty';
+
 export default class ValidationErrorException extends Error {
   constructor(
     message,
     errorCode = 'VALIDATION_ERROR',
     httpStatusCode = 400,
-    extra
+    extra = {}
   ) {
     super();
     this.name = 'ValidationError';
@@ -13,6 +15,6 @@ export default class ValidationErrorException extends Error {
 
     Error.captureStackTrace(this, this.constructor);
 
-    if (extra) this.extra = extra;
+    if (!isEmpty(extra)) this.extra = extra;
   }
 }

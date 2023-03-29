@@ -13,6 +13,6 @@ module.exports = {
   },
   setupFiles: ['./setupTest.js'],
   moduleNameMapper: {
-    '^Config(.*)$': '<rootDir>/tests/__mocks__/config$1.js',
+    '^config(.*)$': '<rootDir>/tests/__mocks__/config$1.js',
   },
 };
