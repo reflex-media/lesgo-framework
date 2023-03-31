@@ -1,31 +1,21 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { SQS } from 'aws-sdk';
+import { SQSClient, SendMessageCommand } from '@aws-sdk/client-sqs';
 import LesgoException from '../exceptions/LesgoException';
+import isEmpty from '../utils/isEmpty';
 
 export default class SQSService {
   constructor(
     opts = {
-      accessKeyId: null,
-      secretAccessKey: null,
       region: null,
     },
     queues = {}
   ) {
     let options = {};
-
-    if (opts.accessKeyId !== null && opts.accessKeyId !== undefined) {
-      options = { ...options, accessKeyId: opts.accessKeyId };
-    }
-
-    if (opts.secretAccessKey !== null && opts.secretAccessKey !== undefined) {
-      options = { ...options, secretAccessKey: opts.secretAccessKey };
-    }
-
-    if (opts.region !== null && opts.region !== undefined) {
+    if (!isEmpty(opts.region)) {
       options = { ...options, region: opts.region };
     }
 
-    this.sqsClient = new SQS({
+    this.sqsClient = new SQSClient({
       ...{ ...options },
     });
 
@@ -38,15 +28,15 @@ export default class SQSService {
    * @param {object} payload
    * @param {string} queueName
    */
-  dispatch(payload, queueName) {
-    if (payload === undefined) {
+  async dispatch(payload, queueName) {
+    if (isEmpty(payload)) {
       throw new LesgoException(
         'payload is undefined in dispatch()',
         'SQSSERVICE_DISPATCH_PAYLOAD_UNDEFINED'
       );
     }
 
-    if (queueName === undefined) {
+    if (isEmpty(queueName)) {
       throw new LesgoException(
         'queueName is undefined in dispatch()',
         'SQSSERVICE_DISPATCH_QUEUENAME_UNDEFINED'
@@ -55,11 +45,25 @@ export default class SQSService {
 
     const queue = this.queues[queueName];
 
-    return this.sqsClient
-      .sendMessage({
-        MessageBody: JSON.stringify(payload),
-        QueueUrl: `${queue.url}`,
-      })
-      .promise();
+    try {
+      const data = await this.sqsClient.send(
+        new SendMessageCommand({
+          MessageBody: JSON.stringify(payload),
+          QueueUrl: `${queue.url}`,
+        })
+      );
+      return data;
+    } catch (error) {
+      throw new LesgoException(
+        'Error occurred sending message to queue',
+        'SQSSERVICE_DISPATCH_ERROR',
+        500,
+        {
+          error,
+          payload,
+          queueName,
+        }
+      );
+    }
   }
 }

@@ -1,47 +1,101 @@
+import { SendMessageCommand, SQSClient } from '@aws-sdk/client-sqs';
+import { mockClient } from 'aws-sdk-client-mock';
 import aws from 'config/aws'; // eslint-disable-line import/no-unresolved
-import { SQS } from 'aws-sdk';
+import LesgoException from '../../exceptions/LesgoException';
 import SQSService from '../SQSService';
 
-describe('ServicesGroup: test SQSService instantiation', () => {
-  it('test instantiate default SQSService', () => {
-    // eslint-disable-next-line no-unused-vars
-    const sqs = new SQSService();
-
-    expect(SQS).toHaveBeenCalledWith({});
-  });
-
-  it('test instantiate SQSService with custom options', () => {
-    // eslint-disable-next-line no-unused-vars
-    const sqs = new SQSService({
-      accessKeyId: 'aws.sqs.options.accessKeyId',
-      secretAccessKey: 'aws.sqs.options.secretAccessKey',
-      region: 'aws.sqs.options.region',
-    });
-
-    expect(SQS).toHaveBeenCalledWith({
-      accessKeyId: 'aws.sqs.options.accessKeyId',
-      secretAccessKey: 'aws.sqs.options.secretAccessKey',
-      region: 'aws.sqs.options.region',
-    });
-  });
-});
+const sqsMock = mockClient(SQSClient);
 
 describe('ServicesGroup: test SQSService usage', () => {
   it('test dispatch', () => {
-    // eslint-disable-next-line no-unused-vars
+    sqsMock.on(SendMessageCommand).resolves({
+      MessageId: 'MessageId',
+    });
+
     const sqs = new SQSService({}, aws.sqs.queues);
 
     return expect(
       sqs.dispatch({ someData: 'someValue' }, 'pingQueue')
     ).resolves.toMatchObject({
       MessageId: 'MessageId',
-      mocked: {
-        opts: {},
-        params: {
-          MessageBody: '{"someData":"someValue"}',
-          QueueUrl: `${aws.sqs.queues.pingQueue.url}`,
-        },
-      },
     });
+  });
+
+  it('test dispatch with default constructor', () => {
+    sqsMock.on(SendMessageCommand).rejects(
+      new Error(
+        'Some Error',
+        'SOME_ERROR'
+      )
+    );
+
+    const sqs = new SQSService();
+
+    return expect(
+      sqs.dispatch({ someData: 'someValue' }, 'pingQueue')
+    ).rejects.toMatchObject(new LesgoException(
+      'Error occurred sending message to queue',
+      'SQSSERVICE_DISPATCH_ERROR',
+      500,
+    ));
+  });
+
+  it('test dispatch with custom region set', () => {
+    sqsMock.on(SendMessageCommand).resolves({
+      MessageId: 'MessageId',
+    });
+
+    const sqs = new SQSService({ region: 'us-west-2' }, aws.sqs.queues);
+
+    return expect(
+      sqs.dispatch({ someData: 'someValue' }, 'pingQueue')
+    ).resolves.toMatchObject({
+      MessageId: 'MessageId',
+    });
+  });
+
+  it('test dispatch with empty payload', () => {
+    const sqs = new SQSService({}, aws.sqs.queues);
+
+    return expect(
+      sqs.dispatch({}, 'pingQueue')
+    ).rejects.toMatchObject(
+      new LesgoException(
+        'payload is undefined in dispatch()',
+        'SQSSERVICE_DISPATCH_PAYLOAD_UNDEFINED'
+      )
+    );
+  });
+
+  it('test dispatch with empty queue name', () => {
+    const sqs = new SQSService({}, aws.sqs.queues);
+
+    return expect(
+      sqs.dispatch({ someData: 'someValue' })
+    ).rejects.toMatchObject(
+      new LesgoException(
+        'queueName is undefined in dispatch()',
+        'SQSSERVICE_DISPATCH_QUEUENAME_UNDEFINED'
+      )
+    );
+  });
+
+  it('test dispatch thrown exception', () => {
+    sqsMock.on(SendMessageCommand).rejects(
+      new Error(
+        'Some Error',
+        'SOME_ERROR'
+      )
+    );
+
+    const sqs = new SQSService({}, aws.sqs.queues);
+
+    return expect(
+      sqs.dispatch({ someData: 'someValue' }, 'pingQueue')
+    ).rejects.toMatchObject(new LesgoException(
+      'Error occurred sending message to queue',
+      'SQSSERVICE_DISPATCH_ERROR',
+      500,
+    ));
   });
 });

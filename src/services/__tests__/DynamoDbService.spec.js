@@ -1,15 +1,16 @@
-import { DocumentClient } from 'aws-sdk/clients/dynamodb'; // eslint-disable-line import/no-extraneous-dependencies
+import {
+  DynamoDBDocumentClient,
+  PutCommand,
+  QueryCommand,
+  UpdateCommand,
+} from '@aws-sdk/lib-dynamodb';
+import { mockClient } from 'aws-sdk-client-mock';
 import DynamoDbService from '../DynamoDbService';
 import LesgoException from '../../exceptions/LesgoException';
 
+const ddbMock = mockClient(DynamoDBDocumentClient);
+
 describe('test DynamoDbService connect', () => {
-  it('should not throw an error when instantiating DynamoDbService', () => {
-    // eslint-disable-next-line no-unused-vars
-    const db = new DynamoDbService({ region: 'ap-southeast-1' });
-
-    expect(DocumentClient).toHaveBeenCalledWith({ region: 'ap-southeast-1' });
-  });
-
   it('should throw an error when instantiating DynamoDbService with missing region', () => {
     let err = {};
     try {
@@ -26,6 +27,17 @@ describe('test DynamoDbService connect', () => {
 
 describe('test DynamoDbService query', () => {
   it('should return a list of items when calling query', () => {
+    ddbMock.on(QueryCommand).resolves({
+      Items: [
+        {
+          key: 123,
+          value: 'abc',
+        },
+      ],
+      Count: 1,
+      ScannedCount: 1,
+    });
+
     const db = new DynamoDbService({ region: 'ap-southeast-1' });
 
     const tableName = 'sampleTable';
@@ -48,59 +60,19 @@ describe('test DynamoDbService query', () => {
     ]);
   });
 
-  it('should throw exception when tableName is empty', () => {
+  it('should throw exception if invalid command', () => {
+    ddbMock
+      .on(QueryCommand)
+      .rejects(
+        new Error('Fake error message', 'FAKE_ERROR_THROWN')
+      );
+
     const db = new DynamoDbService({ region: 'ap-southeast-1' });
 
     const tableName = '';
     const keyConditionExpression = 'key = :keyId';
     const expressionAttributeValues = { ':keyId': 123 };
     const projectionExpression = ['key', 'value'];
-
-    return expect(
-      db.query(
-        tableName,
-        keyConditionExpression,
-        expressionAttributeValues,
-        projectionExpression
-      )
-    ).rejects.toThrow(
-      new LesgoException(
-        'EXCEPTION ENCOUNTERED FOR DYNAMODB QUERY OPERATION',
-        'DYNAMODB_QUERY_EXCEPTION'
-      )
-    );
-  });
-
-  it('should throw exception when expressionAttributeValues is not an object', () => {
-    const db = new DynamoDbService({ region: 'ap-southeast-1' });
-
-    const tableName = 'sampleTable';
-    const keyConditionExpression = 'key = :keyId';
-    const expressionAttributeValues = 'someString';
-    const projectionExpression = ['key', 'value'];
-
-    return expect(
-      db.query(
-        tableName,
-        keyConditionExpression,
-        expressionAttributeValues,
-        projectionExpression
-      )
-    ).rejects.toThrow(
-      new LesgoException(
-        'EXCEPTION ENCOUNTERED FOR DYNAMODB QUERY OPERATION',
-        'DYNAMODB_QUERY_EXCEPTION'
-      )
-    );
-  });
-
-  it('should throw exception when projectionExpression is not an array', () => {
-    const db = new DynamoDbService({ region: 'ap-southeast-1' });
-
-    const tableName = 'sampleTable';
-    const keyConditionExpression = 'key = :keyId';
-    const expressionAttributeValues = { ':keyId': 123 };
-    const projectionExpression = 'someString';
 
     return expect(
       db.query(
@@ -120,6 +92,17 @@ describe('test DynamoDbService query', () => {
 
 describe('test DynamoDbService queryCount', () => {
   it('should return count when calling query', () => {
+    ddbMock.on(QueryCommand).resolves({
+      Items: [
+        {
+          key: 123,
+          value: 'abc',
+        },
+      ],
+      Count: 1,
+      ScannedCount: 1,
+    });
+
     const db = new DynamoDbService({ region: 'ap-southeast-1' });
 
     const tableName = 'sampleTable';
@@ -135,33 +118,18 @@ describe('test DynamoDbService queryCount', () => {
     ).resolves.toEqual(1);
   });
 
-  it('should throw exception when tableName is empty', () => {
+  it('should throw exception if invalid command', () => {
+    ddbMock
+      .on(QueryCommand)
+      .rejects(
+        new Error('Fake error message', 'FAKE_ERROR_THROWN')
+      );
+
     const db = new DynamoDbService({ region: 'ap-southeast-1' });
 
     const tableName = '';
     const keyConditionExpression = 'key = :keyId';
     const expressionAttributeValues = { ':keyId': 123 };
-
-    return expect(
-      db.queryCount(
-        tableName,
-        keyConditionExpression,
-        expressionAttributeValues
-      )
-    ).rejects.toThrow(
-      new LesgoException(
-        'EXCEPTION ENCOUNTERED FOR DYNAMODB QUERY COUNT OPERATION',
-        'DYNAMODB_QUERY_EXCEPTION'
-      )
-    );
-  });
-
-  it('should throw exception when expressionAttributeValues is not an object', () => {
-    const db = new DynamoDbService({ region: 'ap-southeast-1' });
-
-    const tableName = 'sampleTable';
-    const keyConditionExpression = 'key = :keyId';
-    const expressionAttributeValues = 'someString';
 
     return expect(
       db.queryCount(
@@ -180,6 +148,11 @@ describe('test DynamoDbService queryCount', () => {
 
 describe('test DynamoDbService put', () => {
   it('should return recordCount when calling put', () => {
+    ddbMock.on(PutCommand).resolves({
+      recordCount: 1,
+      data: {},
+    });
+
     const db = new DynamoDbService({ region: 'ap-southeast-1' });
 
     const tableName = 'sampleTable';
@@ -194,7 +167,13 @@ describe('test DynamoDbService put', () => {
     });
   });
 
-  it('should throw exception when tableName is empty', () => {
+  it('should throw exception if invalid command', () => {
+    ddbMock
+      .on(PutCommand)
+      .rejects(
+        new Error('Fake error message', 'FAKE_ERROR_THROWN')
+      );
+
     const db = new DynamoDbService({ region: 'ap-southeast-1' });
 
     const tableName = '';
@@ -210,24 +189,15 @@ describe('test DynamoDbService put', () => {
       )
     );
   });
-
-  it('should throw exception when item is not an object', () => {
-    const db = new DynamoDbService({ region: 'ap-southeast-1' });
-
-    const tableName = 'sampleTable';
-    const item = 'someString';
-
-    return expect(db.put(tableName, item)).rejects.toThrow(
-      new LesgoException(
-        'EXCEPTION ENCOUNTERED FOR DYNAMODB PUT OPERATION',
-        'DYNAMODB_PUT_EXCEPTION'
-      )
-    );
-  });
 });
 
 describe('test DynamoDbService update', () => {
   it('should return count when calling query', () => {
+    ddbMock.on(UpdateCommand).resolves({
+      recordCount: 1,
+      data: {},
+    });
+
     const db = new DynamoDbService({ region: 'ap-southeast-1' });
 
     const tableName = 'sampleTable';
@@ -240,66 +210,18 @@ describe('test DynamoDbService update', () => {
     ).resolves.toEqual({ recordCount: 1, data: {} });
   });
 
-  it('should throw exception when tableName is empty', () => {
+  it('should throw exception if invalid command', () => {
+    ddbMock
+      .on(UpdateCommand)
+      .rejects(
+        new Error('Fake error message', 'FAKE_ERROR_THROWN')
+      );
+
     const db = new DynamoDbService({ region: 'ap-southeast-1' });
 
     const tableName = '';
     const key = { key: 123 };
     const updateExpression = 'SET value = :value';
-    const expressionAttributeValues = { ':value': 'asd' };
-
-    return expect(
-      db.update(tableName, key, updateExpression, expressionAttributeValues)
-    ).rejects.toThrow(
-      new LesgoException(
-        'EXCEPTION ENCOUNTERED FOR DYNAMODB UPDATE OPERATION',
-        'DYNAMODB_UPDATE_EXCEPTION'
-      )
-    );
-  });
-
-  it('should throw exception when expressionAttributeValues is not an object', () => {
-    const db = new DynamoDbService({ region: 'ap-southeast-1' });
-
-    const tableName = 'sampleTable';
-    const key = { key: 123 };
-    const updateExpression = 'SET value = :value';
-    const expressionAttributeValues = 'someString';
-
-    return expect(
-      db.update(tableName, key, updateExpression, expressionAttributeValues)
-    ).rejects.toThrow(
-      new LesgoException(
-        'EXCEPTION ENCOUNTERED FOR DYNAMODB UPDATE OPERATION',
-        'DYNAMODB_UPDATE_EXCEPTION'
-      )
-    );
-  });
-
-  it('should throw exception when key is not an object', () => {
-    const db = new DynamoDbService({ region: 'ap-southeast-1' });
-
-    const tableName = 'sampleTable';
-    const key = 123;
-    const updateExpression = 'SET value = :value';
-    const expressionAttributeValues = { ':value': 'asd' };
-
-    return expect(
-      db.update(tableName, key, updateExpression, expressionAttributeValues)
-    ).rejects.toThrow(
-      new LesgoException(
-        'EXCEPTION ENCOUNTERED FOR DYNAMODB UPDATE OPERATION',
-        'DYNAMODB_UPDATE_EXCEPTION'
-      )
-    );
-  });
-
-  it('should throw exception when updateExpression is not a string', () => {
-    const db = new DynamoDbService({ region: 'ap-southeast-1' });
-
-    const tableName = 'sampleTable';
-    const key = { key: 123 };
-    const updateExpression = { some: 'value' };
     const expressionAttributeValues = { ':value': 'asd' };
 
     return expect(

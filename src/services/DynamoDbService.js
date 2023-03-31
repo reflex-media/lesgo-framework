@@ -1,4 +1,10 @@
-import { DocumentClient } from 'aws-sdk/clients/dynamodb'; // eslint-disable-line import/no-extraneous-dependencies
+import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
+import {
+  DynamoDBDocumentClient,
+  QueryCommand,
+  PutCommand,
+  UpdateCommand,
+} from '@aws-sdk/lib-dynamodb';
 import LesgoException from '../exceptions/LesgoException';
 import logger from '../utils/logger';
 
@@ -13,15 +19,17 @@ export default class DynamoDb {
   connect(opts) {
     const { region } = opts;
 
-    if (!region)
+    if (!region) {
       throw new LesgoException(
         'Missing required parameter region',
         'DYNAMODB_MISSING_PARAMETER',
         500,
         { opts }
       );
+    }
 
-    this.client = new DocumentClient({ region });
+    const ddbClient = new DynamoDBClient({ region });
+    this.client = DynamoDBDocumentClient.from(ddbClient);
   }
 
   async query(
@@ -40,7 +48,7 @@ export default class DynamoDb {
     logger.debug(`${FILE}::PREPARING_QUERY`, { params });
 
     try {
-      const data = await this.client.query(params).promise();
+      const data = await this.client.send(new QueryCommand(params));
       logger.debug(`${FILE}::RECEIVED_QUERY_RESPONSE`, { data });
       return data.Items;
     } catch (err) {
@@ -67,7 +75,7 @@ export default class DynamoDb {
     logger.debug(`${FILE}::PREPARING_QUERY_COUNT`, { params });
 
     try {
-      const data = await this.client.query(params).promise();
+      const data = await this.client.send(new QueryCommand(params));
       logger.debug(`${FILE}::RECEIVED_QUERY_COUNT_RESPONSE`, { data });
       return data.Count;
     } catch (err) {
@@ -86,7 +94,7 @@ export default class DynamoDb {
     logger.debug(`${FILE}::PREPARING_PUT`, { params });
 
     try {
-      const data = await this.client.put(params).promise();
+      const data = await this.client.send(new PutCommand(params));
       logger.debug(`${FILE}::RECEIVED_PUT_RESPONSE`, { data });
       return data;
     } catch (err) {
@@ -110,7 +118,7 @@ export default class DynamoDb {
     logger.debug(`${FILE}::PREPARING_UPDATE`, { params });
 
     try {
-      const data = await this.client.update(params).promise();
+      const data = await this.client.send(new UpdateCommand(params));
       logger.debug(`${FILE}::RECEIVED_UPDATE_RESPONSE`, { data });
       return data;
     } catch (err) {
