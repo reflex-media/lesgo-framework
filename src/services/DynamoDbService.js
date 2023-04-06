@@ -8,9 +8,9 @@ import {
 import LesgoException from '../exceptions/LesgoException';
 import logger from '../utils/logger';
 
-const FILE = 'Lesgo/services/DynamoDbService';
+const FILE = 'lesgo/services/DynamoDbService';
 
-export default class DynamoDb {
+export default class DynamoDbService {
   constructor(opts = {}) {
     this.client = null;
     this.connect(opts);
