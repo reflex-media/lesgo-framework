@@ -43,13 +43,17 @@ export const errorHttpResponseHandler = async opts => {
   const statusCode = options.error.statusCode || options.statusCode;
 
   if (!isEmpty(options.error)) {
-    logger.log(statusCode === 500 ? 'error' : 'warn', options.error.message, {
-      error: options.error,
-    });
+    logger.log(
+      statusCode === 500 ? 'error' : 'warn',
+      options.error.message,
+      options.error
+    );
   } else {
-    logger.log(statusCode === 500 ? 'error' : 'warn', jsonBody.error.message, {
-      error: jsonBody.error,
-    });
+    logger.log(
+      statusCode === 500 ? 'error' : 'warn',
+      jsonBody.error.message,
+      jsonBody.error
+    );
   }
 
   try {
