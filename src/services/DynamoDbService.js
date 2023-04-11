@@ -107,12 +107,19 @@ export default class DynamoDbService {
     }
   }
 
-  async update(tableName, key, updateExpression, expressionAttributeValues) {
+  async update(
+    tableName,
+    key,
+    updateExpression,
+    expressionAttributeValues,
+    opts = {}
+  ) {
     const params = this.prepareUpdatePayload(
       tableName,
       key,
       updateExpression,
-      expressionAttributeValues
+      expressionAttributeValues,
+      opts
     );
 
     logger.debug(`${FILE}::PREPARING_UPDATE`, { params });
@@ -173,13 +180,20 @@ export default class DynamoDbService {
     tableName,
     key,
     updateExpression,
-    expressionAttributeValues
+    expressionAttributeValues,
+    opts
   ) {
-    return {
+    const payload = {
       TableName: tableName,
       Key: key,
       UpdateExpression: updateExpression,
       ExpressionAttributeValues: expressionAttributeValues,
     };
+
+    if (typeof opts.conditionExpression !== 'undefined') {
+      payload.ConditionExpression = opts.conditionExpression;
+    }
+
+    return payload;
   }
 }
