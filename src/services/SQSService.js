@@ -29,7 +29,7 @@ export default class SQSService {
    * @param {string} queueName
    * @param {object} opts
    */
-  async dispatch(payload, queueName, opts = {}) {
+  async dispatch(payload, queueName) {
     if (isEmpty(payload)) {
       throw new LesgoException(
         'payload is undefined in dispatch()',
@@ -51,8 +51,6 @@ export default class SQSService {
         new SendMessageCommand({
           MessageBody: JSON.stringify(payload),
           QueueUrl: `${queue.url}`,
-          DelaySeconds:
-            typeof opts.delaySeconds !== 'undefined' ? opts.delaySeconds : 0,
         })
       );
       return data;
