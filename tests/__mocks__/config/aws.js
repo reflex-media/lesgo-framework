@@ -8,4 +8,5 @@ export default {
     },
   },
   s3: jest.fn(),
+  sns: jest.fn(),
 };
