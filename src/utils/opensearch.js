@@ -8,7 +8,9 @@ const opensearch = (conn = 'default') => {
     return singleton[conn];
   }
 
-  const instance = new OpenSearchService({ region: config.region });
+  const adapter = config.adapters[conn === 'default' ? config.default : conn];
+
+  const instance = new OpenSearchService(adapter);
   singleton[conn] = instance;
   return instance;
 };
