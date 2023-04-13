@@ -4,7 +4,6 @@ import aws4 from 'aws4';
 import LesgoException from '../exceptions/LesgoException';
 import isEmpty from '../utils/isEmpty';
 import logger from '../utils/logger';
-import getCurrentTimestamp from '../utils/getCurrentTimestamp';
 
 const FILE = 'lesgo/services/OpenSearch';
 
