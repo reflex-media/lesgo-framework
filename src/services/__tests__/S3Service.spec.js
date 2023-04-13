@@ -39,41 +39,38 @@ describe('ServicesGroup: test S3Service usage', () => {
   it('test getObject to throw if missing key', () => {
     const s3Instance = new S3Service();
 
-    return expect(
-      s3Instance.getObject('', 'someBucket')
-    ).rejects.toMatchObject(new LesgoException(
-      'Key is undefined in S3Service.getObject()',
-      'S3SERVICE_GETOBJECT_KEY_UNDEFINED'
-    ));
+    return expect(s3Instance.getObject('', 'someBucket')).rejects.toMatchObject(
+      new LesgoException(
+        'Key is undefined in S3Service.getObject()',
+        'S3SERVICE_GETOBJECT_KEY_UNDEFINED'
+      )
+    );
   });
 
   it('test getObject to throw if missing bucket', () => {
     const s3Instance = new S3Service();
 
-    return expect(
-      s3Instance.getObject('someKey', '')
-    ).rejects.toMatchObject(new LesgoException(
-      'Bucket is undefined in S3Service.getObject()',
-      'S3SERVICE_GETOBJECT_BUCKET_UNDEFINED'
-    ));
+    return expect(s3Instance.getObject('someKey', '')).rejects.toMatchObject(
+      new LesgoException(
+        'Bucket is undefined in S3Service.getObject()',
+        'S3SERVICE_GETOBJECT_BUCKET_UNDEFINED'
+      )
+    );
   });
 
   it('test getObject thrown exception', () => {
-    s3Mock.on(GetObjectCommand).rejects(
-      new Error(
-        'Some Error',
-        'SOME_ERROR'
-      )
-    );
+    s3Mock.on(GetObjectCommand).rejects(new Error('Some Error', 'SOME_ERROR'));
 
     const s3Instance = new S3Service();
 
     return expect(
       s3Instance.getObject('someKey', 'someBucket')
-    ).rejects.toMatchObject(new LesgoException(
-      'Error occured getting object from S3 bucket',
-      'S3SERVICE_GETOBJECT_COMMAND_ERROR',
-      500,
-    ));
+    ).rejects.toMatchObject(
+      new LesgoException(
+        'Error occured getting object from S3 bucket',
+        'S3SERVICE_GETOBJECT_COMMAND_ERROR',
+        500
+      )
+    );
   });
 });

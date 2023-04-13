@@ -63,9 +63,7 @@ describe('test DynamoDbService query', () => {
   it('should throw exception if invalid command', () => {
     ddbMock
       .on(QueryCommand)
-      .rejects(
-        new Error('Fake error message', 'FAKE_ERROR_THROWN')
-      );
+      .rejects(new Error('Fake error message', 'FAKE_ERROR_THROWN'));
 
     const db = new DynamoDbService({ region: 'ap-southeast-1' });
 
@@ -121,9 +119,7 @@ describe('test DynamoDbService queryCount', () => {
   it('should throw exception if invalid command', () => {
     ddbMock
       .on(QueryCommand)
-      .rejects(
-        new Error('Fake error message', 'FAKE_ERROR_THROWN')
-      );
+      .rejects(new Error('Fake error message', 'FAKE_ERROR_THROWN'));
 
     const db = new DynamoDbService({ region: 'ap-southeast-1' });
 
@@ -170,9 +166,7 @@ describe('test DynamoDbService put', () => {
   it('should throw exception if invalid command', () => {
     ddbMock
       .on(PutCommand)
-      .rejects(
-        new Error('Fake error message', 'FAKE_ERROR_THROWN')
-      );
+      .rejects(new Error('Fake error message', 'FAKE_ERROR_THROWN'));
 
     const db = new DynamoDbService({ region: 'ap-southeast-1' });
 
@@ -213,9 +207,7 @@ describe('test DynamoDbService update', () => {
   it('should throw exception if invalid command', () => {
     ddbMock
       .on(UpdateCommand)
-      .rejects(
-        new Error('Fake error message', 'FAKE_ERROR_THROWN')
-      );
+      .rejects(new Error('Fake error message', 'FAKE_ERROR_THROWN'));
 
     const db = new DynamoDbService({ region: 'ap-southeast-1' });
 

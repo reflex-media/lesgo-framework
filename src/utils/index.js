@@ -1,8 +1,8 @@
 import cache from './cache';
-import elasticsearch from './elasticsearch';
 import logger from './logger';
 import { getObject } from './objectStore';
 import { dispatch } from './queue';
+import opensearch from './opensearch';
 import isEmpty from './isEmpty';
 import isDecimal from './isDecimal';
 import crypto from './crypto';
@@ -14,8 +14,8 @@ import dynamodb from './dynamodb';
 export {
   cache,
   dispatch,
-  elasticsearch,
   getObject,
+  opensearch,
   logger,
   isEmpty,
   isDecimal,

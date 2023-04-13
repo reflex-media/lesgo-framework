@@ -22,22 +22,21 @@ describe('ServicesGroup: test SQSService usage', () => {
   });
 
   it('test dispatch with default constructor', () => {
-    sqsMock.on(SendMessageCommand).rejects(
-      new Error(
-        'Some Error',
-        'SOME_ERROR'
-      )
-    );
+    sqsMock
+      .on(SendMessageCommand)
+      .rejects(new Error('Some Error', 'SOME_ERROR'));
 
     const sqs = new SQSService();
 
     return expect(
       sqs.dispatch({ someData: 'someValue' }, 'pingQueue')
-    ).rejects.toMatchObject(new LesgoException(
-      'Error occurred sending message to queue',
-      'SQSSERVICE_DISPATCH_ERROR',
-      500,
-    ));
+    ).rejects.toMatchObject(
+      new LesgoException(
+        'Error occurred sending message to queue',
+        'SQSSERVICE_DISPATCH_ERROR',
+        500
+      )
+    );
   });
 
   it('test dispatch with custom region set', () => {
@@ -57,9 +56,7 @@ describe('ServicesGroup: test SQSService usage', () => {
   it('test dispatch with empty payload', () => {
     const sqs = new SQSService({}, aws.sqs.queues);
 
-    return expect(
-      sqs.dispatch({}, 'pingQueue')
-    ).rejects.toMatchObject(
+    return expect(sqs.dispatch({}, 'pingQueue')).rejects.toMatchObject(
       new LesgoException(
         'payload is undefined in dispatch()',
         'SQSSERVICE_DISPATCH_PAYLOAD_UNDEFINED'
@@ -81,21 +78,20 @@ describe('ServicesGroup: test SQSService usage', () => {
   });
 
   it('test dispatch thrown exception', () => {
-    sqsMock.on(SendMessageCommand).rejects(
-      new Error(
-        'Some Error',
-        'SOME_ERROR'
-      )
-    );
+    sqsMock
+      .on(SendMessageCommand)
+      .rejects(new Error('Some Error', 'SOME_ERROR'));
 
     const sqs = new SQSService({}, aws.sqs.queues);
 
     return expect(
       sqs.dispatch({ someData: 'someValue' }, 'pingQueue')
-    ).rejects.toMatchObject(new LesgoException(
-      'Error occurred sending message to queue',
-      'SQSSERVICE_DISPATCH_ERROR',
-      500,
-    ));
+    ).rejects.toMatchObject(
+      new LesgoException(
+        'Error occurred sending message to queue',
+        'SQSSERVICE_DISPATCH_ERROR',
+        500
+      )
+    );
   });
 });

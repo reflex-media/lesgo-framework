@@ -1,29 +1,11 @@
-import { Client, Connection } from '@opensearch-project/opensearch';
+import { Client } from '@opensearch-project/opensearch';
 import { defaultProvider } from '@aws-sdk/credential-provider-node';
-import aws4 from 'aws4';
 import LesgoException from '../exceptions/LesgoException';
 import isEmpty from '../utils/isEmpty';
 import logger from '../utils/logger';
+import createAwsConnector from '../utils/createAwsConnector';
 
 const FILE = 'lesgo/services/OpenSearch';
-
-const createAwsConnector = (credentials, region) => {
-  class AmazonConnection extends Connection {
-    buildRequestObject(params) {
-      const request = super.buildRequestObject(params);
-      request.service = 'es';
-      request.region = region;
-      request.headers = request.headers || {};
-      request.headers['host'] = request.hostname;
-
-      return aws4.sign(request, credentials);
-    }
-  }
-
-  return {
-    Connection: AmazonConnection
-  };
-};
 
 export default class OpenSearchService {
   constructor(opts) {
@@ -54,8 +36,10 @@ export default class OpenSearchService {
     const credentials = await defaultProvider()();
     logger.debug(`${FILE}::GETCLIENT_CREDENTIALS`, { credentials });
 
+    const awsConnector = createAwsConnector(credentials, this.opts.region);
+
     return new Client({
-      ...createAwsConnector(credentials, this.opts.region),
+      ...awsConnector,
       node: this.opts.host,
     });
   }
@@ -64,7 +48,7 @@ export default class OpenSearchService {
     const client = await this.getClient();
     logger.debug(`${FILE}::CREATE_INDEX_CLIENT`, { client });
 
-    let params = {
+    const params = {
       index: this.opts.index.name,
       body: {
         settings: {
@@ -88,16 +72,21 @@ export default class OpenSearchService {
       logger.debug(`${FILE}::CREATE_INDEX_CREATED`, { resp, params });
       return resp;
     } catch (err) {
-      throw new LesgoException('Failed to create index', `${FILE}::ERROR_CREATE_INDEX`, 500, { err, params });
+      throw new LesgoException(
+        'Failed to create index',
+        `${FILE}::ERROR_CREATE_INDEX`,
+        500,
+        { err, params }
+      );
     }
   }
 
   /**
    * Add document to index
-   * 
-   * @param {number|string} documentId 
-   * @param {object} data 
-   * 
+   *
+   * @param {number|string} documentId
+   * @param {object} data
+   *
    * const data = {
    *   name: 'John Doe',
    *   gender: 'male',
@@ -139,7 +128,7 @@ export default class OpenSearchService {
         ...data,
         lastIndexedAt: Date.now(),
       },
-      refresh: true
+      refresh: true,
     };
 
     try {
@@ -147,15 +136,20 @@ export default class OpenSearchService {
       logger.debug(`${FILE}::ADD_DOCUMENT_ADDED`, { resp });
       return resp;
     } catch (err) {
-      throw new LesgoException('Failed to add document', `${FILE}::ERROR_ADD_DOCUMENT`, 500, { err, param });
+      throw new LesgoException(
+        'Failed to add document',
+        `${FILE}::ERROR_ADD_DOCUMENT`,
+        500,
+        { err, param }
+      );
     }
   }
 
   /**
    * Searches the index
-   * 
+   *
    * @param {object} query
-   * 
+   *
    * // Search for name: John Doe
    * const query = {
    *  query: {
@@ -173,8 +167,8 @@ export default class OpenSearchService {
     const param = {
       index: this.opts.index.name,
       body: {
-        query
-      }
+        query,
+      },
     };
 
     try {
@@ -182,7 +176,12 @@ export default class OpenSearchService {
       logger.debug(`${FILE}::SEARCH_RESULT`, { resp, param });
       return resp;
     } catch (err) {
-      throw new LesgoException('Failed to search document', `${FILE}::ERROR_SEARCH`, 500, { err, param });
+      throw new LesgoException(
+        'Failed to search document',
+        `${FILE}::ERROR_SEARCH`,
+        500,
+        { err, param }
+      );
     }
   }
 
@@ -197,7 +196,12 @@ export default class OpenSearchService {
       logger.debug(`${FILE}::DELETE_DOCUMENT_DELETED`, { resp });
       return resp;
     } catch (err) {
-      throw new LesgoException('Failed to delete document', `${FILE}::ERROR_DELETE_DOCUMENT`, 500, { err, client });
+      throw new LesgoException(
+        'Failed to delete document',
+        `${FILE}::ERROR_DELETE_DOCUMENT`,
+        500,
+        { err, client }
+      );
     }
   }
 
@@ -214,7 +218,12 @@ export default class OpenSearchService {
       logger.debug(`${FILE}::DELETE_INDEX_DELETED`, { resp, params });
       return resp;
     } catch (err) {
-      throw new LesgoException('Failed to delete index', `${FILE}::ERROR_DELETE_INDEX`, 500, { err, params });
+      throw new LesgoException(
+        'Failed to delete index',
+        `${FILE}::ERROR_DELETE_INDEX`,
+        500,
+        { err, params }
+      );
     }
   }
 }
