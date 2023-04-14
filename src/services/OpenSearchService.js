@@ -82,7 +82,7 @@ export default class OpenSearchService {
   }
 
   /**
-   * Add document to index
+   * Add or update document to index
    *
    * @param {number|string} documentId
    * @param {object} data
@@ -118,7 +118,7 @@ export default class OpenSearchService {
    *   updatedAt: 1681354668,
    * }
    */
-  async addDocument(documentId, data) {
+  async indexDocument(documentId, data) {
     const client = await this.getClient();
 
     const param = {
@@ -161,7 +161,7 @@ export default class OpenSearchService {
    *  },
    * };
    */
-  async search(query) {
+  async searchIndex(query) {
     const client = await this.getClient();
 
     const param = {
