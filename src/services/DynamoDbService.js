@@ -7,6 +7,7 @@ import {
 } from '@aws-sdk/lib-dynamodb';
 import LesgoException from '../exceptions/LesgoException';
 import logger from '../utils/logger';
+import isEmpty from '../utils/isEmpty';
 
 const FILE = 'lesgo/services/DynamoDbService';
 
@@ -183,15 +184,18 @@ export default class DynamoDbService {
     expressionAttributeValues,
     opts
   ) {
-    const payload = {
+    let payload = {
       TableName: tableName,
       Key: key,
       UpdateExpression: updateExpression,
       ExpressionAttributeValues: expressionAttributeValues,
     };
 
-    if (typeof opts.conditionExpression !== 'undefined') {
-      payload.ConditionExpression = opts.conditionExpression;
+    if (!isEmpty(opts.conditionExpression)) {
+      payload = {
+        ...payload,
+        ConditionExpression: opts.conditionExpression,
+      };
     }
 
     return payload;
