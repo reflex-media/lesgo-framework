@@ -186,6 +186,25 @@ describe('test DynamoDbService put', () => {
 });
 
 describe('test DynamoDbService update', () => {
+  it('should return count when calling query with conditionExpression', () => {
+    ddbMock.on(UpdateCommand).resolves({
+      recordCount: 1,
+      data: {},
+    });
+
+    const db = new DynamoDbService({ region: 'ap-southeast-1' });
+
+    const tableName = 'sampleTable';
+    const key = { key: 123 };
+    const updateExpression = 'SET value = :value';
+    const expressionAttributeValues = { ':value': 'asd', ':key': 'key' };
+    const conditionExpression = 'key = :key';
+
+    return expect(
+      db.update(tableName, key, updateExpression, expressionAttributeValues, { conditionExpression: 'key = :key' })
+    ).resolves.toEqual({ recordCount: 1, data: {} });
+  });
+
   it('should return count when calling query', () => {
     ddbMock.on(UpdateCommand).resolves({
       recordCount: 1,

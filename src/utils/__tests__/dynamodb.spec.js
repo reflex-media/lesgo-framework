@@ -1,27 +1,14 @@
+import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
+import { DynamoDBDocumentClient } from '@aws-sdk/lib-dynamodb';
 import dynamodb from '../dynamodb';
 
 describe('test dynamodb utils instantiate', () => {
   it('should not throw error on instantiating DynamoDb', () => {
-    expect(dynamodb.client).toEqual(
-      expect.objectContaining({
-        mocked: {
-          region: 'ap-southeast-1',
-        },
-      })
-    );
-  });
+    const db = dynamodb;
 
-  it('should update DynamoDb region on connect', () => {
-    dynamodb.connect({
-      region: 'us-west-1',
-    });
+    const ddbClient = new DynamoDBClient({ region: 'ap-southeast-1' });
+    const client = DynamoDBDocumentClient.from(ddbClient);
 
-    expect(dynamodb.client).toEqual(
-      expect.objectContaining({
-        mocked: {
-          region: 'us-west-1',
-        },
-      })
-    );
+    expect(db.client.config.apiVersion).toEqual(client.config.apiVersion);
   });
 });

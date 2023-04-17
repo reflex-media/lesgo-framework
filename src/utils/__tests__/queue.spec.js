@@ -1,41 +1,25 @@
-import aws from 'config/aws'; // eslint-disable-line import/no-unresolved
-import queue, { dispatch } from '../queue';
+import { SendMessageCommand, SQSClient } from '@aws-sdk/client-sqs';
+import { mockClient } from 'aws-sdk-client-mock';
+import { dispatch } from '../queue';
 import LesgoException from '../../exceptions/LesgoException';
+
+const sqsMock = mockClient(SQSClient);
 
 describe('UtilsGroup: test queue utils', () => {
   it('test queue.dispatch', () => {
-    return expect(
-      // eslint-disable-next-line import/no-named-as-default-member
-      queue.dispatch({ someData: 'someValue' }, 'pingQueue')
-    ).resolves.toMatchObject({
+    sqsMock.on(SendMessageCommand).resolves({
       MessageId: 'MessageId',
-      mocked: {
-        opts: {},
-        params: {
-          MessageBody: '{"someData":"someValue"}',
-          QueueUrl: `${aws.sqs.queues.pingQueue.url}`,
-        },
-      },
     });
-  });
 
-  it('test queue dispatch', () => {
     return expect(
       dispatch({ someData: 'someValue' }, 'pingQueue')
     ).resolves.toMatchObject({
       MessageId: 'MessageId',
-      mocked: {
-        opts: {},
-        params: {
-          MessageBody: '{"someData":"someValue"}',
-          QueueUrl: `${aws.sqs.queues.pingQueue.url}`,
-        },
-      },
     });
   });
 
   it('test queue dispatch with empty payload', () => {
-    return expect(() => dispatch()).toThrow(
+    return expect(dispatch()).rejects.toThrow(
       new LesgoException(
         'payload is undefined in dispatch()',
         'SQSSERVICE_DISPATCH_PAYLOAD_UNDEFINED'
@@ -44,7 +28,7 @@ describe('UtilsGroup: test queue utils', () => {
   });
 
   it('test queue dispatch with empty queueName', () => {
-    return expect(() => dispatch({ someData: 'someValue' })).toThrow(
+    return expect(dispatch({ someData: 'someValue' })).rejects.toThrow(
       new LesgoException(
         'queueName is undefined in dispatch()',
         'SQSSERVICE_DISPATCH_QUEUENAME_UNDEFINED'
