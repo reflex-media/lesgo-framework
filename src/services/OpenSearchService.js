@@ -8,7 +8,7 @@ import createAwsConnector from '../utils/createAwsConnector';
 const FILE = 'lesgo/services/OpenSearch';
 
 export default class OpenSearchService {
-  constructor(opts) {
+  constructor(opts = {}) {
     const { region, host } = opts;
 
     if (isEmpty(region)) {

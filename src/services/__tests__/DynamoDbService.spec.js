@@ -201,7 +201,9 @@ describe('test DynamoDbService update', () => {
     const conditionExpression = 'key = :key';
 
     return expect(
-      db.update(tableName, key, updateExpression, expressionAttributeValues, { conditionExpression: 'key = :key' })
+      db.update(tableName, key, updateExpression, expressionAttributeValues, {
+        conditionExpression,
+      })
     ).resolves.toEqual({ recordCount: 1, data: {} });
   });
 

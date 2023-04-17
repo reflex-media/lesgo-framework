@@ -50,5 +50,9 @@ export default {
         },
       },
     },
+    mockCustom: {
+      region: 'us-west-2',
+      host: '//localhost-mocked',
+    },
   },
 };
