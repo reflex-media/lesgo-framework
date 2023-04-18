@@ -1,4 +1,5 @@
 import {
+  DeleteCommand,
   DynamoDBDocumentClient,
   PutCommand,
   QueryCommand,
@@ -243,6 +244,43 @@ describe('test DynamoDbService update', () => {
       new LesgoException(
         'EXCEPTION ENCOUNTERED FOR DYNAMODB UPDATE OPERATION',
         'DYNAMODB_UPDATE_EXCEPTION'
+      )
+    );
+  });
+});
+
+describe('test DynamoDbService delete', () => {
+  it('should return count when calling delete', () => {
+    ddbMock.on(DeleteCommand).resolves({
+      recordCount: 1,
+      data: {},
+    });
+
+    const db = new DynamoDbService({ region: 'ap-southeast-1' });
+
+    const tableName = 'sampleTable';
+    const key = { key: 123 };
+
+    return expect(db.delete(tableName, key)).resolves.toEqual({
+      recordCount: 1,
+      data: {},
+    });
+  });
+
+  it('should throw exception if invalid command', () => {
+    ddbMock
+      .on(DeleteCommand)
+      .rejects(new Error('Fake error message', 'FAKE_ERROR_THROWN'));
+
+    const db = new DynamoDbService({ region: 'ap-southeast-1' });
+
+    const tableName = '';
+    const key = { key: 123 };
+
+    return expect(db.delete(tableName, key)).rejects.toThrow(
+      new LesgoException(
+        'EXCEPTION ENCOUNTERED FOR DYNAMODB DELETE OPERATION',
+        'DYNAMODB_DELETE_EXCEPTION'
       )
     );
   });

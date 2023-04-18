@@ -4,6 +4,7 @@ import {
   QueryCommand,
   PutCommand,
   UpdateCommand,
+  DeleteCommand,
 } from '@aws-sdk/lib-dynamodb';
 import LesgoException from '../exceptions/LesgoException';
 import logger from '../utils/logger';
@@ -122,7 +123,6 @@ export default class DynamoDbService {
       expressionAttributeValues,
       opts
     );
-
     logger.debug(`${FILE}::PREPARING_UPDATE`, { params });
 
     try {
@@ -133,6 +133,24 @@ export default class DynamoDbService {
       throw new LesgoException(
         'EXCEPTION ENCOUNTERED FOR DYNAMODB UPDATE OPERATION',
         'DYNAMODB_UPDATE_EXCEPTION',
+        500,
+        { err, params }
+      );
+    }
+  }
+
+  async delete(tableName, key) {
+    const params = this.prepareDeletePayload(tableName, key);
+    logger.debug(`${FILE}::PREPARING_DELETE`, { params });
+
+    try {
+      const data = await this.client.send(new DeleteCommand(params));
+      logger.debug(`${FILE}::RECEIVED_DELETE_RESPONSE`, { data });
+      return data;
+    } catch (err) {
+      throw new LesgoException(
+        'EXCEPTION ENCOUNTERED FOR DYNAMODB DELETE OPERATION',
+        'DYNAMODB_DELETE_EXCEPTION',
         500,
         { err, params }
       );
@@ -199,5 +217,13 @@ export default class DynamoDbService {
     }
 
     return payload;
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  prepareDeletePayload(tableName, key) {
+    return {
+      TableName: tableName,
+      Key: key,
+    };
   }
 }
