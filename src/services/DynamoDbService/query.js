@@ -10,14 +10,13 @@ const query = async (
   tableName,
   keyConditionExpression,
   expressionAttributeValues,
-  projectionExpression,
-  { region, singletonConn }
+  { region, singletonConn, filterExpression = '', projectionExpression = '' }
 ) => {
   const params = prepareQueryPayload(
     tableName,
     keyConditionExpression,
     expressionAttributeValues,
-    projectionExpression
+    { filterExpression, projectionExpression }
   );
   logger.debug(`${FILE}::QUERY_PREPARED`, { params });
 

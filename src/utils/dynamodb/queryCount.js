@@ -5,8 +5,7 @@ export default (
   tableName,
   keyConditionExpression,
   expressionAttributeValues,
-  projectionExpression,
-  { singletonConn = 'default' } = {}
+  { filterExpression = '', singletonConn = 'default' } = {}
 ) => {
   const { region } = config;
 
@@ -14,7 +13,10 @@ export default (
     tableName,
     keyConditionExpression,
     expressionAttributeValues,
-    projectionExpression,
-    { region, singletonConn }
+    {
+      region,
+      singletonConn,
+      filterExpression,
+    }
   );
 };

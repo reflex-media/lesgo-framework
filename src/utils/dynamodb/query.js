@@ -5,16 +5,18 @@ export default (
   tableName,
   keyConditionExpression,
   expressionAttributeValues,
-  projectionExpression,
-  { singletonConn = 'default' } = {}
+  {
+    filterExpression = '',
+    projectionExpression = '',
+    singletonConn = 'default',
+  } = {}
 ) => {
   const { region } = config;
 
-  return query(
-    tableName,
-    keyConditionExpression,
-    expressionAttributeValues,
+  return query(tableName, keyConditionExpression, expressionAttributeValues, {
+    region,
+    singletonConn,
+    filterExpression,
     projectionExpression,
-    { region, singletonConn }
-  );
+  });
 };
