@@ -1,5 +1,6 @@
 import logger from '../utils/logger';
 import isEmpty from '../utils/isEmpty';
+import disconnectOpenConnections from './disconnectOpenConnections';
 
 const FILE = 'Lesgo/middlewares/normalizeSQSMessageMiddleware';
 
@@ -24,6 +25,7 @@ export const normalizeHandler = records => {
 };
 
 export const disconnectConnections = async opts => {
+  // FIXME: Legacy disconnect for cache and db
   try {
     const disconnect = [];
     if (opts) {
@@ -38,6 +40,12 @@ export const disconnectConnections = async opts => {
   } catch (err) {
     logger.error(`${FILE}::Failed to end connection`, err);
   }
+
+  try {
+    await disconnectOpenConnections();
+  } catch (err) {
+    logger.error(`${FILE}::OPEN_CONNECTION_DISCONNECT_FAIL`, err);
+  }
 };
 
 /**
@@ -49,15 +57,28 @@ const normalizeSQSMessageMiddleware /* istanbul ignore next */ = opts => {
   return {
     before: (handler, next) => {
       const { Records } = handler.event;
+
+      // @see https://middy.js.org/docs/middlewares/do-not-wait-for-empty-event-loop/
+      // eslint-disable-next-line no-param-reassign
+      handler.context.callbackWaitsForEmptyEventLoop = false;
+
       // eslint-disable-next-line no-param-reassign
       handler.event.collection = normalizeHandler(Records);
       next();
     },
     after: async (handler, next) => {
+      // @see https://middy.js.org/docs/middlewares/do-not-wait-for-empty-event-loop/
+      // eslint-disable-next-line no-param-reassign
+      handler.context.callbackWaitsForEmptyEventLoop = false;
+
       await disconnectConnections(opts);
       next();
     },
     onError: async (handler, next) => {
+      // @see https://middy.js.org/docs/middlewares/do-not-wait-for-empty-event-loop/
+      // eslint-disable-next-line no-param-reassign
+      handler.context.callbackWaitsForEmptyEventLoop = false;
+
       await disconnectConnections(opts);
       next();
     },

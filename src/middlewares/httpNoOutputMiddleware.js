@@ -2,6 +2,10 @@ import app from 'config/app'; // eslint-disable-line import/no-unresolved
 import { normalizeHttpRequestBeforeHandler } from './normalizeHttpRequestMiddleware';
 import { successHttpResponseHandler } from './successHttpResponseMiddleware';
 import { errorHttpResponseHandler } from './errorHttpResponseMiddleware';
+import disconnectOpenConnections from './disconnectOpenConnections';
+import logger from '../utils/logger';
+
+const FILE = 'lesgo/middlewares/httpNoOutputMiddleware';
 
 const allowResponse = () => {
   return app.debug;
@@ -18,6 +22,12 @@ const successHttpNoOutputResponseHandler = async opts => {
     response.body = '';
   }
 
+  try {
+    await disconnectOpenConnections();
+  } catch (err) {
+    logger.error(`${FILE}::OPEN_CONNECTION_DISCONNECT_FAIL`, err);
+  }
+
   return response;
 };
 
@@ -32,6 +42,10 @@ export const successHttpNoOutputResponseAfterHandler = async (
     allowResponse,
   };
   const options = { ...defaults, ...opts };
+
+  // @see https://middy.js.org/docs/middlewares/do-not-wait-for-empty-event-loop/
+  // eslint-disable-next-line no-param-reassign
+  handler.context.callbackWaitsForEmptyEventLoop = false;
 
   // eslint-disable-next-line no-param-reassign
   handler.response = await successHttpNoOutputResponseHandler(options);
@@ -54,6 +68,12 @@ const errorHttpResponseNoOutputHandler = async opts => {
     response.body = '';
   }
 
+  try {
+    await disconnectOpenConnections();
+  } catch (err) {
+    logger.error(`${FILE}::OPEN_CONNECTION_DISCONNECT_FAIL`, err);
+  }
+
   return response;
 };
 
@@ -70,6 +90,10 @@ export const errorHttpNoOutputResponseAfterHandler = async (
   };
 
   const options = { ...defaults, ...opts };
+
+  // @see https://middy.js.org/docs/middlewares/do-not-wait-for-empty-event-loop/
+  // eslint-disable-next-line no-param-reassign
+  handler.context.callbackWaitsForEmptyEventLoop = false;
 
   // eslint-disable-next-line no-param-reassign
   handler.response = await errorHttpResponseNoOutputHandler(options);

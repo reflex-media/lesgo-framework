@@ -1,10 +1,10 @@
 export default {
-  default: 'memcached',
-  connections: {
-    memcached: {
+  default: 'memcache',
+  adapters: {
+    memcache: {
       options: {
         hosts: [null],
-        autoDiscover: true,
+        autodiscover: true,
       },
     },
   },

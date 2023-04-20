@@ -39,6 +39,10 @@ export const normalizeHttpRequestBeforeHandler = (handler, next) => {
     body: handler.event.body,
   };
 
+  // @see https://middy.js.org/docs/middlewares/do-not-wait-for-empty-event-loop/
+  // eslint-disable-next-line no-param-reassign
+  handler.context.callbackWaitsForEmptyEventLoop = false;
+
   // eslint-disable-next-line no-param-reassign
   handler.event.input = normalizeRequest(options);
 

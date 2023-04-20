@@ -1,5 +1,6 @@
 import logger from '../utils/logger';
 import isEmpty from '../utils/isEmpty';
+import disconnectOpenConnections from './disconnectOpenConnections';
 
 const FILE = 'Lesgo/middlewares/errorHttpResponseMiddleware';
 
@@ -50,6 +51,7 @@ export const errorHttpResponseHandler = async opts => {
     });
   }
 
+  // FIXME: Legacy disconnect for cache and db
   try {
     const disconnect = [];
     if (!isEmpty(opts.cache)) disconnect.push(opts.cache.end());
@@ -61,6 +63,12 @@ export const errorHttpResponseHandler = async opts => {
     }
   } catch (err) {
     logger.error(`${FILE}::Failed to end connection`, err);
+  }
+
+  try {
+    await disconnectOpenConnections();
+  } catch (err) {
+    logger.error(`${FILE}::OPEN_CONNECTION_DISCONNECT_FAIL`, err);
   }
 
   return {
@@ -81,8 +89,13 @@ export const errorHttpResponseAfterHandler = async (handler, next, opts) => {
 
   const options = { ...defaults, ...opts };
 
+  // @see https://middy.js.org/docs/middlewares/do-not-wait-for-empty-event-loop/
+  // eslint-disable-next-line no-param-reassign
+  handler.context.callbackWaitsForEmptyEventLoop = false;
+
   // eslint-disable-next-line no-param-reassign
   handler.response = await errorHttpResponseHandler(options);
+
   /* istanbul ignore next */
   next();
 };
