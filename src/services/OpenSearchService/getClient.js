@@ -2,13 +2,14 @@ import { Client } from '@opensearch-project/opensearch';
 import { defaultProvider } from '@aws-sdk/credential-provider-node';
 import createAwsConnector from './createAwsConnector';
 import logger from '../../utils/logger';
+import isEmpty from '../../utils/isEmpty';
 
 const FILE = 'services/OpenSearchService/getClient';
 
-const singleton = [];
+const singleton = {};
 
 const getClient = async ({ region, host }, singletonConn) => {
-  if (singleton[singletonConn]) {
+  if (!isEmpty(singleton[singletonConn])) {
     logger.debug(`${FILE}::REUSE_CLIENT_SINGLETON`, {
       client: singleton[singletonConn],
     });

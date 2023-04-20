@@ -1,12 +1,13 @@
 import { SQSClient } from '@aws-sdk/client-sqs';
 import logger from '../../utils/logger';
+import isEmpty from '../../utils/isEmpty';
 
 const FILE = 'services/SQSService/getClient';
 
-const singleton = [];
+const singleton = {};
 
 const getClient = ({ region }, singletonConn) => {
-  if (singleton[singletonConn]) {
+  if (!isEmpty(singleton[singletonConn])) {
     logger.debug(`${FILE}::REUSE_CLIENT_SINGLETON`, {
       client: singleton[singletonConn],
       region,
@@ -19,6 +20,8 @@ const getClient = ({ region }, singletonConn) => {
     client: singleton[singletonConn],
     region,
   });
+
+  singleton[singletonConn] = client;
 
   return client;
 };

@@ -20,7 +20,5 @@ export default async () => {
   if (disconnect.length > 0) {
     await Promise.all(disconnect);
     logger.debug(`${FILE}::ALL_OPEN_CONNECTIONS_DISCONNECTED`);
-  } else {
-    logger.debug(`${FILE}::NO_OPEN_CONNECTIONS_TO_DISCONNECT`);
   }
 };

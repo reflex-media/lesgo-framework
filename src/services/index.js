@@ -1,6 +1,6 @@
 import AuroraDbService from './AuroraDbService';
 import DynamoDbService from './DynamoDbService';
-import ElastiCacheService from './ElastiCacheService';
+import MemcacheElastiCacheService from './MemcacheElastiCacheService';
 import OpenSearchService from './OpenSearchService';
 import JwtService from './JwtService';
 import LoggerService from './LoggerService';
@@ -10,7 +10,7 @@ import SQSService from './SQSService';
 export {
   AuroraDbService,
   DynamoDbService,
-  ElastiCacheService,
+  MemcacheElastiCacheService,
   OpenSearchService,
   JwtService,
   LoggerService,
