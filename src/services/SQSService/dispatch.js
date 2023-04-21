@@ -3,6 +3,7 @@ import { SendMessageCommand } from '@aws-sdk/client-sqs';
 import LesgoException from '../../exceptions/LesgoException';
 import isEmpty from '../../utils/isEmpty';
 import getClient from './getClient';
+import logger from '../../utils/logger';
 
 const FILE = 'services/SQSService/dispatch';
 
@@ -18,13 +19,16 @@ const dispatch = async (payload, queueName, { region, queues }) => {
   const queue = queues[queueName];
   const client = getClient({ region }, 'default');
 
+  const opts = {
+    MessageBody: JSON.stringify(payload),
+    QueueUrl: `${queue.url}`,
+  };
+
   try {
     const data = await client.send(
-      new SendMessageCommand({
-        MessageBody: JSON.stringify(payload),
-        QueueUrl: `${queue.url}`,
-      })
+      new SendMessageCommand(opts)
     );
+    logger.debug(`${FILE}::MESSAGE_SENT_TO_QUEUE`, opts, payload, queueName, region, queues)
     return data;
   } catch (error) {
     throw new LesgoException(
