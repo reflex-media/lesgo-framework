@@ -6,7 +6,7 @@ const FILE = 'services/S3Service/getClient';
 
 const singleton = {};
 
-const getClient = singletonConn => {
+const getClient = ({ region, singletonConn }) => {
   if (!isEmpty(singleton[singletonConn])) {
     logger.debug(`${FILE}::REUSE_CLIENT_SINGLETON`, {
       client: singleton[singletonConn],
@@ -14,7 +14,7 @@ const getClient = singletonConn => {
     return singleton[singletonConn];
   }
 
-  const client = new S3Client({});
+  const client = new S3Client({ region });
   logger.debug(`${FILE}::NEW_CLIENT`, {
     client: singleton[singletonConn],
   });
