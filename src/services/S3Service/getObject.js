@@ -5,7 +5,7 @@ import isEmpty from '../../utils/isEmpty';
 
 const FILE = 'services/S3Service/getObject';
 
-const getObject = async (bucket, key) => {
+const getObject = async (key, bucket) => {
   if (isEmpty(key)) {
     throw new LesgoException('Key is undefined', `${FILE}::KEY_UNDEFINED`);
   }
