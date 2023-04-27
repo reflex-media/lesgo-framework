@@ -58,6 +58,7 @@
     "@aws-sdk/client-sqs": "^3.303.0",
     "@aws-sdk/credential-provider-node": "^3.303.0",
     "@aws-sdk/lib-dynamodb": "^3.303.0",
+    "@aws-sdk/s3-request-presigner": "^3.321.1",
     "@firebase/app": "^0.7.33",
     "@opensearch-project/opensearch": "^2.2.0",
     "aws4": "^1.12.0",
