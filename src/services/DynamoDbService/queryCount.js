@@ -10,13 +10,13 @@ const queryCount = async (
   tableName,
   keyConditionExpression,
   expressionAttributeValues,
-  { region, singletonConn, filterExpression = '' }
+  { region, singletonConn, filterExpression = '', indexName = '' }
 ) => {
   const params = prepareQueryCountPayload(
     tableName,
     keyConditionExpression,
     expressionAttributeValues,
-    { filterExpression }
+    { filterExpression, indexName }
   );
   logger.debug(`${FILE}::QUERY_PREPARED`, { params });
 

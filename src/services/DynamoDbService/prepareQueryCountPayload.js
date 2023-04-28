@@ -2,7 +2,7 @@ const prepareQueryCountPayload = (
   tableName,
   keyConditionExpression,
   expressionAttributeValues,
-  { filterExpression = '' }
+  { filterExpression = '', indexName = '' }
 ) => {
   let payload = {
     TableName: tableName,
@@ -15,6 +15,13 @@ const prepareQueryCountPayload = (
     payload = {
       ...payload,
       FilterExpression: filterExpression,
+    };
+  }
+
+  if (indexName) {
+    payload = {
+      ...payload,
+      IndexName: indexName,
     };
   }
 

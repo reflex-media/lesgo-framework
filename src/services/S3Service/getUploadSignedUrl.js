@@ -5,7 +5,7 @@ import getClient from './getClient';
 export default (
   key = '',
   bucket = '',
-  { singletonConn = 'default', region = '', expiresIn = 3600 } = {}
+  { singletonConn = 'default', region = '', expiresIn = 600 } = {}
 ) => {
   const client = getClient({ region, singletonConn });
   const command = new PutObjectCommand({ Bucket: bucket, Key: key });

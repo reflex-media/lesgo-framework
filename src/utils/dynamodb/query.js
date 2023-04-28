@@ -9,6 +9,7 @@ export default (
     filterExpression = '',
     projectionExpression = '',
     singletonConn = 'default',
+    indexName = '',
   } = {}
 ) => {
   const { region } = config;
@@ -18,5 +19,6 @@ export default (
     singletonConn,
     filterExpression,
     projectionExpression,
+    indexName,
   });
 };
