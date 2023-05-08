@@ -16,6 +16,5 @@ export default (payload, secret = '', opts = {}) => {
   }
 
   const token = sign(payload, secretKey, options);
-
   return token;
 };
