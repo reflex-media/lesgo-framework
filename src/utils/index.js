@@ -1,6 +1,6 @@
 import cache from './cache';
 import logger from './logger';
-import { getObject } from './objectStore';
+import s3 from './s3';
 import sqs from './sqs';
 import opensearch from './opensearch';
 import isEmpty from './isEmpty';
@@ -15,7 +15,7 @@ import getCurrentTimestamp from './getCurrentTimestamp';
 export {
   cache,
   sqs,
-  getObject,
+  s3,
   opensearch,
   logger,
   isEmpty,
