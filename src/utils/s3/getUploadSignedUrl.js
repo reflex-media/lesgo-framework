@@ -4,7 +4,12 @@ import getUploadSignedUrl from '../../services/S3Service/getUploadSignedUrl';
 export default (
   key = '',
   bucket = '',
-  { singletonConn = 'default', region = '', metadata = undefined } = {}
+  {
+    singletonConn = 'default',
+    region = '',
+    metadata = undefined,
+    expiresIn = 600,
+  } = {}
 ) => {
   const configRegion = config.region;
 
@@ -12,5 +17,6 @@ export default (
     singletonConn,
     region: region !== '' ? region : configRegion,
     metadata,
+    expiresIn,
   });
 };
