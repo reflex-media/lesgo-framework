@@ -6,7 +6,11 @@ export default (
   key,
   updateExpression,
   expressionAttributeValues,
-  { singletonConn = 'default', conditionExpression = '' } = {}
+  {
+    singletonConn = 'default',
+    conditionExpression = '',
+    expressionAttributeNames = {},
+  } = {}
 ) => {
   const { region } = config;
 
@@ -14,5 +18,6 @@ export default (
     region,
     singletonConn,
     conditionExpression,
+    expressionAttributeNames,
   });
 };

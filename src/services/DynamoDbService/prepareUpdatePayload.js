@@ -21,6 +21,13 @@ const prepareUpdatePayload = (
     };
   }
 
+  if (!isEmpty(opts.expressionAttributeNames)) {
+    payload = {
+      ...payload,
+      ExpressionAttributeNames: opts.expressionAttributeNames,
+    };
+  }
+
   return payload;
 };
 
