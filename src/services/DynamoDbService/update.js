@@ -11,14 +11,19 @@ const update = async (
   key,
   updateExpression,
   expressionAttributeValues,
-  { region, singletonConn, conditionExpression = '' }
+  {
+    region,
+    singletonConn,
+    conditionExpression = '',
+    expressionAttributeNames = {},
+  }
 ) => {
   const params = prepareUpdatePayload(
     tableName,
     key,
     updateExpression,
     expressionAttributeValues,
-    { conditionExpression }
+    { conditionExpression, expressionAttributeNames }
   );
   logger.debug(`${FILE}::QUERY_PREPARED`, { params });
 
