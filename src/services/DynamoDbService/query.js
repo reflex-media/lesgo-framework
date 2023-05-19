@@ -15,6 +15,7 @@ const query = async (
     singletonConn,
     filterExpression = '',
     projectionExpression = '',
+    expressionAttributeNames = '',
     indexName = '',
   }
 ) => {
@@ -22,7 +23,12 @@ const query = async (
     tableName,
     keyConditionExpression,
     expressionAttributeValues,
-    { filterExpression, projectionExpression, indexName }
+    {
+      filterExpression,
+      projectionExpression,
+      expressionAttributeNames,
+      indexName,
+    }
   );
   logger.debug(`${FILE}::QUERY_PREPARED`, { params });
 

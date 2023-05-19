@@ -8,6 +8,7 @@ export default (
   {
     filterExpression = '',
     projectionExpression = '',
+    expressionAttributeNames,
     singletonConn = 'default',
     indexName = '',
   } = {}
@@ -19,6 +20,7 @@ export default (
     singletonConn,
     filterExpression,
     projectionExpression,
+    expressionAttributeNames,
     indexName,
   });
 };
