@@ -2,7 +2,12 @@ const prepareQueryPayload = (
   tableName,
   keyConditionExpression,
   expressionAttributeValues,
-  { filterExpression = '', projectionExpression = '', indexName = '' }
+  {
+    filterExpression = '',
+    projectionExpression = '',
+    expressionAttributeNames = '',
+    indexName = '',
+  }
 ) => {
   let payload = {
     TableName: tableName,
@@ -14,6 +19,13 @@ const prepareQueryPayload = (
     payload = {
       ...payload,
       ProjectionExpression: projectionExpression,
+    };
+  }
+
+  if (expressionAttributeNames) {
+    payload = {
+      ...payload,
+      ExpressionAttributeNames: expressionAttributeNames,
     };
   }
 
