@@ -3,6 +3,7 @@ import {
   Connection as DefaultConnection,
 } from '@elastic/elasticsearch';
 import AwsConnection from './aws/AwsElasticsearchConnection';
+import logger from '../utils/logger';
 
 class ElasticsearchService {
   constructor({ index, type, connection, options, client }) {
@@ -49,6 +50,8 @@ class ElasticsearchService {
     };
 
     const response = await this.client.search(param);
+
+    logger.info('SEARCH RESPONSE', { response });
 
     this.result = response;
 
