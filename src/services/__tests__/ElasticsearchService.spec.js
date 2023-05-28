@@ -1,17 +1,28 @@
 import config from 'Config/elasticsearch'; // eslint-disable-line import/no-unresolved
+import { Client as ElasticsearchClient } from '@elastic/elasticsearch';
 import ElasticsearchService from '../ElasticsearchService';
 
 // TODO we'll need to add more expected response
 
 describe('ServicesGroup: test ElasticsearchService', () => {
-  it('test instantiate default ElasticsearchService connection', () => {
-    const es = new ElasticsearchService(config.adapters.mocked);
-    expect(es.getClient()).toMatchObject({
-      mocked: {
-        conn: undefined,
-      },
-    });
-  });
+  it.each`
+    client
+    ${undefined}
+    ${new ElasticsearchClient({})}
+  `(
+    'test instantiate default ElasticsearchService connection',
+    ({ client }) => {
+      const es = new ElasticsearchService({
+        ...config.adapters.mocked,
+        client,
+      });
+      expect(es.getClient()).toMatchObject({
+        mocked: {
+          conn: undefined,
+        },
+      });
+    }
+  );
 
   it('test search', () => {
     const es = new ElasticsearchService(config.adapters.aws);

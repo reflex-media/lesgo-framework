@@ -5,15 +5,15 @@ import {
 import AwsConnection from './aws/AwsElasticsearchConnection';
 
 class ElasticsearchService {
-  constructor({ index, type, connection, options }) {
+  constructor({ index, type, connection, options, client }) {
     this.index = index;
     this.type = type;
     this.options = options;
 
-    this.setConnection(connection);
+    this.setConnection(connection, client);
   }
 
-  setConnection(conn) {
+  setConnection(conn, client) {
     let Connection = null;
 
     switch (conn) {
@@ -26,10 +26,13 @@ class ElasticsearchService {
         break;
     }
 
-    this.client = new ElasticsearchClient({
-      ...this.options,
-      Connection,
-    });
+    this.client =
+      typeof client === 'undefined' || client === null || client === false
+        ? new ElasticsearchClient({
+            ...this.options,
+            Connection,
+          })
+        : client;
 
     return this;
   }
