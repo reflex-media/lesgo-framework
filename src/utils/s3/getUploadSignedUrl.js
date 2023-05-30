@@ -1,4 +1,4 @@
-import config from 'config/s3';
+import config from 'config/s3'; // eslint-disable-line import/no-unresolved
 import getUploadSignedUrl from '../../services/S3Service/getUploadSignedUrl';
 
 export default (

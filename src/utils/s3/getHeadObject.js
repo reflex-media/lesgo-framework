@@ -1,5 +1,5 @@
+import config from 'config/s3'; // eslint-disable-line import/no-unresolved
 import getHeadObject from '../../services/S3Service/getHeadObject';
-import config from 'config/s3';
 
 export default (
   key = '',
