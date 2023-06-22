@@ -4,11 +4,12 @@ import { putObject } from '../../services/S3Service';
 export default (
   key = '',
   bucket = '',
+  file = '',
   { singletonConn = 'default', region = '' } = {}
 ) => {
   const configRegion = config.region;
 
-  return putObject(key, bucket, {
+  return putObject(key, bucket, file, {
     singletonConn,
     region: region !== '' ? region : configRegion,
   });

@@ -5,7 +5,7 @@ import isEmpty from '../../utils/isEmpty';
 
 const FILE = 'services/S3Service/putObject';
 
-const putObject = async (key, bucket, { region, singleConn }) => {
+const putObject = async (key, bucket, file, { region, singleConn }) => {
   if (isEmpty(key)) {
     throw new LesgoException('Key is undefined', `${FILE}::KEY_UNDEFINED`);
   }
@@ -22,6 +22,7 @@ const putObject = async (key, bucket, { region, singleConn }) => {
   const command = new PutObjectCommand({
     Bucket: bucket,
     Key: key,
+    Body: file,
   });
 
   try {
