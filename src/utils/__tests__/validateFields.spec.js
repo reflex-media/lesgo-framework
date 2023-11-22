@@ -371,4 +371,53 @@ describe('test Utils/validateFields', () => {
       )
     );
   });
+
+  it.each`
+    input             | expectedOutcome
+    ${1}              | ${'valid'}
+    ${'1'}            | ${'invalid'}
+    ${0}              | ${'valid'}
+    ${'0'}            | ${'invalid'}
+    ${true}           | ${'valid'}
+    ${'true'}         | ${'valid'}
+    ${false}          | ${'valid'}
+    ${'false'}        | ${'valid'}
+    ${'string-input'} | ${'invalid'}
+    ${'2'}            | ${'invalid'}
+    ${3}              | ${'invalid'}
+  `(
+    'should be able to validate boolean input and throws an error if invalid',
+    async ({ input, expectedOutcome }) => {
+      const testInput = {
+        booleanCheck: input,
+      };
+      const inputFields = [
+        {
+          key: 'booleanCheck',
+          type: 'boolean',
+          required: true,
+        },
+      ];
+
+      try {
+        const validated = validateFields(testInput, inputFields);
+
+        if (expectedOutcome === 'valid') {
+          expect(validated).toEqual(testInput);
+        } else {
+          expect(validated).toThrow();
+        }
+      } catch (e) {
+        expect(e.name).toEqual('LesgoException');
+        expect(e.message).toEqual(
+          `Invalid type for 'booleanCheck', expecting 'boolean'`
+        );
+        expect(e.code).toEqual(`${FILE}::INVALID_TYPE_BOOLEANCHECK`);
+        expect(e.extra).toStrictEqual({
+          field: inputFields[0],
+          value: input,
+        });
+      }
+    }
+  );
 });
