@@ -19,6 +19,16 @@ const isValidJSON = json => {
   }
 };
 
+const isValidBoolean = input => {
+  if (typeof input === 'string') {
+    return input === 'true' || input === 'false';
+  }
+  if (typeof input === 'number') {
+    return input === 1 || input === 0;
+  }
+  return typeof input === 'boolean';
+};
+
 const validateFields = (params, validFields) => {
   const validated = {};
 
@@ -37,7 +47,7 @@ const validateFields = (params, validFields) => {
         }
       }
 
-      if (!params[key]) {
+      if (type !== 'boolean' && !params[key]) {
         if (typeof params[key] !== 'number') {
           throw new LesgoException(
             `Missing required '${key}'`,
@@ -66,6 +76,7 @@ const validateFields = (params, validFields) => {
 
     (isCollection ? params[key] || [] : [params[key]]).forEach(paramsItem => {
       if (
+        (type === 'boolean' && !isValidBoolean(paramsItem)) ||
         (type === 'string' &&
           typeof paramsItem !== 'undefined' &&
           typeof paramsItem !== 'string') ||
