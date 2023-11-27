@@ -1,5 +1,5 @@
 import mysql from 'mysql2/promise';
-import AuroraDbRDSProxyService from '../AuroraDbRDSProxyService';
+import * as AuroraDbRDSProxyService from '../AuroraDbRDSProxyService';
 import LesgoException from '../../exceptions/LesgoException';
 
 const auroraConfig = {
@@ -17,28 +17,31 @@ const customConfig = {
 };
 
 describe('test AuroraDbRDSProxyService instantiate', () => {
-  it('should not throw exception when instantiating', () => {
-    const db = new AuroraDbRDSProxyService(auroraConfig);
-    expect(db.clientOpts).toMatchObject(auroraConfig);
-  });
-
-  it('should allow for empty config', () => {
-    const db = new AuroraDbRDSProxyService();
-    expect(db.clientOpts).toMatchObject({});
+  it('should throw a type error if instantiated', () => {
+    try {
+      expect(new AuroraDbRDSProxyService(auroraConfig)).toThrow();
+    } catch (error) {
+      expect(error.name).toBe('TypeError');
+      expect(error.message).toBe(
+        'AuroraDbRDSProxyService is not a constructor'
+      );
+    }
   });
 });
 
 describe('test AuroraDbRDSProxyService connect', () => {
-  it('should be able to connect without custom config', async () => {
-    const db = new AuroraDbRDSProxyService(auroraConfig);
-    const conn = await db.connect();
-
-    expect(conn.mocked).toMatchObject(auroraConfig);
+  it('should throw an error if no config is passed', async () => {
+    try {
+      expect(await AuroraDbRDSProxyService.connect()).toThrow();
+    } catch (error) {
+      expect(error.name).toBe('LesgoException');
+      expect(error.statusCode).toBe(500);
+      expect(error.message).toContain('Missing required');
+    }
   });
 
   it('should be able to connect with custom config', async () => {
-    const db = new AuroraDbRDSProxyService(auroraConfig);
-    const conn = await db.connect(customConfig);
+    const conn = await AuroraDbRDSProxyService.connect(customConfig);
 
     expect(conn.mocked).toMatchObject(customConfig);
   });
@@ -46,8 +49,11 @@ describe('test AuroraDbRDSProxyService connect', () => {
 
 describe('test AuroraDbRDSProxyService query', () => {
   it('should return results object when calling query function', async () => {
-    const db = new AuroraDbRDSProxyService(auroraConfig);
-    const resp = await db.query('SELECT_QUERY', {});
+    const resp = await AuroraDbRDSProxyService.query(
+      'SELECT_QUERY',
+      {},
+      auroraConfig
+    );
 
     expect(resp).toMatchObject({
       results: [
@@ -66,8 +72,11 @@ describe('test AuroraDbRDSProxyService query', () => {
   });
 
   it('should return results object when calling querying with connection options passed', async () => {
-    const db = new AuroraDbRDSProxyService(auroraConfig);
-    const resp = await db.query('SELECT_QUERY', {}, auroraConfig);
+    const resp = await AuroraDbRDSProxyService.query(
+      'SELECT_QUERY',
+      {},
+      auroraConfig
+    );
 
     expect(resp).toMatchObject({
       results: [
@@ -86,9 +95,9 @@ describe('test AuroraDbRDSProxyService query', () => {
   });
 
   it('should return results object when calling querying with no connection options passed and persistent conn', async () => {
-    const db = new AuroraDbRDSProxyService(auroraConfig);
-    await db.pConnect();
-    const resp = await db.query('SELECT_QUERY', {});
+    await AuroraDbRDSProxyService.pConnect(auroraConfig);
+
+    const resp = await AuroraDbRDSProxyService.query('SELECT_QUERY', {});
 
     expect(resp).toMatchObject({
       results: [
@@ -109,8 +118,9 @@ describe('test AuroraDbRDSProxyService query', () => {
 
 describe('test AuroraDbRDSProxyService select', () => {
   it('should return array results when calling select function', async () => {
-    const db = new AuroraDbRDSProxyService(auroraConfig);
-    return expect(db.select('SELECT_QUERY', {})).resolves.toMatchObject([
+    return expect(
+      AuroraDbRDSProxyService.select('SELECT_QUERY', {}, auroraConfig)
+    ).resolves.toMatchObject([
       {
         id: 1,
         uid: 'some-uid-1',
@@ -134,8 +144,9 @@ describe('test AuroraDbRDSProxyService select', () => {
       }
     );
 
-    const db = new AuroraDbRDSProxyService(auroraConfig);
-    return expect(db.select('INVALID_QUERY', {})).rejects.toMatchObject(error);
+    return expect(
+      AuroraDbRDSProxyService.select('INVALID_QUERY', {}, auroraConfig)
+    ).rejects.toMatchObject(error);
   });
 
   it('should throw an exception when calling select with invalid query parameters', async () => {
@@ -150,41 +161,56 @@ describe('test AuroraDbRDSProxyService select', () => {
       }
     );
 
-    const db = new AuroraDbRDSProxyService(auroraConfig);
     return expect(
-      db.select('RANDOM_QUERY', 'INVALID_QUERY_PARAMETERS')
+      AuroraDbRDSProxyService.select(
+        'RANDOM_QUERY',
+        'INVALID_QUERY_PARAMETERS',
+        auroraConfig
+      )
     ).rejects.toMatchObject(error);
   });
 });
 
 describe('test AuroraDbRDSProxyService selectPaginate', () => {
   it('should return paginated results when calling selectPaginate function', async () => {
-    const db = new AuroraDbRDSProxyService(auroraConfig);
-    return expect(db.selectPaginate('SELECT_QUERY', {})).resolves.toMatchObject(
-      {
-        count: 2,
-        previous_page: false,
-        current_page: 1,
-        next_page: false,
-        per_page: 10,
-        items: [
-          {
-            id: 1,
-            uid: 'some-uid-1',
-          },
-          {
-            id: 2,
-            uid: 'some-uid-2',
-          },
-        ],
-      }
-    );
+    return expect(
+      AuroraDbRDSProxyService.selectPaginate(
+        'SELECT_QUERY',
+        {},
+        10,
+        1,
+        null,
+        auroraConfig
+      )
+    ).resolves.toMatchObject({
+      count: 2,
+      previous_page: false,
+      current_page: 1,
+      next_page: false,
+      per_page: 10,
+      items: [
+        {
+          id: 1,
+          uid: 'some-uid-1',
+        },
+        {
+          id: 2,
+          uid: 'some-uid-2',
+        },
+      ],
+    });
   });
 
   it('should return paginated results when calling selectPaginate with defined total', async () => {
-    const db = new AuroraDbRDSProxyService(auroraConfig);
     return expect(
-      db.selectPaginate('SELECT_QUERY', {}, 1, 2, 1)
+      AuroraDbRDSProxyService.selectPaginate(
+        'SELECT_QUERY',
+        {},
+        1,
+        2,
+        1,
+        auroraConfig
+      )
     ).resolves.toMatchObject({
       count: 1,
       previous_page: 1,
@@ -203,8 +229,9 @@ describe('test AuroraDbRDSProxyService selectPaginate', () => {
 
 describe('test AuroraDbRDSProxyService selectFirst', () => {
   it('should only return the first record when calling selectFirst', async () => {
-    const db = new AuroraDbRDSProxyService(auroraConfig);
-    return expect(db.selectFirst('SELECT_QUERY', {})).resolves.toMatchObject({
+    return expect(
+      AuroraDbRDSProxyService.selectFirst('SELECT_QUERY', {}, auroraConfig)
+    ).resolves.toMatchObject({
       id: 1,
       uid: 'some-uid-1',
     });
@@ -213,8 +240,9 @@ describe('test AuroraDbRDSProxyService selectFirst', () => {
 
 describe('test AuroraDbRDSProxyService insert', () => {
   it('should return recordId when inserting record', async () => {
-    const db = new AuroraDbRDSProxyService(auroraConfig);
-    return expect(db.insert('INSERT_QUERY', {})).resolves.toEqual(20);
+    return expect(
+      AuroraDbRDSProxyService.insert('INSERT_QUERY', {}, auroraConfig)
+    ).resolves.toEqual(20);
   });
 
   it('should throw exception when calling insert with invalid query', async () => {
@@ -224,55 +252,57 @@ describe('test AuroraDbRDSProxyService insert', () => {
       400
     );
 
-    const db = new AuroraDbRDSProxyService(auroraConfig);
-    return expect(db.insert('INVALID_INSERT_QUERY', {})).rejects.toMatchObject(
-      error
-    );
+    return expect(
+      AuroraDbRDSProxyService.insert('INVALID_INSERT_QUERY', {}, auroraConfig)
+    ).rejects.toMatchObject(error);
   });
 });
 
 describe('test AuroraDbRDSProxyService update', () => {
   it('should return success when making update query', async () => {
-    const db = new AuroraDbRDSProxyService(auroraConfig);
-    return expect(db.update('UPDATE_QUERY', {})).resolves.not.toThrow();
+    return expect(
+      AuroraDbRDSProxyService.update('UPDATE_QUERY', {}, auroraConfig)
+    ).resolves.not.toThrow();
   });
 
   it('should throw not exception when caliing update with invalid query', async () => {
-    const db = new AuroraDbRDSProxyService(auroraConfig);
-    return expect(db.update('INVALID_UPDATE_QUERY', {})).resolves.not.toThrow();
+    return expect(
+      AuroraDbRDSProxyService.update('INVALID_UPDATE_QUERY', {}, auroraConfig)
+    ).resolves.not.toThrow();
   });
 });
 
 describe('test AuroraDbRDSProxyService pConnect', () => {
-  it('should be able to connect without custom config', async () => {
-    const db = new AuroraDbRDSProxyService(auroraConfig);
-    await db.pConnect();
-
-    expect(db.conn.mocked).toMatchObject(auroraConfig);
+  it('should throw an error if called without custom config', async () => {
+    try {
+      expect(await AuroraDbRDSProxyService.pConnect()).toThrow();
+    } catch (error) {
+      expect(error.name).toBe('LesgoException');
+      expect(error.statusCode).toBe(500);
+      expect(error.message).toContain('Missing required');
+    }
   });
 
   it('should be able to connect with custom config', async () => {
-    const db = new AuroraDbRDSProxyService(auroraConfig);
-    await db.pConnect(customConfig);
+    const db = await AuroraDbRDSProxyService.pConnect(customConfig);
 
-    expect(db.conn.mocked).toMatchObject(customConfig);
+    expect(db.mocked).toMatchObject(customConfig);
   });
 });
 
 describe('test AuroraDbRDSProxyService end', () => {
   it('should end the connection when passed', async () => {
-    const db = new AuroraDbRDSProxyService(auroraConfig);
-    const conn = await db.connect();
-    await db.end(conn);
+    const conn = await AuroraDbRDSProxyService.connect(auroraConfig);
+    await AuroraDbRDSProxyService.end(conn);
 
     expect(conn.end).toHaveBeenCalledTimes(1);
   });
 
   it('should end the persisted connection when none is passed', async () => {
-    const db = new AuroraDbRDSProxyService(auroraConfig);
-    await db.pConnect();
-    await db.end();
+    const db = await AuroraDbRDSProxyService.pConnect(auroraConfig);
 
-    expect(db.conn.end).toHaveBeenCalledTimes(1);
+    await AuroraDbRDSProxyService.end();
+
+    expect(db.end).toHaveBeenCalledTimes(1);
   });
 });
