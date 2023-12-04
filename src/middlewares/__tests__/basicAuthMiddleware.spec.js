@@ -64,7 +64,7 @@ describe('test verifyBasicAuthBeforeHandler error handling', () => {
     'base64'
   );
   const invalidSecretKey = Buffer.from(
-    `${client.clients.platform_2.key}:secret_key`
+    `${client.clients.platform2.key}:secret_key`
   ).toString('base64');
 
   test.each`
@@ -75,22 +75,22 @@ describe('test verifyBasicAuthBeforeHandler error handling', () => {
     ${{ Authorization: `basic ${invalidClientKey}` }} | ${'LesgoException'} | ${'Invalid client key or secret provided'}    | ${403}          | ${'Middlewares/basicAuthMiddleware::AUTH_INVALID_CLIENT_OR_SECRET_KEY'} | ${undefined}
     ${{ Authorization: `basic ${invalidSecretKey}` }} | ${'LesgoException'} | ${'Invalid client key or secret provided'}    | ${403}          | ${'Middlewares/basicAuthMiddleware::AUTH_INVALID_CLIENT_OR_SECRET_KEY'} | ${undefined}
     ${{ Authorization: `Basic ${invalidSecretKey}` }} | ${'LesgoException'} | ${'Invalid client key or secret provided'}    | ${403}          | ${'Middlewares/basicAuthMiddleware::AUTH_INVALID_CLIENT_OR_SECRET_KEY'} | ${undefined}
-    ${{}}                                             | ${'LesgoException'} | ${'Authorization header not found'}           | ${403}          | ${'Middlewares/basicAuthMiddleware::AUTHORIZATION_HEADER_NOT_FOUND'}    | ${'platform_1'}
-    ${{ Authorization: 'auth' }}                      | ${'LesgoException'} | ${'Invalid authorization type provided'}      | ${403}          | ${'Middlewares/basicAuthMiddleware::AUTH_INVALID_AUTHORIZATION_TYPE'}   | ${'platform_1'}
-    ${{ Authorization: 'basic ' }}                    | ${'LesgoException'} | ${'Empty basic authentication hash provided'} | ${403}          | ${'Middlewares/basicAuthMiddleware::AUTH_EMPTY_BASIC_HASH'}             | ${'platform_1'}
-    ${{ Authorization: `basic ${invalidClientKey}` }} | ${'LesgoException'} | ${'Invalid client key or secret provided'}    | ${403}          | ${'Middlewares/basicAuthMiddleware::AUTH_INVALID_CLIENT_OR_SECRET_KEY'} | ${'platform_1'}
-    ${{ Authorization: `basic ${invalidSecretKey}` }} | ${'LesgoException'} | ${'Invalid client key or secret provided'}    | ${403}          | ${'Middlewares/basicAuthMiddleware::AUTH_INVALID_CLIENT_OR_SECRET_KEY'} | ${'platform_1'}
-    ${{ Authorization: `Basic ${invalidSecretKey}` }} | ${'LesgoException'} | ${'Invalid client key or secret provided'}    | ${403}          | ${'Middlewares/basicAuthMiddleware::AUTH_INVALID_CLIENT_OR_SECRET_KEY'} | ${'platform_1'}
-    ${{ Authorization: 'auth' }}                      | ${'LesgoException'} | ${'Invalid authorization type provided'}      | ${403}          | ${'Middlewares/basicAuthMiddleware::AUTH_INVALID_AUTHORIZATION_TYPE'}   | ${'blacklist_platform'}
-    ${{ Authorization: 'basic ' }}                    | ${'LesgoException'} | ${'Empty basic authentication hash provided'} | ${403}          | ${'Middlewares/basicAuthMiddleware::AUTH_EMPTY_BASIC_HASH'}             | ${'blacklist_platform'}
-    ${{ Authorization: `basic ${invalidClientKey}` }} | ${'LesgoException'} | ${'Invalid client key or secret provided'}    | ${403}          | ${'Middlewares/basicAuthMiddleware::AUTH_INVALID_CLIENT_OR_SECRET_KEY'} | ${'blacklist_platform'}
-    ${{ Authorization: `basic ${invalidSecretKey}` }} | ${'LesgoException'} | ${'Invalid client key or secret provided'}    | ${403}          | ${'Middlewares/basicAuthMiddleware::AUTH_INVALID_CLIENT_OR_SECRET_KEY'} | ${'blacklist_platform'}
-    ${{ Authorization: `Basic ${invalidSecretKey}` }} | ${'LesgoException'} | ${'Invalid client key or secret provided'}    | ${403}          | ${'Middlewares/basicAuthMiddleware::AUTH_INVALID_CLIENT_OR_SECRET_KEY'} | ${'blacklist_platform'}
-    ${{ Authorization: 'auth' }}                      | ${'LesgoException'} | ${'Invalid authorization type provided'}      | ${403}          | ${'Middlewares/basicAuthMiddleware::AUTH_INVALID_AUTHORIZATION_TYPE'}   | ${'blacklist_platform_1'}
-    ${{ Authorization: 'basic ' }}                    | ${'LesgoException'} | ${'Empty basic authentication hash provided'} | ${403}          | ${'Middlewares/basicAuthMiddleware::AUTH_EMPTY_BASIC_HASH'}             | ${'blacklist_platform_1'}
-    ${{ Authorization: `basic ${invalidClientKey}` }} | ${'LesgoException'} | ${'Invalid client key or secret provided'}    | ${403}          | ${'Middlewares/basicAuthMiddleware::AUTH_INVALID_CLIENT_OR_SECRET_KEY'} | ${'blacklist_platform_1'}
-    ${{ Authorization: `basic ${invalidSecretKey}` }} | ${'LesgoException'} | ${'Invalid client key or secret provided'}    | ${403}          | ${'Middlewares/basicAuthMiddleware::AUTH_INVALID_CLIENT_OR_SECRET_KEY'} | ${'blacklist_platform_1'}
-    ${{ Authorization: `Basic ${invalidSecretKey}` }} | ${'LesgoException'} | ${'Invalid client key or secret provided'}    | ${403}          | ${'Middlewares/basicAuthMiddleware::AUTH_INVALID_CLIENT_OR_SECRET_KEY'} | ${'blacklist_platform_1'}
+    ${{}}                                             | ${'LesgoException'} | ${'Authorization header not found'}           | ${403}          | ${'Middlewares/basicAuthMiddleware::AUTHORIZATION_HEADER_NOT_FOUND'}    | ${'platform1'}
+    ${{ Authorization: 'auth' }}                      | ${'LesgoException'} | ${'Invalid authorization type provided'}      | ${403}          | ${'Middlewares/basicAuthMiddleware::AUTH_INVALID_AUTHORIZATION_TYPE'}   | ${'platform1'}
+    ${{ Authorization: 'basic ' }}                    | ${'LesgoException'} | ${'Empty basic authentication hash provided'} | ${403}          | ${'Middlewares/basicAuthMiddleware::AUTH_EMPTY_BASIC_HASH'}             | ${'platform1'}
+    ${{ Authorization: `basic ${invalidClientKey}` }} | ${'LesgoException'} | ${'Invalid client key or secret provided'}    | ${403}          | ${'Middlewares/basicAuthMiddleware::AUTH_INVALID_CLIENT_OR_SECRET_KEY'} | ${'platform1'}
+    ${{ Authorization: `basic ${invalidSecretKey}` }} | ${'LesgoException'} | ${'Invalid client key or secret provided'}    | ${403}          | ${'Middlewares/basicAuthMiddleware::AUTH_INVALID_CLIENT_OR_SECRET_KEY'} | ${'platform1'}
+    ${{ Authorization: `Basic ${invalidSecretKey}` }} | ${'LesgoException'} | ${'Invalid client key or secret provided'}    | ${403}          | ${'Middlewares/basicAuthMiddleware::AUTH_INVALID_CLIENT_OR_SECRET_KEY'} | ${'platform1'}
+    ${{ Authorization: 'auth' }}                      | ${'LesgoException'} | ${'Invalid authorization type provided'}      | ${403}          | ${'Middlewares/basicAuthMiddleware::AUTH_INVALID_AUTHORIZATION_TYPE'}   | ${'blacklistPlatform'}
+    ${{ Authorization: 'basic ' }}                    | ${'LesgoException'} | ${'Empty basic authentication hash provided'} | ${403}          | ${'Middlewares/basicAuthMiddleware::AUTH_EMPTY_BASIC_HASH'}             | ${'blacklistPlatform'}
+    ${{ Authorization: `basic ${invalidClientKey}` }} | ${'LesgoException'} | ${'Invalid client key or secret provided'}    | ${403}          | ${'Middlewares/basicAuthMiddleware::AUTH_INVALID_CLIENT_OR_SECRET_KEY'} | ${'blacklistPlatform'}
+    ${{ Authorization: `basic ${invalidSecretKey}` }} | ${'LesgoException'} | ${'Invalid client key or secret provided'}    | ${403}          | ${'Middlewares/basicAuthMiddleware::AUTH_INVALID_CLIENT_OR_SECRET_KEY'} | ${'blacklistPlatform'}
+    ${{ Authorization: `Basic ${invalidSecretKey}` }} | ${'LesgoException'} | ${'Invalid client key or secret provided'}    | ${403}          | ${'Middlewares/basicAuthMiddleware::AUTH_INVALID_CLIENT_OR_SECRET_KEY'} | ${'blacklistPlatform'}
+    ${{ Authorization: 'auth' }}                      | ${'LesgoException'} | ${'Invalid authorization type provided'}      | ${403}          | ${'Middlewares/basicAuthMiddleware::AUTH_INVALID_AUTHORIZATION_TYPE'}   | ${'blacklistPlatform1'}
+    ${{ Authorization: 'basic ' }}                    | ${'LesgoException'} | ${'Empty basic authentication hash provided'} | ${403}          | ${'Middlewares/basicAuthMiddleware::AUTH_EMPTY_BASIC_HASH'}             | ${'blacklistPlatform1'}
+    ${{ Authorization: `basic ${invalidClientKey}` }} | ${'LesgoException'} | ${'Invalid client key or secret provided'}    | ${403}          | ${'Middlewares/basicAuthMiddleware::AUTH_INVALID_CLIENT_OR_SECRET_KEY'} | ${'blacklistPlatform1'}
+    ${{ Authorization: `basic ${invalidSecretKey}` }} | ${'LesgoException'} | ${'Invalid client key or secret provided'}    | ${403}          | ${'Middlewares/basicAuthMiddleware::AUTH_INVALID_CLIENT_OR_SECRET_KEY'} | ${'blacklistPlatform1'}
+    ${{ Authorization: `Basic ${invalidSecretKey}` }} | ${'LesgoException'} | ${'Invalid client key or secret provided'}    | ${403}          | ${'Middlewares/basicAuthMiddleware::AUTH_INVALID_CLIENT_OR_SECRET_KEY'} | ${'blacklistPlatform1'}
   `(
     'should throw $errorMessage when authorization header is $headers',
     async ({
@@ -125,8 +125,8 @@ describe('test verifyBasicAuthBeforeHandler error handling', () => {
 
 describe('test verifyBasicAuthBeforeHandler with valid credentials', () => {
   const validBasicAuth = generateBasicAuthorizationHash(
-    client.clients.platform_2.key,
-    client.clients.platform_2.secret
+    client.clients.platform2.key,
+    client.clients.platform2.secret
   );
 
   test.each`
@@ -134,7 +134,7 @@ describe('test verifyBasicAuthBeforeHandler with valid credentials', () => {
     ${undefined}
     ${{}}
     ${{
-  platform_2: {
+  platform2: {
     key: '2222-2222-2222-2222',
     secret: '2222-2222-2222-2222',
   },
@@ -146,7 +146,7 @@ describe('test verifyBasicAuthBeforeHandler with valid credentials', () => {
           Authorization: `basic ${validBasicAuth}`,
         },
         site: {
-          id: 'platform_2',
+          id: 'platform2',
         },
       },
     };
@@ -169,7 +169,7 @@ describe('test verifyBasicAuthBeforeHandler with valid credentials', () => {
     ${undefined}
     ${{}}
     ${{
-  platform_2: {
+  platform2: {
     key: '2222-2222-2222-2222',
     secret: '2222-2222-2222-2222',
   },
@@ -181,7 +181,7 @@ describe('test verifyBasicAuthBeforeHandler with valid credentials', () => {
           Authorization: `basic ${validBasicAuth}`,
         },
         site: {
-          id: 'platform_2',
+          id: 'platform2',
         },
       },
     };
@@ -201,12 +201,12 @@ describe('test verifyBasicAuthBeforeHandler with valid credentials', () => {
 
   test.each`
     Authorization                | platform
-    ${undefined}                 | ${'blacklist_platform'}
-    ${undefined}                 | ${'blacklist_platform_1'}
-    ${`basic ${validBasicAuth}`} | ${'platform_2'}
-    ${`Basic ${validBasicAuth}`} | ${'platform_2'}
-    ${`basic ${validBasicAuth}`} | ${'platform_2'}
-    ${`Basic ${validBasicAuth}`} | ${'platform_2'}
+    ${undefined}                 | ${'blacklistPlatform'}
+    ${undefined}                 | ${'blacklistPlatform1'}
+    ${`basic ${validBasicAuth}`} | ${'platform2'}
+    ${`Basic ${validBasicAuth}`} | ${'platform2'}
+    ${`basic ${validBasicAuth}`} | ${'platform2'}
+    ${`Basic ${validBasicAuth}`} | ${'platform2'}
   `(
     'test Exception with valid credentials',
     async ({ Authorization, platform }) => {
@@ -237,8 +237,8 @@ describe('test verifyBasicAuthBeforeHandler with valid credentials', () => {
   test.each`
     siteObjects
     ${{ platform: {
-    id: 'platform_2',
-    ...client.clients.platform_2,
+    id: 'platform2',
+    ...client.clients.platform2,
   } }}
     ${{}}
   `('valid site ids', async ({ siteObjects }) => {

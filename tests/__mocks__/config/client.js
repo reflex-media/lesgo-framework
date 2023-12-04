@@ -36,10 +36,7 @@ export default {
    *
    */
   getPreHashString: (key, secret) => {
-    return crypto
-      .createHash('sha1')
-      .update(`${key}:${secret}`)
-      .digest('hex');
+    return crypto.createHash('sha1').update(`${key}:${secret}`).digest('hex');
   },
 
   /*
@@ -63,38 +60,40 @@ export default {
    * ```
    */
   clients: {
-    platform_1: {
+    platform1: {
       key: '1111-1111-1111-1111',
       secret: '1111-1111-1111-1111',
     },
-    platform_2: {
+    platform2: {
       key: '2222-2222-2222-2222',
       secret: '2222-2222-2222-2222',
     },
-    platform_3: {
+    platform3: {
       key: '3333-3333-3333-3333',
       secret: '3333-3333-3333-3333',
     },
-    platform_4: {
+    platform4: {
       key: '4444-4444-4444-4444',
       secret: '4444-4444-4444-4444',
     },
-    platform_5: {
+    platform5: {
       key: '5555-5555-5555-5555',
       secret: '5555-5555-5555-5555',
     },
-    platform_6: {
+    platform6: {
       key: '6666-6666-6666-6666',
       secret: '6666-6666-6666-6666',
     },
-    blacklist_platform: {
+    blacklistPlatform: {
       key: '7777-7777-7777-7777',
       isAuthOptional: true,
     },
-    blacklist_platform_1: {
+    blacklistPlatform1: {
       key: '8888-8888-8888-8888',
       get isAuthOptional() {
-        return new Promise(resolve => resolve(true));
+        return new Promise(resolve => {
+          resolve(true);
+        });
       },
     },
   },
