@@ -1,5 +1,4 @@
 import LesgoException from '../../exceptions/LesgoException';
-import isEmpty from '../../utils/isEmpty';
 import logger from '../../utils/logger';
 import connect, { end } from './connect';
 
@@ -22,9 +21,7 @@ const query = async (sql, sqlParams, connectionOpts = {}) => {
       { err }
     );
   } finally {
-    if (isEmpty(conn) || !isEmpty(connectionOpts)) {
-      await end(conn);
-    }
+    await end(conn);
   }
 };
 

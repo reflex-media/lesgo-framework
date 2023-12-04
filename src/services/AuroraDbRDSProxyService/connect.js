@@ -81,7 +81,7 @@ const connect = async (connectionOpts = {}) => {
 export const end = async (conn = {}) => {
   logger.debug(`${FILE}::ENDING DB CONNECTION`);
 
-  if (!isEmpty(conn) && !!conn.end) {
+  if (!isEmpty(conn)) {
     await conn.end();
     logger.debug(`${FILE}::DB DISCONNECTED`);
   } else {
