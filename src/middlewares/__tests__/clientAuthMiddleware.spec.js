@@ -156,7 +156,7 @@ describe('test clientMiddlewareBeforeHandler', () => {
 
     expect(hasError).toBe(false);
     expect(handler.event.platform).toStrictEqual({
-      id: 'platform_1',
+      id: 'platform1',
       key: '1111-1111-1111-1111',
       secret: '1111-1111-1111-1111',
     });
