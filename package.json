@@ -61,7 +61,6 @@
     "@aws-sdk/s3-request-presigner": "^3.321.1",
     "@opensearch-project/opensearch": "^2.2.0",
     "aws4": "^1.12.0",
-    "cardinal": "^2.1.1",
     "data-api-client": "^1.3.0",
     "jsonwebtoken": "^9.0.0",
     "memcache-plus": "^0.2.24",
