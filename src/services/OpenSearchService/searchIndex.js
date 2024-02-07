@@ -53,8 +53,7 @@ const searchIndex = async (query, { adapter, singletonConn }) => {
   if (sort !== null) {
     param.body.sort = sort;
   }
-
-  logger.info('param -->', param);
+  
   try {
     const resp = await client.search(param);
     logger.debug(`${FILE}::SEARCH_RESULT`, { resp, param });
