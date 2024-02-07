@@ -25,35 +25,17 @@ const searchIndex = async (query, { adapter, singletonConn }) => {
   );
   logger.debug(`${FILE}::CLIENT`, { client });
 
-  let size = null;
+  const { size = null, sort = null, ...otherInfo } = query;
 
-  if (typeof query.size !== 'undefined') {
-    size = query.size;
-    delete query.size;
-  }
-
-  let sort = null;
-
-  if (typeof query.sort !== 'undefined') {
-    sort = query.sort;
-    delete query.sort;
-  }
-
-  let param = {
+  const param = {
     index: adapter.index.name,
     body: {
-      query,
+      query: otherInfo,
+      ...(size && { size }),
+      ...(sort && { sort }),
     },
   };
 
-  if (size !== null) {
-    param.body.size = size;
-  }
-
-  if (sort !== null) {
-    param.body.sort = sort;
-  }
-  
   try {
     const resp = await client.search(param);
     logger.debug(`${FILE}::SEARCH_RESULT`, { resp, param });
