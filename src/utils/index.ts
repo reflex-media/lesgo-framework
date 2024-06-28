@@ -1,3 +1,1 @@
-import isEmpty from './isEmpty';
-
-export { isEmpty };
+export { default as isEmpty } from './isEmpty';

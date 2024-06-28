@@ -1,4 +1,9 @@
 Object.defineProperty(exports, '__esModule', { value: true });
 exports.isEmpty = void 0;
-const isEmpty_1 = require('./isEmpty');
-exports.isEmpty = isEmpty_1.default;
+var isEmpty_1 = require('./isEmpty');
+Object.defineProperty(exports, 'isEmpty', {
+  enumerable: true,
+  get: function () {
+    return isEmpty_1.default;
+  },
+});
