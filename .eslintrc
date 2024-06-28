@@ -1,11 +1,19 @@
 {
-  "extends": [
-    "airbnb-base",
-    "plugin:jest/recommended",
-    "plugin:prettier/recommended"
-  ],
-  "rules": {},
+  "env": {
+    "browser": true,
+    "es2021": true,
+    "node": true
+  },
+  "extends": ["eslint:recommended", "plugin:prettier/recommended"],
   "parserOptions": {
-    "ecmaVersion": 2020
+    "ecmaVersion": 12,
+    "sourceType": "module"
+  },
+  "rules": {
+    "strict": ["error", "never"],
+    "lines-around-directive": [
+      "error",
+      { "before": "always", "after": "always" }
+    ]
   }
 }

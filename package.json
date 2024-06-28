@@ -2,7 +2,8 @@
   "name": "lesgo",
   "version": "1.1.0",
   "description": "Core framework for lesgo node.js serverless framework.",
-  "main": "./src/index.js",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "author": "Sufiyan Rahmat",
   "license": "MIT",
   "bugs": {
@@ -22,9 +23,12 @@
     "test": "jest",
     "coverage": "jest --coverage",
     "coveralls": "npm run coverage && cat ./coverage/lcov.info | coveralls",
-    "prepublishOnly": "npm run test",
     "lint": "eslint '**/*.{js,ts,jsx,tsx}' --quiet",
-    "lint-fix": "eslint '**/*.{js,ts,jsx,tsx}' --fix"
+    "lint:dist": "eslint 'dist/**/*.js' --fix",
+    "lint-fix": "eslint '**/*.{js,ts,jsx,tsx}' --fix",
+    "format": "prettier --write 'dist/**/*.js'",
+    "build": "tsc && npm run format && npm run lint:dist",
+    "prepublishOnly": "npm run build"
   },
   "bin": {
     "lesgo-scripts": "./bin/lesgo-scripts.sh"
@@ -37,19 +41,21 @@
     "@babel/cli": "^7.21.0",
     "@babel/core": "^7.21.3",
     "@babel/preset-env": "^7.20.2",
+    "@types/node": "^20.14.9",
     "aws-sdk-client-mock": "^2.1.1",
     "babel-jest": "^29.5.0",
     "coveralls": "^3.1.1",
-    "eslint": "^8.37.0",
+    "eslint": "^8.57.0",
     "eslint-config-airbnb-base": "^15.0.0",
-    "eslint-config-prettier": "^8.8.0",
+    "eslint-config-prettier": "^8.10.0",
     "eslint-plugin-import": "^2.27.5",
     "eslint-plugin-jest": "^27.2.1",
     "eslint-plugin-prettier": "^4.2.1",
     "husky": "^8.0.3",
     "jest": "^29.5.0",
     "lint-staged": "^13.2.0",
-    "prettier": "^2.8.7"
+    "prettier": "^2.8.8",
+    "typescript": "^5.5.2"
   },
   "dependencies": {
     "@aws-sdk/client-dynamodb": "^3.303.0",
