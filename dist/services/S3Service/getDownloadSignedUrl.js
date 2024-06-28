@@ -1,0 +1,19 @@
+Object.defineProperty(exports, '__esModule', { value: true });
+const client_s3_1 = require('@aws-sdk/client-s3');
+const s3_request_presigner_1 = require('@aws-sdk/s3-request-presigner');
+const getClient_1 = require('./getClient');
+const getDownloadSignedUrl = (
+  key,
+  bucket,
+  { singletonConn, region, expiresIn }
+) => {
+  const client = (0, getClient_1.default)({ region, singletonConn });
+  const command = new client_s3_1.GetObjectCommand({
+    Bucket: bucket,
+    Key: key,
+  });
+  return (0, s3_request_presigner_1.getSignedUrl)(client, command, {
+    expiresIn,
+  });
+};
+exports.default = getDownloadSignedUrl;

@@ -1,4 +1,5 @@
-import app from 'config/app'; // eslint-disable-line import/no-unresolved
+// @ts-ignore
+import app from 'config/app';
 import LoggerService from '../services/LoggerService';
 
 const transports = [

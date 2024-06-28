@@ -24,9 +24,10 @@ interface TransportConfigTags {
   [key: string]: string;
 }
 
-const getCurrentDateTime = () => {
-  return new Date().toUTCString();
-};
+// TEMP To check if this is still relevant
+// const getCurrentDateTime = () => {
+//   return new Date().toUTCString();
+// };
 
 export default class LoggerService {
   logger: string;
@@ -75,6 +76,7 @@ export default class LoggerService {
     const structuredMessage = this.structureLogMessage(level, message, extra);
 
     this.transports.map(transport => {
+      // @ts-ignore
       return this[`${transport.logType}Logger`](level, structuredMessage);
     });
   }
