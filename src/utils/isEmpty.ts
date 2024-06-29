@@ -1,4 +1,4 @@
-export default (value: any) => {
+const isEmpty = (value: any) => {
   if (value === undefined || value === null || value === '') {
     return true;
   }
@@ -13,3 +13,5 @@ export default (value: any) => {
 
   return false;
 };
+
+export default isEmpty;

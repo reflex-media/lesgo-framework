@@ -7,8 +7,8 @@ export default class LesgoException extends Error {
 
   constructor(
     message: string,
-    errorCode: string = 'LESGO_EXCEPTION',
-    httpStatusCode: number = 500,
+    errorCode = 'LESGO_EXCEPTION',
+    httpStatusCode = 500,
     extra: any = {}
   ) {
     super();

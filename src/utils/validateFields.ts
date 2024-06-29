@@ -1,0 +1,130 @@
+import LesgoException from '../exceptions/LesgoException';
+import isEmail from './isEmail';
+import isDecimal from './isDecimal';
+
+const FILE = 'lesgo/utils/validateFields';
+
+interface Params {
+  [key: string]: any;
+}
+
+interface Field {
+  key: string;
+  type: string;
+  required: boolean;
+  isCollection?: boolean;
+  enumValues?: string[];
+}
+
+const isValidJSON = (jsonString: string) => {
+  if (typeof jsonString !== 'string') {
+    return false;
+  }
+
+  try {
+    JSON.parse(jsonString);
+    return true;
+  } catch (err) {
+    return false;
+  }
+};
+
+const validateFields = (params: Params, validFields: Field[]) => {
+  const validated: {
+    [key: string]: any;
+  } = {};
+
+  validFields.forEach(field => {
+    const { required, type, key, isCollection, enumValues = [] } = field;
+
+    if (required) {
+      if (typeof params[key] === 'object') {
+        if (Array.isArray(params[key]) && params[key].length === 0) {
+          throw new LesgoException(
+            `Missing required '${key}'`,
+            `${FILE}::MISSING_REQUIRED_${key.toUpperCase()}`,
+            500,
+            { field }
+          );
+        }
+      }
+
+      if (!params[key]) {
+        if (typeof params[key] !== 'number') {
+          throw new LesgoException(
+            `Missing required '${key}'`,
+            `${FILE}::MISSING_REQUIRED_${key.toUpperCase()}`,
+            500,
+            { field }
+          );
+        }
+      }
+    }
+
+    if (isCollection) {
+      try {
+        validateFields({ [key]: params[key] }, [
+          { key, required, type: 'array' },
+        ]);
+      } catch (_) {
+        throw new LesgoException(
+          `Invalid type for '${key}', expecting collection of '${type}'`,
+          `${FILE}::INVALID_TYPE_${key.toUpperCase()}`,
+          500,
+          { field, value: params[key] }
+        );
+      }
+    }
+
+    (isCollection ? params[key] || [] : [params[key]]).forEach(
+      (paramsItem: any) => {
+        if (
+          (type === 'string' &&
+            typeof paramsItem !== 'undefined' &&
+            typeof paramsItem !== 'string') ||
+          (type === 'object' &&
+            typeof paramsItem !== 'undefined' &&
+            typeof paramsItem !== 'object') ||
+          (type === 'number' &&
+            typeof paramsItem !== 'undefined' &&
+            typeof paramsItem !== 'number') ||
+          (type === 'decimal' &&
+            typeof paramsItem !== 'undefined' &&
+            !isDecimal(paramsItem)) ||
+          (type === 'email' &&
+            typeof paramsItem !== 'undefined' &&
+            !isEmail(paramsItem)) ||
+          (type === 'array' &&
+            typeof paramsItem !== 'undefined' &&
+            !Array.isArray(paramsItem)) ||
+          (type === 'enum' &&
+            typeof paramsItem !== 'undefined' &&
+            !enumValues.includes(paramsItem)) ||
+          (type === 'function' &&
+            typeof paramsItem !== 'undefined' &&
+            {}.toString.call(paramsItem) !== '[object Function]') ||
+          (type === 'json' &&
+            typeof paramsItem !== 'undefined' &&
+            !isValidJSON(paramsItem))
+        ) {
+          throw new LesgoException(
+            `Invalid type for '${key}', expecting ${
+              isCollection ? 'collection of ' : ''
+            }'${type}'`,
+            `${FILE}::INVALID_TYPE_${key.toUpperCase()}`,
+            500,
+            { field, value: paramsItem }
+          );
+        }
+      }
+    );
+
+    if (typeof params[key] !== 'undefined') {
+      validated[key] = params[key];
+    }
+  });
+
+  return validated;
+};
+
+export default validateFields;

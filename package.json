@@ -19,13 +19,13 @@
     "bin"
   ],
   "scripts": {
-    "pretest": "eslint .",
+    "pretest": "eslint 'src/**/*.{ts,tsx}'",
     "test": "jest",
     "coverage": "jest --coverage",
     "coveralls": "npm run coverage && cat ./coverage/lcov.info | coveralls",
-    "lint": "eslint '**/*.{js,ts,jsx,tsx}' --quiet",
+    "lint": "eslint 'src/**/*.{ts,tsx}' --quiet",
     "lint:dist": "eslint 'dist/**/*.js' --fix",
-    "lint-fix": "eslint '**/*.{js,ts,jsx,tsx}' --fix",
+    "lint-fix": "eslint 'src/**/*.{js,ts,jsx,tsx}' --fix",
     "format": "prettier --write 'dist/**/*.js'",
     "build": "tsc && npm run format && npm run lint:dist",
     "prepublishOnly": "npm run build"
@@ -41,7 +41,13 @@
     "@babel/cli": "^7.21.0",
     "@babel/core": "^7.21.3",
     "@babel/preset-env": "^7.20.2",
+    "@types/aws-lambda": "^8.10.140",
+    "@types/jest": "^29.5.12",
+    "@types/jsonwebtoken": "^9.0.6",
     "@types/node": "^20.14.9",
+    "@typescript-eslint/eslint-plugin": "^5.62.0",
+    "@typescript-eslint/parser": "^5.62.0",
+    "aws-lambda": "^1.0.7",
     "aws-sdk-client-mock": "^2.1.1",
     "babel-jest": "^29.5.0",
     "coveralls": "^3.1.1",
@@ -55,6 +61,7 @@
     "jest": "^29.5.0",
     "lint-staged": "^13.2.0",
     "prettier": "^2.8.8",
+    "ts-jest": "^29.1.5",
     "typescript": "^5.5.2"
   },
   "dependencies": {

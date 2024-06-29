@@ -1,9 +1,9 @@
 import { PutObjectCommand, StorageClass } from '@aws-sdk/client-s3';
-import getClient from './getClient';
 import LesgoException from '../../exceptions/LesgoException';
 import isEmpty from '../../utils/isEmpty';
+import getClient from './getClient';
 
-const FILE = 'services/S3Service/putObject';
+const FILE = 'lesgo/services/S3Service/putObject';
 
 interface PutObjectOptions {
   region: string;

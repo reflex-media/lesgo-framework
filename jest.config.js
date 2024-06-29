@@ -1,7 +1,9 @@
 module.exports = {
   verbose: true,
-  testMatch: ['**/__tests__/*.spec.js'],
-  collectCoverageFrom: ['src/**/*.js'],
+  preset: 'ts-jest',
+  testEnvironment: 'node',
+  testMatch: ['**/__tests__/*.test.ts'],
+  collectCoverageFrom: ['src/**/*.ts'],
   coverageReporters: ['html', 'text', 'lcov'],
   coverageThreshold: {
     global: {
