@@ -1,2 +1,2 @@
-declare const _default: (value: any) => boolean;
-export default _default;
+declare const isEmpty: (value: any) => boolean;
+export default isEmpty;

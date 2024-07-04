@@ -1,5 +1,5 @@
 Object.defineProperty(exports, '__esModule', { value: true });
-exports.default = value => {
+const isEmpty = value => {
   if (value === undefined || value === null || value === '') {
     return true;
   }
@@ -11,3 +11,4 @@ exports.default = value => {
   }
   return false;
 };
+exports.default = isEmpty;

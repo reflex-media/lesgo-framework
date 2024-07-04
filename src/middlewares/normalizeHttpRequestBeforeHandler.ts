@@ -68,7 +68,7 @@ export const normalizeRequest = (opts: Options) => {
  * as handler.event.input Object
  */
 export const normalizeHttpRequestBeforeHandler = (
-  handler: Handler,
+  handler: NormalizeHttpRequestHandler,
   next: (error?: any) => void
 ) => {
   const options = {

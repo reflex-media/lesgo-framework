@@ -1,5 +1,4 @@
-// @ts-ignore
-import crypto from 'crypto';
+import { createHash } from 'crypto';
 import LesgoException from '../../exceptions/LesgoException';
 import isEmpty from '../isEmpty';
 
@@ -11,10 +10,7 @@ const hashMD5 = (data: string): string => {
     );
   }
 
-  const hashedValue: string = crypto
-    .createHash('md5')
-    .update(data)
-    .digest('hex');
+  const hashedValue: string = createHash('md5').update(data).digest('hex');
   return hashedValue;
 };
 

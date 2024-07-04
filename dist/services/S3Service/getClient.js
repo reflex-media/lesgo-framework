@@ -2,7 +2,7 @@ Object.defineProperty(exports, '__esModule', { value: true });
 const client_s3_1 = require('@aws-sdk/client-s3');
 const logger_1 = require('../../utils/logger');
 const isEmpty_1 = require('../../utils/isEmpty');
-const FILE = 'services/S3Service/getClient';
+const FILE = 'lesgo/services/S3Service/getClient';
 const singleton = {};
 const getClient = ({ region, singletonConn }) => {
   if (!(0, isEmpty_1.default)(singleton[singletonConn])) {

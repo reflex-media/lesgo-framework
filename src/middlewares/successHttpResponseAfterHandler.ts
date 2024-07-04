@@ -49,7 +49,7 @@ export const successHttpResponseHandler = async (opts: Options) => {
 
   try {
     await disconnectOpenConnections();
-  } catch (err) {
+  } catch (err: any) {
     logger.error(`${FILE}::OPEN_CONNECTION_DISCONNECT_FAIL`, err);
   }
 

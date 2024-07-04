@@ -1,9 +1,9 @@
 Object.defineProperty(exports, '__esModule', { value: true });
 exports.putObject =
-  exports.GetUploadSignedUrl =
-  exports.GetDownloadSignedUrl =
-  exports.getHeadObject =
+  exports.getUploadSignedUrl =
   exports.getObject =
+  exports.getHeadObject =
+  exports.getDownloadSignedUrl =
   exports.getClient =
     void 0;
 var getClient_1 = require('./getClient');
@@ -13,11 +13,11 @@ Object.defineProperty(exports, 'getClient', {
     return getClient_1.default;
   },
 });
-var getObject_1 = require('./getObject');
-Object.defineProperty(exports, 'getObject', {
+var getDownloadSignedUrl_1 = require('./getDownloadSignedUrl');
+Object.defineProperty(exports, 'getDownloadSignedUrl', {
   enumerable: true,
   get: function () {
-    return getObject_1.default;
+    return getDownloadSignedUrl_1.default;
   },
 });
 var getHeadObject_1 = require('./getHeadObject');
@@ -27,15 +27,15 @@ Object.defineProperty(exports, 'getHeadObject', {
     return getHeadObject_1.default;
   },
 });
-var getDownloadSignedUrl_1 = require('./getDownloadSignedUrl');
-Object.defineProperty(exports, 'GetDownloadSignedUrl', {
+var getObject_1 = require('./getObject');
+Object.defineProperty(exports, 'getObject', {
   enumerable: true,
   get: function () {
-    return getDownloadSignedUrl_1.default;
+    return getObject_1.default;
   },
 });
 var getUploadSignedUrl_1 = require('./getUploadSignedUrl');
-Object.defineProperty(exports, 'GetUploadSignedUrl', {
+Object.defineProperty(exports, 'getUploadSignedUrl', {
   enumerable: true,
   get: function () {
     return getUploadSignedUrl_1.default;

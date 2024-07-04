@@ -36,7 +36,7 @@ const client_s3_1 = require('@aws-sdk/client-s3');
 const getClient_1 = require('./getClient');
 const LesgoException_1 = require('../../exceptions/LesgoException');
 const isEmpty_1 = require('../../utils/isEmpty');
-const FILE = 'services/S3Service/getObject';
+const FILE = 'lesgo/services/S3Service/getObject';
 const getObject = (key_1, bucket_1, _a) =>
   __awaiter(
     void 0,

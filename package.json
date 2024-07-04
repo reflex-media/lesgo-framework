@@ -24,7 +24,7 @@
     "coverage": "jest --coverage",
     "coveralls": "npm run coverage && cat ./coverage/lcov.info | coveralls",
     "lint": "eslint 'src/**/*.{ts,tsx}' --quiet",
-    "lint:dist": "eslint 'dist/**/*.js' --fix",
+    "lint:dist": "eslint 'dist/**/*.js' --fix --quiet",
     "lint-fix": "eslint 'src/**/*.{js,ts,jsx,tsx}' --fix",
     "format": "prettier --write 'dist/**/*.js'",
     "build": "tsc && npm run format && npm run lint:dist",

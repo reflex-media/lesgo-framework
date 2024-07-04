@@ -1,5 +1,4 @@
-// @ts-ignore
-import crypto from 'crypto';
+import { createHash } from 'crypto';
 import LesgoException from '../../exceptions/LesgoException';
 import isEmpty from '../isEmpty';
 
@@ -11,10 +10,6 @@ export default (data: string): string => {
     );
   }
 
-  const hashedValue: string = crypto
-    .createHash('sha256', 'utf8')
-    .update(data)
-    .digest('hex');
-
+  const hashedValue: string = createHash('sha256').update(data).digest('hex');
   return hashedValue;
 };
