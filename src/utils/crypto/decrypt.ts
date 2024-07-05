@@ -6,7 +6,7 @@ import isEmpty from '../isEmpty';
 
 const { algorithm, secretKey } = cryptoConfig;
 
-export default (text: string): string => {
+const decrypt = (text: string): string => {
   if (isEmpty(text)) {
     throw new LesgoException(
       'Empty parameter supplied on decryp',
@@ -24,3 +24,5 @@ export default (text: string): string => {
 
   return decrypted.toString();
 };
+
+export default decrypt;

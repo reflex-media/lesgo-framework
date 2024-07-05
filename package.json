@@ -35,6 +35,18 @@
       "import": "./dist/services/index.js",
       "require": "./dist/services/index.js"
     },
+    "./services/JWTService": {
+      "import": "./dist/services/JWTService/index.js",
+      "require": "./dist/services/JWTService/index.js"
+    },
+    "./services/S3Service": {
+      "import": "./dist/services/S3Service/index.js",
+      "require": "./dist/services/S3Service/index.js"
+    },
+    "./services/LoggerService": {
+      "import": "./dist/services/LoggerService.js",
+      "require": "./dist/services/LoggerService.js"
+    },
     "./types": {
       "import": "./dist/types/index.js",
       "require": "./dist/types/index.js"
@@ -43,9 +55,17 @@
       "import": "./dist/utils/index.js",
       "require": "./dist/utils/index.js"
     },
-    "./utils/isEmpty": {
-      "import": "./dist/utils/isEmpty.js",
-      "require": "./dist/utils/isEmpty.js"
+    "./utils/crypto": {
+      "import": "./dist/utils/crypto/index.js",
+      "require": "./dist/utils/crypto/index.js"
+    },
+    "./utils/jwt": {
+      "import": "./dist/utils/jwt/index.js",
+      "require": "./dist/utils/jwt/index.js"
+    },
+    "./utils/s3": {
+      "import": "./dist/utils/s3/index.js",
+      "require": "./dist/utils/s3/index.js"
     }
   },
   "scripts": {

@@ -6,7 +6,7 @@ import isEmpty from '../isEmpty';
 
 const { algorithm, secretKey, ivLength } = cryptoConfig;
 
-export default (text: string): string => {
+const encrypt = (text: string): string => {
   if (isEmpty(text)) {
     throw new LesgoException(
       'Empty parameter supplied on encrypt',
@@ -22,3 +22,5 @@ export default (text: string): string => {
 
   return `${iv.toString('hex')}:${encrypted.toString('hex')}`;
 };
+
+export default encrypt;

@@ -1,8 +1,8 @@
 // @ts-ignore
 import config from 'config/jwt';
-import sign from '../../services/JWTService/sign';
+import signService from '../../services/JWTService/sign';
 
-export default (payload: any, secret = '', opts: any = {}): string => {
+const sign = (payload: any, secret = '', opts: any = {}): string => {
   let secretKey: string = secret;
   if (!secretKey) {
     secretKey = config.secret;
@@ -16,6 +16,8 @@ export default (payload: any, secret = '', opts: any = {}): string => {
     };
   }
 
-  const token: string = sign(payload, secretKey, options);
+  const token: string = signService(payload, secretKey, options);
   return token;
 };
+
+export default sign;
