@@ -6,16 +6,7 @@ export { default as normalizeHttpRequestBeforeHandler } from './normalizeHttpReq
 export { default as sqsMiddleware } from './sqsMiddleware';
 export { default as successHttpResponseAfterHandler } from './successHttpResponseAfterHandler';
 
-export {
-  successHttpResponseHandler,
-  SuccessHttpResponseHandler,
-} from './successHttpResponseAfterHandler';
-export {
-  errorHttpResponseHandler,
-  ErrorHttpResponseHandler,
-} from './errorHttpResponseOnErrorHandler';
-export {
-  normalizeHttpRequestHandler,
-  NormalizeHttpRequestHandler,
-} from './normalizeHttpRequestBeforeHandler';
-export { normalizeSqsHandler, SqsHandler } from './sqsMiddleware';
+export { successHttpResponseHandler } from './successHttpResponseAfterHandler';
+export { errorHttpResponseHandler } from './errorHttpResponseOnErrorHandler';
+export { normalizeHttpRequestHandler } from './normalizeHttpRequestBeforeHandler';
+export { normalizeSqsHandler } from './sqsMiddleware';
