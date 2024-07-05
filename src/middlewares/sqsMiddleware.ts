@@ -5,7 +5,7 @@ import disconnectOpenConnections from './disconnectOpenConnections';
 
 const FILE = 'lesgo/middlewares/normalizeSQSMessageMiddleware';
 
-interface SqsMiddlewareHandler {
+export interface SqsHandler {
   event: SQSEvent & { collection: any[] | null };
   context: Context;
 }
@@ -44,7 +44,7 @@ export const disconnectConnections = async () => {
  */
 const sqsMiddleware = () => {
   return {
-    before: (handler: SqsMiddlewareHandler, next: MiddyNext) => {
+    before: (handler: SqsHandler, next: MiddyNext) => {
       const { Records } = handler.event;
 
       // @see https://middy.js.org/docs/middlewares/do-not-wait-for-empty-event-loop/
@@ -55,7 +55,7 @@ const sqsMiddleware = () => {
       handler.event.collection = normalizeSqsHandler(Records);
       next();
     },
-    after: async (handler: SqsMiddlewareHandler, next: MiddyNext) => {
+    after: async (handler: SqsHandler, next: MiddyNext) => {
       // @see https://middy.js.org/docs/middlewares/do-not-wait-for-empty-event-loop/
       // eslint-disable-next-line no-param-reassign
       handler.context.callbackWaitsForEmptyEventLoop = false;
@@ -63,7 +63,7 @@ const sqsMiddleware = () => {
       await disconnectConnections();
       next();
     },
-    onError: async (handler: SqsMiddlewareHandler, next: MiddyNext) => {
+    onError: async (handler: SqsHandler, next: MiddyNext) => {
       // @see https://middy.js.org/docs/middlewares/do-not-wait-for-empty-event-loop/
       // eslint-disable-next-line no-param-reassign
       handler.context.callbackWaitsForEmptyEventLoop = false;

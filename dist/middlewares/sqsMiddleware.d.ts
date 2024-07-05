@@ -1,6 +1,6 @@
 import { Context, SQSEvent, SQSRecord } from 'aws-lambda';
 import { MiddyNext } from '../types/MiddyTypes';
-interface SqsMiddlewareHandler {
+export interface SqsHandler {
     event: SQSEvent & {
         collection: any[] | null;
     };
@@ -13,8 +13,8 @@ export declare const disconnectConnections: () => Promise<void>;
  * This type of request is received by SQS listeners
  */
 declare const sqsMiddleware: () => {
-    before: (handler: SqsMiddlewareHandler, next: MiddyNext) => void;
-    after: (handler: SqsMiddlewareHandler, next: MiddyNext) => Promise<void>;
-    onError: (handler: SqsMiddlewareHandler, next: MiddyNext) => Promise<void>;
+    before: (handler: SqsHandler, next: MiddyNext) => void;
+    after: (handler: SqsHandler, next: MiddyNext) => Promise<void>;
+    onError: (handler: SqsHandler, next: MiddyNext) => Promise<void>;
 };
 export default sqsMiddleware;
