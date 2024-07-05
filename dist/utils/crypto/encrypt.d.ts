@@ -1,2 +1,2 @@
-declare const _default: (text: string) => string;
-export default _default;
+declare const encrypt: (text: string) => string;
+export default encrypt;

@@ -2,7 +2,7 @@ Object.defineProperty(exports, '__esModule', { value: true });
 // @ts-ignore
 const jwt_1 = require('config/jwt');
 const sign_1 = require('../../services/JWTService/sign');
-exports.default = (payload, secret = '', opts = {}) => {
+const sign = (payload, secret = '', opts = {}) => {
   let secretKey = secret;
   if (!secretKey) {
     secretKey = jwt_1.default.secret;
@@ -14,3 +14,4 @@ exports.default = (payload, secret = '', opts = {}) => {
   const token = (0, sign_1.default)(payload, secretKey, options);
   return token;
 };
+exports.default = sign;

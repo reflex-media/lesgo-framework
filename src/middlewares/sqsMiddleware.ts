@@ -10,7 +10,7 @@ interface SqsMiddlewareHandler {
   context: Context;
 }
 
-export const normalizeHandler = (records: SQSRecord[]) => {
+export const normalizeSqsHandler = (records: SQSRecord[]) => {
   let recordCount: number | null = 0;
 
   if (!records || records === null || Object.keys(records).length === 0) {
@@ -52,7 +52,7 @@ const sqsMiddleware = () => {
       handler.context.callbackWaitsForEmptyEventLoop = false;
 
       // eslint-disable-next-line no-param-reassign
-      handler.event.collection = normalizeHandler(Records);
+      handler.event.collection = normalizeSqsHandler(Records);
       next();
     },
     after: async (handler: SqsMiddlewareHandler, next: MiddyNext) => {

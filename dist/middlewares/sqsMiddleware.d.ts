@@ -6,7 +6,7 @@ interface SqsMiddlewareHandler {
     };
     context: Context;
 }
-export declare const normalizeHandler: (records: SQSRecord[]) => any[] | null;
+export declare const normalizeSqsHandler: (records: SQSRecord[]) => any[] | null;
 export declare const disconnectConnections: () => Promise<void>;
 /**
  * Normalizes handler.event.Records as handler.event.collections Object.

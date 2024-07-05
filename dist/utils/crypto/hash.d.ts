@@ -1,2 +1,2 @@
-declare const _default: (data: string) => string;
-export default _default;
+declare const hash: (data: string) => string;
+export default hash;

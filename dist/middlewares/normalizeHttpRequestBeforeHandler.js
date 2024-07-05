@@ -1,10 +1,11 @@
 Object.defineProperty(exports, '__esModule', { value: true });
-exports.normalizeHttpRequestBeforeHandler = exports.normalizeRequest = void 0;
+exports.normalizeHttpRequestBeforeHandler =
+  exports.normalizeHttpRequestHandler = void 0;
 // @ts-ignore
 const app_1 = require('config/app');
 const getJwtSubFromAuthHeader_1 = require('../utils/getJwtSubFromAuthHeader');
 const logger_1 = require('../utils/logger');
-const normalizeRequest = opts => {
+const normalizeHttpRequestHandler = opts => {
   const { headers, body } = opts;
   let { qs } = opts;
   let input = null;
@@ -28,7 +29,7 @@ const normalizeRequest = opts => {
   }
   return input;
 };
-exports.normalizeRequest = normalizeRequest;
+exports.normalizeHttpRequestHandler = normalizeHttpRequestHandler;
 /**
  * Normalizes handler.event.body and handler.event.queryStringParameters
  * as handler.event.input Object
@@ -43,7 +44,7 @@ const normalizeHttpRequestBeforeHandler = (handler, next) => {
   // eslint-disable-next-line no-param-reassign
   handler.context.callbackWaitsForEmptyEventLoop = false;
   // eslint-disable-next-line no-param-reassign
-  handler.event.input = (0, exports.normalizeRequest)(options);
+  handler.event.input = (0, exports.normalizeHttpRequestHandler)(options);
   const authHeader =
     options.headers.Authorization || options.headers.authorization;
   const auth = {};

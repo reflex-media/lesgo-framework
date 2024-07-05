@@ -5,7 +5,7 @@ const crypto_2 = require('config/crypto');
 const LesgoException_1 = require('../../exceptions/LesgoException');
 const isEmpty_1 = require('../isEmpty');
 const { algorithm, secretKey } = crypto_2.default;
-exports.default = text => {
+const decrypt = text => {
   if ((0, isEmpty_1.default)(text)) {
     throw new LesgoException_1.default(
       'Empty parameter supplied on decryp',
@@ -20,3 +20,4 @@ exports.default = text => {
   decrypted = Buffer.concat([decrypted, decipher.final()]);
   return decrypted.toString();
 };
+exports.default = decrypt;

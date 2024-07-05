@@ -31,7 +31,7 @@ export interface NormalizeHttpRequestHandler {
   context: Context;
 }
 
-export const normalizeRequest = (opts: Options) => {
+export const normalizeHttpRequestHandler = (opts: Options) => {
   const { headers, body } = opts;
   let { qs } = opts;
   let input = null;
@@ -82,7 +82,7 @@ export const normalizeHttpRequestBeforeHandler = (
   handler.context.callbackWaitsForEmptyEventLoop = false;
 
   // eslint-disable-next-line no-param-reassign
-  handler.event.input = normalizeRequest(options);
+  handler.event.input = normalizeHttpRequestHandler(options);
 
   const authHeader =
     options.headers.Authorization || options.headers.authorization;

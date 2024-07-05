@@ -32,11 +32,11 @@ var __awaiter =
     });
   };
 Object.defineProperty(exports, '__esModule', { value: true });
-exports.disconnectConnections = exports.normalizeHandler = void 0;
+exports.disconnectConnections = exports.normalizeSqsHandler = void 0;
 const logger_1 = require('../utils/logger');
 const disconnectOpenConnections_1 = require('./disconnectOpenConnections');
 const FILE = 'lesgo/middlewares/normalizeSQSMessageMiddleware';
-const normalizeHandler = records => {
+const normalizeSqsHandler = records => {
   let recordCount = 0;
   if (!records || records === null || Object.keys(records).length === 0) {
     recordCount = null;
@@ -52,7 +52,7 @@ const normalizeHandler = records => {
     )
   );
 };
-exports.normalizeHandler = normalizeHandler;
+exports.normalizeSqsHandler = normalizeSqsHandler;
 const disconnectConnections = () =>
   __awaiter(void 0, void 0, void 0, function* () {
     try {
@@ -74,7 +74,7 @@ const sqsMiddleware = () => {
       // eslint-disable-next-line no-param-reassign
       handler.context.callbackWaitsForEmptyEventLoop = false;
       // eslint-disable-next-line no-param-reassign
-      handler.event.collection = (0, exports.normalizeHandler)(Records);
+      handler.event.collection = (0, exports.normalizeSqsHandler)(Records);
       next();
     },
     after: (handler, next) =>

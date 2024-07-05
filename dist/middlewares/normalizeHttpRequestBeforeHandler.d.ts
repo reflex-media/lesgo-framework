@@ -14,7 +14,7 @@ export interface NormalizeHttpRequestHandler {
     response: APIGatewayProxyResult;
     context: Context;
 }
-export declare const normalizeRequest: (opts: Options) => any;
+export declare const normalizeHttpRequestHandler: (opts: Options) => any;
 /**
  * Normalizes handler.event.body and handler.event.queryStringParameters
  * as handler.event.input Object

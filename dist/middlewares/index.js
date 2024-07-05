@@ -1,5 +1,9 @@
 Object.defineProperty(exports, '__esModule', { value: true });
-exports.successHttpResponseAfterHandler =
+exports.normalizeSqsHandler =
+  exports.normalizeHttpRequestHandler =
+  exports.errorHttpResponseHandler =
+  exports.successHttpResponseHandler =
+  exports.successHttpResponseAfterHandler =
   exports.sqsMiddleware =
   exports.normalizeHttpRequestBeforeHandler =
   exports.httpMiddleware =
@@ -54,5 +58,33 @@ Object.defineProperty(exports, 'successHttpResponseAfterHandler', {
   enumerable: true,
   get: function () {
     return successHttpResponseAfterHandler_1.default;
+  },
+});
+var successHttpResponseAfterHandler_2 = require('./successHttpResponseAfterHandler');
+Object.defineProperty(exports, 'successHttpResponseHandler', {
+  enumerable: true,
+  get: function () {
+    return successHttpResponseAfterHandler_2.successHttpResponseHandler;
+  },
+});
+var errorHttpResponseOnErrorHandler_2 = require('./errorHttpResponseOnErrorHandler');
+Object.defineProperty(exports, 'errorHttpResponseHandler', {
+  enumerable: true,
+  get: function () {
+    return errorHttpResponseOnErrorHandler_2.errorHttpResponseHandler;
+  },
+});
+var normalizeHttpRequestBeforeHandler_2 = require('./normalizeHttpRequestBeforeHandler');
+Object.defineProperty(exports, 'normalizeHttpRequestHandler', {
+  enumerable: true,
+  get: function () {
+    return normalizeHttpRequestBeforeHandler_2.normalizeHttpRequestHandler;
+  },
+});
+var sqsMiddleware_2 = require('./sqsMiddleware');
+Object.defineProperty(exports, 'normalizeSqsHandler', {
+  enumerable: true,
+  get: function () {
+    return sqsMiddleware_2.normalizeSqsHandler;
   },
 });
