@@ -29,16 +29,8 @@ var __exportStar =
         __createBinding(exports, m, p);
   };
 Object.defineProperty(exports, '__esModule', { value: true });
-exports.utils = void 0;
 __exportStar(require('./exceptions'), exports);
 __exportStar(require('./middlewares'), exports);
 __exportStar(require('./services'), exports);
 __exportStar(require('./types'), exports);
 __exportStar(require('./utils'), exports);
-var utils_1 = require('./utils');
-Object.defineProperty(exports, 'utils', {
-  enumerable: true,
-  get: function () {
-    return utils_1.default;
-  },
-});

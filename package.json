@@ -42,6 +42,10 @@
     "./utils": {
       "import": "./dist/utils/index.js",
       "require": "./dist/utils/index.js"
+    },
+    "./utils/isEmpty": {
+      "import": "./dist/utils/isEmpty.js",
+      "require": "./dist/utils/isEmpty.js"
     }
   },
   "scripts": {
