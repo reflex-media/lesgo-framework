@@ -6,55 +6,53 @@ exports.validateFields =
   exports.isDecimal =
   exports.getJwtSubFromAuthHeader =
   exports.getCurrentTimestamp =
-  exports.generateUid =
     void 0;
-var generateUid_1 = require('./generateUid');
-Object.defineProperty(exports, 'generateUid', {
-  enumerable: true,
-  get: function () {
-    return generateUid_1.default;
-  },
-});
-var getCurrentTimestamp_1 = require('./getCurrentTimestamp');
+const getCurrentTimestamp_1 = require('./getCurrentTimestamp');
+const getJwtSubFromAuthHeader_1 = require('./getJwtSubFromAuthHeader');
+const isDecimal_1 = require('./isDecimal');
+const isEmail_1 = require('./isEmail');
+const isEmpty_1 = require('./isEmpty');
+const logger_1 = require('./logger');
+var getCurrentTimestamp_2 = require('./getCurrentTimestamp');
 Object.defineProperty(exports, 'getCurrentTimestamp', {
   enumerable: true,
   get: function () {
-    return getCurrentTimestamp_1.default;
+    return getCurrentTimestamp_2.default;
   },
 });
-var getJwtSubFromAuthHeader_1 = require('./getJwtSubFromAuthHeader');
+var getJwtSubFromAuthHeader_2 = require('./getJwtSubFromAuthHeader');
 Object.defineProperty(exports, 'getJwtSubFromAuthHeader', {
   enumerable: true,
   get: function () {
-    return getJwtSubFromAuthHeader_1.default;
+    return getJwtSubFromAuthHeader_2.default;
   },
 });
-var isDecimal_1 = require('./isDecimal');
+var isDecimal_2 = require('./isDecimal');
 Object.defineProperty(exports, 'isDecimal', {
   enumerable: true,
   get: function () {
-    return isDecimal_1.default;
+    return isDecimal_2.default;
   },
 });
-var isEmail_1 = require('./isEmail');
+var isEmail_2 = require('./isEmail');
 Object.defineProperty(exports, 'isEmail', {
   enumerable: true,
   get: function () {
-    return isEmail_1.default;
+    return isEmail_2.default;
   },
 });
-var isEmpty_1 = require('./isEmpty');
+var isEmpty_2 = require('./isEmpty');
 Object.defineProperty(exports, 'isEmpty', {
   enumerable: true,
   get: function () {
-    return isEmpty_1.default;
+    return isEmpty_2.default;
   },
 });
-var logger_1 = require('./logger');
+var logger_2 = require('./logger');
 Object.defineProperty(exports, 'logger', {
   enumerable: true,
   get: function () {
-    return logger_1.default;
+    return logger_2.default;
   },
 });
 var validateFields_1 = require('./validateFields');
@@ -64,3 +62,13 @@ Object.defineProperty(exports, 'validateFields', {
     return validateFields_1.default;
   },
 });
+exports.default = {
+  // generateUid,
+  getCurrentTimestamp: getCurrentTimestamp_1.default,
+  getJwtSubFromAuthHeader: getJwtSubFromAuthHeader_1.default,
+  isDecimal: isDecimal_1.default,
+  isEmail: isEmail_1.default,
+  isEmpty: isEmpty_1.default,
+  logger: logger_1.default,
+  // validateFields,
+};
