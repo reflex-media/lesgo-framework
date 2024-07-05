@@ -6,9 +6,9 @@
     "outDir": "./dist",
     "strict": true,
     "baseUrl": ".",
-    "paths": {
-      "lesgo/*": ["dist/*"]
-    }
+    // "paths": {
+    //   "lesgo/*": ["dist/*"]
+    // }
   },
   "include": ["src"],
   "exclude": ["node_modules", "dist", "**/__tests__/*", "**/__mocks__/*"]

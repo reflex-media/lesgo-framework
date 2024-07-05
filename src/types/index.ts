@@ -1,1 +1,1 @@
-export { MiddyNext } from './MiddyTypes';
+export * from './MiddyTypes';

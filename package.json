@@ -18,6 +18,14 @@
     "dist",
     "bin"
   ],
+  "exports": {
+    ".": "./dist/index.js",
+    "./exceptions": "./dist/exceptions/*.js",
+    "./middlewares": "./dist/middlewares/*.js",
+    "./services": "./dist/services/*.js",
+    "./types/*": "./dist/types/*.js",
+    "./utils": "./dist/utils/*.js"
+  },
   "scripts": {
     "pretest": "eslint 'src/**/*.{ts,tsx}'",
     "test": "jest",
