@@ -2,8 +2,8 @@
   "name": "lesgo",
   "version": "2.1.0",
   "description": "Core framework for lesgo node.js serverless framework.",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "author": "Sufiyan Rahmat",
   "license": "MIT",
   "bugs": {
@@ -19,12 +19,30 @@
     "bin"
   ],
   "exports": {
-    ".": "./dist/index.js",
-    "./exceptions": "./dist/exceptions/*.js",
-    "./middlewares": "./dist/middlewares/*.js",
-    "./services": "./dist/services/*.js",
-    "./types/*": "./dist/types/*.js",
-    "./utils": "./dist/utils/*.js"
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.js"
+    },
+    "./exceptions": {
+      "import": "./dist/exceptions/index.js",
+      "require": "./dist/exceptions/index.js"
+    },
+    "./middlewares": {
+      "import": "./dist/middlewares/index.js",
+      "require": "./dist/middlewares/index.js"
+    },
+    "./services": {
+      "import": "./dist/services/index.js",
+      "require": "./dist/services/index.js"
+    },
+    "./types": {
+      "import": "./dist/types/index.js",
+      "require": "./dist/types/index.js"
+    },
+    "./utils": {
+      "import": "./dist/utils/index.js",
+      "require": "./dist/utils/index.js"
+    }
   },
   "scripts": {
     "pretest": "eslint 'src/**/*.{ts,tsx}'",
