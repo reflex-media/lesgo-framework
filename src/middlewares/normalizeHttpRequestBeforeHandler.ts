@@ -7,7 +7,7 @@ import {
   Context,
 } from 'aws-lambda';
 // @ts-ignore
-import app from 'config/app';
+import appConfig from 'config/app';
 import getJwtSubFromAuthHeader from '../utils/getJwtSubFromAuthHeader';
 import logger from '../utils/logger';
 
@@ -124,7 +124,7 @@ export const normalizeHttpRequestBeforeHandler = (
     tags,
   });
 
-  if (app.debug) {
+  if (appConfig.debug) {
     logger.addMeta({
       auth: handler.event.auth,
       queryStringParameters: options.qs,

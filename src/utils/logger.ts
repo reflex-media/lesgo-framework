@@ -1,16 +1,16 @@
 // @ts-ignore
-import app from 'config/app';
+import appConfig from 'config/app';
 import LoggerService from '../services/LoggerService';
 
 const transports = [
   {
     logType: 'console',
-    level: /* istanbul ignore next */ app.debug ? 'debug' : 'info',
+    level: /* istanbul ignore next */ appConfig.debug ? 'debug' : 'info',
     config: {
       getCreatedAt: true,
       tags: {
-        env: app.env,
-        service: app.service || app.name,
+        env: appConfig.env,
+        service: appConfig.service || appConfig.name,
       },
     },
   },
