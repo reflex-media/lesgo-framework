@@ -6,8 +6,7 @@ import {
   APIGatewayProxyResult,
   Context,
 } from 'aws-lambda';
-// @ts-ignore
-import appConfig from 'config/app';
+import appConfig from '../config/app';
 import getJwtSubFromAuthHeader from '../utils/getJwtSubFromAuthHeader';
 import logger from '../utils/logger';
 

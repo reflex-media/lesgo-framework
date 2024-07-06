@@ -1,8 +1,7 @@
 Object.defineProperty(exports, '__esModule', { value: true });
 exports.normalizeHttpRequestBeforeHandler =
   exports.normalizeHttpRequestHandler = void 0;
-// @ts-ignore
-const app_1 = require('config/app');
+const app_1 = require('../config/app');
 const getJwtSubFromAuthHeader_1 = require('../utils/getJwtSubFromAuthHeader');
 const logger_1 = require('../utils/logger');
 const normalizeHttpRequestHandler = opts => {
