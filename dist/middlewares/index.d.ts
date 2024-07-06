@@ -1,11 +1,26 @@
-export { default as disconnectOpenConnections } from './disconnectOpenConnections';
-export { default as errorHttpResponseOnErrorHandler } from './errorHttpResponseOnErrorHandler';
-export { default as gzipHttpResponse } from './gzipHttpResponse';
-export { default as httpMiddleware } from './httpMiddleware';
-export { default as normalizeHttpRequestBeforeHandler } from './normalizeHttpRequestBeforeHandler';
-export { default as sqsMiddleware } from './sqsMiddleware';
-export { default as successHttpResponseAfterHandler } from './successHttpResponseAfterHandler';
-export { successHttpResponseHandler } from './successHttpResponseAfterHandler';
-export { errorHttpResponseHandler } from './errorHttpResponseOnErrorHandler';
-export { normalizeHttpRequestHandler } from './normalizeHttpRequestBeforeHandler';
-export { normalizeSqsHandler } from './sqsMiddleware';
+import disconnectOpenConnectionsMiddleware from './disconnectOpenConnectionsMiddleware';
+import httpMiddleware from './httpMiddleware';
+import httpResponseMiddleware from './httpResponseMiddleware';
+import sqsMiddleware from './sqsMiddleware';
+export { disconnectOpenConnectionsMiddleware, httpMiddleware, httpResponseMiddleware, sqsMiddleware, };
+declare const _default: {
+    disconnectOpenConnectionsMiddleware: () => {
+        after: () => Promise<void>;
+        onError: () => Promise<void>;
+    };
+    httpMiddleware: (opts?: import("./httpMiddleware").HttpMiddlewareOptions) => {
+        before: (handler: import("@middy/core").Request<any, any, Error, import("aws-lambda").Context, {}>) => Promise<void>;
+        after: (handler: import("@middy/core").Request<any, any, Error, import("aws-lambda").Context, {}>) => Promise<void>;
+        onError: (handler: import("@middy/core").Request<any, any, Error, import("aws-lambda").Context, {}>) => Promise<void>;
+    };
+    httpResponseMiddleware: (opts?: {}) => {
+        after: (request: import("@middy/core").Request<any, any, Error, import("aws-lambda").Context, {}>) => Promise<void>;
+        onError: (request: import("@middy/core").Request<any, any, Error, import("aws-lambda").Context, {}>) => Promise<void>;
+    };
+    sqsMiddleware: () => {
+        before: (handler: import("@middy/core").Request<any, any, Error, import("aws-lambda").Context, {}>) => Promise<void>;
+        after: (handler: import("@middy/core").Request<any, any, Error, import("aws-lambda").Context, {}>) => Promise<void>;
+        onError: (handler: import("@middy/core").Request<any, any, Error, import("aws-lambda").Context, {}>) => Promise<void>;
+    };
+};
+export default _default;

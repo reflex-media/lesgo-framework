@@ -37,6 +37,7 @@ import errorHandler from '@middy/http-error-handler';
 import doNotWaitForEmptyEventLoop from '@middy/do-not-wait-for-empty-event-loop';
 import httpHeaderNormalizer from '@middy/http-header-normalizer';
 import httpResponseMiddleware from './httpResponseMiddleware';
+import disconnectOpenConnectionsMiddleware from './disconnectOpenConnectionsMiddleware';
 const httpMiddleware = (opts = {}) => {
   const middlewarePackages = [
     doNotWaitForEmptyEventLoop(),
@@ -44,6 +45,7 @@ const httpMiddleware = (opts = {}) => {
     errorHandler(),
     httpHeaderNormalizer(),
     jsonBodyParser({ disableContentTypeError: true }),
+    disconnectOpenConnectionsMiddleware(),
     httpResponseMiddleware(opts),
   ];
   return {

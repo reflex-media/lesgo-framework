@@ -1,77 +1,50 @@
-import { Context, SQSEvent, SQSRecord } from 'aws-lambda';
-import logger from '../utils/logger';
-import { MiddyNext } from '../types/MiddyTypes';
-import disconnectOpenConnections from './disconnectOpenConnections';
+import middy from '@middy/core';
+import eventNormalizer from '@middy/event-normalizer';
+import errorHandler from '@middy/http-error-handler';
+import doNotWaitForEmptyEventLoop from '@middy/do-not-wait-for-empty-event-loop';
+import disconnectOpenConnectionsMiddleware from './disconnectOpenConnectionsMiddleware';
 
-const FILE = 'lesgo/middlewares/normalizeSQSMessageMiddleware';
-
-export interface SqsHandler {
-  event: SQSEvent & { collection: any[] | null };
-  context: Context;
+interface MiddlewareObj<T = any, R = any> {
+  before?: (request: middy.Request<T, R>) => Promise<void>;
+  after?: (request: middy.Request<T, R>) => Promise<void>;
+  onError?: (request: middy.Request<T, R>) => Promise<void>;
 }
 
-export const normalizeSqsHandler = (records: SQSRecord[]) => {
-  let recordCount: number | null = 0;
+export interface HttpMiddlewareOptions {
+  debugMode?: boolean;
+}
 
-  if (!records || records === null || Object.keys(records).length === 0) {
-    recordCount = null;
-  } else {
-    recordCount = Object.keys(records).length;
-  }
+const httpMiddleware = () => {
+  const middlewarePackages: MiddlewareObj[] = [
+    doNotWaitForEmptyEventLoop(),
+    eventNormalizer(),
+    errorHandler(),
+    disconnectOpenConnectionsMiddleware(),
+  ];
 
-  logger.addMeta({ recordCount });
-
-  if (recordCount === null) return null;
-
-  return Object.values(records).map(record => ({
-    messageId: record.messageId,
-    receiptHandle: record.receiptHandle,
-    ...JSON.parse(record.body),
-  }));
-};
-
-export const disconnectConnections = async () => {
-  try {
-    await disconnectOpenConnections();
-  } catch (err: any) {
-    logger.error(`${FILE}::OPEN_CONNECTION_DISCONNECT_FAIL`, err);
-  }
-};
-
-/**
- * Normalizes handler.event.Records as handler.event.collections Object.
- * This type of request is received by SQS listeners
- */
-const sqsMiddleware = () => {
   return {
-    before: (handler: SqsHandler, next: MiddyNext) => {
-      const { Records } = handler.event;
-
-      // @see https://middy.js.org/docs/middlewares/do-not-wait-for-empty-event-loop/
-      // eslint-disable-next-line no-param-reassign
-      handler.context.callbackWaitsForEmptyEventLoop = false;
-
-      // eslint-disable-next-line no-param-reassign
-      handler.event.collection = normalizeSqsHandler(Records);
-      next();
+    before: async (handler: middy.Request) => {
+      for (const middleware of middlewarePackages) {
+        if (middleware.before) {
+          await middleware.before(handler);
+        }
+      }
     },
-    after: async (handler: SqsHandler, next: MiddyNext) => {
-      // @see https://middy.js.org/docs/middlewares/do-not-wait-for-empty-event-loop/
-      // eslint-disable-next-line no-param-reassign
-      handler.context.callbackWaitsForEmptyEventLoop = false;
-
-      await disconnectConnections();
-      next();
+    after: async (handler: middy.Request) => {
+      for (const middleware of middlewarePackages) {
+        if (middleware.after) {
+          await middleware.after(handler);
+        }
+      }
     },
-    onError: async (handler: SqsHandler, next: MiddyNext) => {
-      // @see https://middy.js.org/docs/middlewares/do-not-wait-for-empty-event-loop/
-      // eslint-disable-next-line no-param-reassign
-      handler.context.callbackWaitsForEmptyEventLoop = false;
-
-      await disconnectConnections();
-      next();
+    onError: async (handler: middy.Request) => {
+      for (const middleware of middlewarePackages) {
+        if (middleware.onError) {
+          await middleware.onError(handler);
+        }
+      }
     },
   };
 };
 
-export default sqsMiddleware;
+export default httpMiddleware;

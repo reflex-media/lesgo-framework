@@ -1,20 +1,10 @@
-import { Context, SQSEvent, SQSRecord } from 'aws-lambda';
-import { MiddyNext } from '../types/MiddyTypes';
-export interface SqsHandler {
-    event: SQSEvent & {
-        collection: any[] | null;
-    };
-    context: Context;
+import middy from '@middy/core';
+export interface HttpMiddlewareOptions {
+    debugMode?: boolean;
 }
-export declare const normalizeSqsHandler: (records: SQSRecord[]) => any[] | null;
-export declare const disconnectConnections: () => Promise<void>;
-/**
- * Normalizes handler.event.Records as handler.event.collections Object.
- * This type of request is received by SQS listeners
- */
-declare const sqsMiddleware: () => {
-    before: (handler: SqsHandler, next: MiddyNext) => void;
-    after: (handler: SqsHandler, next: MiddyNext) => Promise<void>;
-    onError: (handler: SqsHandler, next: MiddyNext) => Promise<void>;
+declare const httpMiddleware: () => {
+    before: (handler: middy.Request) => Promise<void>;
+    after: (handler: middy.Request) => Promise<void>;
+    onError: (handler: middy.Request) => Promise<void>;
 };
-export default sqsMiddleware;
+export default httpMiddleware;
