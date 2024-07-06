@@ -22,7 +22,7 @@ const httpMiddleware = (opts: HttpMiddlewareOptions = {}) => {
     eventNormalizer(),
     errorHandler(),
     httpHeaderNormalizer(),
-    jsonBodyParser(),
+    jsonBodyParser({ disableContentTypeError: true }),
     httpResponseMiddleware(opts),
   ];
 
