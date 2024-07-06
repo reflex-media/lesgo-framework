@@ -37,46 +37,41 @@ const getClient_1 = require('./getClient');
 const LesgoException_1 = require('../../exceptions/LesgoException');
 const isEmpty_1 = require('../../utils/isEmpty');
 const FILE = 'lesgo/services/S3Service/getObject';
-const getObject = (key_1, bucket_1, _a) =>
-  __awaiter(
-    void 0,
-    [key_1, bucket_1, _a],
-    void 0,
-    function* (key, bucket, { region, singletonConn }) {
-      if ((0, isEmpty_1.default)(key)) {
-        throw new LesgoException_1.default(
-          'Key is undefined',
-          `${FILE}::KEY_UNDEFINED`
-        );
-      }
-      if ((0, isEmpty_1.default)(bucket)) {
-        throw new LesgoException_1.default(
-          'Bucket is undefined',
-          `${FILE}::BUCKET_UNDEFINED`
-        );
-      }
-      const client = (0, getClient_1.default)({ region, singletonConn });
-      const command = new client_s3_1.GetObjectCommand({
-        Bucket: bucket,
-        Key: key,
-      });
-      try {
-        const response = yield client.send(command);
-        // The Body object also has 'transformToByteArray' and 'transformToWebStream' methods.
-        // const str = await response.Body.transformToString();
-        return response;
-      } catch (error) {
-        throw new LesgoException_1.default(
-          'Error occurred getting object from S3 bucket',
-          `${FILE}::ERROR`,
-          500,
-          {
-            error,
-            bucket,
-            key,
-          }
-        );
-      }
+const getObject = (key, bucket, { region, singletonConn }) =>
+  __awaiter(void 0, void 0, void 0, function* () {
+    if ((0, isEmpty_1.default)(key)) {
+      throw new LesgoException_1.default(
+        'Key is undefined',
+        `${FILE}::KEY_UNDEFINED`
+      );
     }
-  );
+    if ((0, isEmpty_1.default)(bucket)) {
+      throw new LesgoException_1.default(
+        'Bucket is undefined',
+        `${FILE}::BUCKET_UNDEFINED`
+      );
+    }
+    const client = (0, getClient_1.default)({ region, singletonConn });
+    const command = new client_s3_1.GetObjectCommand({
+      Bucket: bucket,
+      Key: key,
+    });
+    try {
+      const response = yield client.send(command);
+      // The Body object also has 'transformToByteArray' and 'transformToWebStream' methods.
+      // const str = await response.Body.transformToString();
+      return response;
+    } catch (error) {
+      throw new LesgoException_1.default(
+        'Error occurred getting object from S3 bucket',
+        `${FILE}::ERROR`,
+        500,
+        {
+          error,
+          bucket,
+          key,
+        }
+      );
+    }
+  });
 exports.default = getObject;

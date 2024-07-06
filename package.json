@@ -58,7 +58,7 @@
     "lint-staged": "^13.2.0",
     "prettier": "^2.8.8",
     "ts-jest": "^29.1.5",
-    "typescript": "^5.5.2"
+    "typescript": "^5.1.6"
   },
   "dependencies": {
     "@aws-sdk/client-dynamodb": "^3.609.0",
@@ -79,7 +79,7 @@
     "data-api-client": "^1.3.0",
     "jsonwebtoken": "^9.0.0",
     "memcache-plus": "^0.2.24",
-    "mysql2": "^2.3.3",
+    "mysql2": "^3.10.2",
     "nanoid": "^3.3.6"
   },
   "exports": {

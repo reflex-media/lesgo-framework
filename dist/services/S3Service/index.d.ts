@@ -1,3 +1,4 @@
+/// <reference types="node" />
 import getClient from './getClient';
 import getDownloadSignedUrl from './getDownloadSignedUrl';
 import getHeadObject from './getHeadObject';
@@ -17,6 +18,6 @@ declare const _default: {
     }>;
     getObject: (key: string, bucket: string, { region, singletonConn }: import("./getObject").GetObjectOptions) => Promise<import("@aws-sdk/client-s3").GetObjectCommandOutput>;
     getUploadSignedUrl: (key: string, bucket: string, { singletonConn, region, expiresIn, metadata }: import("./getUploadSignedUrl").GetUploadSignedUrlOptions) => Promise<string>;
-    putObject: (key: string, bucket: string, file: Buffer | Uint8Array | Blob | string, { region, singletonConn, storageClass }: import("./putObject").PutObjectOptions) => Promise<import("@aws-sdk/client-s3").PutObjectCommandOutput>;
+    putObject: (key: string, bucket: string, file: string | Uint8Array | Blob | Buffer, { region, singletonConn, storageClass }: import("./putObject").PutObjectOptions) => Promise<import("@aws-sdk/client-s3").PutObjectCommandOutput>;
 };
 export default _default;

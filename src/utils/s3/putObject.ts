@@ -1,6 +1,5 @@
 import { StorageClass } from '@aws-sdk/client-s3';
-// @ts-ignore
-import config from 'config/s3';
+import config from '../../config/aws';
 import putObjectService from '../../services/S3Service/putObject';
 
 const putObject = (

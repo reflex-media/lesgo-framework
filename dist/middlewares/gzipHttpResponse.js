@@ -107,29 +107,24 @@ const determineRequestAcceptEncoding = handler => {
   return false;
 };
 exports.determineRequestAcceptEncoding = determineRequestAcceptEncoding;
-const gzipHttpResponse = (handler_1, ...args_1) =>
-  __awaiter(
-    void 0,
-    [handler_1, ...args_1],
-    void 0,
-    function* (handler, options = {}) {
-      /*
-       * By default we zip on ELB request only, but you also add APIGATEWAY
-       * Supported Request [ELB, APIGATEWAY]
-       */
-      let zipWhenRequest = ['ELB'];
-      if (options.zipWhenRequest) {
-        zipWhenRequest = options.zipWhenRequest;
-      }
-      const requestFrom = (0, exports.determineRequestOrigin)(handler);
-      if (
-        zipWhenRequest.includes(requestFrom) &&
-        (0, exports.determineRequestAcceptEncoding)(handler)
-      ) {
-        // eslint-disable-next-line no-param-reassign
-        handler.response = yield (0, exports.gzip)(handler.response);
-      }
-      return handler.response;
+const gzipHttpResponse = (handler, options = {}) =>
+  __awaiter(void 0, void 0, void 0, function* () {
+    /*
+     * By default we zip on ELB request only, but you also add APIGATEWAY
+     * Supported Request [ELB, APIGATEWAY]
+     */
+    let zipWhenRequest = ['ELB'];
+    if (options.zipWhenRequest) {
+      zipWhenRequest = options.zipWhenRequest;
     }
-  );
+    const requestFrom = (0, exports.determineRequestOrigin)(handler);
+    if (
+      zipWhenRequest.includes(requestFrom) &&
+      (0, exports.determineRequestAcceptEncoding)(handler)
+    ) {
+      // eslint-disable-next-line no-param-reassign
+      handler.response = yield (0, exports.gzip)(handler.response);
+    }
+    return handler.response;
+  });
 exports.default = gzipHttpResponse;

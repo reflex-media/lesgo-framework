@@ -107,26 +107,21 @@ exports.errorHttpResponseHandler = errorHttpResponseHandler;
 /**
  * Formats response for error responses
  */
-const errorHttpResponseOnErrorHandler = (handler_1, next_1, ...args_1) =>
-  __awaiter(
-    void 0,
-    [handler_1, next_1, ...args_1],
-    void 0,
-    function* (handler, next, opts = {}) {
-      const defaults = {
-        error: handler.error,
-        event: handler.event,
-        logger: console.error, // eslint-disable-line no-console
-      };
-      const options = Object.assign(Object.assign({}, defaults), opts);
-      // @see https://middy.js.org/docs/middlewares/do-not-wait-for-empty-event-loop/
-      // eslint-disable-next-line no-param-reassign
-      handler.context.callbackWaitsForEmptyEventLoop = false;
-      // eslint-disable-next-line no-param-reassign
-      handler.response = yield (0, exports.errorHttpResponseHandler)(options);
-      /* istanbul ignore next */
-      next();
-    }
-  );
+const errorHttpResponseOnErrorHandler = (handler, next, opts = {}) =>
+  __awaiter(void 0, void 0, void 0, function* () {
+    const defaults = {
+      error: handler.error,
+      event: handler.event,
+      logger: console.error, // eslint-disable-line no-console
+    };
+    const options = Object.assign(Object.assign({}, defaults), opts);
+    // @see https://middy.js.org/docs/middlewares/do-not-wait-for-empty-event-loop/
+    // eslint-disable-next-line no-param-reassign
+    handler.context.callbackWaitsForEmptyEventLoop = false;
+    // eslint-disable-next-line no-param-reassign
+    handler.response = yield (0, exports.errorHttpResponseHandler)(options);
+    /* istanbul ignore next */
+    next();
+  });
 exports.errorHttpResponseOnErrorHandler = errorHttpResponseOnErrorHandler;
 exports.default = exports.errorHttpResponseOnErrorHandler;

@@ -37,47 +37,47 @@ const LesgoException_1 = require('../../exceptions/LesgoException');
 const isEmpty_1 = require('../../utils/isEmpty');
 const getClient_1 = require('./getClient');
 const FILE = 'lesgo/services/S3Service/putObject';
-const putObject = (key_1, bucket_1, file_1, _a) =>
-  __awaiter(
-    void 0,
-    [key_1, bucket_1, file_1, _a],
-    void 0,
-    function* (key, bucket, file, { region, singletonConn, storageClass }) {
-      if ((0, isEmpty_1.default)(key)) {
-        throw new LesgoException_1.default(
-          'Key is undefined',
-          `${FILE}::KEY_UNDEFINED`
-        );
-      }
-      if ((0, isEmpty_1.default)(bucket)) {
-        throw new LesgoException_1.default(
-          'Bucket is undefined',
-          `${FILE}::BUCKET_UNDEFINED`
-        );
-      }
-      const client = (0, getClient_1.default)({ region, singletonConn });
-      const command = new client_s3_1.PutObjectCommand({
-        Bucket: bucket,
-        Key: key,
-        Body: file,
-        StorageClass: storageClass,
-      });
-      try {
-        const response = yield client.send(command);
-        return response;
-      } catch (error) {
-        throw new LesgoException_1.default(
-          'Error occurred putting object to S3 bucket',
-          `${FILE}::ERROR`,
-          500,
-          {
-            error,
-            bucket,
-            key,
-            storageClass,
-          }
-        );
-      }
+const putObject = (
+  key,
+  bucket,
+  file,
+  { region, singletonConn, storageClass }
+) =>
+  __awaiter(void 0, void 0, void 0, function* () {
+    if ((0, isEmpty_1.default)(key)) {
+      throw new LesgoException_1.default(
+        'Key is undefined',
+        `${FILE}::KEY_UNDEFINED`
+      );
     }
-  );
+    if ((0, isEmpty_1.default)(bucket)) {
+      throw new LesgoException_1.default(
+        'Bucket is undefined',
+        `${FILE}::BUCKET_UNDEFINED`
+      );
+    }
+    const client = (0, getClient_1.default)({ region, singletonConn });
+    const command = new client_s3_1.PutObjectCommand({
+      Bucket: bucket,
+      Key: key,
+      Body: file,
+      StorageClass: storageClass,
+    });
+    try {
+      const response = yield client.send(command);
+      return response;
+    } catch (error) {
+      throw new LesgoException_1.default(
+        'Error occurred putting object to S3 bucket',
+        `${FILE}::ERROR`,
+        500,
+        {
+          error,
+          bucket,
+          key,
+          storageClass,
+        }
+      );
+    }
+  });
 exports.default = putObject;

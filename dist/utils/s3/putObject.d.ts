@@ -1,3 +1,4 @@
+/// <reference types="node" />
 declare const putObject: (key: string, bucket: string, file: Buffer | Uint8Array | Blob | string, { singletonConn, region, storageClass }?: {
     singletonConn?: string | undefined;
     region?: string | undefined;

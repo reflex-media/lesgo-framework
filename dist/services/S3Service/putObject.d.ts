@@ -1,3 +1,4 @@
+/// <reference types="node" />
 import { StorageClass } from '@aws-sdk/client-s3';
 export interface PutObjectOptions {
     region: string;

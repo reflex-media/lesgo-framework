@@ -83,27 +83,22 @@ exports.successHttpResponseHandler = successHttpResponseHandler;
 /**
  * Formats response for successful responses
  */
-const successHttpResponseAfterHandler = (handler_1, next_1, ...args_1) =>
-  __awaiter(
-    void 0,
-    [handler_1, next_1, ...args_1],
-    void 0,
-    function* (handler, next, opts = {}) {
-      const defaults = {
-        response: handler.response,
-        event: handler.event,
-      };
-      const options = Object.assign(Object.assign({}, defaults), opts);
-      // @see https://middy.js.org/docs/middlewares/do-not-wait-for-empty-event-loop/
-      // eslint-disable-next-line no-param-reassign
-      handler.context.callbackWaitsForEmptyEventLoop = false;
-      // eslint-disable-next-line no-param-reassign
-      handler.response = yield (0, exports.successHttpResponseHandler)(options);
-      // eslint-disable-next-line no-param-reassign
-      handler.response = yield (0, gzipHttpResponse_1.default)(handler, opts);
-      /* istanbul ignore next */
-      next();
-    }
-  );
+const successHttpResponseAfterHandler = (handler, next, opts = {}) =>
+  __awaiter(void 0, void 0, void 0, function* () {
+    const defaults = {
+      response: handler.response,
+      event: handler.event,
+    };
+    const options = Object.assign(Object.assign({}, defaults), opts);
+    // @see https://middy.js.org/docs/middlewares/do-not-wait-for-empty-event-loop/
+    // eslint-disable-next-line no-param-reassign
+    handler.context.callbackWaitsForEmptyEventLoop = false;
+    // eslint-disable-next-line no-param-reassign
+    handler.response = yield (0, exports.successHttpResponseHandler)(options);
+    // eslint-disable-next-line no-param-reassign
+    handler.response = yield (0, gzipHttpResponse_1.default)(handler, opts);
+    /* istanbul ignore next */
+    next();
+  });
 exports.successHttpResponseAfterHandler = successHttpResponseAfterHandler;
 exports.default = exports.successHttpResponseAfterHandler;
