@@ -1,10 +1,9 @@
 Object.defineProperty(exports, '__esModule', { value: true });
 const crypto_1 = require('crypto');
-// @ts-ignore
-const crypto_2 = require('config/crypto');
+const crypto_2 = require('../../config/crypto');
 const LesgoException_1 = require('../../exceptions/LesgoException');
 const isEmpty_1 = require('../isEmpty');
-const { algorithm, secretKey, ivLength } = crypto_2.default;
+const { algorithm, secretKey, ivLength } = crypto_2.default.encryption;
 const encrypt = text => {
   if ((0, isEmpty_1.default)(text)) {
     throw new LesgoException_1.default(

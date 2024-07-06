@@ -1,5 +1,4 @@
-// @ts-ignore
-import config from 'config/s3';
+import config from '../../config/aws';
 import getObjectService from '../../services/S3Service/getObject';
 
 const getObject = (

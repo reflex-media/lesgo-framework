@@ -1,5 +1,4 @@
-// @ts-ignore
-import config from 'config/jwt';
+import config from '../../config/jwt';
 import signService from '../../services/JWTService/sign';
 
 const sign = (payload: any, secret = '', opts: any = {}): string => {

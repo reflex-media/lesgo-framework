@@ -1,10 +1,9 @@
 import { createDecipheriv } from 'crypto';
-// @ts-ignore
-import cryptoConfig from 'config/crypto';
+import cryptoConfig from '../../config/crypto';
 import LesgoException from '../../exceptions/LesgoException';
 import isEmpty from '../isEmpty';
 
-const { algorithm, secretKey } = cryptoConfig;
+const { algorithm, secretKey } = cryptoConfig.encryption;
 
 const decrypt = (text: string): string => {
   if (isEmpty(text)) {

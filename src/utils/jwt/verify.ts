@@ -1,5 +1,4 @@
-// @ts-ignore
-import config from 'config/jwt';
+import config from '../../config/jwt';
 import verifyService from '../../services/JWTService/verify';
 
 const verify = (token: string, secret = '', opts: any = {}): any => {

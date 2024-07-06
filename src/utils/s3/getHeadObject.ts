@@ -1,5 +1,4 @@
-// @ts-ignore
-import config from 'config/s3';
+import config from '../../config/aws';
 import getHeadObjectService from '../../services/S3Service/getHeadObject';
 
 const getHeadObject = (

@@ -1,6 +1,5 @@
 Object.defineProperty(exports, '__esModule', { value: true });
-// @ts-ignore
-const jwt_1 = require('config/jwt');
+const jwt_1 = require('../../config/jwt');
 const verify_1 = require('../../services/JWTService/verify');
 const verify = (token, secret = '', opts = {}) => {
   let secretKey = secret;

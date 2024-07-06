@@ -1,5 +1,4 @@
-// @ts-ignore
-import config from 'config/s3';
+import config from '../../config/aws';
 import getDownloadSignedUrlService from '../../services/S3Service/getDownloadSignedUrl';
 
 const getDownloadSignedUrl = (
