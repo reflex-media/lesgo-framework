@@ -31,14 +31,11 @@ var __awaiter =
       step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
   };
-Object.defineProperty(exports, '__esModule', { value: true });
-exports.errorHttpResponseOnErrorHandler = exports.errorHttpResponseHandler =
-  void 0;
-const logger_1 = require('../utils/logger');
-const isEmpty_1 = require('../utils/isEmpty');
-const disconnectOpenConnections_1 = require('./disconnectOpenConnections');
+import logger from '../utils/logger';
+import isEmpty from '../utils/isEmpty';
+import disconnectOpenConnections from './disconnectOpenConnections';
 const FILE = 'lesgo/middlewares/errorHttpResponseMiddleware';
-const errorHttpResponseHandler = opts =>
+export const errorHttpResponseHandler = opts =>
   __awaiter(void 0, void 0, void 0, function* () {
     const defaults = {
       response: '',
@@ -78,13 +75,10 @@ const errorHttpResponseHandler = opts =>
       _meta: options.debugMode ? options.event : {},
     };
     const statusCode = options.error.statusCode || options.statusCode;
-    if (!(0, isEmpty_1.default)(options.error)) {
-      logger_1.default.log(
-        statusCode === 500 ? 'error' : 'warn',
-        options.error
-      );
+    if (!isEmpty(options.error)) {
+      logger.log(statusCode === 500 ? 'error' : 'warn', options.error);
     } else {
-      logger_1.default.log(
+      logger.log(
         statusCode === 500 ? 'error' : 'warn',
         jsonBody.error.message,
         {
@@ -93,9 +87,9 @@ const errorHttpResponseHandler = opts =>
       );
     }
     try {
-      yield (0, disconnectOpenConnections_1.default)();
+      yield disconnectOpenConnections();
     } catch (err) {
-      logger_1.default.error(`${FILE}::OPEN_CONNECTION_DISCONNECT_FAIL`, err);
+      logger.error(`${FILE}::OPEN_CONNECTION_DISCONNECT_FAIL`, err);
     }
     return {
       headers: options.headers,
@@ -103,11 +97,10 @@ const errorHttpResponseHandler = opts =>
       body: JSON.stringify(jsonBody),
     };
   });
-exports.errorHttpResponseHandler = errorHttpResponseHandler;
 /**
  * Formats response for error responses
  */
-const errorHttpResponseOnErrorHandler = (handler, next, opts = {}) =>
+export const errorHttpResponseOnErrorHandler = (handler, next, opts = {}) =>
   __awaiter(void 0, void 0, void 0, function* () {
     const defaults = {
       error: handler.error,
@@ -119,9 +112,8 @@ const errorHttpResponseOnErrorHandler = (handler, next, opts = {}) =>
     // eslint-disable-next-line no-param-reassign
     handler.context.callbackWaitsForEmptyEventLoop = false;
     // eslint-disable-next-line no-param-reassign
-    handler.response = yield (0, exports.errorHttpResponseHandler)(options);
+    handler.response = yield errorHttpResponseHandler(options);
     /* istanbul ignore next */
     next();
   });
-exports.errorHttpResponseOnErrorHandler = errorHttpResponseOnErrorHandler;
-exports.default = exports.errorHttpResponseOnErrorHandler;
+export default errorHttpResponseOnErrorHandler;

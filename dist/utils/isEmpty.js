@@ -1,4 +1,3 @@
-Object.defineProperty(exports, '__esModule', { value: true });
 const isEmpty = value => {
   if (value === undefined || value === null || value === '') {
     return true;
@@ -11,4 +10,4 @@ const isEmpty = value => {
   }
   return false;
 };
-exports.default = isEmpty;
+export default isEmpty;

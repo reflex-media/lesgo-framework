@@ -1,5 +1,4 @@
-Object.defineProperty(exports, '__esModule', { value: true });
-exports.default = {
+export default {
   hash: {
     algorithm: process.env.LESGO_CRYPTO_HASH_ALG || 'sha256',
   },

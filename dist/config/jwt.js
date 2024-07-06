@@ -1,5 +1,4 @@
-Object.defineProperty(exports, '__esModule', { value: true });
-exports.default = {
+export default {
   secret:
     process.env.LESGO_JWT_SECRET ||
     'c4156b94c80b7f163feabd4ff268c99eb11ce8995df370a4fd872afb4377b273',

@@ -31,7 +31,6 @@ var __awaiter =
       step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
   };
-Object.defineProperty(exports, '__esModule', { value: true });
 const defaultOptions = {
   debugMode: false,
 };
@@ -82,4 +81,4 @@ const httpResponseMiddleware = (opts = {}) => {
     onError: httpResponseMiddlewareOnError,
   };
 };
-exports.default = httpResponseMiddleware;
+export default httpResponseMiddleware;

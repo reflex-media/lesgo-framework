@@ -1,5 +1,4 @@
-Object.defineProperty(exports, '__esModule', { value: true });
-exports.default = {
+export default {
   name: process.env.LESGO_APP_NAME || process.env.APP_NAME || 'lesgo',
   env: process.env.LESGO_APP_ENV || process.env.APP_ENV || 'dev',
   debug:

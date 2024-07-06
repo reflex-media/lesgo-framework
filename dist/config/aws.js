@@ -1,5 +1,4 @@
-Object.defineProperty(exports, '__esModule', { value: true });
-exports.default = {
+export default {
   region:
     process.env.AWS_ACCOUNT_REGION ||
     process.env.LESGO_AWS_REGION ||

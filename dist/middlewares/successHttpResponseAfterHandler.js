@@ -31,14 +31,11 @@ var __awaiter =
       step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
   };
-Object.defineProperty(exports, '__esModule', { value: true });
-exports.successHttpResponseAfterHandler = exports.successHttpResponseHandler =
-  void 0;
-const gzipHttpResponse_1 = require('./gzipHttpResponse');
-const logger_1 = require('../utils/logger');
-const disconnectOpenConnections_1 = require('./disconnectOpenConnections');
+import gzipHttpResponse from './gzipHttpResponse';
+import logger from '../utils/logger';
+import disconnectOpenConnections from './disconnectOpenConnections';
 const FILE = 'lesgo/middlewares/successHttpResponseMiddleware';
-const successHttpResponseHandler = opts =>
+export const successHttpResponseHandler = opts =>
   __awaiter(void 0, void 0, void 0, function* () {
     const defaults = {
       response: '',
@@ -65,9 +62,9 @@ const successHttpResponseHandler = opts =>
       optionsHeadersMerged
     );
     try {
-      yield (0, disconnectOpenConnections_1.default)();
+      yield disconnectOpenConnections();
     } catch (err) {
-      logger_1.default.error(`${FILE}::OPEN_CONNECTION_DISCONNECT_FAIL`, err);
+      logger.error(`${FILE}::OPEN_CONNECTION_DISCONNECT_FAIL`, err);
     }
     return {
       headers: options.headers,
@@ -79,11 +76,10 @@ const successHttpResponseHandler = opts =>
       }),
     };
   });
-exports.successHttpResponseHandler = successHttpResponseHandler;
 /**
  * Formats response for successful responses
  */
-const successHttpResponseAfterHandler = (handler, next, opts = {}) =>
+export const successHttpResponseAfterHandler = (handler, next, opts = {}) =>
   __awaiter(void 0, void 0, void 0, function* () {
     const defaults = {
       response: handler.response,
@@ -94,11 +90,10 @@ const successHttpResponseAfterHandler = (handler, next, opts = {}) =>
     // eslint-disable-next-line no-param-reassign
     handler.context.callbackWaitsForEmptyEventLoop = false;
     // eslint-disable-next-line no-param-reassign
-    handler.response = yield (0, exports.successHttpResponseHandler)(options);
+    handler.response = yield successHttpResponseHandler(options);
     // eslint-disable-next-line no-param-reassign
-    handler.response = yield (0, gzipHttpResponse_1.default)(handler, opts);
+    handler.response = yield gzipHttpResponse(handler, opts);
     /* istanbul ignore next */
     next();
   });
-exports.successHttpResponseAfterHandler = successHttpResponseAfterHandler;
-exports.default = exports.successHttpResponseAfterHandler;
+export default successHttpResponseAfterHandler;

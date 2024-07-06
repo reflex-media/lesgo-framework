@@ -1,6 +1,5 @@
-Object.defineProperty(exports, '__esModule', { value: true });
-const isEmpty_1 = require('../utils/isEmpty');
-class LesgoException extends Error {
+import isEmpty from '../utils/isEmpty';
+export default class LesgoException extends Error {
   constructor(
     message,
     errorCode = 'LESGO_EXCEPTION',
@@ -13,9 +12,8 @@ class LesgoException extends Error {
     this.statusCode = httpStatusCode;
     this.code = errorCode;
     Error.captureStackTrace(this, this.constructor);
-    if (!(0, isEmpty_1.default)(extra)) {
+    if (!isEmpty(extra)) {
       this.extra = extra;
     }
   }
 }
-exports.default = LesgoException;

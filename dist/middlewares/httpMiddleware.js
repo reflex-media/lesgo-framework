@@ -31,21 +31,16 @@ var __awaiter =
       step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
   };
-Object.defineProperty(exports, '__esModule', { value: true });
-const http_json_body_parser_1 = require('@middy/http-json-body-parser');
-const http_event_normalizer_1 = require('@middy/http-event-normalizer');
-const http_error_handler_1 = require('@middy/http-error-handler');
-const do_not_wait_for_empty_event_loop_1 = require('@middy/do-not-wait-for-empty-event-loop');
-const http_header_normalizer_1 = require('@middy/http-header-normalizer');
-const httpResponseMiddleware_1 = require('./httpResponseMiddleware');
+// import jsonBodyParser from '@middy/http-json-body-parser';
+import eventNormalizer from '@middy/http-event-normalizer';
 const httpMiddleware = (opts = {}) => {
   const middlewarePackages = [
-    (0, do_not_wait_for_empty_event_loop_1.default)(),
-    (0, http_event_normalizer_1.default)(),
-    (0, http_error_handler_1.default)(),
-    (0, http_header_normalizer_1.default)(),
-    (0, http_json_body_parser_1.default)(),
-    (0, httpResponseMiddleware_1.default)(opts),
+    // doNotWaitForEmptyEventLoop(),
+    eventNormalizer(),
+    // errorHandler(),
+    // httpHeaderNormalizer(),
+    // jsonBodyParser(),
+    // httpResponseMiddleware(opts),
   ];
   return {
     before: handler =>
@@ -74,4 +69,4 @@ const httpMiddleware = (opts = {}) => {
       }),
   };
 };
-exports.default = httpMiddleware;
+export default httpMiddleware;

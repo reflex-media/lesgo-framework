@@ -1,12 +1,11 @@
-Object.defineProperty(exports, '__esModule', { value: true });
-const jwt_1 = require('../../config/jwt');
-const verify_1 = require('../../services/JWTService/verify');
+import config from '../../config/jwt';
+import verifyService from '../../services/JWTService/verify';
 const verify = (token, secret = '', opts = {}) => {
   let secretKey = secret;
   if (!secretKey) {
-    secretKey = jwt_1.default.secret;
+    secretKey = config.secret;
   }
-  const decoded = (0, verify_1.default)(token, secretKey, opts);
+  const decoded = verifyService(token, secretKey, opts);
   return decoded;
 };
-exports.default = verify;
+export default verify;

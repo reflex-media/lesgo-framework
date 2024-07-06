@@ -31,11 +31,10 @@ var __awaiter =
       step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
   };
-Object.defineProperty(exports, '__esModule', { value: true });
-const client_s3_1 = require('@aws-sdk/client-s3');
-const LesgoException_1 = require('../../exceptions/LesgoException');
-const isEmpty_1 = require('../../utils/isEmpty');
-const getClient_1 = require('./getClient');
+import { PutObjectCommand } from '@aws-sdk/client-s3';
+import LesgoException from '../../exceptions/LesgoException';
+import isEmpty from '../../utils/isEmpty';
+import getClient from './getClient';
 const FILE = 'lesgo/services/S3Service/putObject';
 const putObject = (
   key,
@@ -44,20 +43,17 @@ const putObject = (
   { region, singletonConn, storageClass }
 ) =>
   __awaiter(void 0, void 0, void 0, function* () {
-    if ((0, isEmpty_1.default)(key)) {
-      throw new LesgoException_1.default(
-        'Key is undefined',
-        `${FILE}::KEY_UNDEFINED`
-      );
+    if (isEmpty(key)) {
+      throw new LesgoException('Key is undefined', `${FILE}::KEY_UNDEFINED`);
     }
-    if ((0, isEmpty_1.default)(bucket)) {
-      throw new LesgoException_1.default(
+    if (isEmpty(bucket)) {
+      throw new LesgoException(
         'Bucket is undefined',
         `${FILE}::BUCKET_UNDEFINED`
       );
     }
-    const client = (0, getClient_1.default)({ region, singletonConn });
-    const command = new client_s3_1.PutObjectCommand({
+    const client = getClient({ region, singletonConn });
+    const command = new PutObjectCommand({
       Bucket: bucket,
       Key: key,
       Body: file,
@@ -67,7 +63,7 @@ const putObject = (
       const response = yield client.send(command);
       return response;
     } catch (error) {
-      throw new LesgoException_1.default(
+      throw new LesgoException(
         'Error occurred putting object to S3 bucket',
         `${FILE}::ERROR`,
         500,
@@ -80,4 +76,4 @@ const putObject = (
       );
     }
   });
-exports.default = putObject;
+export default putObject;

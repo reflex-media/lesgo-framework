@@ -1,7 +1,6 @@
-Object.defineProperty(exports, '__esModule', { value: true });
-const LesgoException_1 = require('../exceptions/LesgoException');
-const isEmail_1 = require('./isEmail');
-const isDecimal_1 = require('./isDecimal');
+import LesgoException from '../exceptions/LesgoException';
+import isEmail from './isEmail';
+import isDecimal from './isDecimal';
 const FILE = 'lesgo/utils/validateFields';
 const isValidJSON = jsonString => {
   if (typeof jsonString !== 'string') {
@@ -21,7 +20,7 @@ const validateFields = (params, validFields) => {
     if (required) {
       if (typeof params[key] === 'object') {
         if (Array.isArray(params[key]) && params[key].length === 0) {
-          throw new LesgoException_1.default(
+          throw new LesgoException(
             `Missing required '${key}'`,
             `${FILE}::MISSING_REQUIRED_${key.toUpperCase()}`,
             500,
@@ -31,7 +30,7 @@ const validateFields = (params, validFields) => {
       }
       if (!params[key]) {
         if (typeof params[key] !== 'number') {
-          throw new LesgoException_1.default(
+          throw new LesgoException(
             `Missing required '${key}'`,
             `${FILE}::MISSING_REQUIRED_${key.toUpperCase()}`,
             500,
@@ -46,7 +45,7 @@ const validateFields = (params, validFields) => {
           { key, required, type: 'array' },
         ]);
       } catch (_) {
-        throw new LesgoException_1.default(
+        throw new LesgoException(
           `Invalid type for '${key}', expecting collection of '${type}'`,
           `${FILE}::INVALID_TYPE_${key.toUpperCase()}`,
           500,
@@ -67,10 +66,10 @@ const validateFields = (params, validFields) => {
           typeof paramsItem !== 'number') ||
         (type === 'decimal' &&
           typeof paramsItem !== 'undefined' &&
-          !(0, isDecimal_1.default)(paramsItem)) ||
+          !isDecimal(paramsItem)) ||
         (type === 'email' &&
           typeof paramsItem !== 'undefined' &&
-          !(0, isEmail_1.default)(paramsItem)) ||
+          !isEmail(paramsItem)) ||
         (type === 'array' &&
           typeof paramsItem !== 'undefined' &&
           !Array.isArray(paramsItem)) ||
@@ -84,7 +83,7 @@ const validateFields = (params, validFields) => {
           typeof paramsItem !== 'undefined' &&
           !isValidJSON(paramsItem))
       ) {
-        throw new LesgoException_1.default(
+        throw new LesgoException(
           `Invalid type for '${key}', expecting ${
             isCollection ? 'collection of ' : ''
           }'${type}'`,
@@ -100,4 +99,4 @@ const validateFields = (params, validFields) => {
   });
   return validated;
 };
-exports.default = validateFields;
+export default validateFields;

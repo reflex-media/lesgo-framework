@@ -1,10 +1,9 @@
-Object.defineProperty(exports, '__esModule', { value: true });
-const LesgoException_1 = require('../exceptions/LesgoException');
+import LesgoException from '../exceptions/LesgoException';
 // TEMP To check if this is still relevant
 // const getCurrentDateTime = () => {
 //   return new Date().toUTCString();
 // };
-class LoggerService {
+export default class LoggerService {
   constructor(opts = {}) {
     const defaultOptions = {
       logger: 'lesgo-logger',
@@ -32,7 +31,7 @@ class LoggerService {
   }
   log(level, message, extra = {}) {
     if (level === undefined || !Object.keys(this.logLevels).includes(level)) {
-      throw new LesgoException_1.default('Invalid level provided in log()');
+      throw new LesgoException('Invalid level provided in log()');
     }
     const structuredMessage = this.structureLogMessage(level, message, extra);
     this.transports.map(transport => {
@@ -124,4 +123,3 @@ class LoggerService {
     );
   }
 }
-exports.default = LoggerService;

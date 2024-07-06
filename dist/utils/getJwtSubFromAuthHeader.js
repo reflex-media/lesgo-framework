@@ -1,7 +1,5 @@
-Object.defineProperty(exports, '__esModule', { value: true });
-exports.getTokenData = void 0;
-const isEmpty_1 = require('./isEmpty');
-const getTokenData = authHeader => {
+import isEmpty from './isEmpty';
+export const getTokenData = authHeader => {
   try {
     return JSON.parse(
       Buffer.from(authHeader.split('.')[1], 'base64').toString()
@@ -10,12 +8,11 @@ const getTokenData = authHeader => {
     return {};
   }
 };
-exports.getTokenData = getTokenData;
 const getJwtSubFromAuthHeader = authHeader => {
-  if ((0, isEmpty_1.default)(authHeader)) {
+  if (isEmpty(authHeader)) {
     return null;
   }
-  const data = (0, exports.getTokenData)(authHeader);
+  const data = getTokenData(authHeader);
   return data.sub || null;
 };
-exports.default = getJwtSubFromAuthHeader;
+export default getJwtSubFromAuthHeader;

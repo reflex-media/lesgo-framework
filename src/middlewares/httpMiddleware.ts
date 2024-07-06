@@ -1,29 +1,29 @@
 import middy from '@middy/core';
-import jsonBodyParser from '@middy/http-json-body-parser';
+// import jsonBodyParser from '@middy/http-json-body-parser';
 import eventNormalizer from '@middy/http-event-normalizer';
-import errorHandler from '@middy/http-error-handler';
-import doNotWaitForEmptyEventLoop from '@middy/do-not-wait-for-empty-event-loop';
-import httpHeaderNormalizer from '@middy/http-header-normalizer';
-import httpResponseMiddleware from './httpResponseMiddleware';
+// import errorHandler from '@middy/http-error-handler';
+// import doNotWaitForEmptyEventLoop from '@middy/do-not-wait-for-empty-event-loop';
+// import httpHeaderNormalizer from '@middy/http-header-normalizer';
+// import httpResponseMiddleware from './httpResponseMiddleware';
 
-interface MiddlewareObj<T = any, R = any> {
-  before?: (request: middy.Request<T, R>) => Promise<void>;
-  after?: (request: middy.Request<T, R>) => Promise<void>;
-  onError?: (request: middy.Request<T, R>) => Promise<void>;
-}
+// interface MiddlewareObj<T = any, R = any> {
+//   before?: (request: middy.Request<T, R>) => Promise<void>;
+//   after?: (request: middy.Request<T, R>) => Promise<void>;
+//   onError?: (request: middy.Request<T, R>) => Promise<void>;
+// }
 
 export interface HttpMiddlewareOptions {
   debugMode?: boolean;
 }
 
 const httpMiddleware = (opts: HttpMiddlewareOptions = {}) => {
-  const middlewarePackages: MiddlewareObj[] = [
-    doNotWaitForEmptyEventLoop(),
+  const middlewarePackages = [
+    // doNotWaitForEmptyEventLoop(),
     eventNormalizer(),
-    errorHandler(),
-    httpHeaderNormalizer(),
-    jsonBodyParser(),
-    httpResponseMiddleware(opts),
+    // errorHandler(),
+    // httpHeaderNormalizer(),
+    // jsonBodyParser(),
+    // httpResponseMiddleware(opts),
   ];
 
   return {

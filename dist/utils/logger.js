@@ -1,15 +1,14 @@
-Object.defineProperty(exports, '__esModule', { value: true });
-const app_1 = require('../config/app');
-const LoggerService_1 = require('../services/LoggerService');
+import appConfig from '../config/app';
+import LoggerService from '../services/LoggerService';
 const transports = [
   {
     logType: 'console',
-    level: app_1.default.debug ? 'debug' : 'info',
+    level: appConfig.debug ? 'debug' : 'info',
     config: {
       getCreatedAt: true,
       tags: {
-        env: app_1.default.env,
-        service: app_1.default.name,
+        env: appConfig.env,
+        service: appConfig.name,
       },
     },
   },
@@ -18,5 +17,5 @@ const loggerOptions = {
   defaultMeta: {},
   transports,
 };
-const logger = new LoggerService_1.default(loggerOptions);
-exports.default = logger;
+const logger = new LoggerService(loggerOptions);
+export default logger;

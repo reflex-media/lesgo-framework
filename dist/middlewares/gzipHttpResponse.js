@@ -31,25 +31,18 @@ var __awaiter =
       step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
   };
-Object.defineProperty(exports, '__esModule', { value: true });
-exports.determineRequestAcceptEncoding =
-  exports.determineRequestOrigin =
-  exports.gzip =
-    void 0;
-const zlib = require('zlib');
-const LesgoException_1 = require('../exceptions/LesgoException');
+import * as zlib from 'zlib';
+import LesgoException from '../exceptions/LesgoException';
 /**
  * Perform zipping and add neccessary header
  */
-const gzip = response =>
+export const gzip = response =>
   __awaiter(void 0, void 0, void 0, function* () {
     return new Promise((resolve, reject) => {
       try {
         zlib.gzip(response.body, (error, gzippedResponse) => {
           if (error) {
-            reject(
-              new LesgoException_1.default(error.message, 'GZIP_LIB_ERROR')
-            );
+            reject(new LesgoException(error.message, 'GZIP_LIB_ERROR'));
           } else {
             response.body = gzippedResponse.toString('base64');
             response.isBase64Encoded = true;
@@ -62,17 +55,14 @@ const gzip = response =>
         });
       } catch (err) {
         /* istanbul ignore next */
-        reject(
-          new LesgoException_1.default(err.message, 'GZIP_UNKNOWN_ERROR', 500)
-        );
+        reject(new LesgoException(err.message, 'GZIP_UNKNOWN_ERROR', 500));
       }
     });
   });
-exports.gzip = gzip;
 /**
  * Determine request origin
  */
-const determineRequestOrigin = handler => {
+export const determineRequestOrigin = handler => {
   const { requestContext } = handler.event;
   let requestFrom = 'APIGATEWAY';
   if (requestContext.elb) {
@@ -83,11 +73,10 @@ const determineRequestOrigin = handler => {
   }
   return requestFrom;
 };
-exports.determineRequestOrigin = determineRequestOrigin;
 /**
  * Determine headers Accept-Encoding exist
  */
-const determineRequestAcceptEncoding = handler => {
+export const determineRequestAcceptEncoding = handler => {
   const { headers } = handler.event;
   const acceptEncoding =
     headers['Accept-encoding'] ||
@@ -106,7 +95,6 @@ const determineRequestAcceptEncoding = handler => {
   }
   return false;
 };
-exports.determineRequestAcceptEncoding = determineRequestAcceptEncoding;
 const gzipHttpResponse = (handler, options = {}) =>
   __awaiter(void 0, void 0, void 0, function* () {
     /*
@@ -117,14 +105,14 @@ const gzipHttpResponse = (handler, options = {}) =>
     if (options.zipWhenRequest) {
       zipWhenRequest = options.zipWhenRequest;
     }
-    const requestFrom = (0, exports.determineRequestOrigin)(handler);
+    const requestFrom = determineRequestOrigin(handler);
     if (
       zipWhenRequest.includes(requestFrom) &&
-      (0, exports.determineRequestAcceptEncoding)(handler)
+      determineRequestAcceptEncoding(handler)
     ) {
       // eslint-disable-next-line no-param-reassign
-      handler.response = yield (0, exports.gzip)(handler.response);
+      handler.response = yield gzip(handler.response);
     }
     return handler.response;
   });
-exports.default = gzipHttpResponse;
+export default gzipHttpResponse;

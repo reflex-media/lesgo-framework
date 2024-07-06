@@ -1,10 +1,7 @@
-Object.defineProperty(exports, '__esModule', { value: true });
-exports.normalizeHttpRequestBeforeHandler =
-  exports.normalizeHttpRequestHandler = void 0;
-const app_1 = require('../config/app');
-const getJwtSubFromAuthHeader_1 = require('../utils/getJwtSubFromAuthHeader');
-const logger_1 = require('../utils/logger');
-const normalizeHttpRequestHandler = opts => {
+import appConfig from '../config/app';
+import getJwtSubFromAuthHeader from '../utils/getJwtSubFromAuthHeader';
+import logger from '../utils/logger';
+export const normalizeHttpRequestHandler = opts => {
   const { headers, body } = opts;
   let { qs } = opts;
   let input = null;
@@ -28,12 +25,11 @@ const normalizeHttpRequestHandler = opts => {
   }
   return input;
 };
-exports.normalizeHttpRequestHandler = normalizeHttpRequestHandler;
 /**
  * Normalizes handler.event.body and handler.event.queryStringParameters
  * as handler.event.input Object
  */
-const normalizeHttpRequestBeforeHandler = (handler, next) => {
+export const normalizeHttpRequestBeforeHandler = (handler, next) => {
   const options = {
     headers: handler.event.headers,
     qs: handler.event.queryStringParameters,
@@ -43,12 +39,12 @@ const normalizeHttpRequestBeforeHandler = (handler, next) => {
   // eslint-disable-next-line no-param-reassign
   handler.context.callbackWaitsForEmptyEventLoop = false;
   // eslint-disable-next-line no-param-reassign
-  handler.event.input = (0, exports.normalizeHttpRequestHandler)(options);
+  handler.event.input = normalizeHttpRequestHandler(options);
   const authHeader =
     options.headers.Authorization || options.headers.authorization;
   const auth = {};
   if (authHeader) {
-    auth.sub = (0, getJwtSubFromAuthHeader_1.default)(authHeader);
+    auth.sub = getJwtSubFromAuthHeader(authHeader);
   }
   // eslint-disable-next-line no-param-reassign
   handler.event.auth = auth;
@@ -70,14 +66,14 @@ const normalizeHttpRequestBeforeHandler = (handler, next) => {
         'httpMethod' in handler.event ? handler.event.httpMethod : '';
       break;
   }
-  logger_1.default.addMeta({
+  logger.addMeta({
     requestId: handler.event.requestContext
       ? handler.event.requestContext.requestId
       : null,
     tags,
   });
-  if (app_1.default.debug) {
-    logger_1.default.addMeta({
+  if (appConfig.debug) {
+    logger.addMeta({
       auth: handler.event.auth,
       queryStringParameters: options.qs,
       body: options.body,
@@ -86,5 +82,4 @@ const normalizeHttpRequestBeforeHandler = (handler, next) => {
   /* istanbul ignore next */
   next();
 };
-exports.normalizeHttpRequestBeforeHandler = normalizeHttpRequestBeforeHandler;
-exports.default = exports.normalizeHttpRequestBeforeHandler;
+export default normalizeHttpRequestBeforeHandler;

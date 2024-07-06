@@ -1,15 +1,14 @@
-Object.defineProperty(exports, '__esModule', { value: true });
-const aws_1 = require('../../config/aws');
-const getHeadObject_1 = require('../../services/S3Service/getHeadObject');
+import config from '../../config/aws';
+import getHeadObjectService from '../../services/S3Service/getHeadObject';
 const getHeadObject = (
   key,
   bucket,
   { singletonConn = 'default', region = '' } = {}
 ) => {
-  const configRegion = aws_1.default.region;
-  return (0, getHeadObject_1.default)(key, bucket, {
+  const configRegion = config.region;
+  return getHeadObjectService(key, bucket, {
     singletonConn,
     region: region !== '' ? region : configRegion,
   });
 };
-exports.default = getHeadObject;
+export default getHeadObject;
