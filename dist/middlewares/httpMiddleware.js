@@ -31,16 +31,20 @@ var __awaiter =
       step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
   };
-// import jsonBodyParser from '@middy/http-json-body-parser';
+import jsonBodyParser from '@middy/http-json-body-parser';
 import eventNormalizer from '@middy/http-event-normalizer';
+import errorHandler from '@middy/http-error-handler';
+import doNotWaitForEmptyEventLoop from '@middy/do-not-wait-for-empty-event-loop';
+import httpHeaderNormalizer from '@middy/http-header-normalizer';
+import httpResponseMiddleware from './httpResponseMiddleware';
 const httpMiddleware = (opts = {}) => {
   const middlewarePackages = [
-    // doNotWaitForEmptyEventLoop(),
+    doNotWaitForEmptyEventLoop(),
     eventNormalizer(),
-    // errorHandler(),
-    // httpHeaderNormalizer(),
-    // jsonBodyParser(),
-    // httpResponseMiddleware(opts),
+    errorHandler(),
+    httpHeaderNormalizer(),
+    jsonBodyParser(),
+    httpResponseMiddleware(opts),
   ];
   return {
     before: handler =>
