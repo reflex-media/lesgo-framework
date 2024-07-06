@@ -54,9 +54,11 @@ const httpResponseMiddleware = (opts = {}) => {
     });
   const httpResponseMiddlewareOnError = request =>
     __awaiter(void 0, void 0, void 0, function* () {
-      console.log('Error:', request.error);
+      console.log('REQUEST', request);
+      console.log('REQUEST_ERROR', request.error);
+      const error = request.error;
       request.response = {
-        statusCode: 500,
+        statusCode: error.statusCode || 500,
         headers: Object.assign(Object.assign({}, request.response.headers), {
           'Access-Control-Allow-Origin': '*',
           'Cache-Control': 'no-cache',
@@ -66,12 +68,9 @@ const httpResponseMiddleware = (opts = {}) => {
           status: 'error',
           data: null,
           error: {
-            // FIXME: To add error data from the error object
-            // code: options.error.code || 'UNHANDLED_ERROR',
-            // message: options.error.name
-            //   ? `${options.error.name}: ${options.error.message}`
-            //   : options.error.message || options.error,
-            // details: options.error.extra || '',
+            code: error.code || 'UNHANDLED_ERROR',
+            message: error.message,
+            details: error.extra || {},
           },
           _meta: options.debugMode ? request.event : {},
         }),

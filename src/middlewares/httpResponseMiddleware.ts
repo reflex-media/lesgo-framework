@@ -1,4 +1,5 @@
 import middy from '@middy/core';
+import { LesgoException } from 'src/exceptions';
 
 const defaultOptions = {
   debugMode: false,
@@ -25,10 +26,13 @@ const httpResponseMiddleware = (opts = {}) => {
   };
 
   const httpResponseMiddlewareOnError = async (request: middy.Request) => {
-    console.log('Error:', request.error);
+    console.log('REQUEST', request);
+    console.log('REQUEST_ERROR', request.error);
+
+    const error = request.error as LesgoException;
 
     request.response = {
-      statusCode: 500,
+      statusCode: error.statusCode || 500,
       headers: {
         ...request.response.headers,
         'Access-Control-Allow-Origin': '*',
@@ -39,12 +43,9 @@ const httpResponseMiddleware = (opts = {}) => {
         status: 'error',
         data: null,
         error: {
-          // FIXME: To add error data from the error object
-          // code: options.error.code || 'UNHANDLED_ERROR',
-          // message: options.error.name
-          //   ? `${options.error.name}: ${options.error.message}`
-          //   : options.error.message || options.error,
-          // details: options.error.extra || '',
+          code: error.code || 'UNHANDLED_ERROR',
+          message: error.message,
+          details: error.extra || {},
         },
         _meta: options.debugMode ? request.event : {},
       }),
