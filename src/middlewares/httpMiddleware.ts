@@ -1,36 +1,49 @@
-import normalizeHttpRequestBeforeHandler, {
-  NormalizeHttpRequestHandler,
-} from './normalizeHttpRequestBeforeHandler';
-import successHttpResponseAfterHandler, {
-  SuccessHttpResponseHandler,
-} from './successHttpResponseAfterHandler';
-import errorHttpResponseOnErrorHandler, {
-  ErrorHttpResponseHandler,
-} from './errorHttpResponseOnErrorHandler';
+import middy from '@middy/core';
+import jsonBodyParser from '@middy/http-json-body-parser';
+import eventNormalizer from '@middy/http-event-normalizer';
+import errorHandler from '@middy/http-error-handler';
+import doNotWaitForEmptyEventLoop from '@middy/do-not-wait-for-empty-event-loop';
+import httpHeaderNormalizer from '@middy/http-header-normalizer';
+import httpResponseMiddleware from './httpResponseMiddleware';
 
-type Next = (error?: any) => void;
-
-interface Options {
-  headers?: Record<string, string>;
-  response?: any;
-  statusCode?: number;
-  event?: Record<string, any>;
-  debugMode?: boolean;
-  zipWhenRequest?: string[];
+interface MiddlewareObj<T = any, R = any> {
+  before?: (request: middy.Request<T, R>) => Promise<void>;
+  after?: (request: middy.Request<T, R>) => Promise<void>;
+  onError?: (request: middy.Request<T, R>) => Promise<void>;
 }
 
-/**
- * Combines all http middlewares into a single middleware
- */
-/* istanbul ignore next */
-const httpMiddleware = (opts: Options) => {
+const httpMiddleware = () => {
+  const middlewarePackages: MiddlewareObj[] = [
+    doNotWaitForEmptyEventLoop(),
+    eventNormalizer(),
+    errorHandler(),
+    httpHeaderNormalizer(),
+    jsonBodyParser(),
+    httpResponseMiddleware(),
+  ];
+
   return {
-    before: (handler: NormalizeHttpRequestHandler, next: Next) =>
-      normalizeHttpRequestBeforeHandler(handler, next),
-    after: (handler: SuccessHttpResponseHandler, next: Next) =>
-      successHttpResponseAfterHandler(handler, next, opts),
-    onError: (handler: ErrorHttpResponseHandler, next: Next) =>
-      errorHttpResponseOnErrorHandler(handler, next, opts),
+    before: async (handler: middy.Request) => {
+      for (const middleware of middlewarePackages) {
+        if (middleware.before) {
+          await middleware.before(handler);
+        }
+      }
+    },
+    after: async (handler: middy.Request) => {
+      for (const middleware of middlewarePackages) {
+        if (middleware.after) {
+          await middleware.after(handler);
+        }
+      }
+    },
+    onError: async (handler: middy.Request) => {
+      for (const middleware of middlewarePackages) {
+        if (middleware.onError) {
+          await middleware.onError(handler);
+        }
+      }
+    },
   };
 };
 
