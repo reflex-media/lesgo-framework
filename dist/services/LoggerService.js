@@ -1,8 +1,7 @@
 import LesgoException from '../exceptions/LesgoException';
-// TEMP To check if this is still relevant
-// const getCurrentDateTime = () => {
-//   return new Date().toUTCString();
-// };
+const getCurrentDateTime = () => {
+  return new Date().toUTCString();
+};
 export default class LoggerService {
   constructor(opts = {}) {
     const defaultOptions = {
@@ -57,13 +56,12 @@ export default class LoggerService {
   addMeta(meta = {}) {
     this.meta = Object.assign(Object.assign({}, this.meta), meta);
   }
-  // TEMP To check if this is still relevant
-  //   consoleLogger(level: LogLevel, message: string) {
-  //     if (!this.checkIsLogRequired('console', level)) return null;
-  //     const refinedMessage = this.refineMessagePerTransport('console', message);
-  //     const consoleFunc = level === 'notice' ? 'log' : level;
-  //     return console[consoleFunc](JSON.stringify(refinedMessage)); // eslint-disable-line no-console
-  //   }
+  consoleLogger(level, message) {
+    if (!this.checkIsLogRequired('console', level)) return null;
+    const refinedMessage = this.refineMessagePerTransport('console', message);
+    const consoleFunc = level === 'notice' ? 'log' : level;
+    return console[consoleFunc](JSON.stringify(refinedMessage));
+  }
   checkIsLogRequired(transportName, level) {
     const transport = this.getTransportByName(transportName);
     if (transport === undefined) {
@@ -84,39 +82,38 @@ export default class LoggerService {
     };
     return structuredMessage;
   }
-  // TEMP To check if this is still relevant
-  //   refineMessagePerTransport(transportName: string, message: string) {
-  //     const transport = this.getTransportByName(transportName);
-  //     const refinedMessage = message;
-  //     if (transport === undefined) {
-  //       return refinedMessage;
-  //     }
-  //     if (transport.config !== undefined) {
-  //       if (transport.config.meta !== undefined) {
-  //         refinedMessage.extra = {
-  //           ...refinedMessage.extra,˝
-  //           ...transport.config.meta,
-  //         };
-  //       }
-  //       if (transport.config.tags !== undefined) {
-  //         refinedMessage.tags = transport.config.tags;
-  //       }
-  //       if (
-  //         refinedMessage.tags !== undefined &&
-  //         refinedMessage.extra.tags !== undefined
-  //       ) {
-  //         refinedMessage.tags = {
-  //           ...refinedMessage.tags,
-  //           ...refinedMessage.extra.tags,
-  //         };
-  //         delete refinedMessage.extra.tags;
-  //       }
-  //       if (transport.config.getCreatedAt) {
-  //         refinedMessage.created = getCurrentDateTime();
-  //       }
-  //     }
-  //     return refinedMessage;
-  //   }
+  refineMessagePerTransport(transportName, message) {
+    const transport = this.getTransportByName(transportName);
+    const refinedMessage = message;
+    if (transport === undefined) {
+      return refinedMessage;
+    }
+    if (transport.config !== undefined) {
+      if (transport.config.meta !== undefined) {
+        refinedMessage.extra = Object.assign(
+          Object.assign({}, refinedMessage.extra),
+          transport.config.meta
+        );
+      }
+      if (transport.config.tags !== undefined) {
+        refinedMessage.tags = transport.config.tags;
+      }
+      if (
+        refinedMessage.tags !== undefined &&
+        refinedMessage.extra.tags !== undefined
+      ) {
+        refinedMessage.tags = Object.assign(
+          Object.assign({}, refinedMessage.tags),
+          refinedMessage.extra.tags
+        );
+        delete refinedMessage.extra.tags;
+      }
+      if (transport.config.getCreatedAt) {
+        refinedMessage.created = getCurrentDateTime();
+      }
+    }
+    return refinedMessage;
+  }
   getTransportByName(transportName) {
     return this.transports.find(
       transport => transport.logType === transportName

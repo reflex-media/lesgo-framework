@@ -31,6 +31,7 @@ var __awaiter =
       step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
   };
+import { isEmpty } from '../utils';
 const defaultOptions = {
   debugMode: false,
 };
@@ -68,7 +69,7 @@ const httpResponseMiddleware = (opts = {}) => {
           error: {
             code: error.code || 'UNHANDLED_ERROR',
             message: error.message || 'Unhandled error occurred',
-            details: error.extra || error || {},
+            details: !isEmpty(error.extra) ? error.extra : error || {},
           },
           _meta: options.debugMode ? request.event : {},
         }),

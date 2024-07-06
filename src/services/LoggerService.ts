@@ -24,10 +24,9 @@ interface TransportConfigTags {
   [key: string]: string;
 }
 
-// TEMP To check if this is still relevant
-// const getCurrentDateTime = () => {
-//   return new Date().toUTCString();
-// };
+const getCurrentDateTime = () => {
+  return new Date().toUTCString();
+};
 
 export default class LoggerService {
   logger: string;
@@ -108,14 +107,13 @@ export default class LoggerService {
     };
   }
 
-  // TEMP To check if this is still relevant
-  //   consoleLogger(level: LogLevel, message: string) {
-  //     if (!this.checkIsLogRequired('console', level)) return null;
-  //     const refinedMessage = this.refineMessagePerTransport('console', message);
-  //     const consoleFunc = level === 'notice' ? 'log' : level;
+  consoleLogger(level: LogLevel, message: string) {
+    if (!this.checkIsLogRequired('console', level)) return null;
+    const refinedMessage = this.refineMessagePerTransport('console', message);
+    const consoleFunc = level === 'notice' ? 'log' : level;
 
-  //     return console[consoleFunc](JSON.stringify(refinedMessage)); // eslint-disable-line no-console
-  //   }
+    return console[consoleFunc](JSON.stringify(refinedMessage));
+  }
 
   checkIsLogRequired(transportName: string, level: LogLevel) {
     const transport = this.getTransportByName(transportName);
@@ -133,7 +131,7 @@ export default class LoggerService {
     return true;
   }
 
-  structureLogMessage(level: LogLevel, message: string, extra: object) {
+  structureLogMessage(level: LogLevel, message: any, extra: object) {
     const structuredMessage = {
       level,
       message,
@@ -147,46 +145,45 @@ export default class LoggerService {
     return structuredMessage;
   }
 
-  // TEMP To check if this is still relevant
-  //   refineMessagePerTransport(transportName: string, message: string) {
-  //     const transport = this.getTransportByName(transportName);
-  //     const refinedMessage = message;
+  refineMessagePerTransport(transportName: string, message: any) {
+    const transport = this.getTransportByName(transportName);
+    const refinedMessage = message;
 
-  //     if (transport === undefined) {
-  //       return refinedMessage;
-  //     }
+    if (transport === undefined) {
+      return refinedMessage;
+    }
 
-  //     if (transport.config !== undefined) {
-  //       if (transport.config.meta !== undefined) {
-  //         refinedMessage.extra = {
-  //           ...refinedMessage.extra,˝
-  //           ...transport.config.meta,
-  //         };
-  //       }
+    if (transport.config !== undefined) {
+      if (transport.config.meta !== undefined) {
+        refinedMessage.extra = {
+          ...refinedMessage.extra,
+          ...transport.config.meta,
+        };
+      }
 
-  //       if (transport.config.tags !== undefined) {
-  //         refinedMessage.tags = transport.config.tags;
-  //       }
+      if (transport.config.tags !== undefined) {
+        refinedMessage.tags = transport.config.tags;
+      }
 
-  //       if (
-  //         refinedMessage.tags !== undefined &&
-  //         refinedMessage.extra.tags !== undefined
-  //       ) {
-  //         refinedMessage.tags = {
-  //           ...refinedMessage.tags,
-  //           ...refinedMessage.extra.tags,
-  //         };
+      if (
+        refinedMessage.tags !== undefined &&
+        refinedMessage.extra.tags !== undefined
+      ) {
+        refinedMessage.tags = {
+          ...refinedMessage.tags,
+          ...refinedMessage.extra.tags,
+        };
 
-  //         delete refinedMessage.extra.tags;
-  //       }
+        delete refinedMessage.extra.tags;
+      }
 
-  //       if (transport.config.getCreatedAt) {
-  //         refinedMessage.created = getCurrentDateTime();
-  //       }
-  //     }
+      if (transport.config.getCreatedAt) {
+        refinedMessage.created = getCurrentDateTime();
+      }
+    }
 
-  //     return refinedMessage;
-  //   }
+    return refinedMessage;
+  }
 
   getTransportByName(transportName: string) {
     return this.transports.find(

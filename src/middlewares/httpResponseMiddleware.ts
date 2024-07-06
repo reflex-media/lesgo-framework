@@ -1,5 +1,6 @@
 import middy from '@middy/core';
-import { LesgoException } from 'src/exceptions';
+import { LesgoException } from '../exceptions';
+import { isEmpty } from '../utils';
 
 const defaultOptions = {
   debugMode: false,
@@ -42,7 +43,7 @@ const httpResponseMiddleware = (opts = {}) => {
         error: {
           code: error.code || 'UNHANDLED_ERROR',
           message: error.message || 'Unhandled error occurred',
-          details: error.extra || error || {},
+          details: !isEmpty(error.extra) ? error.extra : error || {},
         },
         _meta: options.debugMode ? request.event : {},
       }),

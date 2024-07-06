@@ -32,13 +32,15 @@ export default class LoggerService {
     debug(message: string, extra?: {}): void;
     notice(message: string, extra?: {}): void;
     addMeta(meta?: {}): void;
+    consoleLogger(level: LogLevel, message: string): void | null;
     checkIsLogRequired(transportName: string, level: LogLevel): boolean;
-    structureLogMessage(level: LogLevel, message: string, extra: object): {
+    structureLogMessage(level: LogLevel, message: any, extra: object): {
         level: LogLevel;
-        message: string;
+        message: any;
         logger: string;
         extra: {};
     };
+    refineMessagePerTransport(transportName: string, message: any): any;
     getTransportByName(transportName: string): Transport | undefined;
 }
 export {};
