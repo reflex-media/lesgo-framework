@@ -6,7 +6,7 @@ import putObjectService from '../../services/S3Service/putObject';
 const putObject = (
   key: string,
   bucket: string,
-  file: string,
+  file: Buffer | Uint8Array | Blob | string,
   { singletonConn = 'default', region = '', storageClass = 'STANDARD' } = {}
 ) => {
   const configRegion = config.region;
