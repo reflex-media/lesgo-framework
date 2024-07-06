@@ -25,6 +25,8 @@ const httpResponseMiddleware = (opts = {}) => {
   };
 
   const httpResponseMiddlewareOnError = async (request: middy.Request) => {
+    console.log('Error:', request.error);
+
     request.response = {
       statusCode: 500,
       headers: {
@@ -34,7 +36,7 @@ const httpResponseMiddleware = (opts = {}) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        status: 'success',
+        status: 'error',
         data: null,
         error: {
           // FIXME: To add error data from the error object

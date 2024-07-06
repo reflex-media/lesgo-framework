@@ -54,6 +54,7 @@ const httpResponseMiddleware = (opts = {}) => {
     });
   const httpResponseMiddlewareOnError = request =>
     __awaiter(void 0, void 0, void 0, function* () {
+      console.log('Error:', request.error);
       request.response = {
         statusCode: 500,
         headers: Object.assign(Object.assign({}, request.response.headers), {
@@ -62,7 +63,7 @@ const httpResponseMiddleware = (opts = {}) => {
           'Content-Type': 'application/json',
         }),
         body: JSON.stringify({
-          status: 'success',
+          status: 'error',
           data: null,
           error: {
             // FIXME: To add error data from the error object
