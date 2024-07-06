@@ -54,8 +54,6 @@ const httpResponseMiddleware = (opts = {}) => {
     });
   const httpResponseMiddlewareOnError = request =>
     __awaiter(void 0, void 0, void 0, function* () {
-      console.log('REQUEST', request);
-      console.log('REQUEST_ERROR', request.error);
       const error = request.error;
       request.response = {
         statusCode: error.statusCode || 500,
@@ -70,7 +68,7 @@ const httpResponseMiddleware = (opts = {}) => {
           error: {
             code: error.code || 'UNHANDLED_ERROR',
             message: error.message || 'Unhandled error occurred',
-            details: error.extra || {},
+            details: error.extra || error || {},
           },
           _meta: options.debugMode ? request.event : {},
         }),

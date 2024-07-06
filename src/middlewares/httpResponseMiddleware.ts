@@ -26,9 +26,6 @@ const httpResponseMiddleware = (opts = {}) => {
   };
 
   const httpResponseMiddlewareOnError = async (request: middy.Request) => {
-    console.log('REQUEST', request);
-    console.log('REQUEST_ERROR', request.error);
-
     const error = request.error as LesgoException;
 
     request.response = {
@@ -45,7 +42,7 @@ const httpResponseMiddleware = (opts = {}) => {
         error: {
           code: error.code || 'UNHANDLED_ERROR',
           message: error.message || 'Unhandled error occurred',
-          details: error.extra || {},
+          details: error.extra || error || {},
         },
         _meta: options.debugMode ? request.event : {},
       }),
