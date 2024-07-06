@@ -6,45 +6,23 @@ exports.putObject =
   exports.getDownloadSignedUrl =
   exports.getClient =
     void 0;
-var getClient_1 = require('./getClient');
-Object.defineProperty(exports, 'getClient', {
-  enumerable: true,
-  get: function () {
-    return getClient_1.default;
-  },
-});
-var getDownloadSignedUrl_1 = require('./getDownloadSignedUrl');
-Object.defineProperty(exports, 'getDownloadSignedUrl', {
-  enumerable: true,
-  get: function () {
-    return getDownloadSignedUrl_1.default;
-  },
-});
-var getHeadObject_1 = require('./getHeadObject');
-Object.defineProperty(exports, 'getHeadObject', {
-  enumerable: true,
-  get: function () {
-    return getHeadObject_1.default;
-  },
-});
-var getObject_1 = require('./getObject');
-Object.defineProperty(exports, 'getObject', {
-  enumerable: true,
-  get: function () {
-    return getObject_1.default;
-  },
-});
-var getUploadSignedUrl_1 = require('./getUploadSignedUrl');
-Object.defineProperty(exports, 'getUploadSignedUrl', {
-  enumerable: true,
-  get: function () {
-    return getUploadSignedUrl_1.default;
-  },
-});
-var putObject_1 = require('./putObject');
-Object.defineProperty(exports, 'putObject', {
-  enumerable: true,
-  get: function () {
-    return putObject_1.default;
-  },
-});
+const getClient_1 = require('./getClient');
+exports.getClient = getClient_1.default;
+const getDownloadSignedUrl_1 = require('./getDownloadSignedUrl');
+exports.getDownloadSignedUrl = getDownloadSignedUrl_1.default;
+const getHeadObject_1 = require('./getHeadObject');
+exports.getHeadObject = getHeadObject_1.default;
+const getObject_1 = require('./getObject');
+exports.getObject = getObject_1.default;
+const getUploadSignedUrl_1 = require('./getUploadSignedUrl');
+exports.getUploadSignedUrl = getUploadSignedUrl_1.default;
+const putObject_1 = require('./putObject');
+exports.putObject = putObject_1.default;
+exports.default = {
+  getClient: getClient_1.default,
+  getDownloadSignedUrl: getDownloadSignedUrl_1.default,
+  getHeadObject: getHeadObject_1.default,
+  getObject: getObject_1.default,
+  getUploadSignedUrl: getUploadSignedUrl_1.default,
+  putObject: putObject_1.default,
+};

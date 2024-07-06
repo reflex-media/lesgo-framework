@@ -12,14 +12,18 @@ interface MiddlewareObj<T = any, R = any> {
   onError?: (request: middy.Request<T, R>) => Promise<void>;
 }
 
-const httpMiddleware = () => {
+export interface HttpMiddlewareOptions {
+  debugMode?: boolean;
+}
+
+const httpMiddleware = (opts: HttpMiddlewareOptions = {}) => {
   const middlewarePackages: MiddlewareObj[] = [
     doNotWaitForEmptyEventLoop(),
     eventNormalizer(),
     errorHandler(),
     httpHeaderNormalizer(),
     jsonBodyParser(),
-    httpResponseMiddleware(),
+    httpResponseMiddleware(opts),
   ];
 
   return {

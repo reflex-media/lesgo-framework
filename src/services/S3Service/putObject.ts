@@ -5,7 +5,7 @@ import getClient from './getClient';
 
 const FILE = 'lesgo/services/S3Service/putObject';
 
-interface PutObjectOptions {
+export interface PutObjectOptions {
   region: string;
   singletonConn: string;
   storageClass: StorageClass;

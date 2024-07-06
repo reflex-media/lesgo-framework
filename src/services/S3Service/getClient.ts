@@ -10,12 +10,12 @@ interface Singleton {
 
 const singleton: Singleton = {};
 
-interface GetClientOptions {
+export interface GetClientOptions {
   region: string;
   singletonConn: string;
 }
 
-const getClient = ({ region, singletonConn }: GetClientOptions): S3Client => {
+const getClient = ({ region, singletonConn }: GetClientOptions) => {
   if (!isEmpty(singleton[singletonConn])) {
     logger.debug(`${FILE}::REUSE_CLIENT_SINGLETON`, {
       client: singleton[singletonConn],

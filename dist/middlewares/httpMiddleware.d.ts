@@ -1,5 +1,8 @@
 import middy from '@middy/core';
-declare const httpMiddleware: () => {
+export interface HttpMiddlewareOptions {
+    debugMode?: boolean;
+}
+declare const httpMiddleware: (opts?: HttpMiddlewareOptions) => {
     before: (handler: middy.Request) => Promise<void>;
     after: (handler: middy.Request) => Promise<void>;
     onError: (handler: middy.Request) => Promise<void>;

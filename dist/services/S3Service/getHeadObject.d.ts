@@ -1,4 +1,4 @@
-interface GetHeadObjectOptions {
+export interface GetHeadObjectOptions {
     region: string;
     singletonConn: string;
 }

@@ -38,14 +38,14 @@ const http_error_handler_1 = require('@middy/http-error-handler');
 const do_not_wait_for_empty_event_loop_1 = require('@middy/do-not-wait-for-empty-event-loop');
 const http_header_normalizer_1 = require('@middy/http-header-normalizer');
 const httpResponseMiddleware_1 = require('./httpResponseMiddleware');
-const httpMiddleware = () => {
+const httpMiddleware = (opts = {}) => {
   const middlewarePackages = [
     (0, do_not_wait_for_empty_event_loop_1.default)(),
     (0, http_event_normalizer_1.default)(),
     (0, http_error_handler_1.default)(),
     (0, http_header_normalizer_1.default)(),
     (0, http_json_body_parser_1.default)(),
-    (0, httpResponseMiddleware_1.default)(),
+    (0, httpResponseMiddleware_1.default)(opts),
   ];
   return {
     before: handler =>

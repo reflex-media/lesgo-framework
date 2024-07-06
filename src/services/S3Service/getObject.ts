@@ -5,7 +5,7 @@ import isEmpty from '../../utils/isEmpty';
 
 const FILE = 'lesgo/services/S3Service/getObject';
 
-interface GetObjectOptions {
+export interface GetObjectOptions {
   region: string;
   singletonConn: string;
 }

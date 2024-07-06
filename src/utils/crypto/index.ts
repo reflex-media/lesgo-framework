@@ -1,4 +1,13 @@
-export { default as decrypt } from './decrypt';
-export { default as encrypt } from './encrypt';
-export { default as hash } from './hash';
-export { default as hashMD5 } from './hashMD5';
+import decrypt from './decrypt';
+import encrypt from './encrypt';
+import hash from './hash';
+import hashMD5 from './hashMD5';
+
+export { decrypt, encrypt, hash, hashMD5 };
+
+export default {
+  decrypt,
+  encrypt,
+  hash,
+  hashMD5,
+};

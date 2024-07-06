@@ -1,4 +1,4 @@
-interface GetObjectOptions {
+export interface GetObjectOptions {
     region: string;
     singletonConn: string;
 }

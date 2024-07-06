@@ -1,5 +1,5 @@
 import { StorageClass } from '@aws-sdk/client-s3';
-interface PutObjectOptions {
+export interface PutObjectOptions {
     region: string;
     singletonConn: string;
     storageClass: StorageClass;

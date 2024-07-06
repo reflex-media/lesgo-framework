@@ -1,4 +1,4 @@
-interface GetDownloadSignedUrlOptions {
+export interface GetDownloadSignedUrlOptions {
     region: string;
     singletonConn: string;
     expiresIn: number;
