@@ -31,7 +31,7 @@ var __awaiter =
       step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
   };
-import { isEmpty } from '../utils';
+import { isEmpty, logger } from '../utils';
 const defaultOptions = {
   debugMode: false,
 };
@@ -74,6 +74,9 @@ const httpResponseMiddleware = (opts = {}) => {
           _meta: options.debugMode ? request.event : {},
         }),
       };
+      console.log('request', request);
+      console.log('error', error);
+      logger.error(error.message, error);
     });
   return {
     after: httpResponseMiddlewareAfter,
