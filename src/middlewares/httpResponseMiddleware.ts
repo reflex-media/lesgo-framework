@@ -36,7 +36,7 @@ const httpResponseMiddleware = (opts = {}) => {
     request.response = {
       statusCode: error.statusCode || 500,
       headers: {
-        ...request.response.headers,
+        // ...request.response.headers,
         'Access-Control-Allow-Origin': '*',
         'Cache-Control': 'no-cache',
         'Content-Type': 'application/json',

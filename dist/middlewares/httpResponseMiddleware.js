@@ -61,11 +61,12 @@ const httpResponseMiddleware = (opts = {}) => {
       logger.error(error.message, error);
       request.response = {
         statusCode: error.statusCode || 500,
-        headers: Object.assign(Object.assign({}, request.response.headers), {
+        headers: {
+          // ...request.response.headers,
           'Access-Control-Allow-Origin': '*',
           'Cache-Control': 'no-cache',
           'Content-Type': 'application/json',
-        }),
+        },
         body: JSON.stringify({
           status: 'error',
           data: null,
