@@ -27,7 +27,11 @@ const httpResponseMiddleware = (opts = {}) => {
   };
 
   const httpResponseMiddlewareOnError = async (request: middy.Request) => {
+    console.log('request1', request);
+
     const error = request.error as LesgoException;
+    console.log('error1', error);
+    logger.error(error.message, error);
 
     request.response = {
       statusCode: error.statusCode || 500,
@@ -49,8 +53,8 @@ const httpResponseMiddleware = (opts = {}) => {
       }),
     };
 
-    console.log('request', request);
-    console.log('error', error);
+    console.log('request2', request);
+    console.log('error2', error);
     logger.error(error.message, error);
   };
 
