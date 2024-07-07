@@ -1,19 +1,21 @@
 import { randomBytes, createCipheriv } from 'crypto';
-import cryptoConfig from '../../config/crypto';
-import LesgoException from '../../exceptions/LesgoException';
-import isEmpty from '../isEmpty';
-const { algorithm, secretKey, ivLength } = cryptoConfig.encryption;
-const encrypt = text => {
-  if (isEmpty(text)) {
-    throw new LesgoException(
-      'Empty parameter supplied on encrypt',
-      'CRYPTO_ENCRYPT_EMPTY_PARAMETER'
-    );
-  }
-  const iv = randomBytes(ivLength);
-  const cipher = createCipheriv(algorithm, secretKey, iv);
-  let encrypted = cipher.update(text);
+import validateEncryptionFields from './validateEncryptionFields';
+import logger from '../logger';
+const FILE = 'lesgo.utils.crypto.encrypt';
+const encrypt = (text, { algorithm, secretKey, ivLength } = {}) => {
+  logger.debug(`${FILE}::ENCRYPT`, { text });
+  const { validText, validAlgorithm, validIvLength, validSecretKey } =
+    validateEncryptionFields(text, {
+      algorithm,
+      secretKey,
+      ivLength,
+    });
+  const iv = randomBytes(validIvLength);
+  const cipher = createCipheriv(validAlgorithm, validSecretKey, iv);
+  let encrypted = cipher.update(validText);
   encrypted = Buffer.concat([encrypted, cipher.final()]);
-  return `${iv.toString('hex')}:${encrypted.toString('hex')}`;
+  const encryptedText = `${iv.toString('hex')}:${encrypted.toString('hex')}`;
+  logger.debug(`${FILE}::ENCRYPTED_TEXT`, { encryptedText });
+  return encryptedText;
 };
 export default encrypt;
