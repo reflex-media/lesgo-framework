@@ -21,7 +21,7 @@ const httpMiddleware = (opts: HttpMiddlewareOptions = {}) => {
   const middlewarePackages: MiddlewareObj[] = [
     doNotWaitForEmptyEventLoop(),
     eventNormalizer(),
-    errorHandler(),
+    // errorHandler(),
     httpHeaderNormalizer(),
     jsonBodyParser({ disableContentTypeError: true }),
     disconnectOpenConnectionsMiddleware(),

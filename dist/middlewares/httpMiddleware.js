@@ -33,7 +33,6 @@ var __awaiter =
   };
 import jsonBodyParser from '@middy/http-json-body-parser';
 import eventNormalizer from '@middy/http-event-normalizer';
-import errorHandler from '@middy/http-error-handler';
 import doNotWaitForEmptyEventLoop from '@middy/do-not-wait-for-empty-event-loop';
 import httpHeaderNormalizer from '@middy/http-header-normalizer';
 import httpResponseMiddleware from './httpResponseMiddleware';
@@ -42,7 +41,7 @@ const httpMiddleware = (opts = {}) => {
   const middlewarePackages = [
     doNotWaitForEmptyEventLoop(),
     eventNormalizer(),
-    errorHandler(),
+    // errorHandler(),
     httpHeaderNormalizer(),
     jsonBodyParser({ disableContentTypeError: true }),
     disconnectOpenConnectionsMiddleware(),
