@@ -1,7 +1,7 @@
 import LesgoException from '../exceptions/LesgoException';
 import isEmail from './isEmail';
 import isDecimal from './isDecimal';
-const FILE = 'lesgo/utils/validateFields';
+const FILE = 'lesgo.utils.validateFields';
 const isValidJSON = jsonString => {
   if (typeof jsonString !== 'string') {
     return false;

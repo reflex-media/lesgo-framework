@@ -55,14 +55,10 @@ const httpResponseMiddleware = (opts = {}) => {
     });
   const httpResponseMiddlewareOnError = request =>
     __awaiter(void 0, void 0, void 0, function* () {
-      console.log('request1', request);
       const error = request.error;
-      console.log('error1', error);
-      logger.error(error.message, error);
       request.response = {
         statusCode: error.statusCode || 500,
         headers: {
-          // ...request.response.headers,
           'Access-Control-Allow-Origin': '*',
           'Cache-Control': 'no-cache',
           'Content-Type': 'application/json',
@@ -78,9 +74,11 @@ const httpResponseMiddleware = (opts = {}) => {
           _meta: options.debugMode ? request.event : {},
         }),
       };
-      console.log('request2', request);
-      console.log('error2', error);
-      logger.error(error.message, error);
+      if (isEmpty(error.statusCode) || error.statusCode >= 500) {
+        logger.error(error.message, error);
+      } else {
+        logger.warn(error.message, error);
+      }
     });
   return {
     after: httpResponseMiddlewareAfter,

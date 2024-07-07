@@ -32,14 +32,12 @@ var __awaiter =
     });
   };
 import eventNormalizer from '@middy/event-normalizer';
-import errorHandler from '@middy/http-error-handler';
 import doNotWaitForEmptyEventLoop from '@middy/do-not-wait-for-empty-event-loop';
 import disconnectOpenConnectionsMiddleware from './disconnectOpenConnectionsMiddleware';
 const httpMiddleware = () => {
   const middlewarePackages = [
     doNotWaitForEmptyEventLoop(),
     eventNormalizer(),
-    errorHandler(),
     disconnectOpenConnectionsMiddleware(),
   ];
   return {

@@ -2,7 +2,7 @@ import LesgoException from '../exceptions/LesgoException';
 import isEmail from './isEmail';
 import isDecimal from './isDecimal';
 
-const FILE = 'lesgo/utils/validateFields';
+const FILE = 'lesgo.utils.validateFields';
 
 interface Params {
   [key: string]: any;
