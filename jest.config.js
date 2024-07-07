@@ -13,8 +13,5 @@ module.exports = {
       statements: 99,
     },
   },
-  setupFiles: ['./setupTest.js'],
-  moduleNameMapper: {
-    '^config(.*)$': '<rootDir>/tests/__mocks__/config$1.js',
-  },
+  setupFiles: ['./jest.setup.ts'],
 };

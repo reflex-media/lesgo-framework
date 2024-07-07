@@ -12,12 +12,14 @@ describe('decrypt', () => {
 
   it('should throw LesgoException if text is empty', () => {
     const text = '';
-    const expectedErrorMessage = 'Empty parameter supplied on decryp';
-    const expectedErrorCode = 'CRYPTO_DECRYPT_EMPTY_PARAMETER';
+    const expectedErrorMessage = 'Empty string supplied to decrypt';
+    const expectedErrorCode =
+      'lesgo.utils.crypto.decrypt::ERROR_EMPTY_STRING_TO_DECRYPT';
 
     expect(() => {
       decrypt(text);
     }).toThrow(LesgoException);
+
     expect(LesgoException).toHaveBeenCalledWith(
       expectedErrorMessage,
       expectedErrorCode
@@ -26,7 +28,6 @@ describe('decrypt', () => {
 
   it('should decrypt the text and return the decrypted value', () => {
     const text = 'plain text';
-
     const encrypted = encrypt(text);
     const result = decrypt(encrypted);
 
@@ -35,7 +36,6 @@ describe('decrypt', () => {
 
   it('should decrypt the text and return the decrypted value from crypto', () => {
     const text = 'plain text';
-
     const encrypted = encrypt(text);
     const result = crypto.decrypt(encrypted);
 

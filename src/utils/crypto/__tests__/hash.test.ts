@@ -1,5 +1,5 @@
+import hash, { HashAlgorithm } from '../hash';
 import LesgoException from '../../../exceptions/LesgoException';
-import hash from '../hash';
 import crypto from '../../crypto';
 
 jest.mock('../../../exceptions/LesgoException');
@@ -12,7 +12,8 @@ describe('hash', () => {
   it('should throw LesgoException if data is empty', () => {
     const data = '';
     const expectedErrorMessage = 'Empty parameter supplied on hash';
-    const expectedErrorCode = 'CRYPTO_HASH_EMPTY_PARAMETER';
+    const expectedErrorCode =
+      'lesgo.utils.crypto.hash::ERROR_EMPTY_STRING_TO_HASH';
 
     expect(() => {
       hash(data);
@@ -42,5 +43,38 @@ describe('hash', () => {
     const result = crypto.hash(data);
 
     expect(result).toBe(expectedHashedValue);
+  });
+
+  it('should use the specified hash algorithm', () => {
+    const data = 'data';
+    const algorithm = HashAlgorithm.MD5;
+    const expectedHashedValue = '8d777f385d3dfec8815d20f7496026dc';
+
+    const result = hash(data, { algorithm });
+
+    expect(result).toBe(expectedHashedValue);
+  });
+
+  it('should throw LesgoException if an invalid hash algorithm is supplied', () => {
+    const data = 'data';
+    const algorithm = 'invalidAlgorithm';
+    const expectedErrorMessage = 'Invalid hash algorithm supplied';
+    const expectedErrorCode =
+      'lesgo.utils.crypto.hash::ERROR_INVALID_HASH_ALGORITHM';
+
+    expect(() => {
+      // @ts-ignore
+      hash(data, { algorithm });
+    }).toThrow(LesgoException);
+
+    expect(LesgoException).toHaveBeenCalledWith(
+      expectedErrorMessage,
+      expectedErrorCode,
+      500,
+      {
+        algorithmSupplied: algorithm,
+        allowedAlgorithms: Object.values(HashAlgorithm),
+      }
+    );
   });
 });
