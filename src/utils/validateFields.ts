@@ -4,17 +4,17 @@ import isDecimal from './isDecimal';
 
 const FILE = 'lesgo.utils.validateFields';
 
-interface Params {
+export type Params = {
   [key: string]: any;
-}
+};
 
-interface Field {
+export type Field = {
   key: string;
   type: string;
   required: boolean;
   isCollection?: boolean;
   enumValues?: string[];
-}
+};
 
 const isValidJSON = (jsonString: string) => {
   if (typeof jsonString !== 'string') {

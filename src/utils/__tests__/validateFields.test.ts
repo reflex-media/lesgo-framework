@@ -1,5 +1,6 @@
 import LesgoException from '../../exceptions/LesgoException';
 import validateFields from '../validateFields';
+import utils from '../../utils';
 
 describe('validateFields', () => {
   const validFields = [
@@ -30,7 +31,7 @@ describe('validateFields', () => {
       spentAmount: 99.98,
     };
 
-    const validated = validateFields(params, validFields);
+    const validated = utils.validateFields(params, validFields);
 
     expect(validated).toEqual(params);
   });
