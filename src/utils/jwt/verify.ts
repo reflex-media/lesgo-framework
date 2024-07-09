@@ -34,7 +34,12 @@ const verify = (
     algorithm: (opts?.algorithm || config.algorithm || 'HS256') as Algorithm,
   };
 
-  if (opts.validateClaims || config.validateClaims) {
+  let validateClaims = config.validateClaims;
+  if (typeof opts.validateClaims !== 'undefined') {
+    validateClaims = opts.validateClaims !== 'false';
+  }
+
+  if (validateClaims) {
     options = {
       ...options,
       issuer: opts?.issuer || config.issuer || 'lesgo',

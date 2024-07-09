@@ -35,7 +35,11 @@ const verify = (
       config.algorithm ||
       'HS256',
   };
-  if (opts.validateClaims || config.validateClaims) {
+  let validateClaims = config.validateClaims;
+  if (typeof opts.validateClaims !== 'undefined') {
+    validateClaims = opts.validateClaims !== 'false';
+  }
+  if (validateClaims) {
     options = Object.assign(Object.assign({}, options), {
       issuer:
         (opts === null || opts === void 0 ? void 0 : opts.issuer) ||
