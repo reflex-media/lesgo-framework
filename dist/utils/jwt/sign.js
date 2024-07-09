@@ -1,15 +1,60 @@
+import { LesgoException } from '../../exceptions';
 import config from '../../config/jwt';
 import signService from '../../services/JWTService/sign';
-const sign = (payload, secret = '', opts = {}) => {
-  let secretKey = secret;
-  if (!secretKey) {
-    secretKey = config.secret;
+import isEmpty from '../isEmpty';
+import generateUid from '../generateUid';
+const FILE = 'lesgo.utils.jwt.sign';
+const sign = (
+  payload,
+  { secret = '', opts = {} } = {
+    secret: '',
+    opts: {},
   }
-  let options = Object.assign({}, opts);
-  if (!opts.expiresIn) {
-    options = Object.assign(Object.assign({}, options), { expiresIn: '1h' });
+) => {
+  var _a, _b;
+  let kid = (opts === null || opts === void 0 ? void 0 : opts.keyid) || '';
+  secret =
+    secret ||
+    ((_a = config.secrets[0]) === null || _a === void 0 ? void 0 : _a.secret) ||
+    '';
+  if (!isEmpty(kid)) {
+    kid = opts.keyid;
+    secret =
+      ((_b = config.secrets.find(s => s.keyid === kid)) === null ||
+      _b === void 0
+        ? void 0
+        : _b.secret) || '';
+    if (!secret) {
+      throw new LesgoException(
+        `${FILE}::KID_NOT_FOUND`,
+        `kid ${kid} not found.`
+      );
+    }
   }
-  const token = signService(payload, secretKey, options);
+  let options = {
+    algorithm:
+      (opts === null || opts === void 0 ? void 0 : opts.algorithm) ||
+      config.algorithm ||
+      'HS256',
+    expiresIn:
+      (opts === null || opts === void 0 ? void 0 : opts.expiresIn) ||
+      config.expiresIn ||
+      '1h',
+    issuer:
+      (opts === null || opts === void 0 ? void 0 : opts.issuer) ||
+      config.issuer ||
+      'lesgo',
+    audience:
+      (opts === null || opts === void 0 ? void 0 : opts.audience) ||
+      config.audience ||
+      'lesgo',
+    jwtid: generateUid({ length: 16 }),
+    subject: (opts === null || opts === void 0 ? void 0 : opts.subject) || '',
+  };
+  if (!isEmpty(kid)) {
+    options = Object.assign(Object.assign({}, options), { keyid: kid });
+  }
+  const token = signService(payload, secret, options);
   return token;
 };
 export default sign;

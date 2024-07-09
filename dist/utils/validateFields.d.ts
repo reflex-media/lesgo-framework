@@ -1,13 +1,13 @@
-interface Params {
+export type Params = {
     [key: string]: any;
-}
-interface Field {
+};
+export type Field = {
     key: string;
     type: string;
     required: boolean;
     isCollection?: boolean;
     enumValues?: string[];
-}
+};
 declare const validateFields: (params: Params, validFields: Field[]) => {
     [key: string]: any;
 };

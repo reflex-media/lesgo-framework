@@ -1,6 +1,8 @@
 import jwt from '../../jwt';
 import verify from '../verify';
 import verifyService from '../../../services/JWTService/verify';
+import jwtConfig from '../../../config/jwt';
+import { LesgoException } from '../../../exceptions';
 
 jest.mock('../../../services/JWTService/verify');
 
@@ -11,15 +13,20 @@ describe('verify', () => {
 
   it('should call verifyService with default secret', () => {
     const token = 'some-token';
-    const secret = '';
-    const opts = {};
+    const opts = {
+      secret: '',
+    };
 
-    verify(token, secret, opts);
+    verify(token, opts);
 
     expect(verifyService).toHaveBeenCalledWith(
       token,
-      'c4156b94c80b7f163feabd4ff268c99eb11ce8995df370a4fd872afb4377b273',
-      opts
+      jwtConfig.secrets[0].secret,
+      {
+        algorithm: 'HS256',
+        audience: 'lesgo',
+        issuer: 'lesgo',
+      }
     );
   });
 
@@ -30,30 +37,71 @@ describe('verify', () => {
 
     expect(verifyService).toHaveBeenCalledWith(
       token,
-      'c4156b94c80b7f163feabd4ff268c99eb11ce8995df370a4fd872afb4377b273',
-      {}
+      jwtConfig.secrets[0].secret,
+      {
+        algorithm: 'HS256',
+        audience: 'lesgo',
+        issuer: 'lesgo',
+      }
     );
   });
 
   it('should call verifyService with provided secret', () => {
     const token = 'some-token';
     const secret = 'custom-secret';
-    const opts = {};
+    const opts = {
+      secret,
+    };
 
-    jwt.verify(token, secret, opts);
+    jwt.verify(token, opts);
 
-    expect(verifyService).toHaveBeenCalledWith(token, secret, opts);
+    expect(verifyService).toHaveBeenCalledWith(token, secret, {
+      algorithm: 'HS256',
+      audience: 'lesgo',
+      issuer: 'lesgo',
+    });
+  });
+
+  it('should call verifyService with provided kid', () => {
+    const token = 'some-token';
+    const opts = { opts: { keyid: jwtConfig.secrets[1].keyid } };
+
+    jwt.verify(token, opts);
+
+    expect(verifyService).toHaveBeenCalledWith(
+      token,
+      jwtConfig.secrets[1].secret,
+      {
+        algorithm: 'HS256',
+        audience: 'lesgo',
+        issuer: 'lesgo',
+      }
+    );
+  });
+
+  it('should throw error with invalid kid', () => {
+    const token = 'some-token';
+    const opts = { opts: { keyid: 'xyz' } };
+
+    expect(() => jwt.verify(token, opts)).toThrow(
+      new LesgoException(
+        'lesgo.utils.jwt.verify::KID_NOT_FOUND',
+        'kid xyz not found.'
+      )
+    );
   });
 
   it('should return the decoded token', () => {
     const token = 'some-token';
-    const secret = '';
-    const opts = {};
+    const opts = {
+      secret: '',
+      opts: {},
+    };
     const decodedToken = { id: '123', username: 'john.doe' };
 
     (verifyService as jest.Mock).mockReturnValue(decodedToken);
 
-    const result = verify(token, secret, opts);
+    const result = verify(token, opts);
 
     expect(result).toEqual(decodedToken);
   });

@@ -1,17 +1,18 @@
+const secretKeys =
+  process.env.LESGO_JWT_SECRET_KEYS ||
+  '4e5f6a7b8c9d0e1f:c4156b94c80b7f163feabd4ff268c99e,8c9d6a0e1f4e5f7b:b11ce8995df370a4fd872afb4377b273';
+const secrets = secretKeys.split(',').map(key => {
+  if (!key.includes(':')) {
+    return { keyid: '1', secret: key };
+  }
+  const [keyid, secret] = key.split(':');
+  return { keyid, secret };
+});
 export default {
-  secret:
-    process.env.LESGO_JWT_SECRET ||
-    'c4156b94c80b7f163feabd4ff268c99eb11ce8995df370a4fd872afb4377b273',
-  iss: {
-    validate: process.env.LESGO_JWT_ISS_VALIDATE !== 'true' || true,
-    data: process.env.LESGO_JWT_ISS_DATA
-      ? process.env.LESGO_JWT_ISS_DATA.split(',')
-      : ['domain.com'],
-  },
-  customClaims: {
-    validate: process.env.LESGO_JWT_CUSTOMCLAIMS_VALIDATE !== 'true' || true,
-    data: process.env.LESGO_JWT_CUSTOMCLAIMS_DATA
-      ? process.env.LESGO_JWT_CUSTOMCLAIMS_DATA.split(',')
-      : ['department_id'],
-  },
+  algorithm: process.env.LESGO_JWT_ALGORITHM || 'HS256',
+  secrets,
+  expiresIn: process.env.LESGO_JWT_EXPIRESIN || '1h',
+  issuer: process.env.LESGO_JWT_ISSUER || 'lesgo',
+  audience: process.env.LESGO_JWT_AUDIENCE || 'lesgo',
+  validateClaims: process.env.LESGO_JWT_VALIDATE_CLAIMS !== 'false',
 };
