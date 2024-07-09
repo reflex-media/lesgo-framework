@@ -38,7 +38,7 @@ const verify = (
   };
   let validateClaims = config.validateClaims;
   if (typeof opts.validateClaims !== 'undefined') {
-    validateClaims = opts.validateClaims !== 'false';
+    validateClaims = opts.validateClaims;
   }
   if (validateClaims) {
     options = Object.assign(Object.assign({}, options), {
