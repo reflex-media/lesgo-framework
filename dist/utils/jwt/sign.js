@@ -18,7 +18,6 @@ const sign = (
     ((_a = config.secrets[0]) === null || _a === void 0 ? void 0 : _a.secret) ||
     '';
   if (!isEmpty(kid)) {
-    kid = opts.keyid;
     secret =
       ((_b = config.secrets.find(s => s.keyid === kid)) === null ||
       _b === void 0

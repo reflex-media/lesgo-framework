@@ -9,7 +9,20 @@ const FILE = 'lesgo.utils.jwt.sign';
 
 const sign = (
   payload: any,
-  { secret = '', opts = {} }: { secret?: string; opts?: any } = {
+  {
+    secret = '',
+    opts = {},
+  }: {
+    secret?: string;
+    opts?: {
+      keyid?: string;
+      algorithm?: Algorithm | string;
+      expiresIn?: string;
+      issuer?: string;
+      audience?: string;
+      subject?: string;
+    };
+  } = {
     secret: '',
     opts: {},
   }
@@ -18,7 +31,6 @@ const sign = (
   secret = secret || config.secrets[0]?.secret || '';
 
   if (!isEmpty(kid)) {
-    kid = opts.keyid;
     secret = config.secrets.find(s => s.keyid === kid)?.secret || '';
 
     if (!secret) {
@@ -35,8 +47,8 @@ const sign = (
     issuer: string;
     audience: string;
     jwtid: string;
+    subject: string;
     keyid?: string;
-    subject?: string;
   } = {
     algorithm: (opts?.algorithm || config.algorithm || 'HS256') as Algorithm,
     expiresIn: opts?.expiresIn || config.expiresIn || '1h',

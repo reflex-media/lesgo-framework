@@ -8,7 +8,19 @@ const FILE = 'lesgo.utils.jwt.verify';
 
 const verify = (
   token: string,
-  { secret = '', opts = {} }: { secret?: string; opts?: any } = {
+  {
+    secret = '',
+    opts = {},
+  }: {
+    secret?: string;
+    opts?: {
+      keyid?: string;
+      algorithm?: Algorithm | string;
+      validateClaims?: boolean;
+      issuer?: string;
+      audience?: string;
+    };
+  } = {
     secret: '',
     opts: {},
   }
