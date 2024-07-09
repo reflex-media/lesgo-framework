@@ -2,6 +2,7 @@ import { LesgoException } from '../../exceptions';
 import config from '../../config/jwt';
 import verifyService from '../../services/JWTService/verify';
 import isEmpty from '../isEmpty';
+import logger from '../logger';
 const FILE = 'lesgo.utils.jwt.verify';
 const verify = (
   token,
@@ -51,6 +52,7 @@ const verify = (
         'lesgo',
     });
   }
+  logger.debug(`${FILE}::OPTIONS`, { options });
   const decoded = verifyService(token, secret, options);
   return decoded;
 };
