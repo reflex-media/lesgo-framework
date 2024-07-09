@@ -34,7 +34,7 @@ const verify = (
     algorithm: (opts?.algorithm || config.algorithm || 'HS256') as Algorithm,
   };
 
-  if (config.validateClaims) {
+  if (opts.validateClaims || config.validateClaims) {
     options = {
       ...options,
       issuer: opts?.issuer || config.issuer || 'lesgo',
