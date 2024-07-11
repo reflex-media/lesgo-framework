@@ -4,7 +4,11 @@ import getDownloadSignedUrlService from '../../services/S3Service/getDownloadSig
 const getDownloadSignedUrl = (
   key: string,
   bucket: string,
-  { singletonConn = 'default', region = '', expiresIn = 3600 } = {}
+  { singletonConn = 'default', region = '', expiresIn = 3600 } = {
+    singletonConn: 'default',
+    region: '',
+    expiresIn: 3600,
+  }
 ) => {
   const configRegion = config.region;
 

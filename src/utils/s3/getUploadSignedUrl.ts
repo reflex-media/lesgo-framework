@@ -9,7 +9,16 @@ const getUploadSignedUrl = (
     region = '',
     metadata = undefined,
     expiresIn = 600,
-  } = {}
+  }: {
+    singletonConn?: string;
+    region?: string;
+    metadata?: Record<string, string>;
+    expiresIn?: number;
+  } = {
+    singletonConn: 'default',
+    region: '',
+    expiresIn: 600,
+  }
 ) => {
   const configRegion = config.region;
 

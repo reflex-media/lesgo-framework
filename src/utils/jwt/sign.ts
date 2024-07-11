@@ -27,7 +27,7 @@ const sign = (
     opts: {},
   }
 ): string => {
-  let kid = opts?.keyid || '';
+  const kid = opts?.keyid || '';
   secret = secret || config.secrets[0]?.secret || '';
 
   if (!isEmpty(kid)) {

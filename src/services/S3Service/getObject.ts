@@ -3,7 +3,7 @@ import getClient from './getClient';
 import LesgoException from '../../exceptions/LesgoException';
 import isEmpty from '../../utils/isEmpty';
 
-const FILE = 'lesgo/services/S3Service/getObject';
+const FILE = 'lesgo.services.S3Service.getObject';
 
 export interface GetObjectOptions {
   region: string;

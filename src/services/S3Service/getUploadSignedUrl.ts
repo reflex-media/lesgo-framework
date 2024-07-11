@@ -6,7 +6,7 @@ export interface GetUploadSignedUrlOptions {
   singletonConn: string;
   region: string;
   expiresIn: number;
-  metadata?: { [key: string]: string };
+  metadata?: Record<string, string>;
 }
 
 const getUploadSignedUrl = (

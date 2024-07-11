@@ -2,7 +2,7 @@ import { S3Client } from '@aws-sdk/client-s3';
 import logger from '../../utils/logger';
 import isEmpty from '../../utils/isEmpty';
 
-const FILE = 'lesgo/services/S3Service/getClient';
+const FILE = 'lesgo.services.S3Service.getClient';
 
 interface Singleton {
   [key: string]: S3Client;
