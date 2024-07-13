@@ -11,17 +11,20 @@ describe('getDownloadSignedUrl', () => {
     jest.clearAllMocks();
   });
 
-  it('should call getDownloadSignedUrlService with default singletonConn, config region, and expiresIn', () => {
+  it('should call getDownloadSignedUrlService with default bucket, singletonConn, region, and expiresIn', () => {
     const key = 'testKey';
-    const bucket = 'testBucket';
 
-    getDownloadSignedUrl(key, bucket);
+    getDownloadSignedUrl(key);
 
-    expect(getDownloadSignedUrlService).toHaveBeenCalledWith(key, bucket, {
-      singletonConn: 'default',
-      region: config.region,
-      expiresIn: 3600,
-    });
+    expect(getDownloadSignedUrlService).toHaveBeenCalledWith(
+      key,
+      config.s3.bucket,
+      {
+        singletonConn: 'default',
+        region: config.region,
+        expiresIn: 3600,
+      }
+    );
   });
 
   it('should call getDownloadSignedUrlService with specified singletonConn, config region, and expiresIn', () => {

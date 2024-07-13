@@ -21,38 +21,6 @@ describe('getObject', () => {
     jest.clearAllMocks();
   });
 
-  it('should throw an error if key is empty', async () => {
-    const key = '';
-    const bucket = 'testBucket';
-    const options = {
-      region: 'us-west-2',
-      singletonConn: 'default',
-    };
-
-    await expect(getObject(key, bucket, options)).rejects.toThrow(
-      new LesgoException(
-        'Key is undefined',
-        'lesgo.services.S3Service.getObject::KEY_UNDEFINED'
-      )
-    );
-  });
-
-  it('should throw an error if bucket is undefined', async () => {
-    const key = 'testKey';
-    const bucket = '';
-    const options = {
-      region: 'us-west-2',
-      singletonConn: 'default',
-    };
-
-    await expect(S3Service.getObject(key, bucket, options)).rejects.toThrow(
-      new LesgoException(
-        'Bucket is undefined',
-        'lesgo.services.S3Service.getObject::BUCKET_UNDEFINED'
-      )
-    );
-  });
-
   it('should call getClient with the correct region and singletonConn', async () => {
     const key = 'testKey';
     const bucket = 'testBucket';

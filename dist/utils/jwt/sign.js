@@ -4,13 +4,7 @@ import signService from '../../services/JWTService/sign';
 import isEmpty from '../isEmpty';
 import generateUid from '../generateUid';
 const FILE = 'lesgo.utils.jwt.sign';
-const sign = (
-  payload,
-  { secret = '', opts = {} } = {
-    secret: '',
-    opts: {},
-  }
-) => {
+const sign = (payload, { secret = '', opts = {} } = {}) => {
   var _a, _b;
   const kid = (opts === null || opts === void 0 ? void 0 : opts.keyid) || '';
   secret =

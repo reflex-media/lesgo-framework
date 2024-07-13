@@ -11,6 +11,10 @@ declare const _default: {
     };
     aws: {
         region: string;
+        s3: {
+            bucket: string;
+            region: string;
+        };
     };
     crypto: {
         hash: {

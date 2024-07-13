@@ -15,17 +15,6 @@ const getObject = async (
   bucket: string,
   { region, singletonConn }: GetObjectOptions
 ) => {
-  if (isEmpty(key)) {
-    throw new LesgoException('Key is undefined', `${FILE}::KEY_UNDEFINED`);
-  }
-
-  if (isEmpty(bucket)) {
-    throw new LesgoException(
-      'Bucket is undefined',
-      `${FILE}::BUCKET_UNDEFINED`
-    );
-  }
-
   const client = getClient({ region, singletonConn });
 
   const command = new GetObjectCommand({

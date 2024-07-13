@@ -1,9 +1,11 @@
 import config from '../../config/aws';
 import getUploadSignedUrlService from '../../services/S3Service/getUploadSignedUrl';
+import isEmpty from '../isEmpty';
+import validateFields from '../validateFields';
 
 const getUploadSignedUrl = (
   key: string,
-  bucket: string,
+  bucket?: string,
   {
     singletonConn = 'default',
     region = '',
@@ -14,19 +16,28 @@ const getUploadSignedUrl = (
     region?: string;
     metadata?: Record<string, string>;
     expiresIn?: number;
-  } = {
-    singletonConn: 'default',
-    region: '',
-    expiresIn: 600,
-  }
+  } = {}
 ) => {
-  const configRegion = config.region;
+  region = isEmpty(region) ? config.s3.region : region;
+  bucket = isEmpty(bucket) ? config.s3.bucket : bucket;
 
-  return getUploadSignedUrlService(key, bucket, {
-    singletonConn,
-    region: region !== '' ? region : configRegion,
-    metadata,
-    expiresIn,
+  const input = validateFields(
+    { key, bucket, singletonConn, region, metadata, expiresIn },
+    [
+      { key: 'key', type: 'string', required: true },
+      { key: 'bucket', type: 'string', required: true },
+      { key: 'singletonConn', type: 'string', required: true },
+      { key: 'region', type: 'string', required: true },
+      { key: 'metadata', type: 'object', required: false },
+      { key: 'expiresIn', type: 'number', required: true },
+    ]
+  );
+
+  return getUploadSignedUrlService(input.key, input.bucket, {
+    singletonConn: input.singletonConn,
+    region: input.region,
+    metadata: input.metadata,
+    expiresIn: input.expiresIn,
   });
 };
 

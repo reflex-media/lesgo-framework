@@ -33,25 +33,15 @@ var __awaiter =
   };
 import { PutObjectCommand } from '@aws-sdk/client-s3';
 import LesgoException from '../../exceptions/LesgoException';
-import isEmpty from '../../utils/isEmpty';
 import getClient from './getClient';
 const FILE = 'lesgo/services/S3Service/putObject';
 const putObject = (
   key,
-  bucket,
   file,
+  bucket,
   { region, singletonConn, storageClass }
 ) =>
   __awaiter(void 0, void 0, void 0, function* () {
-    if (isEmpty(key)) {
-      throw new LesgoException('Key is undefined', `${FILE}::KEY_UNDEFINED`);
-    }
-    if (isEmpty(bucket)) {
-      throw new LesgoException(
-        'Bucket is undefined',
-        `${FILE}::BUCKET_UNDEFINED`
-      );
-    }
     const client = getClient({ region, singletonConn });
     const command = new PutObjectCommand({
       Bucket: bucket,

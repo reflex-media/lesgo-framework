@@ -18,6 +18,6 @@ declare const _default: {
     }>;
     getObject: (key: string, bucket: string, { region, singletonConn }: import("./getObject").GetObjectOptions) => Promise<import("@aws-sdk/client-s3").GetObjectCommandOutput>;
     getUploadSignedUrl: (key: string, bucket: string, { singletonConn, region, expiresIn, metadata }: import("./getUploadSignedUrl").GetUploadSignedUrlOptions) => Promise<string>;
-    putObject: (key: string, bucket: string, file: string | Uint8Array | Buffer | Blob, { region, singletonConn, storageClass }: import("./putObject").PutObjectOptions) => Promise<import("@aws-sdk/client-s3").PutObjectCommandOutput>;
+    putObject: (key: string, file: string | Uint8Array | Buffer | Blob, bucket: string, { region, singletonConn, storageClass }: import("./putObject").PutObjectOptions) => Promise<import("@aws-sdk/client-s3").PutObjectCommandOutput>;
 };
 export default _default;

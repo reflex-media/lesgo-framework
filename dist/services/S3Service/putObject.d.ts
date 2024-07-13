@@ -5,5 +5,5 @@ export interface PutObjectOptions {
     singletonConn: string;
     storageClass: StorageClass;
 }
-declare const putObject: (key: string, bucket: string, file: Buffer | Uint8Array | Blob | string, { region, singletonConn, storageClass }: PutObjectOptions) => Promise<import("@aws-sdk/client-s3").PutObjectCommandOutput>;
+declare const putObject: (key: string, file: Buffer | Uint8Array | Blob | string, bucket: string, { region, singletonConn, storageClass }: PutObjectOptions) => Promise<import("@aws-sdk/client-s3").PutObjectCommandOutput>;
 export default putObject;

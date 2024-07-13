@@ -11,20 +11,20 @@ describe('getUploadSignedUrl', () => {
     jest.clearAllMocks();
   });
 
-  it('should call getUploadSignedUrlService with default singletonConn, config region, and provided parameters', () => {
+  it('should call getUploadSignedUrlService with default bucket, singletonConn, config region, and provided parameters', () => {
     const key = 'testKey';
-    const bucket = 'testBucket';
-    const metadata = { foo: 'bar' };
-    const expiresIn = 600;
 
-    getUploadSignedUrl(key, bucket, { metadata, expiresIn });
+    getUploadSignedUrl(key);
 
-    expect(getUploadSignedUrlService).toHaveBeenCalledWith(key, bucket, {
-      singletonConn: 'default',
-      region: config.region,
-      metadata,
-      expiresIn,
-    });
+    expect(getUploadSignedUrlService).toHaveBeenCalledWith(
+      key,
+      config.s3.bucket,
+      {
+        singletonConn: 'default',
+        region: config.region,
+        expiresIn: 600,
+      }
+    );
   });
 
   it('should call getUploadSignedUrlService with specified singletonConn, config region, and provided parameters', () => {

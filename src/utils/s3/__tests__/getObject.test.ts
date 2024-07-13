@@ -11,13 +11,12 @@ describe('getObject', () => {
     jest.clearAllMocks();
   });
 
-  it('should call getObjectService with default singletonConn and config region', () => {
+  it('should call getObjectService with default bucket, singletonConn and config region', () => {
     const key = 'testKey';
-    const bucket = 'testBucket';
 
-    getObject(key, bucket);
+    getObject(key);
 
-    expect(getObjectService).toHaveBeenCalledWith(key, bucket, {
+    expect(getObjectService).toHaveBeenCalledWith(key, config.s3.bucket, {
       singletonConn: 'default',
       region: config.region,
     });

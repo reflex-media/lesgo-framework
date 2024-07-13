@@ -11,13 +11,12 @@ describe('getHeadObject', () => {
     jest.clearAllMocks();
   });
 
-  it('should call getHeadObjectService with default singletonConn and config region', () => {
+  it('should call getHeadObjectService with default bucket, singletonConn and region', () => {
     const key = 'testKey';
-    const bucket = 'testBucket';
 
-    getHeadObject(key, bucket);
+    getHeadObject(key);
 
-    expect(getHeadObjectService).toHaveBeenCalledWith(key, bucket, {
+    expect(getHeadObjectService).toHaveBeenCalledWith(key, config.s3.bucket, {
       singletonConn: 'default',
       region: config.region,
     });

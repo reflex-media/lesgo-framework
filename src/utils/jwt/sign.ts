@@ -22,10 +22,7 @@ const sign = (
       audience?: string;
       subject?: string;
     };
-  } = {
-    secret: '',
-    opts: {},
-  }
+  } = {}
 ): string => {
   const kid = opts?.keyid || '';
   secret = secret || config.secrets[0]?.secret || '';

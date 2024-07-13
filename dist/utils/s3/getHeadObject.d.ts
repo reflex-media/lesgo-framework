@@ -1,4 +1,4 @@
-declare const getHeadObject: (key: string, bucket: string, { singletonConn, region }?: {
+declare const getHeadObject: (key: string, bucket?: string, { singletonConn, region }?: {
     singletonConn?: string | undefined;
     region?: string | undefined;
 }) => Promise<{

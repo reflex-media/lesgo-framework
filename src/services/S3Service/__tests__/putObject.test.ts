@@ -21,44 +21,6 @@ describe('putObject', () => {
     jest.clearAllMocks();
   });
 
-  it('should throw an error if key is undefined', async () => {
-    const key = '';
-    const bucket = 'test-bucket';
-    const file = Buffer.from('test-file');
-    const options = {
-      region: 'us-west-2',
-      singletonConn: 'default',
-      storageClass: StorageClass.STANDARD,
-    };
-
-    await expect(putObject(key, bucket, file, options)).rejects.toThrow(
-      new LesgoException(
-        'Key is undefined',
-        'lesgo/services/S3Service/putObject::KEY_UNDEFINED'
-      )
-    );
-  });
-
-  it('should throw an error if bucket is undefined', async () => {
-    const key = 'test-key';
-    const bucket = '';
-    const file = Buffer.from('test-file');
-    const options = {
-      region: 'us-west-2',
-      singletonConn: 'default',
-      storageClass: StorageClass.STANDARD,
-    };
-
-    await expect(
-      S3Service.putObject(key, bucket, file, options)
-    ).rejects.toThrow(
-      new LesgoException(
-        'Bucket is undefined',
-        'lesgo/services/S3Service/putObject::BUCKET_UNDEFINED'
-      )
-    );
-  });
-
   it('should call getClient with the correct region and singletonConn', async () => {
     const key = 'test-key';
     const bucket = 'test-bucket';
@@ -69,7 +31,7 @@ describe('putObject', () => {
       storageClass: StorageClass.STANDARD,
     };
 
-    await putObject(key, bucket, file, options);
+    await putObject(key, file, bucket, options);
 
     expect(getClient).toHaveBeenCalledWith({
       region: options.region,
@@ -94,7 +56,7 @@ describe('putObject', () => {
       send: jest.fn().mockResolvedValue(response),
     });
 
-    const result = await putObject(key, bucket, file, options);
+    const result = await putObject(key, file, bucket, options);
 
     expect(result).toBe(response);
   });
@@ -114,7 +76,7 @@ describe('putObject', () => {
       send: jest.fn().mockRejectedValueOnce(error),
     });
 
-    await expect(putObject(key, bucket, file, options)).rejects.toThrow(
+    await expect(putObject(key, file, bucket, options)).rejects.toThrow(
       new LesgoException(
         'Error occurred putting object to S3 bucket',
         'lesgo.services.S3Service.putObject::ERROR',

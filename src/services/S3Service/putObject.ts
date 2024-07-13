@@ -13,21 +13,10 @@ export interface PutObjectOptions {
 
 const putObject = async (
   key: string,
-  bucket: string,
   file: Buffer | Uint8Array | Blob | string,
+  bucket: string,
   { region, singletonConn, storageClass }: PutObjectOptions
 ) => {
-  if (isEmpty(key)) {
-    throw new LesgoException('Key is undefined', `${FILE}::KEY_UNDEFINED`);
-  }
-
-  if (isEmpty(bucket)) {
-    throw new LesgoException(
-      'Bucket is undefined',
-      `${FILE}::BUCKET_UNDEFINED`
-    );
-  }
-
   const client = getClient({ region, singletonConn });
 
   const command = new PutObjectCommand({
