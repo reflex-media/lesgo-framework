@@ -1,13 +1,13 @@
-import { GetObjectCommand } from '@aws-sdk/client-s3';
+import { HeadObjectCommand } from '@aws-sdk/client-s3';
 import S3Service from '../../S3Service';
-import getObject from '../getObject';
+import getHeadObject from '../getHeadObject';
 import getClient from '../getClient';
 import { LesgoException } from '../../../exceptions';
 
 jest.mock('../getClient', () => {
   return jest.fn().mockImplementation(() => ({
     send: jest.fn().mockImplementation(command => {
-      if (command instanceof GetObjectCommand) {
+      if (command instanceof HeadObjectCommand) {
         return Promise.resolve(command);
       }
 
@@ -16,7 +16,7 @@ jest.mock('../getClient', () => {
   }));
 });
 
-describe('getObject', () => {
+describe('getHeadObject', () => {
   afterEach(() => {
     jest.clearAllMocks();
   });
@@ -29,10 +29,10 @@ describe('getObject', () => {
       singletonConn: 'default',
     };
 
-    await expect(getObject(key, bucket, options)).rejects.toThrow(
+    await expect(getHeadObject(key, bucket, options)).rejects.toThrow(
       new LesgoException(
         'Key is undefined',
-        'lesgo.services.S3Service.getObject::KEY_UNDEFINED'
+        'lesgo.services.S3Service.getHeadObject::KEY_UNDEFINED'
       )
     );
   });
@@ -45,10 +45,10 @@ describe('getObject', () => {
       singletonConn: 'default',
     };
 
-    await expect(S3Service.getObject(key, bucket, options)).rejects.toThrow(
+    await expect(S3Service.getHeadObject(key, bucket, options)).rejects.toThrow(
       new LesgoException(
         'Bucket is undefined',
-        'lesgo.services.S3Service.getObject::BUCKET_UNDEFINED'
+        'lesgo.services.S3Service.getHeadObject::BUCKET_UNDEFINED'
       )
     );
   });
@@ -61,7 +61,7 @@ describe('getObject', () => {
       singletonConn: 'default',
     };
 
-    await getObject(key, bucket, options);
+    await getHeadObject(key, bucket, options);
 
     expect(getClient).toHaveBeenCalledWith({
       region: options.region,
@@ -77,11 +77,12 @@ describe('getObject', () => {
       singletonConn: 'default',
     };
 
-    await expect(getObject(key, bucket, options)).resolves.toMatchObject({
-      input: {
-        Bucket: bucket,
-        Key: key,
-      },
+    await expect(getHeadObject(key, bucket, options)).resolves.toMatchObject({
+      ContentLength: undefined,
+      ContentType: undefined,
+      ETag: undefined,
+      LastModified: undefined,
+      Metadata: undefined,
     });
   });
 
@@ -98,10 +99,10 @@ describe('getObject', () => {
       send: jest.fn().mockRejectedValueOnce(error),
     });
 
-    await expect(getObject(key, bucket, options)).rejects.toThrow(
+    await expect(getHeadObject(key, bucket, options)).rejects.toThrow(
       new LesgoException(
-        'Error occurred getting object from S3 bucket',
-        'lesgo.services.S3Service.getObject::ERROR',
+        'Error occurred getting object metadata from S3 bucket',
+        'lesgo.services.S3Service.getHeadObject::ERROR',
         500,
         {
           error,

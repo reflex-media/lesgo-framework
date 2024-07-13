@@ -35,7 +35,7 @@ import { GetObjectCommand } from '@aws-sdk/client-s3';
 import getClient from './getClient';
 import LesgoException from '../../exceptions/LesgoException';
 import isEmpty from '../../utils/isEmpty';
-const FILE = 'lesgo/services/S3Service/getObject';
+const FILE = 'lesgo.services.S3Service.getObject';
 const getObject = (key, bucket, { region, singletonConn }) =>
   __awaiter(void 0, void 0, void 0, function* () {
     if (isEmpty(key)) {

@@ -12,7 +12,7 @@ const sign = (
   }
 ) => {
   var _a, _b;
-  let kid = (opts === null || opts === void 0 ? void 0 : opts.keyid) || '';
+  const kid = (opts === null || opts === void 0 ? void 0 : opts.keyid) || '';
   secret =
     secret ||
     ((_a = config.secrets[0]) === null || _a === void 0 ? void 0 : _a.secret) ||

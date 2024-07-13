@@ -8,7 +8,11 @@ const getUploadSignedUrl = (
     region = '',
     metadata = undefined,
     expiresIn = 600,
-  } = {}
+  } = {
+    singletonConn: 'default',
+    region: '',
+    expiresIn: 600,
+  }
 ) => {
   const configRegion = config.region;
   return getUploadSignedUrlService(key, bucket, {
