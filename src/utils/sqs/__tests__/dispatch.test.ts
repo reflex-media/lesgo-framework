@@ -1,6 +1,8 @@
 import { dispatch } from '../../../utils/sqs/dispatch';
 import sqs from '../../../utils/sqs';
 import dispatchService from '../../../services/SQSService/dispatch';
+import config from '../../../config/aws';
+import { LesgoException } from '../../../exceptions';
 
 jest.mock('../../../services/SQSService/dispatch');
 
@@ -43,5 +45,48 @@ describe('dispatch', () => {
       region,
       singletonConn,
     });
+  });
+
+  it('should call dispatchService with queue as string', () => {
+    const payload = { foo: 'bar' };
+    const queue = 'testQueue';
+    const singletonConn = 'customSingletonConn';
+    const region = 'us-west-2';
+    const queueObject = config.sqs.queues.find(q => q.alias === queue);
+
+    sqs.dispatch(payload, queue, { singletonConn, region });
+
+    expect(dispatchService).toHaveBeenCalledWith(
+      payload,
+      {
+        alias: queue,
+        name: queueObject?.name,
+        url: queueObject?.url,
+      },
+      {
+        region,
+        singletonConn,
+      }
+    );
+  });
+
+  it('should throw error if queue not found', async () => {
+    const payload = { foo: 'bar' };
+    const queue = 'invalidQueue';
+    const singletonConn = 'customSingletonConn';
+    const region = 'us-west-2';
+
+    expect(() =>
+      sqs.dispatch(payload, queue, { singletonConn, region })
+    ).toThrow(
+      new LesgoException(
+        `Queue with alias ${queue} not found in config`,
+        '::QUEUE_NOT_FOUND',
+        500,
+        {
+          queue,
+        }
+      )
+    );
   });
 });
