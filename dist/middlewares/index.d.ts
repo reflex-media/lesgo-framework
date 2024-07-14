@@ -13,7 +13,7 @@ declare const _default: {
         after: (handler: import("@middy/core").Request<any, any, Error, import("aws-lambda").Context, {}>) => Promise<void>;
         onError: (handler: import("@middy/core").Request<any, any, Error, import("aws-lambda").Context, {}>) => Promise<void>;
     };
-    httpResponseMiddleware: (opts?: {}) => {
+    httpResponseMiddleware: (opts?: import("./httpMiddleware").HttpMiddlewareOptions) => {
         after: (request: import("@middy/core").Request<any, any, Error, import("aws-lambda").Context, {}>) => Promise<void>;
         onError: (request: import("@middy/core").Request<any, any, Error, import("aws-lambda").Context, {}>) => Promise<void>;
     };

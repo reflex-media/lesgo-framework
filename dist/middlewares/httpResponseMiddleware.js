@@ -43,7 +43,15 @@ const defaultOptions = {
   isBase64Encoded: false,
 };
 const httpResponseMiddleware = (opts = {}) => {
-  const options = Object.assign(Object.assign({}, defaultOptions), opts);
+  const options = Object.assign(
+    Object.assign(Object.assign({}, defaultOptions), opts),
+    {
+      headers: Object.assign(
+        Object.assign({}, defaultOptions.headers),
+        opts.headers
+      ),
+    }
+  );
   const httpResponseMiddlewareAfter = request =>
     __awaiter(void 0, void 0, void 0, function* () {
       let body;

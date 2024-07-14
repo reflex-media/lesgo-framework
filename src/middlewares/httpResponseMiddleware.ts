@@ -1,6 +1,7 @@
 import middy from '@middy/core';
 import { LesgoException } from '../exceptions';
 import { isEmpty, logger } from '../utils';
+import { HttpMiddlewareOptions } from './httpMiddleware';
 
 const FILE = 'lesgo.middlewares.httpResponseMiddleware';
 
@@ -14,8 +15,15 @@ const defaultOptions = {
   isBase64Encoded: false,
 };
 
-const httpResponseMiddleware = (opts = {}) => {
-  const options = { ...defaultOptions, ...opts };
+const httpResponseMiddleware = (opts: HttpMiddlewareOptions = {}) => {
+  const options = {
+    ...defaultOptions,
+    ...opts,
+    headers: {
+      ...defaultOptions.headers,
+      ...opts.headers,
+    },
+  };
 
   const httpResponseMiddlewareAfter = async (request: middy.Request) => {
     let body;
