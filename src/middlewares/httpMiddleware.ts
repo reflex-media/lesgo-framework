@@ -15,6 +15,7 @@ interface MiddlewareObj<T = any, R = any> {
 export interface HttpMiddlewareOptions {
   debugMode?: boolean;
   headers?: Record<string, string>;
+  isBase64Encoded?: boolean;
 }
 
 const httpMiddleware = (opts: HttpMiddlewareOptions = {}) => {
