@@ -14,7 +14,7 @@ declare const _default: {
     getObject: (key: string, bucket?: string | undefined, { singletonConn, region }?: {
         singletonConn?: string | undefined;
         region?: string | undefined;
-    }) => Promise<import("@aws-sdk/client-s3").GetObjectCommandOutput>;
+    }) => Promise<Buffer>;
     getHeadObject: (key: string, bucket?: string | undefined, { singletonConn, region }?: {
         singletonConn?: string | undefined;
         region?: string | undefined;

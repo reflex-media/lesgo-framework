@@ -1,6 +1,7 @@
+/// <reference types="node" />
 export interface GetObjectOptions {
     region: string;
     singletonConn: string;
 }
-declare const getObject: (key: string, bucket: string, { region, singletonConn }: GetObjectOptions) => Promise<import("@aws-sdk/client-s3").GetObjectCommandOutput>;
+declare const getObject: (key: string, bucket: string, { region, singletonConn }: GetObjectOptions) => Promise<Buffer>;
 export default getObject;

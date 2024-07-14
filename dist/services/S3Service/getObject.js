@@ -32,9 +32,19 @@ var __awaiter =
     });
   };
 import { GetObjectCommand } from '@aws-sdk/client-s3';
+import { Readable } from 'stream';
 import getClient from './getClient';
 import LesgoException from '../../exceptions/LesgoException';
 const FILE = 'lesgo.services.S3Service.getObject';
+const streamToBuffer = stream =>
+  __awaiter(void 0, void 0, void 0, function* () {
+    return new Promise((resolve, reject) => {
+      const chunks = [];
+      stream.on('data', chunk => chunks.push(chunk));
+      stream.on('error', reject);
+      stream.on('end', () => resolve(Buffer.concat(chunks)));
+    });
+  });
 const getObject = (key, bucket, { region, singletonConn }) =>
   __awaiter(void 0, void 0, void 0, function* () {
     const client = getClient({ region, singletonConn });
@@ -42,11 +52,10 @@ const getObject = (key, bucket, { region, singletonConn }) =>
       Bucket: bucket,
       Key: key,
     });
+    let body;
     try {
-      const response = yield client.send(command);
-      // The Body object also has 'transformToByteArray' and 'transformToWebStream' methods.
-      // const str = await response.Body.transformToString();
-      return response;
+      const { Body } = yield client.send(command);
+      body = Body;
     } catch (error) {
       throw new LesgoException(
         'Error occurred getting object from S3 bucket',
@@ -59,5 +68,18 @@ const getObject = (key, bucket, { region, singletonConn }) =>
         }
       );
     }
+    if (!body || !(body instanceof Readable)) {
+      throw new LesgoException(
+        'No data returned from S3 or data is not a readable stream',
+        `${FILE}::ERROR_NO_DATA_OR_NOT_READABLE`,
+        500,
+        {
+          bucket,
+          key,
+        }
+      );
+    }
+    const objectBody = yield streamToBuffer(body);
+    return objectBody;
   });
 export default getObject;

@@ -16,7 +16,7 @@ declare const _default: {
         ContentType: string | undefined;
         Metadata: Record<string, string> | undefined;
     }>;
-    getObject: (key: string, bucket: string, { region, singletonConn }: import("./getObject").GetObjectOptions) => Promise<import("@aws-sdk/client-s3").GetObjectCommandOutput>;
+    getObject: (key: string, bucket: string, { region, singletonConn }: import("./getObject").GetObjectOptions) => Promise<Buffer>;
     getUploadSignedUrl: (key: string, bucket: string, { singletonConn, region, expiresIn, metadata }: import("./getUploadSignedUrl").GetUploadSignedUrlOptions) => Promise<string>;
     putObject: (key: string, file: string | Uint8Array | Buffer | Blob, bucket: string, { region, singletonConn, storageClass }: import("./putObject").PutObjectOptions) => Promise<import("@aws-sdk/client-s3").PutObjectCommandOutput>;
 };
