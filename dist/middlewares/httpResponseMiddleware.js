@@ -34,6 +34,11 @@ var __awaiter =
 import { isEmpty, logger } from '../utils';
 const defaultOptions = {
   debugMode: false,
+  headers: {
+    'Access-Control-Allow-Origin': '*',
+    'Cache-Control': 'no-cache',
+    'Content-Type': 'application/json',
+  },
 };
 const httpResponseMiddleware = (opts = {}) => {
   const options = Object.assign(Object.assign({}, defaultOptions), opts);
@@ -41,11 +46,10 @@ const httpResponseMiddleware = (opts = {}) => {
     __awaiter(void 0, void 0, void 0, function* () {
       request.response = {
         statusCode: 200,
-        headers: Object.assign(Object.assign({}, request.response.headers), {
-          'Access-Control-Allow-Origin': '*',
-          'Cache-Control': 'no-cache',
-          'Content-Type': 'application/json',
-        }),
+        headers: Object.assign(
+          Object.assign({}, options.headers),
+          request.response.headers
+        ),
         body: JSON.stringify({
           status: 'success',
           data: request.response,
@@ -58,11 +62,10 @@ const httpResponseMiddleware = (opts = {}) => {
       const error = request.error;
       request.response = {
         statusCode: error.statusCode || 500,
-        headers: {
-          'Access-Control-Allow-Origin': '*',
-          'Cache-Control': 'no-cache',
-          'Content-Type': 'application/json',
-        },
+        headers: Object.assign(
+          Object.assign({}, options.headers),
+          request.response.headers
+        ),
         body: JSON.stringify({
           status: 'error',
           data: null,

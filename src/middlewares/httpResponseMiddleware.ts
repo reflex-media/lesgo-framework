@@ -4,6 +4,11 @@ import { isEmpty, logger } from '../utils';
 
 const defaultOptions = {
   debugMode: false,
+  headers: {
+    'Access-Control-Allow-Origin': '*',
+    'Cache-Control': 'no-cache',
+    'Content-Type': 'application/json',
+  },
 };
 
 const httpResponseMiddleware = (opts = {}) => {
@@ -13,10 +18,8 @@ const httpResponseMiddleware = (opts = {}) => {
     request.response = {
       statusCode: 200,
       headers: {
+        ...options.headers,
         ...request.response.headers,
-        'Access-Control-Allow-Origin': '*',
-        'Cache-Control': 'no-cache',
-        'Content-Type': 'application/json',
       },
       body: JSON.stringify({
         status: 'success',
@@ -32,9 +35,8 @@ const httpResponseMiddleware = (opts = {}) => {
     request.response = {
       statusCode: error.statusCode || 500,
       headers: {
-        'Access-Control-Allow-Origin': '*',
-        'Cache-Control': 'no-cache',
-        'Content-Type': 'application/json',
+        ...options.headers,
+        ...request.response.headers,
       },
       body: JSON.stringify({
         status: 'error',
