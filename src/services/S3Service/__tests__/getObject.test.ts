@@ -5,7 +5,7 @@ import { LesgoException } from '../../../exceptions';
 import { Readable } from 'stream';
 
 const readableStream = new Readable({
-  read(size) {
+  read() {
     this.push('Your stream content here');
     this.push(null);
   },

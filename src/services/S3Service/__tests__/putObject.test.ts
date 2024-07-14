@@ -1,6 +1,5 @@
 import { PutObjectCommand, StorageClass } from '@aws-sdk/client-s3';
 import LesgoException from '../../../exceptions/LesgoException';
-import S3Service from '../../S3Service';
 import putObject from '../putObject';
 import getClient from '../getClient';
 

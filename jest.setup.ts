@@ -26,4 +26,6 @@ process.env = {
 
   LESGO_AWS_S3_REGION: 'ap-southeast-1',
   LESGO_AWS_S3_BUCKET: 'lesgo-dev',
+
+  LESGO_AWS_SQS_REGION: 'ap-southeast-1',
 };

@@ -11,4 +11,11 @@ export default {
       process.env.AWS_ACCOUNT_REGION ||
       'ap-southeast-1',
   },
+  sqs: {
+    region:
+      process.env.LESGO_AWS_SQS_REGION ||
+      process.env.LESGO_AWS_REGION ||
+      process.env.AWS_ACCOUNT_REGION ||
+      'ap-southeast-1',
+  },
 };

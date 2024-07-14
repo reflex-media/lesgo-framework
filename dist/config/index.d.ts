@@ -15,6 +15,9 @@ declare const _default: {
             bucket: string;
             region: string;
         };
+        sqs: {
+            region: string;
+        };
     };
     crypto: {
         hash: {

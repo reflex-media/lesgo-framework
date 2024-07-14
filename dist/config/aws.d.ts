@@ -4,5 +4,8 @@ declare const _default: {
         bucket: string;
         region: string;
     };
+    sqs: {
+        region: string;
+    };
 };
 export default _default;
