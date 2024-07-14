@@ -1,6 +1,6 @@
 import { customAlphabet } from 'nanoid';
 
-interface GenerateUidParams {
+export interface GenerateUidParams {
   prefix?: string;
   suffix?: string;
   length?: number;

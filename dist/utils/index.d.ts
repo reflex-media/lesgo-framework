@@ -1,3 +1,4 @@
+import generateUid from './generateUid';
 import getCurrentTimestamp from './getCurrentTimestamp';
 import getJwtSubFromAuthHeader from './getJwtSubFromAuthHeader';
 import isDecimal from './isDecimal';
@@ -5,8 +6,9 @@ import isEmail from './isEmail';
 import isEmpty from './isEmpty';
 import logger from './logger';
 import validateFields from './validateFields';
-export { getCurrentTimestamp, getJwtSubFromAuthHeader, isDecimal, isEmail, isEmpty, logger, validateFields, };
+export { generateUid, getCurrentTimestamp, getJwtSubFromAuthHeader, isDecimal, isEmail, isEmpty, logger, validateFields, };
 declare const _default: {
+    generateUid: (params?: import("./generateUid").GenerateUidParams) => string;
     getCurrentTimestamp: () => number;
     getJwtSubFromAuthHeader: (authHeader: string) => any;
     isDecimal: (number: string | number) => boolean;

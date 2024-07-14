@@ -1,4 +1,4 @@
-interface GenerateUidParams {
+export interface GenerateUidParams {
     prefix?: string;
     suffix?: string;
     length?: number;

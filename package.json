@@ -107,6 +107,10 @@
       "import": "./dist/services/S3Service/index.js",
       "require": "./dist/services/S3Service/index.js"
     },
+    "./services/SQSService": {
+      "import": "./dist/services/SQSService/index.js",
+      "require": "./dist/services/SQSService/index.js"
+    },
     "./services/LoggerService": {
       "import": "./dist/services/LoggerService.js",
       "require": "./dist/services/LoggerService.js"
@@ -130,6 +134,10 @@
     "./utils/s3": {
       "import": "./dist/utils/s3/index.js",
       "require": "./dist/utils/s3/index.js"
+    },
+    "./utils/sqs": {
+      "import": "./dist/utils/sqs/index.js",
+      "require": "./dist/utils/sqs/index.js"
     }
   },
   "husky": {

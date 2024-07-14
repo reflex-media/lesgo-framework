@@ -1,3 +1,4 @@
+import generateUid from './generateUid';
 import getCurrentTimestamp from './getCurrentTimestamp';
 import getJwtSubFromAuthHeader from './getJwtSubFromAuthHeader';
 import isDecimal from './isDecimal';
@@ -7,6 +8,7 @@ import logger from './logger';
 import validateFields from './validateFields';
 
 export {
+  generateUid,
   getCurrentTimestamp,
   getJwtSubFromAuthHeader,
   isDecimal,
@@ -17,6 +19,7 @@ export {
 };
 
 export default {
+  generateUid,
   getCurrentTimestamp,
   getJwtSubFromAuthHeader,
   isDecimal,
