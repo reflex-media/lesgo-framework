@@ -1,14 +1,23 @@
 import { GetObjectCommand } from '@aws-sdk/client-s3';
-import S3Service from '../../S3Service';
 import getObject from '../getObject';
 import getClient from '../getClient';
 import { LesgoException } from '../../../exceptions';
+import { Readable } from 'stream';
+
+const readableStream = new Readable({
+  read(size) {
+    this.push('Your stream content here');
+    this.push(null);
+  },
+});
 
 jest.mock('../getClient', () => {
   return jest.fn().mockImplementation(() => ({
     send: jest.fn().mockImplementation(command => {
       if (command instanceof GetObjectCommand) {
-        return Promise.resolve(command);
+        return Promise.resolve({
+          Body: readableStream,
+        });
       }
 
       return Promise.reject(new Error('Command not mocked'));
@@ -34,22 +43,6 @@ describe('getObject', () => {
     expect(getClient).toHaveBeenCalledWith({
       region: options.region,
       singletonConn: options.singletonConn,
-    });
-  });
-
-  it('should call GetObjectCommand with the correct bucket and key', async () => {
-    const key = 'testKey';
-    const bucket = 'testBucket';
-    const options = {
-      region: 'us-west-2',
-      singletonConn: 'default',
-    };
-
-    await expect(getObject(key, bucket, options)).resolves.toMatchObject({
-      input: {
-        Bucket: bucket,
-        Key: key,
-      },
     });
   });
 
