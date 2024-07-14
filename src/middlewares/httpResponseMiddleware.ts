@@ -9,23 +9,33 @@ const defaultOptions = {
     'Cache-Control': 'no-cache',
     'Content-Type': 'application/json',
   },
+  isBase64Encoded: false,
 };
 
 const httpResponseMiddleware = (opts = {}) => {
   const options = { ...defaultOptions, ...opts };
 
   const httpResponseMiddlewareAfter = async (request: middy.Request) => {
+    let body;
+
+    if (options.headers['Content-Type'] !== 'application/json') {
+      body = request.response;
+    } else {
+      body = JSON.stringify({
+        status: 'success',
+        data: request.response,
+        _meta: options.debugMode ? request.event : {},
+      });
+    }
+
     request.response = {
       statusCode: 200,
       headers: {
         ...options.headers,
         ...request.response.headers,
       },
-      body: JSON.stringify({
-        status: 'success',
-        data: request.response,
-        _meta: options.debugMode ? request.event : {},
-      }),
+      body,
+      isBase64Encoded: options.isBase64Encoded,
     };
   };
 
