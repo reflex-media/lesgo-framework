@@ -32,6 +32,7 @@ var __awaiter =
     });
   };
 import { isEmpty, logger } from '../utils';
+const FILE = 'lesgo.middlewares.httpResponseMiddleware';
 const defaultOptions = {
   debugMode: false,
   headers: {
@@ -55,7 +56,7 @@ const httpResponseMiddleware = (opts = {}) => {
           _meta: options.debugMode ? request.event : {},
         });
       }
-      request.response = {
+      const responseData = {
         statusCode: 200,
         headers: Object.assign(
           Object.assign({}, options.headers),
@@ -64,11 +65,13 @@ const httpResponseMiddleware = (opts = {}) => {
         body,
         isBase64Encoded: options.isBase64Encoded,
       };
+      logger.debug(`${FILE}::RESPONSE_DATA_SUCCESS`, responseData);
+      request.response = responseData;
     });
   const httpResponseMiddlewareOnError = request =>
     __awaiter(void 0, void 0, void 0, function* () {
       const error = request.error;
-      request.response = {
+      const responseData = {
         statusCode: error.statusCode || 500,
         headers: Object.assign(
           Object.assign({}, options.headers),
@@ -85,6 +88,8 @@ const httpResponseMiddleware = (opts = {}) => {
           _meta: options.debugMode ? request.event : {},
         }),
       };
+      logger.debug(`${FILE}::RESPONSE_DATA_ERROR`, responseData);
+      request.response = responseData;
       if (isEmpty(error.statusCode) || error.statusCode >= 500) {
         logger.error(error.message, error);
       } else {
