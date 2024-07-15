@@ -78,12 +78,15 @@ const httpResponseMiddleware = (opts = {}) => {
     });
   const httpResponseMiddlewareOnError = request =>
     __awaiter(void 0, void 0, void 0, function* () {
+      var _a;
       const error = request.error;
       const responseData = {
         statusCode: error.statusCode || 500,
         headers: Object.assign(
           Object.assign({}, options.headers),
-          request.response.headers
+          (_a = request.response) === null || _a === void 0
+            ? void 0
+            : _a.headers
         ),
         body: JSON.stringify({
           status: 'error',

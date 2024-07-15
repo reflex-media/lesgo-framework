@@ -59,7 +59,7 @@ const httpResponseMiddleware = (opts: HttpMiddlewareOptions = {}) => {
       statusCode: error.statusCode || 500,
       headers: {
         ...options.headers,
-        ...request.response.headers,
+        ...request.response?.headers,
       },
       body: JSON.stringify({
         status: 'error',
