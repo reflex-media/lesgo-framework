@@ -34,12 +34,18 @@ var __awaiter =
 import { DeleteCommand } from '@aws-sdk/lib-dynamodb';
 import LesgoException from '../../exceptions/LesgoException';
 import logger from '../../utils/logger';
+import config from '../../config/aws';
 import getClient from './getClient';
 const FILE = 'lesgo.services.DynamoDbService.deleteRecord';
 const deleteRecord = (key, tableName, { region, singletonConn }) =>
   __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
     const input = {
-      TableName: tableName,
+      TableName:
+        (_a = config.dynamodb.tables.find(t => t.alias === tableName)) ===
+          null || _a === void 0
+          ? void 0
+          : _a.name,
       Key: key,
     };
     logger.debug(`${FILE}::QUERY_PREPARED`, { input });

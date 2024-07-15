@@ -5,6 +5,7 @@ import {
 } from '@aws-sdk/lib-dynamodb';
 import LesgoException from '../../exceptions/LesgoException';
 import { isEmpty, logger } from '../../utils';
+import config from '../../config/aws';
 import getClient from './getClient';
 
 const FILE = 'lesgo.services.DynamoDbService.updateRecord';
@@ -29,7 +30,7 @@ const prepareUpdateInput = (
   opts: UpdateRecordInputOptions
 ) => {
   let input: UpdateCommandInput = {
-    TableName: tableName,
+    TableName: config.dynamodb.tables.find(t => t.alias === tableName)?.name,
     Key: key,
     UpdateExpression: opts.updateExpression,
     ExpressionAttributeValues: opts.expressionAttributeValues,

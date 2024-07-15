@@ -5,6 +5,7 @@ import {
 } from '@aws-sdk/lib-dynamodb';
 import LesgoException from '../../exceptions/LesgoException';
 import logger from '../../utils/logger';
+import config from '../../config/aws';
 import getClient, { GetClientOptions } from './getClient';
 
 const FILE = 'lesgo.services.DynamoDbService.deleteRecord';
@@ -17,7 +18,7 @@ const deleteRecord = async (
   { region, singletonConn }: GetClientOptions
 ) => {
   const input: DeleteCommandInput = {
-    TableName: tableName,
+    TableName: config.dynamodb.tables.find(t => t.alias === tableName)?.name,
     Key: key,
   };
   logger.debug(`${FILE}::QUERY_PREPARED`, { input });

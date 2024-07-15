@@ -1,6 +1,7 @@
 import { QueryCommand, QueryCommandInput } from '@aws-sdk/lib-dynamodb';
 import LesgoException from '../../exceptions/LesgoException';
 import logger from '../../utils/logger';
+import config from '../../config/aws';
 import getClient from './getClient';
 
 const FILE = 'lesgo.services.DynamoDbService.query';
@@ -25,7 +26,7 @@ export const prepareQueryInput = (
   opts: QueryInputOptions
 ) => {
   const input: QueryCommandInput = {
-    TableName: tableName,
+    TableName: config.dynamodb.tables.find(t => t.alias === tableName)?.name,
     KeyConditionExpression: keyConditionExpression,
     ExpressionAttributeValues: expressionAttributeValues,
   };
