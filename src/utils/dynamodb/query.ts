@@ -2,18 +2,27 @@ import config from '../../config/aws';
 import queryService from '../../services/DynamoDbService/query';
 import isEmpty from '../isEmpty';
 
+export interface QueryOptions {
+  filterExpression?: string;
+  projectionExpression?: string;
+  expressionAttributeNames?: Record<string, string>;
+  singletonConn?: string;
+  region?: string;
+  indexName?: string;
+}
+
 export const query = (
   tableName: string,
   keyConditionExpression: string,
   expressionAttributeValues: Record<string, string>,
   {
-    filterExpression = '',
-    projectionExpression = '',
-    expressionAttributeNames = {},
+    filterExpression,
+    projectionExpression,
+    expressionAttributeNames,
+    indexName,
     singletonConn = 'default',
     region = '',
-    indexName = '',
-  } = {}
+  }: QueryOptions = {}
 ) => {
   region = isEmpty(region) ? config.dynamodb.region : region;
 

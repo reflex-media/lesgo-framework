@@ -6,12 +6,12 @@ export const query = (
   keyConditionExpression,
   expressionAttributeValues,
   {
-    filterExpression = '',
-    projectionExpression = '',
-    expressionAttributeNames = {},
+    filterExpression,
+    projectionExpression,
+    expressionAttributeNames,
+    indexName,
     singletonConn = 'default',
     region = '',
-    indexName = '',
   } = {}
 ) => {
   region = isEmpty(region) ? config.dynamodb.region : region;

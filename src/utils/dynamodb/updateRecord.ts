@@ -4,6 +4,15 @@ import updateRecordService, {
 } from '../../services/DynamoDbService/updateRecord';
 import isEmpty from '../isEmpty';
 
+export interface UpdateRecordOptions {
+  updateExpression?: string;
+  expressionAttributeValues?: Record<string, any>;
+  conditionExpression?: string;
+  expressionAttributeNames?: Record<string, string>;
+  singletonConn?: string;
+  region?: string;
+}
+
 export const updateRecord = (
   key: Key,
   tableName: string,
@@ -12,9 +21,9 @@ export const updateRecord = (
     region = '',
     updateExpression = '',
     expressionAttributeValues = {},
-    conditionExpression = '',
-    expressionAttributeNames = {},
-  } = {}
+    conditionExpression,
+    expressionAttributeNames,
+  }: UpdateRecordOptions = {}
 ) => {
   region = isEmpty(region) ? config.dynamodb.region : region;
 

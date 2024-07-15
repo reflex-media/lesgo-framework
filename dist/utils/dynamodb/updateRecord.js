@@ -9,8 +9,8 @@ export const updateRecord = (
     region = '',
     updateExpression = '',
     expressionAttributeValues = {},
-    conditionExpression = '',
-    expressionAttributeNames = {},
+    conditionExpression,
+    expressionAttributeNames,
   } = {}
 ) => {
   region = isEmpty(region) ? config.dynamodb.region : region;

@@ -5,12 +5,7 @@ const queryCount = (
   tableName,
   keyConditionExpression,
   expressionAttributeValues,
-  {
-    filterExpression = '',
-    singletonConn = 'default',
-    region = '',
-    indexName = '',
-  } = {}
+  { filterExpression, singletonConn = 'default', region = '', indexName } = {}
 ) => {
   region = isEmpty(region) ? config.dynamodb.region : region;
   return queryCountService(

@@ -2,16 +2,23 @@ import config from '../../config/aws';
 import queryCountService from '../../services/DynamoDbService/queryCount';
 import isEmpty from '../isEmpty';
 
+export interface QueryCountOptions {
+  filterExpression?: string;
+  singletonConn?: string;
+  region?: string;
+  indexName?: string;
+}
+
 const queryCount = (
   tableName: string,
   keyConditionExpression: string,
   expressionAttributeValues: Record<string, string>,
   {
-    filterExpression = '',
+    filterExpression,
     singletonConn = 'default',
     region = '',
-    indexName = '',
-  } = {}
+    indexName,
+  }: QueryCountOptions = {}
 ) => {
   region = isEmpty(region) ? config.dynamodb.region : region;
 
