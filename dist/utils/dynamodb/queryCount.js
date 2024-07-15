@@ -1,5 +1,5 @@
 import config from '../../config/aws';
-import queryCountService from '../../services/DynamoDbService/queryCount';
+import queryService from '../../services/DynamoDbService/query';
 import isEmpty from '../isEmpty';
 const queryCount = (
   tableName,
@@ -8,7 +8,7 @@ const queryCount = (
   { filterExpression, singletonConn = 'default', region = '', indexName } = {}
 ) => {
   region = isEmpty(region) ? config.dynamodb.region : region;
-  return queryCountService(
+  return queryService(
     tableName,
     keyConditionExpression,
     expressionAttributeValues,
