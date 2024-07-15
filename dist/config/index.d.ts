@@ -23,6 +23,13 @@ declare const _default: {
                 url: string;
             }[];
         };
+        dynamodb: {
+            region: string;
+            tables: {
+                alias: string;
+                name: string;
+            }[];
+        };
     };
     crypto: {
         hash: {

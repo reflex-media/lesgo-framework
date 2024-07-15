@@ -1,11 +1,12 @@
-import { S3Client } from '@aws-sdk/client-s3';
+import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
+import { DynamoDBDocumentClient } from '@aws-sdk/lib-dynamodb';
 import logger from '../../utils/logger';
 import isEmpty from '../../utils/isEmpty';
 
-const FILE = 'lesgo.services.S3Service.getClient';
+const FILE = 'lesgo.services.DynamoDbService.getClient';
 
-interface Singleton {
-  [key: string]: S3Client;
+export interface Singleton {
+  [key: string]: DynamoDBDocumentClient;
 }
 
 export interface GetClientOptions {
@@ -15,7 +16,7 @@ export interface GetClientOptions {
 
 const singleton: Singleton = {};
 
-const getClient = ({ region, singletonConn }: GetClientOptions) => {
+const getClient = ({ singletonConn, region }: GetClientOptions) => {
   if (!isEmpty(singleton[singletonConn])) {
     logger.debug(`${FILE}::REUSE_CLIENT_SINGLETON`, {
       client: singleton[singletonConn],
@@ -24,8 +25,10 @@ const getClient = ({ region, singletonConn }: GetClientOptions) => {
     return singleton[singletonConn];
   }
 
-  const client = new S3Client({ region });
-  logger.debug(`${FILE}::NEW_CLIENT`, {
+  const ddbClient = new DynamoDBClient({ region });
+  const client = DynamoDBDocumentClient.from(ddbClient);
+
+  logger.debug(`${FILE}::NEW_CLIENT_SINGLETON`, {
     client,
     region,
   });

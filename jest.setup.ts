@@ -34,4 +34,7 @@ process.env = {
 
   LESGO_AWS_SQS_REGION: 'ap-southeast-1',
   LESGO_AWS_SQS_QUEUE_NAMES: 'testQueue,testQueue2',
+
+  LESGO_AWS_DYNAMODB_REGION: 'ap-southeast-1',
+  LESGO_AWS_DYNAMODB_TABLE_NAMES: 'lesgoTable,lesgoTable2',
 };

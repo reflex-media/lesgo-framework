@@ -12,5 +12,12 @@ declare const _default: {
             url: string;
         }[];
     };
+    dynamodb: {
+        region: string;
+        tables: {
+            alias: string;
+            name: string;
+        }[];
+    };
 };
 export default _default;
