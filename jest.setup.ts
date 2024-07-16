@@ -33,8 +33,8 @@ process.env = {
   LESGO_AWS_S3_BUCKET: 'lesgo-dev',
 
   LESGO_AWS_SQS_REGION: 'ap-southeast-1',
-  LESGO_AWS_SQS_QUEUE_NAMES: 'testQueue,testQueue2',
+  LESGO_AWS_SQS_QUEUE_ALIASES: 'testQueue,testQueue2',
 
   LESGO_AWS_DYNAMODB_REGION: 'ap-southeast-1',
-  LESGO_AWS_DYNAMODB_TABLE_NAMES: 'testingTable,testingTable2',
+  LESGO_AWS_DYNAMODB_TABLE_ALIASES: 'testingTable,testingTable2',
 };
