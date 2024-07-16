@@ -4,6 +4,14 @@ import verifyService from '../../services/JWTService/verify';
 import isEmpty from '../isEmpty';
 import logger from '../logger';
 const FILE = 'lesgo.utils.jwt.verify';
+const decodeJwt = token => {
+  const parts = token.split('.');
+  return {
+    header: JSON.parse(Buffer.from(parts[0], 'base64').toString('utf8')),
+    payload: JSON.parse(Buffer.from(parts[1], 'base64').toString('utf8')),
+    signature: parts[2],
+  };
+};
 const verify = (
   token,
   { secret = '', opts = {} } = {
@@ -12,7 +20,8 @@ const verify = (
   }
 ) => {
   var _a, _b;
-  const kid = (opts === null || opts === void 0 ? void 0 : opts.keyid) || '';
+  const { header, payload } = decodeJwt(token);
+  const kid = opts.keyid || payload.kid || header.kid || '';
   secret =
     secret ||
     ((_a = config.secrets[0]) === null || _a === void 0 ? void 0 : _a.secret) ||

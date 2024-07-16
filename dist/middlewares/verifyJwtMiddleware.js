@@ -38,9 +38,8 @@ const FILE = 'lesgo.middlewares.verifyJwtMiddleware';
 const verifyJwtMiddleware = (options = {}) => {
   const verifyJwt = (token, opts) =>
     __awaiter(void 0, void 0, void 0, function* () {
-      let payload;
       try {
-        payload = verify(token, { secret: opts.secret, opts });
+        verify(token, { secret: opts.secret, opts });
       } catch (error) {
         throw new LesgoException(
           'Error verifying JWT',

@@ -6,6 +6,16 @@ import logger from '../logger';
 
 const FILE = 'lesgo.utils.jwt.verify';
 
+const decodeJwt = (token: string) => {
+  const parts = token.split('.');
+
+  return {
+    header: JSON.parse(Buffer.from(parts[0], 'base64').toString('utf8')),
+    payload: JSON.parse(Buffer.from(parts[1], 'base64').toString('utf8')),
+    signature: parts[2],
+  };
+};
+
 const verify = (
   token: string,
   {
@@ -25,7 +35,9 @@ const verify = (
     opts: {},
   }
 ): any => {
-  const kid = opts?.keyid || '';
+  const { header, payload } = decodeJwt(token);
+
+  const kid = opts.keyid || payload.kid || header.kid || '';
   secret = secret || config.secrets[0]?.secret || '';
 
   if (!isEmpty(kid)) {

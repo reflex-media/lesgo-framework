@@ -16,10 +16,8 @@ export interface VerifyJwtOptions {
 
 const verifyJwtMiddleware = (options: VerifyJwtOptions = {}) => {
   const verifyJwt = async (token: string, opts: VerifyJwtOptions) => {
-    let payload;
-
     try {
-      payload = verify(token, { secret: opts.secret, opts });
+      verify(token, { secret: opts.secret, opts });
     } catch (error: any) {
       throw new LesgoException(
         'Error verifying JWT',
