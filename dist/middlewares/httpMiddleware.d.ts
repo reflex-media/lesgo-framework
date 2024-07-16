@@ -1,8 +1,10 @@
 import middy from '@middy/core';
-export interface HttpMiddlewareOptions {
+import { VerifyJwtOptions } from './verifyJwtMiddleware';
+export interface HttpMiddlewareOptions extends VerifyJwtOptions {
     debugMode?: boolean;
     headers?: Record<string, string>;
     isBase64Encoded?: boolean;
+    isVerifyJwt?: boolean;
 }
 declare const httpMiddleware: (opts?: HttpMiddlewareOptions) => {
     before: (handler: middy.Request) => Promise<void>;

@@ -37,15 +37,20 @@ import doNotWaitForEmptyEventLoop from '@middy/do-not-wait-for-empty-event-loop'
 import httpHeaderNormalizer from '@middy/http-header-normalizer';
 import httpResponseMiddleware from './httpResponseMiddleware';
 import disconnectOpenConnectionsMiddleware from './disconnectOpenConnectionsMiddleware';
+import verifyJwtMiddleware from './verifyJwtMiddleware';
 const httpMiddleware = (opts = {}) => {
   const middlewarePackages = [
     doNotWaitForEmptyEventLoop(),
     eventNormalizer(),
     httpHeaderNormalizer(),
     jsonBodyParser({ disableContentTypeError: true }),
+    verifyJwtMiddleware(opts),
     disconnectOpenConnectionsMiddleware(),
     httpResponseMiddleware(opts),
   ];
+  if (typeof opts.isVerifyJwt !== 'undefined' && !opts.isVerifyJwt) {
+    middlewarePackages.splice(4, 1);
+  }
   return {
     before: handler =>
       __awaiter(void 0, void 0, void 0, function* () {
