@@ -31,7 +31,7 @@ const verifyJwtMiddleware = (options: VerifyJwtOptions = {}) => {
   };
 
   const verifyJwtMiddlewareBefore = async (request: middy.Request) => {
-    logger.debug(`${FILE}::JWT_TO_VERIFY`);
+    logger.debug(`${FILE}::JWT_TO_VERIFY`, { request, options });
     const token = request.event.headers.Authorization;
 
     if (!token) {
