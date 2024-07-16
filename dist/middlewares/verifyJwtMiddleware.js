@@ -35,7 +35,7 @@ import { verify } from '../utils/jwt';
 import logger from '../utils/logger';
 import { LesgoException } from '../exceptions';
 const FILE = 'lesgo.middlewares.verifyJwtMiddleware';
-const verifyJwtMiddleware = options => {
+const verifyJwtMiddleware = (options = {}) => {
   const verifyJwt = (token, opts) =>
     __awaiter(void 0, void 0, void 0, function* () {
       let payload;

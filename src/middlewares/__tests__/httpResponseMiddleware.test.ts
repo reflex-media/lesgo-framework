@@ -90,7 +90,7 @@ describe('httpResponseMiddleware', () => {
         error: {
           code: 'LESGO_EXCEPTION',
           message: 'Test error',
-          details: error,
+          details: {},
         },
         _meta: {},
       }),
@@ -124,7 +124,7 @@ describe('httpResponseMiddleware', () => {
         error: {
           code: 'LESGO_EXCEPTION',
           message: 'Test error',
-          details: error,
+          details: {},
         },
         _meta: {},
       }),

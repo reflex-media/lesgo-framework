@@ -7,7 +7,7 @@ export interface VerifyJwtOptions {
     audience?: string;
     secret?: string;
 }
-declare const verifyJwtMiddleware: (options: VerifyJwtOptions) => {
+declare const verifyJwtMiddleware: (options?: VerifyJwtOptions) => {
     before: (request: middy.Request) => Promise<void>;
 };
 export default verifyJwtMiddleware;

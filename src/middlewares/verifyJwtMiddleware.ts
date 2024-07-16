@@ -14,7 +14,7 @@ export interface VerifyJwtOptions {
   secret?: string;
 }
 
-const verifyJwtMiddleware = (options: VerifyJwtOptions) => {
+const verifyJwtMiddleware = (options: VerifyJwtOptions = {}) => {
   const verifyJwt = async (token: string, opts: VerifyJwtOptions) => {
     let payload;
 

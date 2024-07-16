@@ -23,7 +23,7 @@ declare const _default: {
         after: (handler: import("@middy/core").Request<any, any, Error, import("aws-lambda").Context, {}>) => Promise<void>;
         onError: (handler: import("@middy/core").Request<any, any, Error, import("aws-lambda").Context, {}>) => Promise<void>;
     };
-    verifyJwtMiddleware: (options: import("./verifyJwtMiddleware").VerifyJwtOptions) => {
+    verifyJwtMiddleware: (options?: import("./verifyJwtMiddleware").VerifyJwtOptions) => {
         before: (request: import("@middy/core").Request<any, any, Error, import("aws-lambda").Context, {}>) => Promise<void>;
     };
 };
