@@ -8,6 +8,10 @@ import { JwtHeader, JwtPayload } from 'jsonwebtoken';
 const FILE = 'lesgo.utils.jwt.verify';
 
 const decodeJwt = (token: string) => {
+  if (token.includes('Bearer')) {
+    token = token.replace('Bearer ', '');
+  }
+
   const parts = token.split('.');
 
   return {

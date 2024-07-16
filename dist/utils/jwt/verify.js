@@ -5,6 +5,9 @@ import isEmpty from '../isEmpty';
 import logger from '../logger';
 const FILE = 'lesgo.utils.jwt.verify';
 const decodeJwt = token => {
+  if (token.includes('Bearer')) {
+    token = token.replace('Bearer ', '');
+  }
   const parts = token.split('.');
   return {
     header: JSON.parse(Buffer.from(parts[0], 'base64').toString('utf8')),
