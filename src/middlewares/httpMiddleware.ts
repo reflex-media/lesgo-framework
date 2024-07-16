@@ -5,7 +5,6 @@ import doNotWaitForEmptyEventLoop from '@middy/do-not-wait-for-empty-event-loop'
 import httpHeaderNormalizer from '@middy/http-header-normalizer';
 import httpResponseMiddleware from './httpResponseMiddleware';
 import disconnectOpenConnectionsMiddleware from './disconnectOpenConnectionsMiddleware';
-import verifyJwtMiddleware, { VerifyJwtOptions } from './verifyJwtMiddleware';
 
 interface MiddlewareObj<T = any, R = any> {
   before?: (request: middy.Request<T, R>) => Promise<void>;
@@ -13,11 +12,10 @@ interface MiddlewareObj<T = any, R = any> {
   onError?: (request: middy.Request<T, R>) => Promise<void>;
 }
 
-export interface HttpMiddlewareOptions extends VerifyJwtOptions {
+export interface HttpMiddlewareOptions {
   debugMode?: boolean;
   headers?: Record<string, string>;
   isBase64Encoded?: boolean;
-  isVerifyJwt?: boolean;
 }
 
 const httpMiddleware = (opts: HttpMiddlewareOptions = {}) => {
@@ -26,14 +24,9 @@ const httpMiddleware = (opts: HttpMiddlewareOptions = {}) => {
     eventNormalizer(),
     httpHeaderNormalizer(),
     jsonBodyParser({ disableContentTypeError: true }),
-    verifyJwtMiddleware(opts),
     disconnectOpenConnectionsMiddleware(),
     httpResponseMiddleware(opts),
   ];
-
-  if (typeof opts.isVerifyJwt !== 'undefined' && !opts.isVerifyJwt) {
-    middlewarePackages.splice(4, 1);
-  }
 
   return {
     before: async (handler: middy.Request) => {
