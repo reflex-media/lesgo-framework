@@ -36,13 +36,27 @@ import LesgoException from '../../exceptions/LesgoException';
 import logger from '../../utils/logger';
 import getClient from './getClient';
 const FILE = 'lesgo.services.SQSService.dispatch';
-const dispatch = (payload, queue, { region, singletonConn }) =>
+const dispatch = (
+  payload,
+  queue,
+  {
+    region,
+    singletonConn,
+    fifo = false,
+    messageGroupId = '',
+    messageDeduplicationId = '',
+  }
+) =>
   __awaiter(void 0, void 0, void 0, function* () {
     const client = getClient({ region, singletonConn });
     const opts = {
       MessageBody: JSON.stringify(payload),
       QueueUrl: queue.url,
     };
+    if (fifo) {
+      opts.MessageGroupId = messageGroupId;
+      opts.MessageDeduplicationId = messageDeduplicationId;
+    }
     try {
       const data = yield client.send(new SendMessageCommand(opts));
       logger.debug(`${FILE}::MESSAGE_SENT_TO_QUEUE`, {

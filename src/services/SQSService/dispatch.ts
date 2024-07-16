@@ -1,4 +1,7 @@
-import { SendMessageCommand } from '@aws-sdk/client-sqs';
+import {
+  SendMessageCommand,
+  SendMessageCommandInput,
+} from '@aws-sdk/client-sqs';
 import LesgoException from '../../exceptions/LesgoException';
 import logger from '../../utils/logger';
 import getClient from './getClient';
@@ -14,14 +17,31 @@ export type Queue = {
 const dispatch = async (
   payload: Record<any, any>,
   queue: Queue,
-  { region, singletonConn }: { region: string; singletonConn: string }
+  {
+    region,
+    singletonConn,
+    fifo = false,
+    messageGroupId = '',
+    messageDeduplicationId = '',
+  }: {
+    region: string;
+    singletonConn: string;
+    fifo?: boolean;
+    messageGroupId?: string;
+    messageDeduplicationId?: string;
+  }
 ) => {
   const client = getClient({ region, singletonConn });
 
-  const opts = {
+  const opts: SendMessageCommandInput = {
     MessageBody: JSON.stringify(payload),
     QueueUrl: queue.url,
   };
+
+  if (fifo) {
+    opts.MessageGroupId = messageGroupId;
+    opts.MessageDeduplicationId = messageDeduplicationId;
+  }
 
   try {
     const data = await client.send(new SendMessageCommand(opts));
