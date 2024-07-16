@@ -27,7 +27,7 @@ export const deleteMessage = (
   const input = validateFields(opts, [
     { key: 'region', type: 'string', required: true },
     { key: 'singletonConn', type: 'string', required: true },
-    { key: 'receiptHandle', type: 'tring', required: true },
+    { key: 'receiptHandle', type: 'string', required: true },
   ]);
 
   logger.debug(`${FILE}::VALIDATED_INPUT`, {
