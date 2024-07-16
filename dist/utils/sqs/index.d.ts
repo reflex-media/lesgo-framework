@@ -2,12 +2,7 @@ import dispatch from './dispatch';
 import getClient from './getClient';
 export { dispatch, getClient };
 declare const _default: {
-    dispatch: (payload: Record<any, any>, queue: string | import("../../services/SQSService/dispatch").Queue, { singletonConn, region, fifo, messageGroupId, }?: {
-        singletonConn?: string | undefined;
-        region?: string | undefined;
-        fifo?: boolean | undefined;
-        messageGroupId?: string | undefined;
-    }) => Promise<import("@aws-sdk/client-sqs").SendMessageCommandOutput>;
+    dispatch: (payload: Record<any, any>, queue: string | import("../../services/SQSService/dispatch").Queue, opts?: import("./dispatch").DispatchOptions) => Promise<import("@aws-sdk/client-sqs").SendMessageCommandOutput>;
     getClient: ({ singletonConn, region }?: {
         singletonConn?: string | undefined;
         region?: string | undefined;

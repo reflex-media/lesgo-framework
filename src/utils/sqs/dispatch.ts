@@ -7,28 +7,31 @@ import logger from '../logger';
 
 const FILE = 'lesgo.utils.sqs.dispatch';
 
+export interface DispatchOptions {
+  region?: string;
+  singletonConn?: string;
+  fifo?: boolean;
+  messageGroupId?: string;
+  messageDeduplicationId?: string;
+}
+
 export const dispatch = (
   payload: Record<any, any>,
   queue: string | Queue,
-  {
-    singletonConn = 'default',
-    region = '',
-    fifo = false,
-    messageGroupId = '',
-  } = {}
+  opts: DispatchOptions = {}
 ) => {
   logger.debug(`${FILE}::DISPATCH`, {
     payload,
     queue,
-    singletonConn,
-    region,
-    fifo,
-    messageGroupId,
+    opts,
   });
 
-  region = isEmpty(region) ? config.sqs.region : region;
+  opts.region = isEmpty(opts.region) ? config.sqs.region : opts.region;
+  opts.singletonConn = isEmpty(opts.singletonConn)
+    ? 'default'
+    : opts.singletonConn;
 
-  const input = validateFields({ payload, singletonConn, region }, [
+  const input = validateFields({ payload, ...opts }, [
     { key: 'payload', type: 'object', required: true },
     { key: 'region', type: 'string', required: true },
     { key: 'singletonConn', type: 'string', required: true },
@@ -58,7 +61,7 @@ export const dispatch = (
   }
 
   if (input.fifo || queue.name.endsWith('.fifo')) {
-    if (isEmpty(messageGroupId)) {
+    if (isEmpty(input.messageGroupId)) {
       throw new LesgoException(
         'messageGroupId is required for FIFO queue',
         `${FILE}::MESSAGE_GROUP_ID_REQUIRED`,

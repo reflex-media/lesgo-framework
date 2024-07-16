@@ -5,26 +5,17 @@ import isEmpty from '../isEmpty';
 import validateFields from '../validateFields';
 import logger from '../logger';
 const FILE = 'lesgo.utils.sqs.dispatch';
-export const dispatch = (
-  payload,
-  queue,
-  {
-    singletonConn = 'default',
-    region = '',
-    fifo = false,
-    messageGroupId = '',
-  } = {}
-) => {
+export const dispatch = (payload, queue, opts = {}) => {
   logger.debug(`${FILE}::DISPATCH`, {
     payload,
     queue,
-    singletonConn,
-    region,
-    fifo,
-    messageGroupId,
+    opts,
   });
-  region = isEmpty(region) ? config.sqs.region : region;
-  const input = validateFields({ payload, singletonConn, region }, [
+  opts.region = isEmpty(opts.region) ? config.sqs.region : opts.region;
+  opts.singletonConn = isEmpty(opts.singletonConn)
+    ? 'default'
+    : opts.singletonConn;
+  const input = validateFields(Object.assign({ payload }, opts), [
     { key: 'payload', type: 'object', required: true },
     { key: 'region', type: 'string', required: true },
     { key: 'singletonConn', type: 'string', required: true },
@@ -49,8 +40,8 @@ export const dispatch = (
     }
     queue = configQueue;
   }
-  if (fifo || queue.name.endsWith('.fifo')) {
-    if (isEmpty(messageGroupId)) {
+  if (input.fifo || queue.name.endsWith('.fifo')) {
+    if (isEmpty(input.messageGroupId)) {
       throw new LesgoException(
         'messageGroupId is required for FIFO queue',
         `${FILE}::MESSAGE_GROUP_ID_REQUIRED`,
