@@ -8,10 +8,6 @@ import { JwtHeader, JwtPayload } from 'jsonwebtoken';
 const FILE = 'lesgo.utils.jwt.verify';
 
 const decodeJwt = (token: string) => {
-  if (token.includes('Bearer')) {
-    token = token.replace('Bearer ', '');
-  }
-
   const parts = token.split('.');
 
   return {
@@ -45,6 +41,9 @@ const verify = (
   }
 ): any => {
   logger.debug(`${FILE}::REQUEST_RECEIVED`, { token, secret, opts });
+  if (token.includes('Bearer')) {
+    token = token.replace('Bearer ', '');
+  }
 
   const { header, payload, signature } = decodeJwt(token);
   logger.debug(`${FILE}::DECODED_JWT`, { header, payload, signature });
@@ -87,7 +86,7 @@ const verify = (
     };
   }
 
-  logger.debug(`${FILE}::OPTIONS`, { options, secret, kid });
+  logger.debug(`${FILE}::OPTIONS`, { options, kid });
   const decoded = verifyService(token, secret, options);
   return decoded;
 };

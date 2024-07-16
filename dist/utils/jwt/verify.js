@@ -5,9 +5,6 @@ import isEmpty from '../isEmpty';
 import logger from '../logger';
 const FILE = 'lesgo.utils.jwt.verify';
 const decodeJwt = token => {
-  if (token.includes('Bearer')) {
-    token = token.replace('Bearer ', '');
-  }
   const parts = token.split('.');
   return {
     header: JSON.parse(Buffer.from(parts[0], 'base64').toString('utf8')),
@@ -24,6 +21,9 @@ const verify = (
 ) => {
   var _a, _b;
   logger.debug(`${FILE}::REQUEST_RECEIVED`, { token, secret, opts });
+  if (token.includes('Bearer')) {
+    token = token.replace('Bearer ', '');
+  }
   const { header, payload, signature } = decodeJwt(token);
   logger.debug(`${FILE}::DECODED_JWT`, { header, payload, signature });
   const kid =
@@ -74,7 +74,7 @@ const verify = (
         'lesgo',
     });
   }
-  logger.debug(`${FILE}::OPTIONS`, { options, secret, kid });
+  logger.debug(`${FILE}::OPTIONS`, { options, kid });
   const decoded = verifyService(token, secret, options);
   return decoded;
 };
