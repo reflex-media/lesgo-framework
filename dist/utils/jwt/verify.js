@@ -74,7 +74,7 @@ const verify = (
         'lesgo',
     });
   }
-  logger.debug(`${FILE}::OPTIONS`, { options });
+  logger.debug(`${FILE}::OPTIONS`, { options, secret, kid });
   const decoded = verifyService(token, secret, options);
   return decoded;
 };
