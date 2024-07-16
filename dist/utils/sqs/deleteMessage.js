@@ -10,11 +10,14 @@ export const deleteMessage = (queue, receiptHandle, opts = {}) => {
   opts.singletonConn = isEmpty(opts.singletonConn)
     ? 'default'
     : opts.singletonConn;
-  const input = validateFields(opts, [
-    { key: 'region', type: 'string', required: true },
-    { key: 'singletonConn', type: 'string', required: true },
-    { key: 'receiptHandle', type: 'string', required: true },
-  ]);
+  const input = validateFields(
+    Object.assign(Object.assign({}, opts), { receiptHandle }),
+    [
+      { key: 'region', type: 'string', required: true },
+      { key: 'singletonConn', type: 'string', required: true },
+      { key: 'receiptHandle', type: 'string', required: true },
+    ]
+  );
   logger.debug(`${FILE}::VALIDATED_INPUT`, {
     input,
   });

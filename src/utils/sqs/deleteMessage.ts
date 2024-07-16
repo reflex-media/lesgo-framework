@@ -24,7 +24,7 @@ export const deleteMessage = (
     ? 'default'
     : opts.singletonConn;
 
-  const input = validateFields(opts, [
+  const input = validateFields({ ...opts, receiptHandle }, [
     { key: 'region', type: 'string', required: true },
     { key: 'singletonConn', type: 'string', required: true },
     { key: 'receiptHandle', type: 'string', required: true },
