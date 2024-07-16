@@ -6,11 +6,11 @@ const FILE = 'lesgo.middlewares.disconnectOpenConnectionsMiddleware';
 
 // FIXME: This function is not disconnecting any open connections
 const disconnectOpenConnectionsMiddleware = () => {
-  // const disconnect: any[] = [];
-
-  logger.debug(`${FILE}::PREPARING_TO_DISCONNECT`);
-
   const disconnectOpenConnections = async () => {
+    logger.debug(`${FILE}::PREPARING_TO_DISCONNECT`);
+
+    // const disconnect: any[] = [];
+
     // const memcacheClientSingleton = getMemcacheClientSingleton();
     // if (Object.keys(memcacheClientSingleton).length > 0) {
     //   Object.keys(memcacheClientSingleton).forEach(singletonConn => {
