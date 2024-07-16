@@ -57,7 +57,7 @@ export const dispatch = (
     queue = configQueue;
   }
 
-  if (fifo || queue.name.endsWith('.fifo')) {
+  if (input.fifo || queue.name.endsWith('.fifo')) {
     if (isEmpty(messageGroupId)) {
       throw new LesgoException(
         'messageGroupId is required for FIFO queue',
