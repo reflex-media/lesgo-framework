@@ -2,7 +2,6 @@ import { LesgoException } from '../../../exceptions';
 import deleteMessageService, {
   Queue,
 } from '../../../services/SQSService/deleteMessage';
-import isEmpty from '../../isEmpty';
 import logger from '../../logger';
 import { deleteMessage, DeleteMessagesOptions } from '../deleteMessage';
 
@@ -41,9 +40,9 @@ describe('deleteMessage', () => {
   });
 
   it('should throw a LesgoException when the queue alias is not found in config', () => {
-    expect(() => {
-      deleteMessage('nonExistentQueue', receiptHandle, opts);
-    }).toThrow(
+    expect(
+      deleteMessage('nonExistentQueue', receiptHandle, opts)
+    ).rejects.toThrow(
       new LesgoException(
         'Queue with alias nonExistentQueue not found in config',
         'lesgo.utils.sqs.deleteMessage::QUEUE_NOT_FOUND',

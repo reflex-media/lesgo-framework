@@ -13,7 +13,7 @@ export interface UpdateRecordOptions {
   region?: string;
 }
 
-export const updateRecord = (
+export const updateRecord = async (
   key: Key,
   tableName: string,
   {

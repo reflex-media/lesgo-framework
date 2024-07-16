@@ -12,7 +12,7 @@ export interface ScanOptions {
   indexName?: string;
 }
 
-export const scan = (
+export const scan = async (
   tableName: string,
   {
     filterExpression,

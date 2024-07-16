@@ -11,7 +11,7 @@ export interface QueryOptions {
   indexName?: string;
 }
 
-export const query = (
+export const query = async (
   tableName: string,
   keyConditionExpression: string,
   expressionAttributeValues: Record<string, string>,

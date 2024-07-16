@@ -3,7 +3,7 @@ import getDownloadSignedUrlService from '../../services/S3Service/getDownloadSig
 import isEmpty from '../isEmpty';
 import validateFields from '../validateFields';
 
-const getDownloadSignedUrl = (
+const getDownloadSignedUrl = async (
   key: string,
   bucket?: string,
   { singletonConn = 'default', region = '', expiresIn = 3600 } = {}

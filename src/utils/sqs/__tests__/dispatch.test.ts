@@ -76,9 +76,9 @@ describe('dispatch', () => {
     const singletonConn = 'customSingletonConn';
     const region = 'us-west-2';
 
-    expect(() =>
+    expect(
       sqs.dispatch(payload, queue, { singletonConn, region })
-    ).toThrow(
+    ).rejects.toThrow(
       new LesgoException(
         `Queue with alias ${queue} not found in config`,
         '::QUEUE_NOT_FOUND',

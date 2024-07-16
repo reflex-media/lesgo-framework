@@ -15,7 +15,7 @@ export interface DispatchOptions {
   messageDeduplicationId?: string;
 }
 
-export const dispatch = (
+export const dispatch = async (
   payload: Record<any, any>,
   queue: string | Queue,
   opts: DispatchOptions = {}

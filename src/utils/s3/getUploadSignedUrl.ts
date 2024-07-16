@@ -3,7 +3,7 @@ import getUploadSignedUrlService from '../../services/S3Service/getUploadSignedU
 import isEmpty from '../isEmpty';
 import validateFields from '../validateFields';
 
-const getUploadSignedUrl = (
+const getUploadSignedUrl = async (
   key: string,
   bucket?: string,
   {

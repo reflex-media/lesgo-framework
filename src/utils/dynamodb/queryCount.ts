@@ -9,7 +9,7 @@ export interface QueryCountOptions {
   indexName?: string;
 }
 
-const queryCount = (
+const queryCount = async (
   tableName: string,
   keyConditionExpression: string,
   expressionAttributeValues: Record<string, string>,

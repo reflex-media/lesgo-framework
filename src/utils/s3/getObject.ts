@@ -3,7 +3,7 @@ import getObjectService from '../../services/S3Service/getObject';
 import isEmpty from '../isEmpty';
 import validateFields from '../validateFields';
 
-const getObject = (
+const getObject = async (
   key: string,
   bucket?: string,
   { singletonConn = 'default', region = '' } = {}

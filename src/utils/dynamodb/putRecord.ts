@@ -4,7 +4,7 @@ import putRecordService, {
 } from '../../services/DynamoDbService/putRecord';
 import isEmpty from '../isEmpty';
 
-const putRecord = (
+const putRecord = async (
   item: Item,
   tableName: string,
   { singletonConn = 'default', region = '' } = {}

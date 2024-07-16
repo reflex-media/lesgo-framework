@@ -4,7 +4,7 @@ import deleteRecordService, {
 } from '../../services/DynamoDbService/deleteRecord';
 import isEmpty from '../isEmpty';
 
-const deleteRecord = (
+const deleteRecord = async (
   key: Key,
   tableName: string,
   { singletonConn = 'default', region = '' } = {}

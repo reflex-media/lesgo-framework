@@ -4,7 +4,7 @@ import putObjectService from '../../services/S3Service/putObject';
 import isEmpty from '../isEmpty';
 import validateFields from '../validateFields';
 
-const putObject = (
+const putObject = async (
   key: string,
   file: Buffer | Uint8Array | Blob | string,
   bucket?: string,

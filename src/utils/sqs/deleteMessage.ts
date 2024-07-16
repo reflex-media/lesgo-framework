@@ -14,7 +14,7 @@ export interface DeleteMessagesOptions {
   singletonConn?: string;
 }
 
-export const deleteMessage = (
+export const deleteMessage = async (
   queue: string | Queue,
   receiptHandle: string,
   opts: DeleteMessagesOptions = {}
