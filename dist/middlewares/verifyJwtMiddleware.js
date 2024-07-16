@@ -53,7 +53,7 @@ const verifyJwtMiddleware = (options = {}) => {
   const verifyJwtMiddlewareBefore = request =>
     __awaiter(void 0, void 0, void 0, function* () {
       logger.debug(`${FILE}::JWT_TO_VERIFY`, { request, options });
-      const token = request.event.headers.Authorization;
+      const token = request.event.headers.authorization;
       if (!token) {
         throw new LesgoException(
           'No token provided',

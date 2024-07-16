@@ -32,7 +32,7 @@ const verifyJwtMiddleware = (options: VerifyJwtOptions = {}) => {
 
   const verifyJwtMiddlewareBefore = async (request: middy.Request) => {
     logger.debug(`${FILE}::JWT_TO_VERIFY`, { request, options });
-    const token = request.event.headers.Authorization;
+    const token = request.event.headers.authorization;
 
     if (!token) {
       throw new LesgoException(
