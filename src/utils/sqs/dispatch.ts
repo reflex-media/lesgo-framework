@@ -3,6 +3,7 @@ import config from '../../config/aws';
 import dispatchService, { Queue } from '../../services/SQSService/dispatch';
 import isEmpty from '../isEmpty';
 import validateFields from '../validateFields';
+import logger from '../logger';
 
 const FILE = 'lesgo.utils.sqs.dispatch';
 
@@ -16,6 +17,15 @@ export const dispatch = (
     messageGroupId = '',
   } = {}
 ) => {
+  logger.debug(`${FILE}::DISPATCH`, {
+    payload,
+    queue,
+    singletonConn,
+    region,
+    fifo,
+    messageGroupId,
+  });
+
   region = isEmpty(region) ? config.sqs.region : region;
 
   const input = validateFields({ payload, singletonConn, region }, [
@@ -26,6 +36,10 @@ export const dispatch = (
     { key: 'messageGroupId', type: 'string', required: false },
     { key: 'messageDeduplicationId', type: 'string', required: false },
   ]);
+
+  logger.debug(`${FILE}::VALIDATED_INPUT`, {
+    input,
+  });
 
   if (typeof queue === 'string') {
     const configQueue = config.sqs.queues.find(q => q.alias === queue);
