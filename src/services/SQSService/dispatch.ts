@@ -21,8 +21,8 @@ const dispatch = async (
     region,
     singletonConn,
     fifo = false,
-    messageGroupId = '',
-    messageDeduplicationId = '',
+    messageGroupId,
+    messageDeduplicationId,
   }: {
     region: string;
     singletonConn: string;

@@ -43,8 +43,8 @@ const dispatch = (
     region,
     singletonConn,
     fifo = false,
-    messageGroupId = '',
-    messageDeduplicationId = '',
+    messageGroupId,
+    messageDeduplicationId,
   }
 ) =>
   __awaiter(void 0, void 0, void 0, function* () {
