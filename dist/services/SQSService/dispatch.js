@@ -74,6 +74,7 @@ const dispatch = (
           error,
           payload,
           queue,
+          opts,
         }
       );
     }

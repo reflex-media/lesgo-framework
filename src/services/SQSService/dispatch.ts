@@ -60,6 +60,7 @@ const dispatch = async (
         error,
         payload,
         queue,
+        opts,
       }
     );
   }
