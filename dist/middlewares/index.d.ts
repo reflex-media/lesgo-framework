@@ -24,7 +24,7 @@ declare const _default: {
         onError: (handler: import("@middy/core").Request<any, any, Error, import("aws-lambda").Context, {}>) => Promise<void>;
     };
     verifyJwtMiddleware: (options?: import("./verifyJwtMiddleware").VerifyJwtOptions) => {
-        before: (request: import("@middy/core").Request<any, any, Error, import("aws-lambda").Context, {}>) => Promise<void>;
+        before: (request: import("@middy/core").Request<any, any, Error, import("aws-lambda").Context, {}>) => void;
     };
 };
 export default _default;

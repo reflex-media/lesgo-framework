@@ -8,6 +8,6 @@ export interface VerifyJwtOptions {
     secret?: string;
 }
 declare const verifyJwtMiddleware: (options?: VerifyJwtOptions) => {
-    before: (request: middy.Request) => Promise<void>;
+    before: (request: middy.Request) => void;
 };
 export default verifyJwtMiddleware;

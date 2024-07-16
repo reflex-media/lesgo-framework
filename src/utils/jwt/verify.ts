@@ -3,6 +3,7 @@ import config from '../../config/jwt';
 import verifyService from '../../services/JWTService/verify';
 import isEmpty from '../isEmpty';
 import logger from '../logger';
+import { JwtHeader, JwtPayload } from 'jsonwebtoken';
 
 const FILE = 'lesgo.utils.jwt.verify';
 
@@ -10,8 +11,12 @@ const decodeJwt = (token: string) => {
   const parts = token.split('.');
 
   return {
-    header: JSON.parse(Buffer.from(parts[0], 'base64').toString('utf8')),
-    payload: JSON.parse(Buffer.from(parts[1], 'base64').toString('utf8')),
+    header: JSON.parse(
+      Buffer.from(parts[0], 'base64').toString('utf8')
+    ) as JwtHeader,
+    payload: JSON.parse(
+      Buffer.from(parts[1], 'base64').toString('utf8')
+    ) as JwtPayload,
     signature: parts[2],
   };
 };
@@ -19,8 +24,8 @@ const decodeJwt = (token: string) => {
 const verify = (
   token: string,
   {
-    secret = '',
-    opts = {},
+    secret,
+    opts,
   }: {
     secret?: string;
     opts?: {
@@ -35,9 +40,12 @@ const verify = (
     opts: {},
   }
 ): any => {
-  const { header, payload } = decodeJwt(token);
+  logger.debug(`${FILE}::REQUEST_RECEIVED`, { token, secret, opts });
 
-  const kid = opts.keyid || payload.kid || header.kid || '';
+  const { header, payload, signature } = decodeJwt(token);
+  logger.debug(`${FILE}::DECODED_JWT`, { header, payload, signature });
+
+  const kid = opts?.keyid || payload.kid || header.kid || '';
   secret = secret || config.secrets[0]?.secret || '';
 
   if (!isEmpty(kid)) {
@@ -56,11 +64,14 @@ const verify = (
     issuer?: string;
     audience?: string;
   } = {
-    algorithm: (opts?.algorithm || config.algorithm || 'HS256') as Algorithm,
+    algorithm: (opts?.algorithm ||
+      header.alg ||
+      config.algorithm ||
+      'HS256') as Algorithm,
   };
 
   let validateClaims = config.validateClaims;
-  if (typeof opts.validateClaims !== 'undefined') {
+  if (typeof opts?.validateClaims !== 'undefined') {
     validateClaims = opts.validateClaims;
   }
 

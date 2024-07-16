@@ -15,7 +15,7 @@ export interface VerifyJwtOptions {
 }
 
 const verifyJwtMiddleware = (options: VerifyJwtOptions = {}) => {
-  const verifyJwt = async (token: string, opts: VerifyJwtOptions) => {
+  const verifyJwt = (token: string, opts: VerifyJwtOptions) => {
     try {
       verify(token, { secret: opts.secret, opts });
     } catch (error: any) {
@@ -28,7 +28,7 @@ const verifyJwtMiddleware = (options: VerifyJwtOptions = {}) => {
     }
   };
 
-  const verifyJwtMiddlewareBefore = async (request: middy.Request) => {
+  const verifyJwtMiddlewareBefore = (request: middy.Request) => {
     logger.debug(`${FILE}::JWT_TO_VERIFY`, { request, options });
     const token = request.event.headers.authorization;
 
@@ -40,7 +40,7 @@ const verifyJwtMiddleware = (options: VerifyJwtOptions = {}) => {
       );
     }
 
-    await verifyJwt(token, options);
+    verifyJwt(token, options);
     logger.debug(`${FILE}::JWT_VERIFIED`);
   };
 

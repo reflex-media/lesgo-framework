@@ -14,14 +14,20 @@ const decodeJwt = token => {
 };
 const verify = (
   token,
-  { secret = '', opts = {} } = {
+  { secret, opts } = {
     secret: '',
     opts: {},
   }
 ) => {
   var _a, _b;
-  const { header, payload } = decodeJwt(token);
-  const kid = opts.keyid || payload.kid || header.kid || '';
+  logger.debug(`${FILE}::REQUEST_RECEIVED`, { token, secret, opts });
+  const { header, payload, signature } = decodeJwt(token);
+  logger.debug(`${FILE}::DECODED_JWT`, { header, payload, signature });
+  const kid =
+    (opts === null || opts === void 0 ? void 0 : opts.keyid) ||
+    payload.kid ||
+    header.kid ||
+    '';
   secret =
     secret ||
     ((_a = config.secrets[0]) === null || _a === void 0 ? void 0 : _a.secret) ||
@@ -42,11 +48,15 @@ const verify = (
   let options = {
     algorithm:
       (opts === null || opts === void 0 ? void 0 : opts.algorithm) ||
+      header.alg ||
       config.algorithm ||
       'HS256',
   };
   let validateClaims = config.validateClaims;
-  if (typeof opts.validateClaims !== 'undefined') {
+  if (
+    typeof (opts === null || opts === void 0 ? void 0 : opts.validateClaims) !==
+    'undefined'
+  ) {
     validateClaims = opts.validateClaims;
   }
   if (validateClaims) {
