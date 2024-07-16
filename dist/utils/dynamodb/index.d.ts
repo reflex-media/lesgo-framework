@@ -1,15 +1,20 @@
 import deleteRecord from './deleteRecord';
+import getClient from './getClient';
 import putRecord from './putRecord';
 import query from './query';
 import queryCount from './queryCount';
 import scan from './scan';
 import updateRecord from './updateRecord';
-export { deleteRecord, putRecord, query, queryCount, scan, updateRecord };
+export { deleteRecord, getClient, putRecord, query, queryCount, scan, updateRecord, };
 declare const _default: {
     deleteRecord: (key: import("../../services/DynamoDbService/deleteRecord").Key, tableName: string, { singletonConn, region }?: {
         singletonConn?: string | undefined;
         region?: string | undefined;
     }) => Promise<import("@aws-sdk/lib-dynamodb").DeleteCommandOutput>;
+    getClient: ({ singletonConn, region }?: {
+        singletonConn?: string | undefined;
+        region?: string | undefined;
+    }) => import("@aws-sdk/lib-dynamodb").DynamoDBDocumentClient;
     putRecord: (item: import("../../services/DynamoDbService/putRecord").Item, tableName: string, { singletonConn, region }?: {
         singletonConn?: string | undefined;
         region?: string | undefined;

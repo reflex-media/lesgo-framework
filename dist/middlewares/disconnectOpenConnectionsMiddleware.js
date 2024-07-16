@@ -37,10 +37,10 @@ import logger from '../utils/logger';
 const FILE = 'lesgo.middlewares.disconnectOpenConnectionsMiddleware';
 // FIXME: This function is not disconnecting any open connections
 const disconnectOpenConnectionsMiddleware = () => {
-  // const disconnect: any[] = [];
-  logger.debug(`${FILE}::PREPARING_TO_DISCONNECT`);
   const disconnectOpenConnections = () =>
     __awaiter(void 0, void 0, void 0, function* () {
+      logger.debug(`${FILE}::PREPARING_TO_DISCONNECT`);
+      // const disconnect: any[] = [];
       // const memcacheClientSingleton = getMemcacheClientSingleton();
       // if (Object.keys(memcacheClientSingleton).length > 0) {
       //   Object.keys(memcacheClientSingleton).forEach(singletonConn => {

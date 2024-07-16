@@ -1,15 +1,15 @@
-import { PutCommand, PutCommandInput } from '@aws-sdk/lib-dynamodb';
+import { DeleteCommand, DeleteCommandInput } from '@aws-sdk/lib-dynamodb';
 import LesgoException from '../../../exceptions/LesgoException';
 import logger from '../../../utils/logger';
 import config from '../../../config/aws';
 import getClient from '../getClient';
-import putRecord, { Item } from '../putRecord';
+import deleteRecord, { Key } from '../deleteRecord';
 import DynamoDbService from '../../DynamoDbService';
 
 jest.mock('../getClient', () => {
   return jest.fn().mockImplementation(() => ({
     send: jest.fn().mockImplementation(command => {
-      if (command instanceof PutCommand) {
+      if (command instanceof DeleteCommand) {
         return Promise.resolve(command.input);
       }
 
@@ -19,7 +19,7 @@ jest.mock('../getClient', () => {
 });
 jest.mock('../../../utils/logger');
 
-describe('putRecord', () => {
+describe('deleteRecord', () => {
   const tableName = 'testingTable';
   const region = 'ap-southeast-1';
   const singletonConn = 'default';
@@ -28,37 +28,40 @@ describe('putRecord', () => {
     jest.clearAllMocks();
   });
 
-  it('should put the record successfully', async () => {
-    const item: Item = { id: '123', name: 'John Doe' };
-    const input: PutCommandInput = {
+  it('should delete the record successfully', async () => {
+    const key: Key = { id: '123' };
+    const input: DeleteCommandInput = {
       TableName: config.dynamodb.tables.find(t => t.alias === tableName)?.name,
-      Item: item,
+      Key: key,
     };
 
-    const result = await putRecord(item, tableName, { region, singletonConn });
+    const result = await deleteRecord(key, tableName, {
+      region,
+      singletonConn,
+    });
 
     expect(getClient).toHaveBeenCalledWith({ singletonConn, region });
     expect(result).toEqual(input);
   });
 
-  it('should throw an exception when failed to put the record', async () => {
-    const item: Item = { id: '123', name: 'John Doe' };
-    const input: PutCommandInput = {
+  it('should throw an exception when failed to delete the record', async () => {
+    const key: Key = { id: '123' };
+    const input: DeleteCommandInput = {
       TableName: config.dynamodb.tables.find(t => t.alias === tableName)?.name,
-      Item: item,
+      Key: key,
     };
-    const error = new Error('Failed to put record');
+    const error = new Error('Failed to delete record');
     const client = {
       send: jest.fn().mockRejectedValue(error),
     };
     (getClient as jest.Mock).mockReturnValue(client);
 
     await expect(
-      DynamoDbService.putRecord(item, tableName, { region, singletonConn })
+      DynamoDbService.deleteRecord(key, tableName, { region, singletonConn })
     ).rejects.toThrow(
       new LesgoException(
-        'Failed to put record',
-        'lesgo.services.DynamoDbService.putRecord::ERROR',
+        'Failed to delete record',
+        'lesgo.services.DynamoDbService.deleteRecord::ERROR',
         500,
         {
           err: error,
@@ -69,7 +72,7 @@ describe('putRecord', () => {
 
     expect(getClient).toHaveBeenCalledWith({ singletonConn, region });
     expect(logger.debug).toHaveBeenCalledWith(
-      'lesgo.services.DynamoDbService.putRecord::QUERY_PREPARED',
+      'lesgo.services.DynamoDbService.deleteRecord::QUERY_PREPARED',
       { input }
     );
   });
