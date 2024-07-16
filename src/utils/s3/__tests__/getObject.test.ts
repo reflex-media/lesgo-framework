@@ -1,28 +1,28 @@
 import getObject from '../getObject';
 import getObjectService from '../../../services/S3Service/getObject';
 import s3Utils from '../../../utils/s3';
-import config from '../../../config/aws';
+import awsConfig from '../../../config/aws';
+import config from '../../../config';
 
 jest.mock('../../../services/S3Service/getObject');
-jest.mock('../../../config/aws');
 
 describe('getObject', () => {
   afterEach(() => {
     jest.clearAllMocks();
   });
 
-  it('should call getObjectService with default bucket, singletonConn and config region', () => {
+  it('should call getObjectService with default bucket, singletonConn and awsConfig region', () => {
     const key = 'testKey';
 
     getObject(key);
 
-    expect(getObjectService).toHaveBeenCalledWith(key, config.s3.bucket, {
+    expect(getObjectService).toHaveBeenCalledWith(key, awsConfig.s3.bucket, {
       singletonConn: 'default',
-      region: config.region,
+      region: awsConfig.region,
     });
   });
 
-  it('should call getObjectService with specified singletonConn and config region', () => {
+  it('should call getObjectService with specified singletonConn and awsConfig region', () => {
     const key = 'testKey';
     const bucket = 'testBucket';
     const singletonConn = 'customSingletonConn';
@@ -31,7 +31,7 @@ describe('getObject', () => {
 
     expect(getObjectService).toHaveBeenCalledWith(key, bucket, {
       singletonConn,
-      region: config.region,
+      region: config.aws.region,
     });
   });
 
