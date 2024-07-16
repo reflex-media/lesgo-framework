@@ -31,34 +31,28 @@ var __awaiter =
       step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
   };
-import { ReceiveMessageCommand } from '@aws-sdk/client-sqs';
+import { DeleteMessageCommand } from '@aws-sdk/client-sqs';
 import LesgoException from '../../exceptions/LesgoException';
 import logger from '../../utils/logger';
 import getClient from './getClient';
-const FILE = 'lesgo.services.SQSService.receiveMessages';
-const receiveMessages = (
-  queue,
-  { region, singletonConn, maxNumberOfMessages = 1, waitTimeSeconds = 0 }
-) =>
+const FILE = 'lesgo.services.SQSService.deleteMessage';
+const deleteMessage = (queue, receiptHandle, { region, singletonConn }) =>
   __awaiter(void 0, void 0, void 0, function* () {
     const client = getClient({ region, singletonConn });
     const opts = {
       QueueUrl: queue.url,
-      MaxNumberOfMessages: maxNumberOfMessages,
-      WaitTimeSeconds: waitTimeSeconds,
+      ReceiptHandle: receiptHandle,
     };
     try {
-      const data = yield client.send(new ReceiveMessageCommand(opts));
-      logger.debug(`${FILE}::MESSAGES_RECEIVED_FROM_QUEUE`, {
-        data,
+      yield client.send(new DeleteMessageCommand(opts));
+      logger.debug(`${FILE}::MESSAGE_DELETED_FROM_QUEUE`, {
         opts,
         queue,
       });
-      return data;
     } catch (error) {
       throw new LesgoException(
-        'Error occurred receiving messages from queue',
-        `${FILE}::RECEIVE_MESSAGES_ERROR`,
+        'Error occurred deleting message from queue',
+        `${FILE}::DELETE_MESSAGE_ERROR`,
         500,
         {
           error,
@@ -68,4 +62,4 @@ const receiveMessages = (
       );
     }
   });
-export default receiveMessages;
+export default deleteMessage;

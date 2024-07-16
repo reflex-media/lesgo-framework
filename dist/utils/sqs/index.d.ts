@@ -1,8 +1,10 @@
+import deleteMessage from './deleteMessage';
 import dispatch from './dispatch';
 import getClient from './getClient';
 import receiveMessages from './receiveMessages';
-export { dispatch, getClient, receiveMessages };
+export { deleteMessage, dispatch, getClient, receiveMessages };
 declare const _default: {
+    deleteMessage: (queue: string | import("../../services/SQSService/deleteMessage").Queue, receiptHandle: string, opts?: import("./deleteMessage").ReceiveMessagesOptions) => Promise<void>;
     dispatch: (payload: Record<any, any>, queue: string | import("../../services/SQSService/dispatch").Queue, opts?: import("./dispatch").DispatchOptions) => Promise<import("@aws-sdk/client-sqs").SendMessageCommandOutput>;
     getClient: ({ singletonConn, region }?: {
         singletonConn?: string | undefined;

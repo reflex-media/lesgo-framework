@@ -1,8 +1,13 @@
+import deleteMessage from './deleteMessage';
 import dispatch from './dispatch';
 import getClient from './getClient';
 import receiveMessages from './receiveMessages';
-export { dispatch, getClient, receiveMessages };
+export { deleteMessage, dispatch, getClient, receiveMessages };
 declare const _default: {
+    deleteMessage: (queue: import("./deleteMessage").Queue, receiptHandle: string, { region, singletonConn, }: {
+        region: string;
+        singletonConn: string;
+    }) => Promise<void>;
     dispatch: (payload: Record<any, any>, queue: import("./dispatch").Queue, { region, singletonConn, fifo, messageGroupId, messageDeduplicationId, }: {
         region: string;
         singletonConn: string;

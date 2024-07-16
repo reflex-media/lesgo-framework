@@ -20,7 +20,7 @@ const receiveMessages = async (
     region,
     singletonConn,
     maxNumberOfMessages = 1,
-    waitTimeSeconds = 3,
+    waitTimeSeconds = 0,
   }: {
     region: string;
     singletonConn: string;
