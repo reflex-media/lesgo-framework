@@ -31,53 +31,41 @@ var __awaiter =
       step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
   };
-import { SendMessageCommand } from '@aws-sdk/client-sqs';
+import { ReceiveMessageCommand } from '@aws-sdk/client-sqs';
 import LesgoException from '../../exceptions/LesgoException';
 import logger from '../../utils/logger';
 import getClient from './getClient';
-const FILE = 'lesgo.services.SQSService.dispatch';
-const dispatch = (
-  payload,
+const FILE = 'lesgo.services.SQSService.receiveMessages';
+const receiveMessages = (
   queue,
-  {
-    region,
-    singletonConn,
-    fifo = false,
-    messageGroupId,
-    messageDeduplicationId,
-  }
+  { region, singletonConn, maxNumberOfMessages = 1, waitTimeSeconds = 3 }
 ) =>
   __awaiter(void 0, void 0, void 0, function* () {
     const client = getClient({ region, singletonConn });
     const opts = {
-      MessageBody: JSON.stringify(payload),
       QueueUrl: queue.url,
+      MaxNumberOfMessages: maxNumberOfMessages,
+      WaitTimeSeconds: waitTimeSeconds,
     };
-    if (fifo) {
-      opts.MessageGroupId = messageGroupId;
-      opts.MessageDeduplicationId = messageDeduplicationId;
-    }
     try {
-      const data = yield client.send(new SendMessageCommand(opts));
-      logger.debug(`${FILE}::MESSAGE_SENT_TO_QUEUE`, {
-        opts,
-        payload,
-        queue,
+      const data = yield client.send(new ReceiveMessageCommand(opts));
+      logger.debug(`${FILE}::MESSAGES_RECEIVED_FROM_QUEUE`, {
         data,
+        opts,
+        queue,
       });
       return data;
     } catch (error) {
       throw new LesgoException(
-        'Error occurred sending message to queue',
-        `${FILE}::SEND_MESSAGE_ERROR`,
+        'Error occurred receiving messages from queue',
+        `${FILE}::RECEIVE_MESSAGES_ERROR`,
         500,
         {
           error,
-          payload,
           queue,
           opts,
         }
       );
     }
   });
-export default dispatch;
+export default receiveMessages;

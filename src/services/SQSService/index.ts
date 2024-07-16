@@ -1,9 +1,11 @@
-import getClient from './getClient';
 import dispatch from './dispatch';
+import getClient from './getClient';
+import receiveMessages from './receiveMessages';
 
-export { getClient, dispatch };
+export { dispatch, getClient, receiveMessages };
 
 export default {
-  getClient,
   dispatch,
+  getClient,
+  receiveMessages,
 };

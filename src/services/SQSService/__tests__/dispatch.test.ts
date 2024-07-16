@@ -49,6 +49,7 @@ describe('dispatch', () => {
     expect(logger.debug).toHaveBeenCalledWith(
       'lesgo.services.SQSService.dispatch::MESSAGE_SENT_TO_QUEUE',
       {
+        data: {},
         opts: {
           MessageBody: JSON.stringify(payload),
           QueueUrl: queue.url,

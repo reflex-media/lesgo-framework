@@ -49,6 +49,7 @@ const dispatch = async (
       opts,
       payload,
       queue,
+      data,
     });
     return data;
   } catch (error) {
