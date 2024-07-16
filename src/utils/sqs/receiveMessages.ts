@@ -16,7 +16,7 @@ export interface ReceiveMessagesOptions {
   waitTimeSeconds?: number;
 }
 
-export const receiveMessages = (
+export const receiveMessages = async (
   queue: string | Queue,
   opts: ReceiveMessagesOptions = {}
 ) => {

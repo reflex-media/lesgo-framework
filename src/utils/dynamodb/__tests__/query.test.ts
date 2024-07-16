@@ -1,5 +1,4 @@
 import query from '../query';
-import getClient from '../getClient';
 import queryService from '../../../services/DynamoDbService/query';
 
 jest.mock('../getClient');

@@ -1,12 +1,12 @@
-import { SendMessageCommand } from '@aws-sdk/client-sqs';
+import { ReceiveMessageCommand } from '@aws-sdk/client-sqs';
 import LesgoException from '../../../exceptions/LesgoException';
 import getClient from '../getClient';
-import dispatch from '../dispatch';
+import receiveMessages, { Queue } from '../receiveMessages';
 
 jest.mock('../getClient', () => {
   return jest.fn().mockImplementation(() => ({
     send: jest.fn().mockImplementation(command => {
-      if (command instanceof SendMessageCommand) {
+      if (command instanceof ReceiveMessageCommand) {
         if (command.input.QueueUrl === 'invalidQueueUrl') {
           return Promise.reject(new Error('invalidQueueUrl'));
         }
@@ -19,55 +19,58 @@ jest.mock('../getClient', () => {
   }));
 });
 
-describe('dispatch', () => {
-  const payload = { foo: 'bar' };
-  const queue = {
+describe('receiveMessages', () => {
+  const queue: Queue = {
     alias: 'testQueue',
     name: 'testQueueName',
     url: 'testQueueUrl',
   };
-  const singletonConn = 'default';
   const region = 'ap-southeast-1';
+  const singletonConn = 'default';
 
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
   it('should call getClient with the correct arguments', async () => {
-    await dispatch(payload, queue, { region, singletonConn });
+    await receiveMessages(queue, { region, singletonConn });
 
     expect(getClient).toHaveBeenCalledWith({ region, singletonConn });
   });
 
   it('should return the data from client.send', async () => {
-    const result = await dispatch(payload, queue, { region, singletonConn });
+    const resp = await receiveMessages(queue, { region, singletonConn });
 
-    expect(result).toMatchObject({
+    expect(resp).toMatchObject({
       _mocked: {
-        MessageBody: JSON.stringify(payload),
         QueueUrl: queue.url,
+        MaxNumberOfMessages: 1,
+        WaitTimeSeconds: 0,
       },
     });
   });
 
   it('should throw a LesgoException when an error occurs', async () => {
-    const queue = {
+    const queue: Queue = {
       alias: 'invalidQueueAlias',
       name: 'invalidQueueName',
       url: 'invalidQueueUrl',
     };
 
     await expect(
-      dispatch(payload, queue, { region, singletonConn })
+      receiveMessages(queue, { region, singletonConn })
     ).rejects.toThrow(
       new LesgoException(
-        'Error occurred sending message to queue',
-        'lesgo.services.SQSService.dispatch::SEND_MESSAGE_ERROR',
+        'Error occurred receiving messages from queue',
+        'lesgo.services.SQSService.receiveMessages::RECEIVE_MESSAGES_ERROR',
         500,
         {
-          error: new Error('invalidQueueUrl'),
-          payload,
           queue,
+          opts: {
+            QueueUrl: queue.url,
+            MaxNumberOfMessages: 1,
+            WaitTimeSeconds: 0,
+          },
         }
       )
     );

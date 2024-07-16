@@ -9,7 +9,7 @@ import logger from '../logger';
 
 const FILE = 'lesgo.utils.sqs.deleteMessage';
 
-export interface ReceiveMessagesOptions {
+export interface DeleteMessagesOptions {
   region?: string;
   singletonConn?: string;
 }
@@ -17,7 +17,7 @@ export interface ReceiveMessagesOptions {
 export const deleteMessage = (
   queue: string | Queue,
   receiptHandle: string,
-  opts: ReceiveMessagesOptions = {}
+  opts: DeleteMessagesOptions = {}
 ) => {
   opts.region = isEmpty(opts.region) ? config.sqs.region : opts.region;
   opts.singletonConn = isEmpty(opts.singletonConn)

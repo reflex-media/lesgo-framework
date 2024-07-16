@@ -1,5 +1,6 @@
 import { SQSClient } from '@aws-sdk/client-sqs';
 import getClient from '../getClient';
+import SQSService from '..';
 import logger from '../../../utils/logger';
 
 jest.mock('../../../utils/logger');
@@ -31,7 +32,7 @@ describe('getClient', () => {
     const singletonConn = 'default';
 
     const client1 = getClient({ region, singletonConn });
-    const client2 = getClient({ region, singletonConn });
+    const client2 = SQSService.getClient({ region, singletonConn });
 
     expect(logger.debug).toHaveBeenCalledTimes(2);
     expect(logger.debug).toHaveBeenCalledWith(
