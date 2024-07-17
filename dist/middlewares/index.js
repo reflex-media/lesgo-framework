@@ -2,12 +2,14 @@ import disconnectOpenConnectionsMiddleware from './disconnectOpenConnectionsMidd
 import httpMiddleware from './httpMiddleware';
 import httpResponseMiddleware from './httpResponseMiddleware';
 import sqsMiddleware from './sqsMiddleware';
+import verifyBasicAuthMiddleware from './verifyBasicAuthMiddleware';
 import verifyJwtMiddleware from './verifyJwtMiddleware';
 export {
   disconnectOpenConnectionsMiddleware,
   httpMiddleware,
   httpResponseMiddleware,
   sqsMiddleware,
+  verifyBasicAuthMiddleware,
   verifyJwtMiddleware,
 };
 export default {
@@ -15,5 +17,6 @@ export default {
   httpMiddleware,
   httpResponseMiddleware,
   sqsMiddleware,
+  verifyBasicAuthMiddleware,
   verifyJwtMiddleware,
 };

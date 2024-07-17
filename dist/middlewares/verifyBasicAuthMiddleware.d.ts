@@ -1,13 +1,8 @@
 import middy from '@middy/core';
-export interface VerifyJwtOptions {
-    keyid?: string;
-    algorithm?: string;
-    validateClaims?: boolean;
-    issuer?: string;
-    audience?: string;
-    secret?: string;
+export interface VerifyBasicAuthMiddlewareOptions {
+    debugMode?: boolean;
 }
-declare const verifyBasicAuthMiddleware: (options?: VerifyJwtOptions) => {
+declare const verifyBasicAuthMiddleware: (options?: VerifyBasicAuthMiddlewareOptions) => {
     before: (request: middy.Request) => void;
 };
 export default verifyBasicAuthMiddleware;

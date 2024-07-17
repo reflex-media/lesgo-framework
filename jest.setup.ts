@@ -27,6 +27,8 @@ process.env = {
   LESGO_JWT_AUDIENCE: 'lesgo',
   LESGO_JWT_VALIDATE_CLAIMS: 'true',
 
+  LESGO_BASIC_AUTH_LIST: 'john:j04nD0e,jane:j4n3d03',
+
   LESGO_AWS_REGION: 'ap-southeast-1',
 
   LESGO_AWS_S3_REGION: 'ap-southeast-1',
