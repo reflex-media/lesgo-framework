@@ -1,8 +1,9 @@
 import app from './app';
 import aws from './aws';
+import basicAuth from './basicAuth';
 import crypto from './crypto';
 import jwt from './jwt';
-export { app, aws, crypto, jwt };
+export { app, aws, basicAuth, crypto, jwt };
 declare const _default: {
     app: {
         name: string;
@@ -30,6 +31,12 @@ declare const _default: {
                 name: string;
             }[];
         };
+    };
+    basicAuth: {
+        authorizedList: {
+            username: string;
+            password: string;
+        }[];
     };
     crypto: {
         hash: {
