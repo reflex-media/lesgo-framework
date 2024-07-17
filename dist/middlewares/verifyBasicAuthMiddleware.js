@@ -2,11 +2,10 @@ import { verify } from '../utils/jwt';
 import logger from '../utils/logger';
 import { LesgoException } from '../exceptions';
 const FILE = 'lesgo.middlewares.verifyJwtMiddleware';
-const verifyJwtMiddleware = (options = {}) => {
-  const verifyJwt = (token, opts) => {
+const verifyBasicAuthMiddleware = (options = {}) => {
+  const verifyBasicAuth = (token, opts) => {
     try {
-      const decoded = verify(token, { secret: opts.secret, opts });
-      return decoded;
+      verify(token, { secret: opts.secret, opts });
     } catch (error) {
       throw new LesgoException(
         'Error verifying JWT',
@@ -16,7 +15,7 @@ const verifyJwtMiddleware = (options = {}) => {
       );
     }
   };
-  const verifyJwtMiddlewareBefore = request => {
+  const verifyBasicAuthMiddlewareBefore = request => {
     logger.debug(`${FILE}::JWT_TO_VERIFY`, { request, options });
     const token = request.event.headers.authorization;
     if (!token) {
@@ -26,12 +25,11 @@ const verifyJwtMiddleware = (options = {}) => {
         401
       );
     }
-    const decoded = verifyJwt(token, options);
-    logger.debug(`${FILE}::JWT_VERIFIED`, { decoded });
-    request.event.jwt = decoded;
+    verifyBasicAuth(token, options);
+    logger.debug(`${FILE}::JWT_VERIFIED`);
   };
   return {
-    before: verifyJwtMiddlewareBefore,
+    before: verifyBasicAuthMiddlewareBefore,
   };
 };
-export default verifyJwtMiddleware;
+export default verifyBasicAuthMiddleware;

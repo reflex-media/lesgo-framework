@@ -22,6 +22,6 @@ declare const _default: {
             issuer?: string | undefined;
             audience?: string | undefined;
         } | undefined;
-    }) => any;
+    }) => string | import("jsonwebtoken").Jwt | import("jsonwebtoken").JwtPayload;
 };
 export default _default;

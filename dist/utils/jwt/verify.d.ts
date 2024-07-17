@@ -1,3 +1,4 @@
+import { JwtPayload } from 'jsonwebtoken';
 declare const verify: (token: string, { secret, opts, }?: {
     secret?: string | undefined;
     opts?: {
@@ -7,5 +8,5 @@ declare const verify: (token: string, { secret, opts, }?: {
         issuer?: string | undefined;
         audience?: string | undefined;
     } | undefined;
-}) => any;
+}) => string | import("jsonwebtoken").Jwt | JwtPayload;
 export default verify;

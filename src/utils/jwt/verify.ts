@@ -39,8 +39,8 @@ const verify = (
     secret: '',
     opts: {},
   }
-): any => {
-  logger.debug(`${FILE}::REQUEST_RECEIVED`, { token, secret, opts });
+) => {
+  logger.debug(`${FILE}::REQUEST_RECEIVED`, { token, opts });
   if (token.includes('Bearer')) {
     token = token.replace('Bearer ', '');
   }

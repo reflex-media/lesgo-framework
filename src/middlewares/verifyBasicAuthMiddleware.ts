@@ -14,11 +14,10 @@ export interface VerifyJwtOptions {
   secret?: string;
 }
 
-const verifyJwtMiddleware = (options: VerifyJwtOptions = {}) => {
-  const verifyJwt = (token: string, opts: VerifyJwtOptions) => {
+const verifyBasicAuthMiddleware = (options: VerifyJwtOptions = {}) => {
+  const verifyBasicAuth = (token: string, opts: VerifyJwtOptions) => {
     try {
-      const decoded = verify(token, { secret: opts.secret, opts });
-      return decoded;
+      verify(token, { secret: opts.secret, opts });
     } catch (error: any) {
       throw new LesgoException(
         'Error verifying JWT',
@@ -29,7 +28,7 @@ const verifyJwtMiddleware = (options: VerifyJwtOptions = {}) => {
     }
   };
 
-  const verifyJwtMiddlewareBefore = (request: middy.Request) => {
+  const verifyBasicAuthMiddlewareBefore = (request: middy.Request) => {
     logger.debug(`${FILE}::JWT_TO_VERIFY`, { request, options });
     const token = request.event.headers.authorization;
 
@@ -41,15 +40,13 @@ const verifyJwtMiddleware = (options: VerifyJwtOptions = {}) => {
       );
     }
 
-    const decoded = verifyJwt(token, options);
-    logger.debug(`${FILE}::JWT_VERIFIED`, { decoded });
-
-    request.event.jwt = decoded;
+    verifyBasicAuth(token, options);
+    logger.debug(`${FILE}::JWT_VERIFIED`);
   };
 
   return {
-    before: verifyJwtMiddlewareBefore,
+    before: verifyBasicAuthMiddlewareBefore,
   };
 };
 
-export default verifyJwtMiddleware;
+export default verifyBasicAuthMiddleware;
