@@ -5,6 +5,7 @@ import basicAuthConfig from '../config/basicAuth';
 const FILE = 'lesgo.middlewares.verifyBasicAuthMiddleware';
 const verifyBasicAuthMiddleware = (options = {}) => {
   let decoded;
+  let input;
   const verifyBasicAuth = basicAuth => {
     try {
       if (basicAuth.includes('Basic')) {
@@ -21,17 +22,26 @@ const verifyBasicAuthMiddleware = (options = {}) => {
     }
     const [username, password] = decoded.split(':');
     logger.debug(`${FILE}::BASIC_AUTH_DECODED`, { username, password });
-    const input = validateFields({ username, password }, [
-      { key: 'username', type: 'string', required: true },
-      { key: 'password', type: 'string', required: true },
-    ]);
+    try {
+      input = validateFields({ username, password }, [
+        { key: 'username', type: 'string', required: true },
+        { key: 'password', type: 'string', required: true },
+      ]);
+    } catch (error) {
+      throw new LesgoException(
+        'Invalid basic auth due to missing fields',
+        `${FILE}::INVALID_BASIC_AUTH_MISSING_FIELDS`,
+        401,
+        error
+      );
+    }
     const matchFound = basicAuthConfig.authorizedList.find(
       a => a.username === username && a.password === password
     );
     if (!matchFound) {
       throw new LesgoException(
-        'Invalid basic auth',
-        `${FILE}::INVALID_BASIC_AUTH`,
+        'Invalid basic auth due to no match found',
+        `${FILE}::INVALID_BASIC_AUTH_NO_MATCH`,
         401
       );
     }
