@@ -17,20 +17,11 @@ const verifyBasicAuthMiddleware = (
   let input;
 
   const verifyBasicAuth = (basicAuth: string) => {
-    try {
-      if (basicAuth.includes('Basic')) {
-        basicAuth = basicAuth.replace('Basic ', '');
-      }
-
-      decoded = Buffer.from(basicAuth, 'base64').toString('utf8');
-    } catch (error: any) {
-      throw new LesgoException(
-        'Error decoding basic auth',
-        `${FILE}::ERROR_DECODING_BASIC_AUTH`,
-        401,
-        error
-      );
+    if (basicAuth.includes('Basic')) {
+      basicAuth = basicAuth.replace('Basic ', '');
     }
+
+    decoded = Buffer.from(basicAuth, 'base64').toString('utf8');
 
     const [username, password] = decoded.split(':');
     logger.debug(`${FILE}::BASIC_AUTH_DECODED`, { username, password });
