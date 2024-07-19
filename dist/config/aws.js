@@ -46,4 +46,29 @@ export default {
       name: `${process.env.APP_NAME}-${process.env.APP_ENV}-${t}`,
     })),
   },
+  rds: {
+    aurora: {
+      mysql: {
+        region:
+          process.env.LESGO_AWS_RDS_AURORA_MYSQL_REGION ||
+          process.env.LESGO_AWS_REGION ||
+          process.env.AWS_ACCOUNT_REGION ||
+          'ap-southeast-1',
+        secretArn:
+          process.env.LESGO_AWS_RDS_AURORA_MYSQL_SECRETS_MANAGER_DB_SECRET_ARN,
+        resourceArn: process.env.LESGO_AWS_RDS_AURORA_MYSQL_RESOURCE_ARN,
+        databaseName: process.env.LESGO_AWS_RDS_AURORA_MYSQL_DB_NAME,
+        databaseCredentialsSecretsManagerId:
+          process.env
+            .LESGO_AWS_RDS_AURORA_MYSQL_DB_CREDENTIALS_SECRETS_MANAGER_ID,
+      },
+    },
+  },
+  secretsManager: {
+    region:
+      process.env.LESGO_AWS_SECRETS_MANAGER_REGION ||
+      process.env.LESGO_AWS_REGION ||
+      process.env.AWS_ACCOUNT_REGION ||
+      'ap-southeast-1',
+  },
 };

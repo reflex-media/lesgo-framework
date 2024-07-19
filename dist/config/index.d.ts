@@ -31,6 +31,20 @@ declare const _default: {
                 name: string;
             }[];
         };
+        rds: {
+            aurora: {
+                mysql: {
+                    region: string;
+                    secretArn: string | undefined;
+                    resourceArn: string | undefined;
+                    databaseName: string | undefined;
+                    databaseCredentialsSecretsManagerId: string | undefined;
+                };
+            };
+        };
+        secretsManager: {
+            region: string;
+        };
     };
     basicAuth: {
         authorizedList: {
