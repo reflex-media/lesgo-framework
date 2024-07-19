@@ -147,6 +147,10 @@
     "./utils/dynamodb": {
       "import": "./dist/utils/dynamodb/index.js",
       "require": "./dist/utils/dynamodb/index.js"
+    },
+    "./utils/secretsManager": {
+      "import": "./dist/utils/secretsManager/index.js",
+      "require": "./dist/utils/secretsManager/index.js"
     }
   },
   "husky": {
