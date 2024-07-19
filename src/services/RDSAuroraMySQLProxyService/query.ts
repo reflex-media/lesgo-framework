@@ -1,6 +1,6 @@
-import { logger, validateFields } from 'src/utils';
+import { logger, validateFields } from '../../utils';
+import { LesgoException } from '../../exceptions';
 import getClient from './getClient';
-import { LesgoException } from 'src/exceptions';
 
 const FILE = 'lesgo.services.RDSAuroraMySQLService.query';
 
@@ -9,10 +9,10 @@ export interface QueryOptions {
   region: string;
 }
 
-const query = async (query: string, opts: QueryOptions) => {
+const query = async (sql: string, opts: QueryOptions) => {
   const input = validateFields({ query }, [
     {
-      key: 'query',
+      key: 'sql',
       type: 'string',
       required: true,
     },
@@ -21,7 +21,7 @@ const query = async (query: string, opts: QueryOptions) => {
   const connection = await getClient(opts);
 
   try {
-    const [results, fields] = await connection.query(input.query);
+    const [results, fields] = await connection.query(input.sql);
 
     logger.debug(`${FILE}::RECEIVED_RESPONSE`, { results, fields });
     return { results, fields };
