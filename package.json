@@ -164,13 +164,13 @@
       "import": "./dist/utils/secretsManager/index.js",
       "require": "./dist/utils/secretsManager/index.js"
     },
-    "./utils/rdsAuroraMySQLDataApi": {
-      "import": "./dist/utils/rdsAuroraMySQLDataApi/index.js",
-      "require": "./dist/utils/rdsAuroraMySQLDataApi/index.js"
+    "./utils/db/dataApi": {
+      "import": "./dist/utils/db/dataApi/index.js",
+      "require": "./dist/utils/db/dataApi/index.js"
     },
-    "./utils/rdsAuroraMySQLProxy": {
-      "import": "./dist/utils/rdsAuroraMySQLProxy/index.js",
-      "require": "./dist/utils/rdsAuroraMySQLProxy/index.js"
+    "./utils/db/proxy": {
+      "import": "./dist/utils/db/proxy/index.js",
+      "require": "./dist/utils/db/proxy/index.js"
     }
   },
   "husky": {

@@ -1,5 +1,5 @@
 import config from '../../../config/aws';
-import getClientService from '../../../services/RDSAuroraMySQLDataAPIService/getClient';
+import getClientService from '../../../services/RDSAuroraMySQLProxyService/getClient';
 import isEmpty from '../../isEmpty';
 import validateFields from '../../validateFields';
 
