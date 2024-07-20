@@ -120,6 +120,18 @@
       "import": "./dist/services/LoggerService.js",
       "require": "./dist/services/LoggerService.js"
     },
+    "./services/RDSAuroraMySQLDataAPIService": {
+      "import": "./dist/services/RDSAuroraMySQLDataAPIService/index.js",
+      "require": "./dist/services/RDSAuroraMySQLDataAPIService/index.js"
+    },
+    "./services/RDSAuroraMySQLProxyService": {
+      "import": "./dist/services/RDSAuroraMySQLProxyService/index.js",
+      "require": "./dist/services/RDSAuroraMySQLProxyService/index.js"
+    },
+    "./services/SecretsManagerService": {
+      "import": "./dist/services/SecretsManagerService/index.js",
+      "require": "./dist/services/SecretsManagerService/index.js"
+    },
     "./types": {
       "import": "./dist/types/index.js",
       "require": "./dist/types/index.js"
@@ -151,6 +163,14 @@
     "./utils/secretsManager": {
       "import": "./dist/utils/secretsManager/index.js",
       "require": "./dist/utils/secretsManager/index.js"
+    },
+    "./utils/rdsAuroraMySQLDataApi": {
+      "import": "./dist/utils/rdsAuroraMySQLDataApi/index.js",
+      "require": "./dist/utils/rdsAuroraMySQLDataApi/index.js"
+    },
+    "./utils/rdsAuroraMySQLProxy": {
+      "import": "./dist/utils/rdsAuroraMySQLProxy/index.js",
+      "require": "./dist/utils/rdsAuroraMySQLProxy/index.js"
     }
   },
   "husky": {
