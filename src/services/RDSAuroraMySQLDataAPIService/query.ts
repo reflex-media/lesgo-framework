@@ -34,6 +34,7 @@ const query = async (sql: string, opts: QueryOptions) => {
   };
 
   const command = new ExecuteStatementCommand(sqlParams);
+  logger.debug(`${FILE}::BUILDING_COMMAND`, { sqlParams, command });
 
   try {
     const result = await client.send(command);
@@ -43,9 +44,8 @@ const query = async (sql: string, opts: QueryOptions) => {
   } catch (err) {
     throw new LesgoException('Failed to query', `${FILE}::QUERY_ERROR`, 500, {
       err,
-      sql,
-      opts,
       sqlParams,
+      opts,
     });
   }
 };

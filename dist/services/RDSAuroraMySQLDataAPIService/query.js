@@ -64,6 +64,7 @@ const query = (sql, opts) =>
       sql: input.sql,
     });
     const command = new ExecuteStatementCommand(sqlParams);
+    logger.debug(`${FILE}::BUILDING_COMMAND`, { sqlParams, command });
     try {
       const result = yield client.send(command);
       logger.debug(`${FILE}::RECEIVED_RESPONSE`, { result, sqlParams });
@@ -71,9 +72,8 @@ const query = (sql, opts) =>
     } catch (err) {
       throw new LesgoException('Failed to query', `${FILE}::QUERY_ERROR`, 500, {
         err,
-        sql,
-        opts,
         sqlParams,
+        opts,
       });
     }
   });
