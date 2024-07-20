@@ -5,10 +5,14 @@ declare const _default: {
     getClient: ({ singletonConn, region }?: {
         singletonConn?: string | undefined;
         region?: string | undefined;
-    }) => Promise<{
-        client: import("aws-sdk/clients/rdsdataservice");
-        params: import("aws-sdk/clients/rdsdataservice").ExecuteStatementRequest;
-    }>;
-    query: (sql: string, opts?: import("./query").QueryOptions) => Promise<import("aws-sdk/lib/request").PromiseResult<import("aws-sdk/clients/rdsdataservice").ExecuteStatementResponse, import("aws-sdk").AWSError>>;
+    }) => {
+        client: import("@aws-sdk/client-rds-data").RDSDataClient;
+        params: {
+            secretArn: string | undefined;
+            resourceArn: string | undefined;
+            database: string | undefined;
+        };
+    };
+    query: (sql: string, opts?: import("./query").QueryOptions) => Promise<import("@aws-sdk/client-rds-data").ExecuteStatementCommandOutput>;
 };
 export default _default;

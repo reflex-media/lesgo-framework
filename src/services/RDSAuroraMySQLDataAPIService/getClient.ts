@@ -1,4 +1,7 @@
-import aws from 'aws-sdk';
+import {
+  RDSDataClient,
+  ExecuteStatementCommandInput,
+} from '@aws-sdk/client-rds-data';
 import logger from '../../utils/logger';
 import isEmpty from '../../utils/isEmpty';
 import awsConfig from '../../config/aws';
@@ -6,7 +9,7 @@ import awsConfig from '../../config/aws';
 const FILE = 'lesgo.services.RDSAuroraMySQLDataAPIService.getClient';
 
 export interface Singleton {
-  [key: string]: aws.RDSDataService;
+  [key: string]: RDSDataClient;
 }
 
 export interface GetClientOptions {
@@ -19,7 +22,7 @@ export interface GetClientOptions {
 
 const singleton: Singleton = {};
 
-const getClient = async ({
+const getClient = ({
   secretArn,
   resourceArn,
   databaseName,
@@ -36,7 +39,7 @@ const getClient = async ({
     database: isEmpty(databaseName)
       ? awsConfig.rds.aurora.mysql.databaseName
       : secretArn,
-  } as aws.RDSDataService.ExecuteStatementRequest;
+  };
 
   if (!isEmpty(singleton[singletonConn])) {
     logger.debug(`${FILE}::REUSE_CLIENT_SINGLETON`, {
@@ -50,16 +53,16 @@ const getClient = async ({
     };
   }
 
-  const rdsDataService = new aws.RDSDataService();
+  const client = new RDSDataClient({ region });
 
-  singleton[singletonConn] = rdsDataService;
+  singleton[singletonConn] = client;
   logger.debug(`${FILE}::NEW_CLIENT_SINGLETON`, {
     params,
     region,
   });
 
   return {
-    client: rdsDataService,
+    client,
     params,
   };
 };

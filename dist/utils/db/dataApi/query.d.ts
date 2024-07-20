@@ -13,5 +13,5 @@ export interface QueryServiceOptions {
     singletonConn: string;
     region: string;
 }
-declare const query: (sql: string, opts?: QueryOptions) => Promise<import("aws-sdk/lib/request").PromiseResult<import("aws-sdk/clients/rdsdataservice").ExecuteStatementResponse, import("aws-sdk").AWSError>>;
+declare const query: (sql: string, opts?: QueryOptions) => Promise<import("@aws-sdk/client-rds-data").ExecuteStatementCommandOutput>;
 export default query;

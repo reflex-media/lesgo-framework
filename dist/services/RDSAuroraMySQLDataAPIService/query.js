@@ -31,6 +31,7 @@ var __awaiter =
       step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
   };
+import { ExecuteStatementCommand } from '@aws-sdk/client-rds-data';
 import { logger, validateFields } from '../../utils';
 import { LesgoException } from '../../exceptions';
 import getClient from './getClient';
@@ -62,8 +63,9 @@ const query = (sql, opts) =>
           : params.database,
       sql: input.sql,
     });
+    const command = new ExecuteStatementCommand(sqlParams);
     try {
-      const result = yield client.executeStatement(sqlParams).promise();
+      const result = yield client.send(command);
       logger.debug(`${FILE}::RECEIVED_RESPONSE`, { result, sqlParams });
       return result;
     } catch (err) {

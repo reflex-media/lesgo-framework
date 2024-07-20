@@ -1,8 +1,12 @@
 declare const getClient: ({ singletonConn, region }?: {
     singletonConn?: string | undefined;
     region?: string | undefined;
-}) => Promise<{
-    client: import("aws-sdk/clients/rdsdataservice");
-    params: import("aws-sdk/clients/rdsdataservice").ExecuteStatementRequest;
-}>;
+}) => {
+    client: import("@aws-sdk/client-rds-data").RDSDataClient;
+    params: {
+        secretArn: string | undefined;
+        resourceArn: string | undefined;
+        database: string | undefined;
+    };
+};
 export default getClient;

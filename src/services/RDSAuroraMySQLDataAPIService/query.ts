@@ -1,3 +1,4 @@
+import { ExecuteStatementCommand } from '@aws-sdk/client-rds-data';
 import { logger, validateFields } from '../../utils';
 import { LesgoException } from '../../exceptions';
 import getClient from './getClient';
@@ -26,14 +27,16 @@ const query = async (sql: string, opts: QueryOptions) => {
 
   const sqlParams = {
     ...params,
-    secretArn: input.secretArn ?? params.secretArn,
-    resourceArn: input.resourceArn ?? params.resourceArn,
-    database: input.databaseName ?? params.database,
-    sql: input.sql,
+    secretArn: (input.secretArn ?? params.secretArn) as string,
+    resourceArn: (input.resourceArn ?? params.resourceArn) as string,
+    database: (input.databaseName ?? params.database) as string,
+    sql: input.sql as string,
   };
 
+  const command = new ExecuteStatementCommand(sqlParams);
+
   try {
-    const result = await client.executeStatement(sqlParams).promise();
+    const result = await client.send(command);
     logger.debug(`${FILE}::RECEIVED_RESPONSE`, { result, sqlParams });
 
     return result;
