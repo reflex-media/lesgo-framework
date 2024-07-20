@@ -58,9 +58,9 @@ export default {
           process.env.LESGO_AWS_RDS_AURORA_MYSQL_SECRETS_MANAGER_DB_SECRET_ARN,
         resourceArn: process.env.LESGO_AWS_RDS_AURORA_MYSQL_RESOURCE_ARN,
         databaseName: process.env.LESGO_AWS_RDS_AURORA_MYSQL_DB_NAME,
-        databaseCredentialsSecretsManagerId:
+        databaseCredentialsSecretsManagerSecretId:
           process.env
-            .LESGO_AWS_RDS_AURORA_MYSQL_DB_CREDENTIALS_SECRETS_MANAGER_ID,
+            .LESGO_AWS_SECRETS_MANAGER_RDS_AURORA_MYSQL_DB_CREDENTIALS_SECRET_ID,
       },
     },
   },

@@ -55,7 +55,7 @@ const getClient = ({
     const dbCredentials = yield getSecretValue(
       dbCredentialsSecretId
         ? dbCredentialsSecretId
-        : awsConfig.rds.aurora.mysql.databaseCredentialsSecretsManagerId,
+        : awsConfig.rds.aurora.mysql.databaseCredentialsSecretsManagerSecretId,
       {
         region,
         singletonConn,

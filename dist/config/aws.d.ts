@@ -26,7 +26,7 @@ declare const _default: {
                 secretArn: string | undefined;
                 resourceArn: string | undefined;
                 databaseName: string | undefined;
-                databaseCredentialsSecretsManagerId: string | undefined;
+                databaseCredentialsSecretsManagerSecretId: string | undefined;
             };
         };
     };

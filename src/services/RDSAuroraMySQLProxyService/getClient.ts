@@ -38,7 +38,7 @@ const getClient = async ({
   const dbCredentials = await getSecretValue(
     dbCredentialsSecretId
       ? dbCredentialsSecretId
-      : awsConfig.rds.aurora.mysql.databaseCredentialsSecretsManagerId!,
+      : awsConfig.rds.aurora.mysql.databaseCredentialsSecretsManagerSecretId!,
     {
       region,
       singletonConn,
