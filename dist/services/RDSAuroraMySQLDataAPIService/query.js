@@ -37,26 +37,41 @@ import getClient from './getClient';
 const FILE = 'lesgo.services.RDSAuroraMySQLService.query';
 const query = (sql, opts) =>
   __awaiter(void 0, void 0, void 0, function* () {
-    const input = validateFields({ query }, [
-      {
-        key: 'sql',
-        type: 'string',
-        required: true,
-      },
+    var _a, _b, _c;
+    const input = validateFields(Object.assign({ sql }, opts), [
+      { key: 'sql', type: 'string', required: true },
+      { key: 'secretArn', type: 'string', required: false },
+      { key: 'resourceArn', type: 'string', required: false },
+      { key: 'databaseName', type: 'string', required: false },
+      { key: 'singletonConn', type: 'string', required: true },
+      { key: 'region', type: 'string', required: true },
     ]);
     const { client, params } = yield getClient(opts);
     const sqlParams = Object.assign(Object.assign({}, params), {
+      secretArn:
+        (_a = input.secretArn) !== null && _a !== void 0
+          ? _a
+          : params.secretArn,
+      resourceArn:
+        (_b = input.resourceArn) !== null && _b !== void 0
+          ? _b
+          : params.resourceArn,
+      database:
+        (_c = input.databaseName) !== null && _c !== void 0
+          ? _c
+          : params.database,
       sql: input.sql,
     });
     try {
       const result = yield client.executeStatement(sqlParams).promise();
-      logger.debug(`${FILE}::RECEIVED_RESPONSE`, result);
+      logger.debug(`${FILE}::RECEIVED_RESPONSE`, { result, sqlParams });
       return result;
     } catch (err) {
       throw new LesgoException('Failed to query', `${FILE}::QUERY_ERROR`, 500, {
         err,
         sql,
         opts,
+        sqlParams,
       });
     }
   });

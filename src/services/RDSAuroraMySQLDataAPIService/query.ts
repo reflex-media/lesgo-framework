@@ -13,24 +13,28 @@ export interface QueryOptions {
 }
 
 const query = async (sql: string, opts: QueryOptions) => {
-  const input = validateFields({ query }, [
-    {
-      key: 'sql',
-      type: 'string',
-      required: true,
-    },
+  const input = validateFields({ sql, ...opts }, [
+    { key: 'sql', type: 'string', required: true },
+    { key: 'secretArn', type: 'string', required: false },
+    { key: 'resourceArn', type: 'string', required: false },
+    { key: 'databaseName', type: 'string', required: false },
+    { key: 'singletonConn', type: 'string', required: true },
+    { key: 'region', type: 'string', required: true },
   ]);
 
   const { client, params } = await getClient(opts);
 
   const sqlParams = {
     ...params,
+    secretArn: input.secretArn ?? params.secretArn,
+    resourceArn: input.resourceArn ?? params.resourceArn,
+    database: input.databaseName ?? params.database,
     sql: input.sql,
   };
 
   try {
     const result = await client.executeStatement(sqlParams).promise();
-    logger.debug(`${FILE}::RECEIVED_RESPONSE`, result);
+    logger.debug(`${FILE}::RECEIVED_RESPONSE`, { result, sqlParams });
 
     return result;
   } catch (err) {
@@ -38,6 +42,7 @@ const query = async (sql: string, opts: QueryOptions) => {
       err,
       sql,
       opts,
+      sqlParams,
     });
   }
 };

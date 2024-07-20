@@ -9,9 +9,6 @@ declare const _default: {
         client: import("aws-sdk/clients/rdsdataservice");
         params: import("aws-sdk/clients/rdsdataservice").ExecuteStatementRequest;
     }>;
-    query: (key: string, bucket?: string | undefined, { singletonConn, region }?: {
-        singletonConn?: string | undefined;
-        region?: string | undefined;
-    }) => Promise<import("aws-sdk/lib/request").PromiseResult<import("aws-sdk/clients/rdsdataservice").ExecuteStatementResponse, import("aws-sdk").AWSError>>;
+    query: (sql: string, opts?: import("./query").QueryOptions) => Promise<import("aws-sdk/lib/request").PromiseResult<import("aws-sdk/clients/rdsdataservice").ExecuteStatementResponse, import("aws-sdk").AWSError>>;
 };
 export default _default;

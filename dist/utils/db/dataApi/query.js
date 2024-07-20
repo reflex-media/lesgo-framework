@@ -31,18 +31,28 @@ var __awaiter =
       step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
   };
+import isEmpty from '../../../utils/isEmpty';
 import queryService from '../../../services/RDSAuroraMySQLDataAPIService/query';
 import validateFields from '../../validateFields';
-const query = (key, bucket, { singletonConn = 'default', region = '' } = {}) =>
+import config from '../../../config/aws';
+const query = (sql, opts = {}) =>
   __awaiter(void 0, void 0, void 0, function* () {
-    const input = validateFields({ key, bucket, singletonConn, region }, [
+    opts = Object.assign(Object.assign({}, opts), {
+      singletonConn: !isEmpty(opts.singletonConn)
+        ? opts.singletonConn
+        : 'default',
+      region: !isEmpty(opts.region)
+        ? opts.region
+        : config.rds.aurora.mysql.region,
+    });
+    const input = validateFields(Object.assign({ sql }, opts), [
       { key: 'sql', type: 'string', required: true },
       { key: 'singletonConn', type: 'string', required: true },
       { key: 'region', type: 'string', required: true },
+      { key: 'secretArn', type: 'string', required: false },
+      { key: 'resourceArn', type: 'string', required: false },
+      { key: 'databaseName', type: 'string', required: false },
     ]);
-    return queryService(input.sql, {
-      singletonConn: input.singletonConn,
-      region: input.region,
-    });
+    return queryService(input.sql, input);
   });
 export default query;
