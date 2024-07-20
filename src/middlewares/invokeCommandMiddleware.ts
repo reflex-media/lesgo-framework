@@ -14,11 +14,11 @@ export interface invokeCommandMiddlewareOptions {
   [key: string]: any;
 }
 
-const invokeCommandMiddleware = () => {
+const invokeCommandMiddleware = (opts: invokeCommandMiddlewareOptions = {}) => {
   const middlewarePackages: MiddlewareObj[] = [
     doNotWaitForEmptyEventLoop(),
     eventNormalizer(),
-    disconnectOpenConnectionsMiddleware(),
+    disconnectOpenConnectionsMiddleware(opts),
   ];
 
   return {

@@ -7,7 +7,7 @@ import verifyBasicAuthMiddleware from './verifyBasicAuthMiddleware';
 import verifyJwtMiddleware from './verifyJwtMiddleware';
 export { disconnectOpenConnectionsMiddleware, httpMiddleware, httpResponseMiddleware, invokeCommandMiddleware, sqsMiddleware, verifyBasicAuthMiddleware, verifyJwtMiddleware, };
 declare const _default: {
-    disconnectOpenConnectionsMiddleware: () => {
+    disconnectOpenConnectionsMiddleware: (opts?: import("./disconnectOpenConnectionsMiddleware").invokeCommandMiddlewareOptions | undefined) => {
         after: () => Promise<void>;
         onError: () => Promise<void>;
     };
@@ -20,7 +20,7 @@ declare const _default: {
         after: (request: import("@middy/core").Request<any, any, Error, import("aws-lambda").Context, {}>) => Promise<void>;
         onError: (request: import("@middy/core").Request<any, any, Error, import("aws-lambda").Context, {}>) => Promise<void>;
     };
-    invokeCommandMiddleware: () => {
+    invokeCommandMiddleware: (opts?: import("./invokeCommandMiddleware").invokeCommandMiddlewareOptions) => {
         before: (handler: import("@middy/core").Request<any, any, Error, import("aws-lambda").Context, {}>) => Promise<void>;
         after: (handler: import("@middy/core").Request<any, any, Error, import("aws-lambda").Context, {}>) => Promise<void>;
         onError: (handler: import("@middy/core").Request<any, any, Error, import("aws-lambda").Context, {}>) => Promise<void>;
