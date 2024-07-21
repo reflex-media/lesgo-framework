@@ -1,7 +1,7 @@
 import { ScanCommand, ScanCommandInput } from '@aws-sdk/lib-dynamodb';
 import LesgoException from '../../../exceptions/LesgoException';
 import getClient from '../getClient';
-import scan, { prepareScanInput, ScanOptions } from '../scan';
+import scan, { prepareScanInput } from '../scan';
 
 const mockScanCommandInput: ScanCommandInput = {
   TableName: 'lesgo-testing-testingTable',
@@ -40,9 +40,7 @@ describe('scan', () => {
   const singletonConn = 'default';
 
   it('should prepare scan input correctly', () => {
-    const opts: ScanOptions = {
-      region,
-      singletonConn,
+    const opts = {
       filterExpression: 'filterExpression',
       expressionAttributeValues: { key: 'value' },
       projectionExpression: 'projectionExpression',
@@ -50,19 +48,23 @@ describe('scan', () => {
       indexName: 'indexName',
       select: 'ALL_ATTRIBUTES',
     };
+    const clientOpts = {
+      region,
+      singletonConn,
+    };
 
-    const result = prepareScanInput(tableName, opts);
+    const result = prepareScanInput({ ...opts, ...clientOpts, tableName });
 
     expect(result).toEqual(mockScanCommandInput);
   });
 
   it('should call getClient with correct parameters', async () => {
-    const opts: ScanOptions = {
+    const clientOpts = {
       region,
       singletonConn,
     };
 
-    await scan(tableName, opts);
+    await scan(tableName, clientOpts);
 
     expect(getClient).toHaveBeenCalledWith({
       region,
@@ -71,18 +73,18 @@ describe('scan', () => {
   });
 
   it('should return the scanned items', async () => {
-    const opts: ScanOptions = {
+    const clientOpts = {
       region,
       singletonConn,
     };
 
-    const result = await scan(tableName, opts);
+    const result = await scan(tableName, clientOpts);
 
     expect(result).toEqual(mockScanCommandResponse.Items);
   });
 
   it('should throw LesgoException if scan fails', async () => {
-    const opts: ScanOptions = {
+    const opts = {
       region,
       singletonConn,
     };

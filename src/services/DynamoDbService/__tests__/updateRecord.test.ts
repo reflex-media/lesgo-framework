@@ -1,7 +1,7 @@
 import { UpdateCommand, UpdateCommandInput } from '@aws-sdk/lib-dynamodb';
 import LesgoException from '../../../exceptions/LesgoException';
 import logger from '../../../utils/logger';
-import config from '../../../config/aws';
+import dynamodbConfig from '../../../config/dynamodb';
 import getClient from '../getClient';
 import updateRecord, { Key } from '../updateRecord';
 import DynamoDbService from '../../DynamoDbService';
@@ -33,18 +33,23 @@ describe('updateRecord', () => {
     const updateExpression = 'SET #name = :name';
     const expressionAttributeValues = { ':name': 'John Doe' };
     const input: UpdateCommandInput = {
-      TableName: config.dynamodb.tables.find(t => t.alias === tableName)?.name,
+      TableName: dynamodbConfig.tables.find(t => t.alias === tableName)?.name,
       Key: key,
       UpdateExpression: updateExpression,
       ExpressionAttributeValues: expressionAttributeValues,
     };
 
-    const result = await updateRecord(key, tableName, {
-      region,
-      singletonConn,
+    const result = await updateRecord(
+      key,
+      tableName,
       updateExpression,
       expressionAttributeValues,
-    });
+      undefined,
+      {
+        region,
+        singletonConn,
+      }
+    );
 
     expect(getClient).toHaveBeenCalledWith({ singletonConn, region });
     expect(result).toEqual(input);
@@ -55,7 +60,7 @@ describe('updateRecord', () => {
     const updateExpression = 'SET #name = :name';
     const expressionAttributeValues = { ':name': 'John Doe' };
     const input: UpdateCommandInput = {
-      TableName: config.dynamodb.tables.find(t => t.alias === tableName)?.name,
+      TableName: dynamodbConfig.tables.find(t => t.alias === tableName)?.name,
       Key: key,
       UpdateExpression: updateExpression,
       ExpressionAttributeValues: expressionAttributeValues,
@@ -67,12 +72,17 @@ describe('updateRecord', () => {
     (getClient as jest.Mock).mockReturnValue(client);
 
     await expect(
-      DynamoDbService.updateRecord(key, tableName, {
-        region,
-        singletonConn,
+      DynamoDbService.updateRecord(
+        key,
+        tableName,
         updateExpression,
         expressionAttributeValues,
-      })
+        undefined,
+        {
+          region,
+          singletonConn,
+        }
+      )
     ).rejects.toThrow(
       new LesgoException(
         'Failed to update record',

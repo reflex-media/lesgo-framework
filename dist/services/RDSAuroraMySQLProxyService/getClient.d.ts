@@ -5,9 +5,8 @@ export interface Singleton {
 export interface GetClientOptions {
     dbCredentialsSecretId?: string;
     databaseName?: string;
-    connectionType?: string;
     region: string;
     singletonConn: string;
 }
-declare const getClient: ({ dbCredentialsSecretId, databaseName, singletonConn, region, }: GetClientOptions) => Promise<mysql.Pool>;
+declare const getClient: (opts: GetClientOptions) => Promise<mysql.Pool>;
 export default getClient;

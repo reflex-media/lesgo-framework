@@ -7,6 +7,8 @@ declare const getClient: ({ singletonConn, region }?: {
         secretArn: string | undefined;
         resourceArn: string | undefined;
         database: string | undefined;
+        maxAttempts: string | number | undefined;
+        requestTimeout: string | number | undefined;
     };
 };
 export default getClient;

@@ -1,7 +1,7 @@
 import { DeleteCommand, DeleteCommandInput } from '@aws-sdk/lib-dynamodb';
 import LesgoException from '../../../exceptions/LesgoException';
 import logger from '../../../utils/logger';
-import config from '../../../config/aws';
+import dynamodbConfig from '../../../config/dynamodb';
 import getClient from '../getClient';
 import deleteRecord, { Key } from '../deleteRecord';
 import DynamoDbService from '../../DynamoDbService';
@@ -31,7 +31,7 @@ describe('deleteRecord', () => {
   it('should delete the record successfully', async () => {
     const key: Key = { id: '123' };
     const input: DeleteCommandInput = {
-      TableName: config.dynamodb.tables.find(t => t.alias === tableName)?.name,
+      TableName: dynamodbConfig.tables.find(t => t.alias === tableName)?.name,
       Key: key,
     };
 
@@ -46,8 +46,8 @@ describe('deleteRecord', () => {
 
   it('should throw an exception when failed to delete the record', async () => {
     const key: Key = { id: '123' };
-    const input: DeleteCommandInput = {
-      TableName: config.dynamodb.tables.find(t => t.alias === tableName)?.name,
+    const commandInput: DeleteCommandInput = {
+      TableName: dynamodbConfig.tables.find(t => t.alias === tableName)?.name,
       Key: key,
     };
     const error = new Error('Failed to delete record');
@@ -64,8 +64,9 @@ describe('deleteRecord', () => {
         'lesgo.services.DynamoDbService.deleteRecord::ERROR',
         500,
         {
-          err: error,
-          input,
+          error,
+          commandInput,
+          clientOpts: { region, singletonConn },
         }
       )
     );
@@ -73,7 +74,7 @@ describe('deleteRecord', () => {
     expect(getClient).toHaveBeenCalledWith({ singletonConn, region });
     expect(logger.debug).toHaveBeenCalledWith(
       'lesgo.services.DynamoDbService.deleteRecord::QUERY_PREPARED',
-      { input }
+      { commandInput, clientOpts: { region, singletonConn } 
     );
   });
 });

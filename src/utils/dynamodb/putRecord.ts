@@ -1,17 +1,14 @@
-import config from '../../config/aws';
+import { GetClientOptions } from '../../services/DynamoDbService/getClient';
 import putRecordService, {
   Item,
 } from '../../services/DynamoDbService/putRecord';
-import isEmpty from '../isEmpty';
 
 const putRecord = async (
   item: Item,
   tableName: string,
-  { singletonConn = 'default', region = '' } = {}
+  clientOpts?: GetClientOptions
 ) => {
-  region = isEmpty(region) ? config.dynamodb.region : region;
-
-  return putRecordService(item, tableName, { region, singletonConn });
+  return putRecordService(item, tableName, clientOpts);
 };
 
 export default putRecord;

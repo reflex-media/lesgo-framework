@@ -34,45 +34,41 @@ var __awaiter =
 import mysql from 'mysql2/promise';
 import logger from '../../utils/logger';
 import isEmpty from '../../utils/isEmpty';
-import awsConfig from '../../config/aws';
+import rdsConfig from '../../config/rds';
 import { getSecretValue } from '../../utils/secretsmanager';
 const FILE = 'lesgo.services.RDSAuroraMySQLProxyService.getClient';
 const singleton = {};
-const getClient = ({
-  dbCredentialsSecretId,
-  databaseName,
-  singletonConn,
-  region,
-}) =>
+const getClient = opts =>
   __awaiter(void 0, void 0, void 0, function* () {
-    if (!isEmpty(singleton[singletonConn])) {
+    var _a;
+    if (!isEmpty(singleton[opts.singletonConn])) {
       logger.debug(`${FILE}::REUSE_CLIENT_SINGLETON`, {
-        client: singleton[singletonConn],
-        region,
+        client: singleton[opts.singletonConn],
+        region: opts.region,
       });
-      return singleton[singletonConn];
+      return singleton[opts.singletonConn];
     }
     const dbCredentials = yield getSecretValue(
-      dbCredentialsSecretId
-        ? dbCredentialsSecretId
-        : awsConfig.rds.aurora.mysql.databaseCredentialsSecretsManagerSecretId,
+      opts.dbCredentialsSecretId
+        ? opts.dbCredentialsSecretId
+        : rdsConfig.aurora.mysql.proxy.dbCredentialsSecretId,
       {
-        region,
-        singletonConn,
+        region: opts.region,
+        singletonConn: opts.singletonConn,
       }
     );
     const pool = mysql.createPool({
       host: dbCredentials.host,
       user: dbCredentials.username,
       password: dbCredentials.password,
-      database: databaseName
-        ? databaseName
-        : awsConfig.rds.aurora.mysql.databaseName,
+      database:
+        (_a = opts.databaseName) !== null && _a !== void 0
+          ? _a
+          : rdsConfig.aurora.mysql.databaseName,
     });
-    singleton[singletonConn] = pool;
+    singleton[opts.singletonConn] = pool;
     logger.debug(`${FILE}::NEW_CLIENT_SINGLETON`, {
-      singletonConn,
-      region,
+      opts,
     });
     return pool;
   });

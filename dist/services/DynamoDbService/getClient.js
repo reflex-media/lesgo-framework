@@ -1,10 +1,16 @@
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import { DynamoDBDocumentClient } from '@aws-sdk/lib-dynamodb';
-import logger from '../../utils/logger';
-import isEmpty from '../../utils/isEmpty';
+import { isEmpty, logger, validateFields } from '../../utils';
+import dynamodbConfig from '../../config/dynamodb';
 const FILE = 'lesgo.services.DynamoDbService.getClient';
 const singleton = {};
-const getClient = ({ singletonConn, region }) => {
+const getClient = (opts = {}) => {
+  const options = validateFields(opts, [
+    { key: 'region', type: 'string', required: false },
+    { key: 'singletonConn', type: 'string', required: false },
+  ]);
+  const region = options.region || dynamodbConfig.region;
+  const singletonConn = options.singletonConn || 'default';
   if (!isEmpty(singleton[singletonConn])) {
     logger.debug(`${FILE}::REUSE_CLIENT_SINGLETON`, {
       client: singleton[singletonConn],

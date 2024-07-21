@@ -1,4 +1,4 @@
-import scan, { ScanOptions } from '../scan';
+import scan from '../scan';
 import scanService from '../../../services/DynamoDbService/scan';
 
 jest.mock('../../../services/DynamoDbService/scan');
@@ -13,12 +13,12 @@ describe('scan', () => {
   const singletonConn = 'default';
 
   it('should call scanService with correct parameters', async () => {
-    const opts: ScanOptions = {
+    const clientOpts = {
       region,
       singletonConn,
     };
 
-    await scan(tableName, opts);
+    await scan(tableName, undefined, clientOpts);
 
     expect(scanService).toHaveBeenCalledWith(tableName, {
       region,
@@ -27,7 +27,7 @@ describe('scan', () => {
   });
 
   it('should return the result from scanService', async () => {
-    const opts: ScanOptions = {
+    const clientOpts = {
       region,
       singletonConn,
     };
@@ -35,7 +35,7 @@ describe('scan', () => {
     const mockScanResult = [{ id: '1', name: 'John' }];
     (scanService as jest.Mock).mockResolvedValueOnce(mockScanResult);
 
-    const result = await scan(tableName, opts);
+    const result = await scan(tableName, undefined, clientOpts);
 
     expect(result).toEqual(mockScanResult);
   });

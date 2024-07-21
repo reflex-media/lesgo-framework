@@ -4,85 +4,86 @@ import {
   UpdateCommandInput,
 } from '@aws-sdk/lib-dynamodb';
 import LesgoException from '../../exceptions/LesgoException';
-import { isEmpty, logger } from '../../utils';
-import config from '../../config/aws';
-import getClient from './getClient';
+import { isEmpty, logger, validateFields } from '../../utils';
+import dynamodbConfig from '../../config/dynamodb';
+import getClient, { GetClientOptions } from './getClient';
 
 const FILE = 'lesgo.services.DynamoDbService.updateRecord';
 
 export type Key = Record<string, NativeAttributeValue>;
 
 export interface UpdateRecordInputOptions {
-  updateExpression: string;
-  expressionAttributeValues: Record<string, string>;
   conditionExpression?: string;
   expressionAttributeNames?: Record<string, string>;
 }
 
-export interface UpdateRecordOptions extends UpdateRecordInputOptions {
-  region: string;
-  singletonConn: string;
+export interface ValidatedCommandInput extends UpdateRecordInputOptions {
+  key: Key;
+  tableName: string;
+  updateExpression: string;
+  expressionAttributeValues: Record<string, string>;
 }
 
-const prepareUpdateInput = (
-  key: Key,
-  tableName: string,
-  opts: UpdateRecordInputOptions
-) => {
-  let input: UpdateCommandInput = {
-    TableName: config.dynamodb.tables.find(t => t.alias === tableName)?.name,
-    Key: key,
-    UpdateExpression: opts.updateExpression,
-    ExpressionAttributeValues: opts.expressionAttributeValues,
+const prepareUpdateInput = (input: ValidatedCommandInput) => {
+  let commandInput: UpdateCommandInput = {
+    TableName: dynamodbConfig.tables.find(t => t.alias === input.tableName)
+      ?.name,
+    Key: input.key,
+    UpdateExpression: input.updateExpression,
+    ExpressionAttributeValues: input.expressionAttributeValues,
   };
 
-  if (!isEmpty(opts.conditionExpression)) {
-    input = {
-      ...input,
-      ConditionExpression: opts.conditionExpression,
+  if (!isEmpty(input.conditionExpression)) {
+    commandInput = {
+      ...commandInput,
+      ConditionExpression: input.conditionExpression,
     };
   }
 
-  if (!isEmpty(opts.expressionAttributeNames)) {
-    input = {
-      ...input,
-      ExpressionAttributeNames: opts.expressionAttributeNames,
+  if (!isEmpty(input.expressionAttributeNames)) {
+    commandInput = {
+      ...commandInput,
+      ExpressionAttributeNames: input.expressionAttributeNames,
     };
   }
 
-  return input;
+  return commandInput;
 };
 
 const updateRecord = async (
   key: Record<string, string>,
   tableName: string,
-  {
-    region,
-    singletonConn,
-    updateExpression,
-    expressionAttributeValues,
-    conditionExpression,
-    expressionAttributeNames,
-  }: UpdateRecordOptions
+  updateExpression: string,
+  expressionAttributeValues: Record<string, string>,
+  opts?: UpdateRecordInputOptions,
+  clientOpts?: GetClientOptions
 ) => {
-  const params = prepareUpdateInput(key, tableName, {
-    updateExpression,
-    expressionAttributeValues,
-    conditionExpression,
-    expressionAttributeNames,
-  });
-  logger.debug(`${FILE}::QUERY_PREPARED`, { params });
+  const input = validateFields(
+    { key, tableName, updateExpression, expressionAttributeValues, ...opts },
+    [
+      { key: 'key', type: 'object', required: true },
+      { key: 'tableName', type: 'string', required: true },
+      { key: 'updateExpression', type: 'string', required: true },
+      { key: 'expressionAttributeValues', type: 'object', required: true },
+      { key: 'conditionExpression', type: 'string', required: false },
+      { key: 'expressionAttributeNames', type: 'object', required: false },
+    ]
+  ) as ValidatedCommandInput;
 
-  const client = getClient({ singletonConn, region });
+  const client = getClient(clientOpts);
+
+  const commandInput = prepareUpdateInput(input);
+  logger.debug(`${FILE}::QUERY_PREPARED`, { commandInput });
 
   try {
-    const data = await client.send(new UpdateCommand(params));
+    const data = await client.send(new UpdateCommand(commandInput));
     logger.debug(`${FILE}::RECEIVED_RESPONSE`, { data });
     return data;
-  } catch (err) {
+  } catch (error) {
     throw new LesgoException('Failed to update record', `${FILE}::ERROR`, 500, {
-      err,
-      params,
+      error,
+      commandInput,
+      opts,
     });
   }
 };

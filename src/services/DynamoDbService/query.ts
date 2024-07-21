@@ -1,8 +1,8 @@
 import { QueryCommand, QueryCommandInput } from '@aws-sdk/lib-dynamodb';
 import LesgoException from '../../exceptions/LesgoException';
-import logger from '../../utils/logger';
-import config from '../../config/aws';
-import getClient from './getClient';
+import dynamodbConfig from '../../config/dynamodb';
+import getClient, { GetClientOptions } from './getClient';
+import { validateFields, logger } from '../../utils';
 
 const FILE = 'lesgo.services.DynamoDbService.query';
 
@@ -14,59 +14,64 @@ export interface QueryInputOptions {
   select?: string;
 }
 
-export interface QueryOptions extends QueryInputOptions {
-  region: string;
-  singletonConn: string;
+export interface ValidatedCommandInput extends QueryInputOptions {
+  tableName: string;
+  keyConditionExpression: string;
+  expressionAttributeValues: Record<string, any>;
 }
 
-export const prepareQueryInput = (
-  tableName: string,
-  keyConditionExpression: string,
-  expressionAttributeValues: Record<string, any>,
-  opts: QueryInputOptions
-) => {
-  const input: QueryCommandInput = {
-    TableName: config.dynamodb.tables.find(t => t.alias === tableName)?.name,
-    KeyConditionExpression: keyConditionExpression,
-    ExpressionAttributeValues: expressionAttributeValues,
+export const prepareQueryInput = (input: ValidatedCommandInput) => {
+  const commandInput: QueryCommandInput = {
+    TableName: dynamodbConfig.tables.find(t => t.alias === input.tableName)
+      ?.name,
+    KeyConditionExpression: input.keyConditionExpression,
+    ExpressionAttributeValues: input.expressionAttributeValues,
   };
 
-  input.ProjectionExpression = opts.projectionExpression;
-  input.ExpressionAttributeNames = opts.expressionAttributeNames;
-  input.FilterExpression = opts.filterExpression;
-  input.IndexName = opts.indexName;
-  input.Select = opts.select as QueryCommandInput['Select'];
+  commandInput.FilterExpression = input.filterExpression;
+  commandInput.ProjectionExpression = input.projectionExpression;
+  commandInput.ExpressionAttributeNames = input.expressionAttributeNames;
+  commandInput.IndexName = input.indexName;
+  commandInput.Select = input.select as QueryCommandInput['Select'];
 
-  return input;
+  return commandInput;
 };
 
 const query = async (
   tableName: string,
   keyConditionExpression: string,
   expressionAttributeValues: Record<string, any>,
-  opts: QueryOptions
+  opts?: QueryInputOptions,
+  clientOpts?: GetClientOptions
 ) => {
-  const params = prepareQueryInput(
-    tableName,
-    keyConditionExpression,
-    expressionAttributeValues,
-    opts
-  );
-  logger.debug(`${FILE}::QUERY_PREPARED`, { params });
+  const input = validateFields(
+    { tableName, keyConditionExpression, expressionAttributeValues, ...opts },
+    [
+      { key: 'tableName', type: 'string', required: true },
+      { key: 'keyConditionExpression', type: 'string', required: true },
+      { key: 'expressionAttributeValues', type: 'object', required: true },
+      { key: 'filterExpression', type: 'string', required: false },
+      { key: 'projectionExpression', type: 'string', required: false },
+      { key: 'expressionAttributeNames', type: 'object', required: false },
+      { key: 'indexName', type: 'string', required: false },
+      { key: 'select', type: 'string', required: false },
+    ]
+  ) as ValidatedCommandInput;
 
-  const client = getClient({
-    singletonConn: opts.singletonConn,
-    region: opts.region,
-  });
+  const client = getClient(clientOpts);
+
+  const commandInput = prepareQueryInput(input);
+  logger.debug(`${FILE}::QUERY_PREPARED`, { commandInput });
 
   try {
-    const data = await client.send(new QueryCommand(params));
+    const data = await client.send(new QueryCommand(commandInput));
     logger.debug(`${FILE}::RECEIVED_RESPONSE`, { data });
     return data.Items;
-  } catch (err) {
+  } catch (error) {
     throw new LesgoException('Failed to query', `${FILE}::ERROR`, 500, {
-      err,
-      params,
+      error,
+      commandInput,
+      opts,
     });
   }
 };

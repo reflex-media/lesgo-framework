@@ -2,49 +2,23 @@ import app from './app';
 import aws from './aws';
 import basicAuth from './basicAuth';
 import crypto from './crypto';
+import dynamodb from './dynamodb';
 import jwt from './jwt';
-export { app, aws, basicAuth, crypto, jwt };
+import rds from './rds';
+import s3 from './s3';
+import secretsManager from './secretsManager';
+import sqs from './sqs';
+export { app, aws, basicAuth, crypto, dynamodb, jwt, rds, s3, secretsManager, sqs, };
 declare const _default: {
     app: {
         name: string;
+        stackName: string;
         env: string;
         debug: boolean;
     };
     aws: {
+        accountId: string | undefined;
         region: string;
-        s3: {
-            bucket: string;
-            region: string;
-        };
-        sqs: {
-            region: string;
-            queues: {
-                alias: string;
-                name: string;
-                url: string;
-            }[];
-        };
-        dynamodb: {
-            region: string;
-            tables: {
-                alias: string;
-                name: string;
-            }[];
-        };
-        rds: {
-            aurora: {
-                mysql: {
-                    region: string;
-                    secretArn: string | undefined;
-                    resourceArn: string | undefined;
-                    databaseName: string | undefined;
-                    databaseCredentialsSecretsManagerSecretId: string | undefined;
-                };
-            };
-        };
-        secretsManager: {
-            region: string;
-        };
     };
     basicAuth: {
         authorizedList: {
@@ -62,6 +36,13 @@ declare const _default: {
             ivLength: number;
         };
     };
+    dynamodb: {
+        region: string;
+        tables: {
+            alias: string;
+            name: string;
+        }[];
+    };
     jwt: {
         algorithm: string;
         secrets: {
@@ -72,6 +53,39 @@ declare const _default: {
         issuer: string;
         audience: string;
         validateClaims: boolean;
+    };
+    rds: {
+        aurora: {
+            mysql: {
+                region: string;
+                databaseName: string | undefined;
+                connectionType: string | undefined;
+                dataApi: {
+                    secretArn: string | undefined;
+                    resourceArn: string | undefined;
+                    maxAttempts: string | number;
+                    requestTimeout: string | number;
+                };
+                proxy: {
+                    dbCredentialsSecretId: string | undefined;
+                };
+            };
+        };
+    };
+    s3: {
+        region: string;
+        bucket: string;
+    };
+    secretsManager: {
+        region: string;
+    };
+    sqs: {
+        region: string;
+        queues: {
+            alias: string;
+            name: string;
+            url: string;
+        }[];
     };
 };
 export default _default;

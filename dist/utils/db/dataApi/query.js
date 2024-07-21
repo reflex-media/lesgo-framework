@@ -34,7 +34,7 @@ var __awaiter =
 import isEmpty from '../../../utils/isEmpty';
 import queryService from '../../../services/RDSAuroraMySQLDataAPIService/query';
 import validateFields from '../../validateFields';
-import config from '../../../config/aws';
+import rdsConfig from '../../../config/rds';
 const query = (sql, opts = {}) =>
   __awaiter(void 0, void 0, void 0, function* () {
     opts = Object.assign(Object.assign({}, opts), {
@@ -43,7 +43,7 @@ const query = (sql, opts = {}) =>
         : 'default',
       region: !isEmpty(opts.region)
         ? opts.region
-        : config.rds.aurora.mysql.region,
+        : rdsConfig.aurora.mysql.region,
     });
     const input = validateFields(Object.assign({ sql }, opts), [
       { key: 'sql', type: 'string', required: true },

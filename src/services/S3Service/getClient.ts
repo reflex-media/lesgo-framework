@@ -1,6 +1,6 @@
 import { S3Client } from '@aws-sdk/client-s3';
-import logger from '../../utils/logger';
-import isEmpty from '../../utils/isEmpty';
+import { logger, isEmpty, validateFields } from '../../utils';
+import s3Config from '../../config/s3';
 
 const FILE = 'lesgo.services.S3Service.getClient';
 
@@ -9,18 +9,27 @@ interface Singleton {
 }
 
 export interface GetClientOptions {
-  region: string;
-  singletonConn: string;
+  region?: string;
+  singletonConn?: string;
 }
 
 const singleton: Singleton = {};
 
-const getClient = ({ region, singletonConn }: GetClientOptions) => {
+const getClient = (clientOpts: GetClientOptions = {}) => {
+  const options = validateFields(clientOpts, [
+    { key: 'region', type: 'string', required: false },
+    { key: 'singletonConn', type: 'string', required: false },
+  ]) as GetClientOptions;
+
+  const region = options.region || s3Config.region;
+  const singletonConn = options.singletonConn || 'default';
+
   if (!isEmpty(singleton[singletonConn])) {
     logger.debug(`${FILE}::REUSE_CLIENT_SINGLETON`, {
       client: singleton[singletonConn],
       region,
     });
+
     return singleton[singletonConn];
   }
 

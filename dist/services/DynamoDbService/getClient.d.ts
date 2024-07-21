@@ -3,8 +3,8 @@ export interface Singleton {
     [key: string]: DynamoDBDocumentClient;
 }
 export interface GetClientOptions {
-    region: string;
-    singletonConn: string;
+    region?: string;
+    singletonConn?: string;
 }
-declare const getClient: ({ singletonConn, region }: GetClientOptions) => DynamoDBDocumentClient;
+declare const getClient: (opts?: GetClientOptions) => DynamoDBDocumentClient;
 export default getClient;

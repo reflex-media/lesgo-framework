@@ -1,11 +1,7 @@
-import {
-  DeleteCommand,
-  DeleteCommandInput,
-  NativeAttributeValue,
-} from '@aws-sdk/lib-dynamodb';
+import { DeleteCommand, NativeAttributeValue } from '@aws-sdk/lib-dynamodb';
 import LesgoException from '../../exceptions/LesgoException';
-import logger from '../../utils/logger';
-import config from '../../config/aws';
+import dynamodbConfig from '../../config/dynamodb';
+import { validateFields, logger } from '../../utils';
 import getClient, { GetClientOptions } from './getClient';
 
 const FILE = 'lesgo.services.DynamoDbService.deleteRecord';
@@ -13,26 +9,33 @@ const FILE = 'lesgo.services.DynamoDbService.deleteRecord';
 export type Key = Record<string, NativeAttributeValue>;
 
 const deleteRecord = async (
-  key: Record<string, string>,
+  key: Key,
   tableName: string,
-  { region, singletonConn }: GetClientOptions
+  clientOpts?: GetClientOptions
 ) => {
-  const input: DeleteCommandInput = {
-    TableName: config.dynamodb.tables.find(t => t.alias === tableName)?.name,
-    Key: key,
-  };
-  logger.debug(`${FILE}::QUERY_PREPARED`, { input });
+  const input = validateFields({ key, tableName }, [
+    { key: 'key', type: 'object', required: true },
+    { key: 'tableName', type: 'string', required: true },
+  ]) as { key: Key; tableName: string };
 
-  const client = getClient({ singletonConn, region });
+  const client = getClient(clientOpts);
+
+  const commandInput = {
+    TableName: dynamodbConfig.tables.find(t => t.alias === input.tableName)
+      ?.name,
+    Key: input.key,
+  };
+  logger.debug(`${FILE}::QUERY_PREPARED`, { commandInput, clientOpts });
 
   try {
-    const data = await client.send(new DeleteCommand(input));
+    const data = await client.send(new DeleteCommand(commandInput));
     logger.debug(`${FILE}::RECEIVED_RESPONSE`, { data });
     return data;
-  } catch (err) {
+  } catch (error) {
     throw new LesgoException('Failed to delete record', `${FILE}::ERROR`, 500, {
-      err,
-      input,
+      error,
+      commandInput,
+      clientOpts,
     });
   }
 };

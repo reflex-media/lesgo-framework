@@ -1,9 +1,9 @@
-import config from '../../config/aws';
+import secretsManagerConfig from '../../config/secretsManager';
 import getClientService from '../../services/S3Service/getClient';
 import isEmpty from '../isEmpty';
 import validateFields from '../validateFields';
 const getClient = ({ singletonConn = 'default', region = '' } = {}) => {
-  region = isEmpty(region) ? config.secretsManager.region : region;
+  region = isEmpty(region) ? secretsManagerConfig.region : region;
   const input = validateFields({ singletonConn, region }, [
     { key: 'singletonConn', type: 'string', required: true },
     { key: 'region', type: 'string', required: true },

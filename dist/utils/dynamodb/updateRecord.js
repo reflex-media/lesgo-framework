@@ -31,30 +31,23 @@ var __awaiter =
       step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
   };
-import config from '../../config/aws';
 import updateRecordService from '../../services/DynamoDbService/updateRecord';
-import isEmpty from '../isEmpty';
 export const updateRecord = (
   key,
   tableName,
-  {
-    singletonConn = 'default',
-    region = '',
-    updateExpression = '',
-    expressionAttributeValues = {},
-    conditionExpression,
-    expressionAttributeNames,
-  } = {}
+  updateExpression,
+  expressionAttributeValues,
+  opts,
+  clientOpts
 ) =>
   __awaiter(void 0, void 0, void 0, function* () {
-    region = isEmpty(region) ? config.dynamodb.region : region;
-    return updateRecordService(key, tableName, {
-      region,
-      singletonConn,
+    return updateRecordService(
+      key,
+      tableName,
       updateExpression,
       expressionAttributeValues,
-      conditionExpression,
-      expressionAttributeNames,
-    });
+      opts,
+      clientOpts
+    );
   });
 export default updateRecord;

@@ -1,10 +1,10 @@
-import config from '../../config/aws';
+import sqsConfig from '../../config/sqs';
 import getClientService from '../../services/SQSService/getClient';
 import isEmpty from '../isEmpty';
 import validateFields from '../validateFields';
 
 const getClient = ({ singletonConn = 'default', region = '' } = {}) => {
-  region = isEmpty(region) ? config.s3.region : region;
+  region = isEmpty(region) ? sqsConfig.region : region;
 
   const input = validateFields({ singletonConn, region }, [
     { key: 'singletonConn', type: 'string', required: true },

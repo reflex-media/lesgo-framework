@@ -37,14 +37,14 @@ import getClient from './getClient';
 const FILE = 'lesgo.services.RDSAuroraMySQLService.query';
 const query = (sql, opts) =>
   __awaiter(void 0, void 0, void 0, function* () {
-    const input = validateFields({ query }, [
-      {
-        key: 'sql',
-        type: 'string',
-        required: true,
-      },
+    const input = validateFields(Object.assign({ query }, opts), [
+      { key: 'sql', type: 'string', required: true },
+      { key: 'dbCredentialsSecretId', type: 'string', required: false },
+      { key: 'databaseName', type: 'string', required: false },
+      { key: 'singletonConn', type: 'string', required: true },
+      { key: 'region', type: 'string', required: true },
     ]);
-    const connection = yield getClient(opts);
+    const connection = yield getClient(input);
     try {
       const [results, fields] = yield connection.query(input.sql);
       logger.debug(`${FILE}::RECEIVED_RESPONSE`, { results, fields });

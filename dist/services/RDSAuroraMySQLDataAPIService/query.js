@@ -38,12 +38,14 @@ import getClient from './getClient';
 const FILE = 'lesgo.services.RDSAuroraMySQLService.query';
 const query = (sql, opts) =>
   __awaiter(void 0, void 0, void 0, function* () {
-    var _a, _b, _c;
+    var _a, _b, _c, _d, _e;
     const input = validateFields(Object.assign({ sql }, opts), [
       { key: 'sql', type: 'string', required: true },
       { key: 'secretArn', type: 'string', required: false },
       { key: 'resourceArn', type: 'string', required: false },
       { key: 'databaseName', type: 'string', required: false },
+      { key: 'maxAttempts', type: 'number', required: false },
+      { key: 'requestTimeout', type: 'number', required: false },
       { key: 'singletonConn', type: 'string', required: true },
       { key: 'region', type: 'string', required: true },
     ]);
@@ -61,6 +63,14 @@ const query = (sql, opts) =>
         (_c = input.databaseName) !== null && _c !== void 0
           ? _c
           : params.database,
+      maxAttempts:
+        (_d = input.maxAttempts) !== null && _d !== void 0
+          ? _d
+          : params.maxAttempts,
+      requestTimeout:
+        (_e = input.requestTimeout) !== null && _e !== void 0
+          ? _e
+          : params.requestTimeout,
       sql: input.sql,
     });
     const command = new ExecuteStatementCommand(sqlParams);

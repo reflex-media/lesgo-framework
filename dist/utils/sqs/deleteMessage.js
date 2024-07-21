@@ -32,7 +32,7 @@ var __awaiter =
     });
   };
 import { LesgoException } from '../../exceptions';
-import config from '../../config/aws';
+import sqsConfig from '../../config/sqs';
 import deleteMessageService from '../../services/SQSService/deleteMessage';
 import isEmpty from '../isEmpty';
 import validateFields from '../validateFields';
@@ -40,7 +40,7 @@ import logger from '../logger';
 const FILE = 'lesgo.utils.sqs.deleteMessage';
 export const deleteMessage = (queue, receiptHandle, opts = {}) =>
   __awaiter(void 0, void 0, void 0, function* () {
-    opts.region = isEmpty(opts.region) ? config.sqs.region : opts.region;
+    opts.region = isEmpty(opts.region) ? sqsConfig.region : opts.region;
     opts.singletonConn = isEmpty(opts.singletonConn)
       ? 'default'
       : opts.singletonConn;
@@ -56,7 +56,7 @@ export const deleteMessage = (queue, receiptHandle, opts = {}) =>
       input,
     });
     if (typeof queue === 'string') {
-      const configQueue = config.sqs.queues.find(q => q.alias === queue);
+      const configQueue = sqsConfig.queues.find(q => q.alias === queue);
       if (!configQueue) {
         throw new LesgoException(
           `Queue with alias ${queue} not found in config`,

@@ -32,7 +32,7 @@ var __awaiter =
     });
   };
 import { LesgoException } from '../../exceptions';
-import config from '../../config/aws';
+import sqsConfig from '../../config/sqs';
 import receiveMessagesService from '../../services/SQSService/receiveMessages';
 import isEmpty from '../isEmpty';
 import validateFields from '../validateFields';
@@ -44,7 +44,7 @@ export const receiveMessages = (queue, opts = {}) =>
       queue,
       opts,
     });
-    opts.region = isEmpty(opts.region) ? config.sqs.region : opts.region;
+    opts.region = isEmpty(opts.region) ? sqsConfig.region : opts.region;
     opts.singletonConn = isEmpty(opts.singletonConn)
       ? 'default'
       : opts.singletonConn;
@@ -58,7 +58,7 @@ export const receiveMessages = (queue, opts = {}) =>
       input,
     });
     if (typeof queue === 'string') {
-      const configQueue = config.sqs.queues.find(q => q.alias === queue);
+      const configQueue = sqsConfig.queues.find(q => q.alias === queue);
       if (!configQueue) {
         throw new LesgoException(
           `Queue with alias ${queue} not found in config`,

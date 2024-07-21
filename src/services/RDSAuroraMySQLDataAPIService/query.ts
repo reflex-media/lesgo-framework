@@ -9,6 +9,8 @@ export interface QueryOptions {
   secretArn?: string;
   resourceArn?: string;
   databaseName?: string;
+  maxAttempts?: number;
+  requestTimeout?: number;
   singletonConn: string;
   region: string;
 }
@@ -19,6 +21,8 @@ const query = async (sql: string, opts: QueryOptions) => {
     { key: 'secretArn', type: 'string', required: false },
     { key: 'resourceArn', type: 'string', required: false },
     { key: 'databaseName', type: 'string', required: false },
+    { key: 'maxAttempts', type: 'number', required: false },
+    { key: 'requestTimeout', type: 'number', required: false },
     { key: 'singletonConn', type: 'string', required: true },
     { key: 'region', type: 'string', required: true },
   ]);
@@ -30,6 +34,8 @@ const query = async (sql: string, opts: QueryOptions) => {
     secretArn: (input.secretArn ?? params.secretArn) as string,
     resourceArn: (input.resourceArn ?? params.resourceArn) as string,
     database: (input.databaseName ?? params.database) as string,
+    maxAttempts: (input.maxAttempts ?? params.maxAttempts) as number,
+    requestTimeout: (input.requestTimeout ?? params.requestTimeout) as number,
     sql: input.sql as string,
   };
 

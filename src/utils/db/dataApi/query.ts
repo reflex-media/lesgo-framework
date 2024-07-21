@@ -1,7 +1,7 @@
 import isEmpty from '../../../utils/isEmpty';
 import queryService from '../../../services/RDSAuroraMySQLDataAPIService/query';
 import validateFields from '../../validateFields';
-import config from '../../../config/aws';
+import rdsConfig from '../../../config/rds';
 
 export interface QueryOptions {
   secretArn?: string;
@@ -26,9 +26,7 @@ const query = async (sql: string, opts: QueryOptions = {}) => {
     singletonConn: !isEmpty(opts.singletonConn)
       ? opts.singletonConn
       : 'default',
-    region: !isEmpty(opts.region)
-      ? opts.region
-      : config.rds.aurora.mysql.region,
+    region: !isEmpty(opts.region) ? opts.region : rdsConfig.aurora.mysql.region,
   };
 
   const input = validateFields({ sql, ...opts }, [

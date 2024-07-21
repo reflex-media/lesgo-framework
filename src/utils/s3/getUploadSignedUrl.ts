@@ -1,4 +1,4 @@
-import config from '../../config/aws';
+import s3Config from '../../config/s3';
 import getUploadSignedUrlService from '../../services/S3Service/getUploadSignedUrl';
 import isEmpty from '../isEmpty';
 import validateFields from '../validateFields';
@@ -18,8 +18,8 @@ const getUploadSignedUrl = async (
     expiresIn?: number;
   } = {}
 ) => {
-  region = isEmpty(region) ? config.s3.region : region;
-  bucket = isEmpty(bucket) ? config.s3.bucket : bucket;
+  region = isEmpty(region) ? s3Config.region : region;
+  bucket = isEmpty(bucket) ? s3Config.bucket : bucket;
 
   const input = validateFields(
     { key, bucket, singletonConn, region, metadata, expiresIn },

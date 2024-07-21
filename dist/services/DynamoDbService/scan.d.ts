@@ -1,5 +1,6 @@
 import { ScanCommandInput } from '@aws-sdk/lib-dynamodb';
-export interface ScanInputOptions {
+import { GetClientOptions } from './getClient';
+export interface ScanInputOptions extends GetClientOptions {
     filterExpression?: string;
     expressionAttributeValues?: Record<string, string>;
     projectionExpression?: string;
@@ -7,10 +8,9 @@ export interface ScanInputOptions {
     indexName?: string;
     select?: string;
 }
-export interface ScanOptions extends ScanInputOptions {
-    region: string;
-    singletonConn: string;
+export interface ValidatedCommandInput extends ScanInputOptions {
+    tableName: string;
 }
-export declare const prepareScanInput: (tableName: string, opts: ScanInputOptions) => ScanCommandInput;
-declare const scan: (tableName: string, opts: ScanOptions) => Promise<Record<string, any>[] | undefined>;
+export declare const prepareScanInput: (input: ValidatedCommandInput) => ScanCommandInput;
+declare const scan: (tableName: string, opts?: ScanInputOptions, clientOpts?: GetClientOptions) => Promise<Record<string, any>[] | undefined>;
 export default scan;

@@ -31,36 +31,21 @@ var __awaiter =
       step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
   };
-import config from '../../config/aws';
 import queryService from '../../services/DynamoDbService/query';
-import isEmpty from '../isEmpty';
 export const query = (
   tableName,
   keyConditionExpression,
   expressionAttributeValues,
-  {
-    filterExpression,
-    projectionExpression,
-    expressionAttributeNames,
-    indexName,
-    singletonConn = 'default',
-    region = '',
-  } = {}
+  opts,
+  clientOpts
 ) =>
   __awaiter(void 0, void 0, void 0, function* () {
-    region = isEmpty(region) ? config.dynamodb.region : region;
     return queryService(
       tableName,
       keyConditionExpression,
       expressionAttributeValues,
-      {
-        region,
-        singletonConn,
-        filterExpression,
-        projectionExpression,
-        expressionAttributeNames,
-        indexName,
-      }
+      opts,
+      clientOpts
     );
   });
 export default query;

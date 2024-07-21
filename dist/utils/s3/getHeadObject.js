@@ -31,7 +31,7 @@ var __awaiter =
       step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
   };
-import config from '../../config/aws';
+import s3Config from '../../config/s3';
 import getHeadObjectService from '../../services/S3Service/getHeadObject';
 import isEmpty from '../isEmpty';
 import validateFields from '../validateFields';
@@ -41,8 +41,8 @@ const getHeadObject = (
   { singletonConn = 'default', region = '' } = {}
 ) =>
   __awaiter(void 0, void 0, void 0, function* () {
-    region = isEmpty(region) ? config.s3.region : region;
-    bucket = isEmpty(bucket) ? config.s3.bucket : bucket;
+    region = isEmpty(region) ? s3Config.region : region;
+    bucket = isEmpty(bucket) ? s3Config.bucket : bucket;
     const input = validateFields({ key, bucket, singletonConn, region }, [
       { key: 'key', type: 'string', required: true },
       { key: 'bucket', type: 'string', required: true },

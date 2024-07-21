@@ -24,7 +24,7 @@ describe('query', () => {
     const tableName = 'myTable';
     const keyConditionExpression = 'id = :id';
     const expressionAttributeValues = { ':id': '123' };
-    const opts = {
+    const clientOpts = {
       region: 'us-west-2',
       singletonConn: 'default',
     };
@@ -33,18 +33,19 @@ describe('query', () => {
       tableName,
       keyConditionExpression,
       expressionAttributeValues,
-      opts
+      undefined,
+      clientOpts
     );
 
     expect(getClient).toHaveBeenCalledTimes(1);
-    expect(getClient).toHaveBeenCalledWith(opts);
+    expect(getClient).toHaveBeenCalledWith(clientOpts);
   });
 
   it('should return the items from the response', async () => {
     const tableName = 'myTable';
     const keyConditionExpression = 'id = :id';
     const expressionAttributeValues = { ':id': '123' };
-    const opts = {
+    const clientOpts = {
       region: 'us-west-2',
       singletonConn: 'default',
     };
@@ -63,7 +64,8 @@ describe('query', () => {
       tableName,
       keyConditionExpression,
       expressionAttributeValues,
-      opts
+      undefined,
+      clientOpts
     );
 
     expect(result).toEqual(mockItems);
@@ -73,7 +75,7 @@ describe('query', () => {
     const tableName = 'myTable';
     const keyConditionExpression = 'id = :id';
     const expressionAttributeValues = { ':id': '123' };
-    const opts = {
+    const clientOpts = {
       region: 'us-west-2',
       singletonConn: 'default',
     };
@@ -86,7 +88,13 @@ describe('query', () => {
     (getClient as jest.Mock).mockReturnValue(mockClient);
 
     await expect(
-      query(tableName, keyConditionExpression, expressionAttributeValues, opts)
+      query(
+        tableName,
+        keyConditionExpression,
+        expressionAttributeValues,
+        undefined,
+        clientOpts
+      )
     ).rejects.toThrowError('Failed to query');
   });
 });
@@ -104,12 +112,12 @@ describe('prepareQueryInput', () => {
       select: 'ALL_ATTRIBUTES',
     };
 
-    const result = prepareQueryInput(
+    const result = prepareQueryInput({
       tableName,
       keyConditionExpression,
       expressionAttributeValues,
-      opts
-    );
+      ...opts,
+    });
 
     expect(result).toEqual({
       TableName: expect.any(String),

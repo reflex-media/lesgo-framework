@@ -31,7 +31,7 @@ var __awaiter =
       step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
   };
-import config from '../../config/aws';
+import dynamodbConfig from '../../config/dynamodb';
 import queryService from '../../services/DynamoDbService/query';
 import isEmpty from '../isEmpty';
 const queryCount = (
@@ -41,7 +41,7 @@ const queryCount = (
   { filterExpression, singletonConn = 'default', region = '', indexName } = {}
 ) =>
   __awaiter(void 0, void 0, void 0, function* () {
-    region = isEmpty(region) ? config.dynamodb.region : region;
+    region = isEmpty(region) ? dynamodbConfig.region : region;
     return queryService(
       tableName,
       keyConditionExpression,

@@ -1,5 +1,6 @@
 declare const _default: {
     name: string;
+    stackName: string;
     env: string;
     debug: boolean;
 };

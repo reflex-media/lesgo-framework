@@ -5,20 +5,29 @@ import getClient from './getClient';
 const FILE = 'lesgo.services.RDSAuroraMySQLService.query';
 
 export interface QueryOptions {
+  dbCredentialsSecretId?: string;
+  databaseName?: string;
   singletonConn: string;
   region: string;
 }
 
-const query = async (sql: string, opts: QueryOptions) => {
-  const input = validateFields({ query }, [
-    {
-      key: 'sql',
-      type: 'string',
-      required: true,
-    },
-  ]);
+export interface GetClientOptions {
+  dbCredentialsSecretId?: string;
+  databaseName?: string;
+  region: string;
+  singletonConn: string;
+}
 
-  const connection = await getClient(opts);
+const query = async (sql: string, opts: QueryOptions) => {
+  const input = validateFields({ query, ...opts }, [
+    { key: 'sql', type: 'string', required: true },
+    { key: 'dbCredentialsSecretId', type: 'string', required: false },
+    { key: 'databaseName', type: 'string', required: false },
+    { key: 'singletonConn', type: 'string', required: true },
+    { key: 'region', type: 'string', required: true },
+  ]) as GetClientOptions & { sql: string };
+
+  const connection = await getClient(input);
 
   try {
     const [results, fields] = await connection.query(input.sql);

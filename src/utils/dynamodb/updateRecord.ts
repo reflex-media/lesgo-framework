@@ -1,40 +1,25 @@
-import config from '../../config/aws';
+import { GetClientOptions } from '../../services/DynamoDbService/getClient';
 import updateRecordService, {
   Key,
+  UpdateRecordInputOptions,
 } from '../../services/DynamoDbService/updateRecord';
-import isEmpty from '../isEmpty';
-
-export interface UpdateRecordOptions {
-  updateExpression?: string;
-  expressionAttributeValues?: Record<string, any>;
-  conditionExpression?: string;
-  expressionAttributeNames?: Record<string, string>;
-  singletonConn?: string;
-  region?: string;
-}
 
 export const updateRecord = async (
   key: Key,
   tableName: string,
-  {
-    singletonConn = 'default',
-    region = '',
-    updateExpression = '',
-    expressionAttributeValues = {},
-    conditionExpression,
-    expressionAttributeNames,
-  }: UpdateRecordOptions = {}
+  updateExpression: string,
+  expressionAttributeValues: Record<string, string>,
+  opts?: UpdateRecordInputOptions,
+  clientOpts?: GetClientOptions
 ) => {
-  region = isEmpty(region) ? config.dynamodb.region : region;
-
-  return updateRecordService(key, tableName, {
-    region,
-    singletonConn,
+  return updateRecordService(
+    key,
+    tableName,
     updateExpression,
     expressionAttributeValues,
-    conditionExpression,
-    expressionAttributeNames,
-  });
+    opts,
+    clientOpts
+  );
 };
 
 export default updateRecord;

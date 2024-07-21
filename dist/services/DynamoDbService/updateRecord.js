@@ -33,67 +33,73 @@ var __awaiter =
   };
 import { UpdateCommand } from '@aws-sdk/lib-dynamodb';
 import LesgoException from '../../exceptions/LesgoException';
-import { isEmpty, logger } from '../../utils';
-import config from '../../config/aws';
+import { isEmpty, logger, validateFields } from '../../utils';
+import dynamodbConfig from '../../config/dynamodb';
 import getClient from './getClient';
 const FILE = 'lesgo.services.DynamoDbService.updateRecord';
-const prepareUpdateInput = (key, tableName, opts) => {
+const prepareUpdateInput = input => {
   var _a;
-  let input = {
+  let commandInput = {
     TableName:
-      (_a = config.dynamodb.tables.find(t => t.alias === tableName)) === null ||
-      _a === void 0
+      (_a = dynamodbConfig.tables.find(t => t.alias === input.tableName)) ===
+        null || _a === void 0
         ? void 0
         : _a.name,
-    Key: key,
-    UpdateExpression: opts.updateExpression,
-    ExpressionAttributeValues: opts.expressionAttributeValues,
+    Key: input.key,
+    UpdateExpression: input.updateExpression,
+    ExpressionAttributeValues: input.expressionAttributeValues,
   };
-  if (!isEmpty(opts.conditionExpression)) {
-    input = Object.assign(Object.assign({}, input), {
-      ConditionExpression: opts.conditionExpression,
+  if (!isEmpty(input.conditionExpression)) {
+    commandInput = Object.assign(Object.assign({}, commandInput), {
+      ConditionExpression: input.conditionExpression,
     });
   }
-  if (!isEmpty(opts.expressionAttributeNames)) {
-    input = Object.assign(Object.assign({}, input), {
-      ExpressionAttributeNames: opts.expressionAttributeNames,
+  if (!isEmpty(input.expressionAttributeNames)) {
+    commandInput = Object.assign(Object.assign({}, commandInput), {
+      ExpressionAttributeNames: input.expressionAttributeNames,
     });
   }
-  return input;
+  return commandInput;
 };
 const updateRecord = (
   key,
   tableName,
-  {
-    region,
-    singletonConn,
-    updateExpression,
-    expressionAttributeValues,
-    conditionExpression,
-    expressionAttributeNames,
-  }
+  updateExpression,
+  expressionAttributeValues,
+  opts,
+  clientOpts
 ) =>
   __awaiter(void 0, void 0, void 0, function* () {
-    const params = prepareUpdateInput(key, tableName, {
-      updateExpression,
-      expressionAttributeValues,
-      conditionExpression,
-      expressionAttributeNames,
-    });
-    logger.debug(`${FILE}::QUERY_PREPARED`, { params });
-    const client = getClient({ singletonConn, region });
+    const input = validateFields(
+      Object.assign(
+        { key, tableName, updateExpression, expressionAttributeValues },
+        opts
+      ),
+      [
+        { key: 'key', type: 'object', required: true },
+        { key: 'tableName', type: 'string', required: true },
+        { key: 'updateExpression', type: 'string', required: true },
+        { key: 'expressionAttributeValues', type: 'object', required: true },
+        { key: 'conditionExpression', type: 'string', required: false },
+        { key: 'expressionAttributeNames', type: 'object', required: false },
+      ]
+    );
+    const client = getClient(clientOpts);
+    const commandInput = prepareUpdateInput(input);
+    logger.debug(`${FILE}::QUERY_PREPARED`, { commandInput });
     try {
-      const data = yield client.send(new UpdateCommand(params));
+      const data = yield client.send(new UpdateCommand(commandInput));
       logger.debug(`${FILE}::RECEIVED_RESPONSE`, { data });
       return data;
-    } catch (err) {
+    } catch (error) {
       throw new LesgoException(
         'Failed to update record',
         `${FILE}::ERROR`,
         500,
         {
-          err,
-          params,
+          error,
+          commandInput,
+          opts,
         }
       );
     }

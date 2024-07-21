@@ -16,15 +16,22 @@ describe('query', () => {
     const region = 'ap-southeast-1';
     const singletonConn = 'default';
 
-    await query(tableName, keyConditionExpression, expressionAttributeValues, {
-      region,
-      singletonConn,
-    });
+    await query(
+      tableName,
+      keyConditionExpression,
+      expressionAttributeValues,
+      undefined,
+      {
+        region,
+        singletonConn,
+      }
+    );
 
     expect(queryService).toHaveBeenCalledWith(
       tableName,
       keyConditionExpression,
       expressionAttributeValues,
+      undefined,
       {
         region,
         singletonConn,

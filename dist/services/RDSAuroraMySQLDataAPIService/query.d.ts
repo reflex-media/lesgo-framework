@@ -2,6 +2,8 @@ export interface QueryOptions {
     secretArn?: string;
     resourceArn?: string;
     databaseName?: string;
+    maxAttempts?: number;
+    requestTimeout?: number;
     singletonConn: string;
     region: string;
 }

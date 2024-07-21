@@ -1,7 +1,7 @@
 import { PutCommand, PutCommandInput } from '@aws-sdk/lib-dynamodb';
 import LesgoException from '../../../exceptions/LesgoException';
 import logger from '../../../utils/logger';
-import config from '../../../config/aws';
+import dynamodbConfig from '../../../config/dynamodb';
 import getClient from '../getClient';
 import putRecord, { Item } from '../putRecord';
 import DynamoDbService from '../../DynamoDbService';
@@ -31,7 +31,7 @@ describe('putRecord', () => {
   it('should put the record successfully', async () => {
     const item: Item = { id: '123', name: 'John Doe' };
     const input: PutCommandInput = {
-      TableName: config.dynamodb.tables.find(t => t.alias === tableName)?.name,
+      TableName: dynamodbConfig.tables.find(t => t.alias === tableName)?.name,
       Item: item,
     };
 
@@ -44,7 +44,7 @@ describe('putRecord', () => {
   it('should throw an exception when failed to put the record', async () => {
     const item: Item = { id: '123', name: 'John Doe' };
     const input: PutCommandInput = {
-      TableName: config.dynamodb.tables.find(t => t.alias === tableName)?.name,
+      TableName: dynamodbConfig.tables.find(t => t.alias === tableName)?.name,
       Item: item,
     };
     const error = new Error('Failed to put record');

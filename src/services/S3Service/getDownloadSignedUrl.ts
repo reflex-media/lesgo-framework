@@ -1,25 +1,24 @@
-import { GetObjectCommand } from '@aws-sdk/client-s3';
-import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
-import getClient from './getClient';
-
-export interface GetDownloadSignedUrlOptions {
-  region: string;
-  singletonConn: string;
-  expiresIn: number;
-}
+import { GetObjectCommand, GetObjectCommandInput } from '@aws-sdk/client-s3';
+import {
+  getSignedUrl,
+  S3RequestPresignerOptions,
+} from '@aws-sdk/s3-request-presigner';
+import getClient, { GetClientOptions } from './getClient';
 
 const getDownloadSignedUrl = (
   key: string,
-  bucket: string,
-  { singletonConn, region, expiresIn }: GetDownloadSignedUrlOptions
+  bucket?: string,
+  opts?: GetObjectCommandInput & S3RequestPresignerOptions,
+  clientOpts?: GetClientOptions
 ) => {
-  const client = getClient({ region, singletonConn });
+  const client = getClient(clientOpts);
   const command = new GetObjectCommand({
+    ...opts,
     Bucket: bucket,
     Key: key,
   });
 
-  return getSignedUrl(client, command, { expiresIn });
+  return getSignedUrl(client, command, opts);
 };
 
 export default getDownloadSignedUrl;

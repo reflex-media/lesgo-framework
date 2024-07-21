@@ -1,12 +1,12 @@
 import { ScanCommand, ScanCommandInput } from '@aws-sdk/lib-dynamodb';
 import LesgoException from '../../exceptions/LesgoException';
-import logger from '../../utils/logger';
-import config from '../../config/aws';
-import getClient from './getClient';
+import dynamodbConfig from '../../config/dynamodb';
+import { validateFields, logger } from '../../utils';
+import getClient, { GetClientOptions } from './getClient';
 
 const FILE = 'lesgo.services.DynamoDbService.scan';
 
-export interface ScanInputOptions {
+export interface ScanInputOptions extends GetClientOptions {
   filterExpression?: string;
   expressionAttributeValues?: Record<string, string>;
   projectionExpression?: string;
@@ -15,43 +15,55 @@ export interface ScanInputOptions {
   select?: string;
 }
 
-export interface ScanOptions extends ScanInputOptions {
-  region: string;
-  singletonConn: string;
+export interface ValidatedCommandInput extends ScanInputOptions {
+  tableName: string;
 }
 
-export const prepareScanInput = (tableName: string, opts: ScanInputOptions) => {
-  const input: ScanCommandInput = {
-    TableName: config.dynamodb.tables.find(t => t.alias === tableName)?.name,
+export const prepareScanInput = (input: ValidatedCommandInput) => {
+  const commandInput: ScanCommandInput = {
+    TableName: dynamodbConfig.tables.find(t => t.alias === input.tableName)
+      ?.name,
   };
 
-  input.FilterExpression = opts.filterExpression;
-  input.ExpressionAttributeValues = opts.expressionAttributeValues;
-  input.ProjectionExpression = opts.projectionExpression;
-  input.ExpressionAttributeNames = opts.expressionAttributeNames;
-  input.IndexName = opts.indexName;
-  input.Select = opts.select as ScanCommandInput['Select'];
+  commandInput.FilterExpression = input.filterExpression;
+  commandInput.ExpressionAttributeValues = input.expressionAttributeValues;
+  commandInput.ProjectionExpression = input.projectionExpression;
+  commandInput.ExpressionAttributeNames = input.expressionAttributeNames;
+  commandInput.IndexName = input.indexName;
+  commandInput.Select = input.select as ScanCommandInput['Select'];
 
-  return input;
+  return commandInput;
 };
 
-const scan = async (tableName: string, opts: ScanOptions) => {
-  const params = prepareScanInput(tableName, opts);
-  logger.debug(`${FILE}::SCAN_PREPARED`, { params });
+const scan = async (
+  tableName: string,
+  opts?: ScanInputOptions,
+  clientOpts?: GetClientOptions
+) => {
+  const input = validateFields({ tableName, ...opts }, [
+    { key: 'tableName', type: 'string', required: true },
+    { key: 'filterExpression', type: 'string', required: false },
+    { key: 'expressionAttributeValues', type: 'object', required: false },
+    { key: 'projectionExpression', type: 'string', required: false },
+    { key: 'expressionAttributeNames', type: 'object', required: false },
+    { key: 'indexName', type: 'string', required: false },
+    { key: 'select', type: 'string', required: false },
+  ]) as ValidatedCommandInput;
 
-  const client = getClient({
-    singletonConn: opts.singletonConn,
-    region: opts.region,
-  });
+  const client = getClient(clientOpts);
+
+  const commandInput = prepareScanInput(input);
+  logger.debug(`${FILE}::SCAN_PREPARED`, { commandInput });
 
   try {
-    const data = await client.send(new ScanCommand(params));
+    const data = await client.send(new ScanCommand(commandInput));
     logger.debug(`${FILE}::RECEIVED_RESPONSE`, { data });
     return data.Items;
-  } catch (err) {
+  } catch (error) {
     throw new LesgoException('Failed to scan', `${FILE}::ERROR`, 500, {
-      err,
-      params,
+      error,
+      commandInput,
+      opts,
     });
   }
 };

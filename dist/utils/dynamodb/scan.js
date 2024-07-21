@@ -31,31 +31,9 @@ var __awaiter =
       step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
   };
-import config from '../../config/aws';
 import scanService from '../../services/DynamoDbService/scan';
-import isEmpty from '../isEmpty';
-export const scan = (
-  tableName,
-  {
-    filterExpression,
-    expressionAttributeValues,
-    projectionExpression,
-    expressionAttributeNames,
-    indexName,
-    singletonConn = 'default',
-    region = '',
-  } = {}
-) =>
+export const scan = (tableName, opts, clientOpts) =>
   __awaiter(void 0, void 0, void 0, function* () {
-    region = isEmpty(region) ? config.dynamodb.region : region;
-    return scanService(tableName, {
-      region,
-      singletonConn,
-      filterExpression,
-      expressionAttributeValues,
-      projectionExpression,
-      expressionAttributeNames,
-      indexName,
-    });
+    return scanService(tableName, opts, clientOpts);
   });
 export default scan;

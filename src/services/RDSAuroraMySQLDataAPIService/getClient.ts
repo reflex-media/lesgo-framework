@@ -4,7 +4,7 @@ import {
 } from '@aws-sdk/client-rds-data';
 import logger from '../../utils/logger';
 import isEmpty from '../../utils/isEmpty';
-import awsConfig from '../../config/aws';
+import rdsConfig from '../../config/rds';
 
 const FILE = 'lesgo.services.RDSAuroraMySQLDataAPIService.getClient';
 
@@ -16,6 +16,8 @@ export interface GetClientOptions {
   secretArn?: string;
   resourceArn?: string;
   databaseName?: string;
+  maxAttempts?: number;
+  requestTimeout?: number;
   region: string;
   singletonConn: string;
 }
@@ -26,19 +28,27 @@ const getClient = ({
   secretArn,
   resourceArn,
   databaseName,
+  maxAttempts,
+  requestTimeout,
   region,
   singletonConn,
 }: GetClientOptions) => {
   const params = {
     secretArn: isEmpty(secretArn)
-      ? awsConfig.rds.aurora.mysql.secretArn
+      ? rdsConfig.aurora.mysql.dataApi.secretArn
       : secretArn,
     resourceArn: isEmpty(secretArn)
-      ? awsConfig.rds.aurora.mysql.resourceArn
+      ? rdsConfig.aurora.mysql.dataApi.resourceArn
       : resourceArn,
     database: isEmpty(databaseName)
-      ? awsConfig.rds.aurora.mysql.databaseName
+      ? rdsConfig.aurora.mysql.databaseName
       : secretArn,
+    maxAttempts: isEmpty(maxAttempts)
+      ? rdsConfig.aurora.mysql.dataApi.maxAttempts
+      : maxAttempts,
+    requestTimeout: isEmpty(requestTimeout)
+      ? rdsConfig.aurora.mysql.dataApi.requestTimeout
+      : requestTimeout,
   };
 
   if (!isEmpty(singleton[singletonConn])) {
@@ -53,7 +63,7 @@ const getClient = ({
     };
   }
 
-  const client = new RDSDataClient({ region });
+  const client = new RDSDataClient({ region, maxAttempts });
 
   singleton[singletonConn] = client;
   logger.debug(`${FILE}::NEW_CLIENT_SINGLETON`, {

@@ -1,4 +1,5 @@
 import { QueryCommandInput } from '@aws-sdk/lib-dynamodb';
+import { GetClientOptions } from './getClient';
 export interface QueryInputOptions {
     filterExpression?: string;
     projectionExpression?: string;
@@ -6,10 +7,11 @@ export interface QueryInputOptions {
     indexName?: string;
     select?: string;
 }
-export interface QueryOptions extends QueryInputOptions {
-    region: string;
-    singletonConn: string;
+export interface ValidatedCommandInput extends QueryInputOptions {
+    tableName: string;
+    keyConditionExpression: string;
+    expressionAttributeValues: Record<string, any>;
 }
-export declare const prepareQueryInput: (tableName: string, keyConditionExpression: string, expressionAttributeValues: Record<string, any>, opts: QueryInputOptions) => QueryCommandInput;
-declare const query: (tableName: string, keyConditionExpression: string, expressionAttributeValues: Record<string, any>, opts: QueryOptions) => Promise<Record<string, any>[] | undefined>;
+export declare const prepareQueryInput: (input: ValidatedCommandInput) => QueryCommandInput;
+declare const query: (tableName: string, keyConditionExpression: string, expressionAttributeValues: Record<string, any>, opts?: QueryInputOptions, clientOpts?: GetClientOptions) => Promise<Record<string, any>[] | undefined>;
 export default query;
