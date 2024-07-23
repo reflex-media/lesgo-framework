@@ -5,7 +5,8 @@ export default {
     mysql: {
       region: process.env.LESGO_AWS_RDS_AURORA_MYSQL_REGION || awsConfig.region,
       databaseName: process.env.LESGO_AWS_RDS_AURORA_MYSQL_DB_NAME,
-      connectionType: process.env.LESGO_AWS_RDS_AURORA_MYSQL_CONNECTION_TYPE,
+      connectionType:
+        process.env.LESGO_AWS_RDS_AURORA_MYSQL_CONNECTION_TYPE || 'proxy',
       dataApi: {
         secretArn: process.env.LESGO_AWS_RDS_AURORA_MYSQL_DATA_API_SECRET_ARN,
         resourceArn:

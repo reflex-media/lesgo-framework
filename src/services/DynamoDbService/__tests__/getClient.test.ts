@@ -1,6 +1,7 @@
 import { DynamoDBDocumentClient } from '@aws-sdk/lib-dynamodb';
 import logger from '../../../utils/logger';
 import getClient from '../getClient';
+import DynamoDbService from '../../DynamoDbService';
 
 jest.mock('../../../utils/logger');
 
@@ -32,7 +33,7 @@ describe('getClient', () => {
     const singletonConn = 'default';
 
     const client1 = getClient({ region, singletonConn });
-    const client2 = getClient({ region, singletonConn });
+    const client2 = DynamoDbService.getClient({ region, singletonConn });
 
     expect(logger.debug).toHaveBeenCalledTimes(2);
     expect(logger.debug).toHaveBeenCalledWith(

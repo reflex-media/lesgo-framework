@@ -19,17 +19,22 @@ const verify = (token, secret, opts) => {
     (opts === null || opts === void 0 ? void 0 : opts.validateClaims) ||
     jwtConfig.validateClaims;
   if (validateClaims) {
-    opts = Object.assign(Object.assign({}, opts), {
-      issuer:
-        (opts === null || opts === void 0 ? void 0 : opts.issuer) ||
-        jwtConfig.issuer,
-      audience:
-        (opts === null || opts === void 0 ? void 0 : opts.audience) ||
-        jwtConfig.audience,
-    });
+    opts = Object.assign(
+      {
+        issuer:
+          (opts === null || opts === void 0 ? void 0 : opts.issuer) ||
+          jwtConfig.issuer,
+        audience:
+          (opts === null || opts === void 0 ? void 0 : opts.audience) ||
+          jwtConfig.audience,
+      },
+      opts
+    );
   }
+  opts = Object.assign({ complete: true }, opts);
   try {
-    const decoded = verifyToken(token, jwtSecret, opts);
+    const decoded = verifyToken(token, jwtSecret.secret, opts);
+    logger.debug(`${FILE}::VERIFIED_TOKEN`, decoded);
     return decoded;
   } catch (error) {
     throw new LesgoException(

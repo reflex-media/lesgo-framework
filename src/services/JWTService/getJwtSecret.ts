@@ -8,16 +8,38 @@ export interface GetJwtSecretInput {
   keyid?: string;
 }
 
-const getJwtSecret = (input: GetJwtSecretInput) => {
-  const { keyid } = input;
-  let { secret } = input;
+export interface JwtSecret {
+  keyid: string;
+  secret: string;
+}
 
-  if (!secret) {
-    secret = jwtConfig.secrets[0]?.secret;
+const getJwtSecret = (input: GetJwtSecretInput) => {
+  const jwtSecret = {
+    keyid: input.keyid || '',
+    secret: input.secret || '',
+  };
+
+  if (!input.secret) {
+    jwtSecret.keyid = jwtConfig.secrets[0]?.keyid || '';
+    jwtSecret.secret = jwtConfig.secrets[0]?.secret || '';
   }
 
-  if (keyid) {
-    const foundSecret = jwtConfig.secrets.find(s => s?.keyid === keyid);
+  if (input.secret) {
+    const foundSecret = jwtConfig.secrets.find(s => s?.secret === input.secret);
+
+    if (!foundSecret) {
+      throw new LesgoException(
+        `No matching JWT Secret found.`,
+        `${FILE}::SECRET_NOT_FOUND`
+      );
+    }
+
+    jwtSecret.keyid = foundSecret.keyid;
+    jwtSecret.secret = foundSecret.secret;
+  }
+
+  if (input.keyid) {
+    const foundSecret = jwtConfig.secrets.find(s => s?.keyid === input.keyid);
 
     if (!foundSecret) {
       throw new LesgoException(
@@ -26,17 +48,18 @@ const getJwtSecret = (input: GetJwtSecretInput) => {
       );
     }
 
-    secret = foundSecret.secret;
+    jwtSecret.keyid = foundSecret.keyid;
+    jwtSecret.secret = foundSecret.secret;
   }
 
-  if (!secret) {
+  if (!jwtSecret.secret) {
     throw new LesgoException(
       'Missing Secret to sign JWT',
       `${FILE}::SECRET_NOT_FOUND`
     );
   }
 
-  return secret;
+  return jwtSecret;
 };
 
 export default getJwtSecret;

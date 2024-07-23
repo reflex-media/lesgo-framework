@@ -25,14 +25,20 @@ const verify = (token: string, secret?: string, opts?: VerifyInputOptions) => {
 
   if (validateClaims) {
     opts = {
-      ...opts,
       issuer: opts?.issuer || jwtConfig.issuer,
       audience: opts?.audience || jwtConfig.audience,
+      ...opts,
     };
   }
 
+  opts = {
+    complete: true,
+    ...opts,
+  };
+
   try {
-    const decoded = verifyToken(token, jwtSecret, opts);
+    const decoded = verifyToken(token, jwtSecret.secret, opts);
+    logger.debug(`${FILE}::VERIFIED_TOKEN`, decoded);
     return decoded;
   } catch (error) {
     throw new LesgoException(

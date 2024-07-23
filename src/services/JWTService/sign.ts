@@ -4,6 +4,8 @@ import { generateUid } from '../../utils';
 import getJwtSecret from './getJwtSecret';
 
 const sign = (payload: any, secret?: string, opts?: SignOptions) => {
+  const jwtSecret = getJwtSecret({ secret, keyid: opts?.keyid });
+
   const options: SignOptions = {
     ...opts,
     algorithm: (opts?.algorithm || jwtConfig.algorithm) as Algorithm,
@@ -11,11 +13,10 @@ const sign = (payload: any, secret?: string, opts?: SignOptions) => {
     issuer: opts?.issuer || jwtConfig.issuer,
     audience: opts?.audience || jwtConfig.audience,
     jwtid: opts?.jwtid || generateUid({ length: 16 }),
+    keyid: jwtSecret.keyid,
   };
 
-  const jwtSecret = getJwtSecret({ secret, keyid: options.keyid });
-
-  const token = signJwt(payload, jwtSecret, options);
+  const token = signJwt(payload, jwtSecret.secret, options);
   return token;
 };
 

@@ -1,6 +1,7 @@
-import { JwtPayload } from 'jsonwebtoken';
+import { Jwt, JwtPayload } from 'jsonwebtoken';
+import jwtConfig from '../../../config/jwt';
 import verify from '../verify';
-import sign from '../sign';
+import JWTService from '../../JWTService';
 
 describe('verify', () => {
   afterEach(() => {
@@ -9,28 +10,34 @@ describe('verify', () => {
 
   it('should return the signed token', () => {
     const payload = { id: '123', username: 'john.doe' };
-    const secret = 'custom-secret';
+    const secret = jwtConfig.secrets[0].secret;
     const opts = { expiresIn: '2h' };
 
-    const result = sign(payload, secret, opts);
+    const result = JWTService.sign(payload, secret, opts);
     const verifyResult = verify(result, secret) as JwtPayload;
 
-    expect(verifyResult.id).toEqual(payload.id);
-    expect(verifyResult.username).toEqual(payload.username);
-    expect(verifyResult.exp).toBeTruthy();
-    expect(verifyResult.iat).toBeTruthy();
+    expect(verifyResult.header).toMatchObject({
+      alg: 'HS256',
+      typ: 'JWT',
+      kid: jwtConfig.secrets[0].keyid,
+    });
+    expect(verifyResult.payload).toMatchObject(payload);
   });
 
   it('should return the signed token with default opts', () => {
     const payload = { id: '123', username: 'john.doe' };
-    const secret = 'custom-secret';
+    const opts = {
+      keyid: jwtConfig.secrets[1].keyid,
+    };
 
-    const result = sign(payload, secret);
-    const verifyResult = verify(result, secret) as JwtPayload;
+    const result = JWTService.sign(payload, undefined, opts);
+    const verifyResult = verify(result) as Jwt;
 
-    expect(verifyResult.id).toEqual(payload.id);
-    expect(verifyResult.username).toEqual(payload.username);
-    expect(verifyResult.exp).toBeTruthy();
-    expect(verifyResult.iat).toBeTruthy();
+    expect(verifyResult.header).toMatchObject({
+      alg: 'HS256',
+      typ: 'JWT',
+      kid: jwtConfig.secrets[1].keyid,
+    });
+    expect(verifyResult.payload).toMatchObject(payload);
   });
 });

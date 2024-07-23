@@ -94,7 +94,7 @@ const httpResponseMiddleware = (opts = {}) => {
           error: {
             code: error.code || 'UNHANDLED_ERROR',
             message: error.message || 'Unhandled error occurred',
-            details: !isEmpty(error.extra) ? error.extra : {},
+            details: error.extra || {},
           },
           _meta: options.debugMode ? request.event : {},
         }),

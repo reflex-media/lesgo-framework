@@ -97,6 +97,30 @@
       "import": "./dist/middlewares/index.js",
       "require": "./dist/middlewares/index.js"
     },
+    "./services/DynamoDbService": {
+      "import": "./dist/services/DynamoDbService/index.js",
+      "require": "./dist/services/DynamoDbService/index.js"
+    },
+    "./services/JWTService": {
+      "import": "./dist/services/JWTService/index.js",
+      "require": "./dist/services/JWTService/index.js"
+    },
+    "./services/RDSAuroraMySQLProxyService": {
+      "import": "./dist/services/RDSAuroraMySQLProxyService/index.js",
+      "require": "./dist/services/RDSAuroraMySQLProxyService/index.js"
+    },
+    "./services/S3Service": {
+      "import": "./dist/services/S3Service/index.js",
+      "require": "./dist/services/S3Service/index.js"
+    },
+    "./services/SecretsManagerService": {
+      "import": "./dist/services/SecretsManagerService/index.js",
+      "require": "./dist/services/SecretsManagerService/index.js"
+    },
+    "./services/SQSService": {
+      "import": "./dist/services/SQSService/index.js",
+      "require": "./dist/services/SQSService/index.js"
+    },
     "./types": {
       "import": "./dist/types/index.js",
       "require": "./dist/types/index.js"

@@ -59,7 +59,7 @@ declare const _default: {
             mysql: {
                 region: string;
                 databaseName: string | undefined;
-                connectionType: string | undefined;
+                connectionType: string;
                 dataApi: {
                     secretArn: string | undefined;
                     resourceArn: string | undefined;

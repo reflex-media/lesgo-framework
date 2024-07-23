@@ -2,7 +2,7 @@ import sign from './sign';
 import verify from './verify';
 export { sign, verify };
 declare const _default: {
-    sign: (payload: any, secret: string, opts?: import("jsonwebtoken").SignOptions) => string;
-    verify: (token: string, secret: string, opts?: import("jsonwebtoken").VerifyOptions) => string | import("jsonwebtoken").Jwt | import("jsonwebtoken").JwtPayload;
+    sign: (payload: any, secret?: string | undefined, opts?: import("jsonwebtoken").SignOptions | undefined) => string;
+    verify: (token: string, secret?: string | undefined, opts?: import("./verify").VerifyInputOptions | undefined) => string | import("jsonwebtoken").JwtPayload | import("jsonwebtoken").Jwt;
 };
 export default _default;

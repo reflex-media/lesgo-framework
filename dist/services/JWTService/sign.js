@@ -3,6 +3,10 @@ import jwtConfig from '../../config/jwt';
 import { generateUid } from '../../utils';
 import getJwtSecret from './getJwtSecret';
 const sign = (payload, secret, opts) => {
+  const jwtSecret = getJwtSecret({
+    secret,
+    keyid: opts === null || opts === void 0 ? void 0 : opts.keyid,
+  });
   const options = Object.assign(Object.assign({}, opts), {
     algorithm:
       (opts === null || opts === void 0 ? void 0 : opts.algorithm) ||
@@ -19,9 +23,9 @@ const sign = (payload, secret, opts) => {
     jwtid:
       (opts === null || opts === void 0 ? void 0 : opts.jwtid) ||
       generateUid({ length: 16 }),
+    keyid: jwtSecret.keyid,
   });
-  const jwtSecret = getJwtSecret({ secret, keyid: options.keyid });
-  const token = signJwt(payload, jwtSecret, options);
+  const token = signJwt(payload, jwtSecret.secret, options);
   return token;
 };
 export default sign;

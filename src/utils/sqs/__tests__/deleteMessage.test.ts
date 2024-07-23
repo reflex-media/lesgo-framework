@@ -1,4 +1,3 @@
-import { LesgoException } from '../../../exceptions';
 import deleteMessageService from '../../../services/SQSService/deleteMessage';
 import { Queue } from '../../../services/SQSService/getQueueUrl';
 import deleteMessage from '../deleteMessage';
