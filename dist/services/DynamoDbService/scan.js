@@ -44,9 +44,7 @@ const scan = (tableAlias, opts, clientOpts) =>
     ]);
     const tableName = getTableName(input.tableAlias);
     const client = getClient(clientOpts);
-    const commandInput = Object.assign(Object.assign({}, opts), {
-      TableName: tableName,
-    });
+    const commandInput = Object.assign({ TableName: tableName }, opts);
     try {
       const data = yield client.send(new ScanCommand(commandInput));
       logger.debug(`${FILE}::RECEIVED_RESPONSE`, { data, commandInput });

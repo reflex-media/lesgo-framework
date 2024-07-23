@@ -42,14 +42,16 @@ const getDownloadSignedUrl = (key, opts, signingOpts, clientOpts) =>
       { key: 'key', type: 'string', required: true },
     ]);
     const client = getClient(clientOpts);
-    const command = new GetObjectCommand(
-      Object.assign(Object.assign({}, opts), {
+    const commandInput = Object.assign(
+      {
         Bucket:
           (opts === null || opts === void 0 ? void 0 : opts.Bucket) ||
           s3Config.bucket,
         Key: input.key,
-      })
+      },
+      opts
     );
+    const command = new GetObjectCommand(commandInput);
     signingOpts = Object.assign({ expiresIn: 3600 }, signingOpts);
     return getSignedUrl(client, command, signingOpts);
   });

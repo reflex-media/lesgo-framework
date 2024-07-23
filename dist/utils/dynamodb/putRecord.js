@@ -32,8 +32,8 @@ var __awaiter =
     });
   };
 import putRecordService from '../../services/DynamoDbService/putRecord';
-const putRecord = (item, tableName, opts, clientOpts) =>
+const putRecord = (item, tableAlias, opts, clientOpts) =>
   __awaiter(void 0, void 0, void 0, function* () {
-    return putRecordService(item, tableName, opts, clientOpts);
+    return putRecordService(item, tableAlias, opts, clientOpts);
   });
 export default putRecord;

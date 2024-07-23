@@ -2,7 +2,7 @@ import { LesgoException } from '../../exceptions';
 import jwtConfig from '../../config/jwt';
 const FILE = 'lesgo.services.JWTService.getJwtSecret';
 const getJwtSecret = input => {
-  var _a, _b;
+  var _a;
   const { keyid } = input;
   let { secret } = input;
   if (!secret) {
@@ -12,18 +12,16 @@ const getJwtSecret = input => {
         : _a.secret;
   }
   if (keyid) {
-    secret =
-      (_b = jwtConfig.secrets.find(
-        s => (s === null || s === void 0 ? void 0 : s.keyid) === keyid
-      )) === null || _b === void 0
-        ? void 0
-        : _b.secret;
-    if (!secret) {
+    const foundSecret = jwtConfig.secrets.find(
+      s => (s === null || s === void 0 ? void 0 : s.keyid) === keyid
+    );
+    if (!foundSecret) {
       throw new LesgoException(
         `kid ${input.keyid} not found.`,
         `${FILE}::KID_NOT_FOUND`
       );
     }
+    secret = foundSecret.secret;
   }
   if (!secret) {
     throw new LesgoException(

@@ -43,8 +43,8 @@ const putObject = (key, file, opts, clientOpts) =>
       { key: 'key', type: 'string', required: true },
     ]);
     const client = getClient(clientOpts);
-    const command = new PutObjectCommand(
-      Object.assign(Object.assign({}, opts), {
+    const commandInput = Object.assign(
+      {
         Bucket:
           (opts === null || opts === void 0 ? void 0 : opts.Bucket) ||
           s3Config.bucket,
@@ -53,11 +53,12 @@ const putObject = (key, file, opts, clientOpts) =>
         StorageClass:
           (opts === null || opts === void 0 ? void 0 : opts.StorageClass) ||
           'STANDARD',
-      })
+      },
+      opts
     );
     try {
-      const response = yield client.send(command);
-      logger.debug(`${FILE}::RESPONSE`, { response, command });
+      const response = yield client.send(new PutObjectCommand(commandInput));
+      logger.debug(`${FILE}::RESPONSE`, { response, commandInput });
       return response;
     } catch (error) {
       throw new LesgoException(
@@ -66,7 +67,7 @@ const putObject = (key, file, opts, clientOpts) =>
         500,
         {
           error,
-          command,
+          commandInput,
           opts,
           clientOpts,
         }

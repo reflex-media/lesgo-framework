@@ -34,8 +34,6 @@ var __awaiter =
 import getHeadObjectService from '../../services/S3Service/getHeadObject';
 const getHeadObject = (key, opts, clientOpts) =>
   __awaiter(void 0, void 0, void 0, function* () {
-    const { LastModified, ContentLength, ETag, ContentType, Metadata } =
-      yield getHeadObjectService(key, opts, clientOpts);
-    return { LastModified, ContentLength, ETag, ContentType, Metadata };
+    return getHeadObjectService(key, opts, clientOpts);
   });
 export default getHeadObject;

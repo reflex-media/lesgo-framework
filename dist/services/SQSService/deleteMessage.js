@@ -44,10 +44,10 @@ const deleteMessage = (queue, receiptHandle, opts, clientOpts) =>
       { key: 'receiptHandle', type: 'string', required: true },
     ]);
     const client = getClient(clientOpts);
-    const commandInput = Object.assign(Object.assign({}, opts), {
-      QueueUrl: queueUrl,
-      ReceiptHandle: input.receiptHandle,
-    });
+    const commandInput = Object.assign(
+      { QueueUrl: queueUrl, ReceiptHandle: input.receiptHandle },
+      opts
+    );
     try {
       yield client.send(new DeleteMessageCommand(commandInput));
       logger.debug(`${FILE}::MESSAGE_DELETED_FROM_QUEUE`, {

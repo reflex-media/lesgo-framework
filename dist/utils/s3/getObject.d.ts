@@ -1,5 +1,5 @@
 /// <reference types="node" />
-import { GetObjectCommandInput } from '@aws-sdk/client-s3';
+import { GetObjectOptions } from '../../services/S3Service/getObject';
 import { ClientOptions } from '../../types/aws';
-declare const getObject: (key: string, opts?: GetObjectCommandInput, clientOpts?: ClientOptions) => Promise<Buffer>;
+declare const getObject: (key: string, opts?: GetObjectOptions, clientOpts?: ClientOptions) => Promise<Buffer>;
 export default getObject;

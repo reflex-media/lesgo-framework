@@ -60,12 +60,15 @@ const updateRecord = (
     );
     const tableName = getTableName(input.tableAlias);
     const client = getClient(clientOpts);
-    const commandInput = Object.assign(Object.assign({}, opts), {
-      TableName: tableName,
-      Key: input.key,
-      UpdateExpression: input.updateExpression,
-      ExpressionAttributeValues: input.expressionAttributeValues,
-    });
+    const commandInput = Object.assign(
+      {
+        TableName: tableName,
+        Key: input.key,
+        UpdateExpression: input.updateExpression,
+        ExpressionAttributeValues: input.expressionAttributeValues,
+      },
+      opts
+    );
     try {
       const data = yield client.send(new UpdateCommand(commandInput));
       logger.debug(`${FILE}::RECEIVED_RESPONSE`, { data, commandInput });

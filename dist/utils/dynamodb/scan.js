@@ -32,9 +32,9 @@ var __awaiter =
     });
   };
 import scanService from '../../services/DynamoDbService/scan';
-export const scan = (tableName, opts, clientOpts) =>
+export const scan = (tableAlias, opts, clientOpts) =>
   __awaiter(void 0, void 0, void 0, function* () {
-    const data = yield scanService(tableName, opts, clientOpts);
-    return data.Items;
+    const data = yield scanService(tableAlias, opts, clientOpts);
+    return (data === null || data === void 0 ? void 0 : data.Items) || [];
   });
 export default scan;

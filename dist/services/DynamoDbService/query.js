@@ -55,11 +55,14 @@ const query = (
     );
     const tableName = getTableName(input.tableAlias);
     const client = getClient(clientOpts);
-    const commandInput = Object.assign(Object.assign({}, opts), {
-      TableName: tableName,
-      KeyConditionExpression: input.keyConditionExpression,
-      ExpressionAttributeValues: input.expressionAttributeValues,
-    });
+    const commandInput = Object.assign(
+      {
+        TableName: tableName,
+        KeyConditionExpression: input.keyConditionExpression,
+        ExpressionAttributeValues: input.expressionAttributeValues,
+      },
+      opts
+    );
     try {
       const data = yield client.send(new QueryCommand(commandInput));
       logger.debug(`${FILE}::RECEIVED_RESPONSE`, { data, commandInput });

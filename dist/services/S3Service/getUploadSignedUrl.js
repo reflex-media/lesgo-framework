@@ -43,17 +43,19 @@ const getUploadSignedUrl = (key, opts, signingOpts, clientOpts) =>
       { key: 'key', type: 'string', required: true },
     ]);
     const client = getClient(clientOpts);
-    const command = new PutObjectCommand(
-      Object.assign(Object.assign({}, opts), {
+    const commandInput = Object.assign(
+      {
         Bucket:
           (opts === null || opts === void 0 ? void 0 : opts.Bucket) ||
           s3Config.bucket,
         Key: input.key,
-      })
+      },
+      opts
     );
+    const command = new PutObjectCommand(commandInput);
     signingOpts = Object.assign({ expiresIn: 3600 }, signingOpts);
     const resp = yield getSignedUrl(client, command, signingOpts);
-    logger.debug(`${FILE}::RESPONSE`, { resp, command, signingOpts });
+    logger.debug(`${FILE}::RESPONSE`, { resp, commandInput, signingOpts });
     return resp;
   });
 export default getUploadSignedUrl;

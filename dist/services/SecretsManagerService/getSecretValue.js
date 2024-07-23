@@ -43,7 +43,7 @@ const getSecretValue = (secretId, opts, clientOpts) =>
     ]);
     const client = getClient(clientOpts);
     const command = new GetSecretValueCommand(
-      Object.assign(Object.assign({}, opts), { SecretId: input.secretId })
+      Object.assign({ SecretId: input.secretId }, opts)
     );
     try {
       const resp = yield client.send(command);

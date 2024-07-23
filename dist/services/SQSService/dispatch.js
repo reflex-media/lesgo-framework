@@ -44,10 +44,10 @@ const dispatch = (payload, queue, opts, clientOpts) =>
       { key: 'payload', type: 'object', required: true },
     ]);
     const client = getClient(clientOpts);
-    const commandInput = Object.assign(Object.assign({}, opts), {
-      MessageBody: JSON.stringify(input.payload),
-      QueueUrl: queueUrl,
-    });
+    const commandInput = Object.assign(
+      { MessageBody: JSON.stringify(input.payload), QueueUrl: queueUrl },
+      opts
+    );
     try {
       const data = yield client.send(new SendMessageCommand(commandInput));
       logger.debug(`${FILE}::MESSAGE_SENT_TO_QUEUE`, {

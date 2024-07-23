@@ -34,7 +34,7 @@ var __awaiter =
 import updateRecordService from '../../services/DynamoDbService/updateRecord';
 export const updateRecord = (
   key,
-  tableName,
+  tableAlias,
   updateExpression,
   expressionAttributeValues,
   opts,
@@ -43,7 +43,7 @@ export const updateRecord = (
   __awaiter(void 0, void 0, void 0, function* () {
     return updateRecordService(
       key,
-      tableName,
+      tableAlias,
       updateExpression,
       expressionAttributeValues,
       opts,

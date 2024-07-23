@@ -32,8 +32,8 @@ var __awaiter =
     });
   };
 import deleteRecordService from '../../services/DynamoDbService/deleteRecord';
-const deleteRecord = (key, tableName, opts, clientOpts) =>
+const deleteRecord = (key, tableAlias, opts, clientOpts) =>
   __awaiter(void 0, void 0, void 0, function* () {
-    return deleteRecordService(key, tableName, opts, clientOpts);
+    return deleteRecordService(key, tableAlias, opts, clientOpts);
   });
 export default deleteRecord;

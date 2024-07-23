@@ -43,18 +43,29 @@ const getHeadObject = (key, opts, clientOpts) =>
       { key: 'key', type: 'string', required: true },
     ]);
     const client = getClient(clientOpts);
-    const command = new HeadObjectCommand(
-      Object.assign(Object.assign({}, opts), {
+    const commandInput = Object.assign(
+      {
         Bucket:
           (opts === null || opts === void 0 ? void 0 : opts.Bucket) ||
           s3Config.bucket,
         Key: input.key,
-      })
+      },
+      opts
     );
     try {
-      const response = yield client.send(command);
-      logger.debug(`${FILE}::RESPONSE`, { response, command });
-      return response;
+      const response = yield client.send(new HeadObjectCommand(commandInput));
+      const { LastModified, ContentLength, ETag, ContentType, Metadata } =
+        response;
+      logger.debug(`${FILE}::RESPONSE`, {
+        LastModified,
+        ContentLength,
+        ETag,
+        ContentType,
+        Metadata,
+        response,
+        commandInput,
+      });
+      return { LastModified, ContentLength, ETag, ContentType, Metadata };
     } catch (error) {
       throw new LesgoException(
         'Error occurred getting object metadata from S3 bucket',
@@ -62,7 +73,7 @@ const getHeadObject = (key, opts, clientOpts) =>
         500,
         {
           error,
-          command,
+          commandInput,
           opts,
           clientOpts,
         }

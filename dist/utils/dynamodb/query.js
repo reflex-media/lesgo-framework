@@ -33,7 +33,7 @@ var __awaiter =
   };
 import queryService from '../../services/DynamoDbService/query';
 export const query = (
-  tableName,
+  tableAlias,
   keyConditionExpression,
   expressionAttributeValues,
   opts,
@@ -41,12 +41,12 @@ export const query = (
 ) =>
   __awaiter(void 0, void 0, void 0, function* () {
     const data = yield queryService(
-      tableName,
+      tableAlias,
       keyConditionExpression,
       expressionAttributeValues,
       opts,
       clientOpts
     );
-    return data.Items;
+    return (data === null || data === void 0 ? void 0 : data.Items) || [];
   });
 export default query;

@@ -59,17 +59,18 @@ const getObject = (key, opts, clientOpts) =>
       { key: 'key', type: 'string', required: true },
     ]);
     const client = getClient(clientOpts);
-    const command = new GetObjectCommand(
-      Object.assign(Object.assign({}, opts), {
+    const commandInput = Object.assign(
+      {
         Bucket:
           (opts === null || opts === void 0 ? void 0 : opts.Bucket) ||
           s3Config.bucket,
         Key: input.key,
-      })
+      },
+      opts
     );
     try {
-      const resp = yield client.send(command);
-      logger.debug(`${FILE}::RESPONSE`, { resp, command });
+      const resp = yield client.send(new GetObjectCommand(commandInput));
+      logger.debug(`${FILE}::RESPONSE`, { resp, commandInput });
       return resp;
     } catch (error) {
       throw new LesgoException(
@@ -78,7 +79,7 @@ const getObject = (key, opts, clientOpts) =>
         500,
         {
           error,
-          command,
+          commandInput,
           opts,
           clientOpts,
         }

@@ -45,10 +45,10 @@ const putRecord = (item, tableAlias, opts, clientOpts) =>
     ]);
     const tableName = getTableName(input.tableAlias);
     const client = getClient(clientOpts);
-    const commandInput = Object.assign(Object.assign({}, opts), {
-      TableName: tableName,
-      Item: input.item,
-    });
+    const commandInput = Object.assign(
+      { TableName: tableName, Item: input.item },
+      opts
+    );
     try {
       const resp = yield client.send(new PutCommand(commandInput));
       logger.debug(`${FILE}::RECEIVED_RESPONSE`, { resp, commandInput });

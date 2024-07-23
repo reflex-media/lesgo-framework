@@ -41,9 +41,7 @@ const receiveMessages = (queue, opts, clientOpts) =>
   __awaiter(void 0, void 0, void 0, function* () {
     const queueUrl = getQueueUrl(queue);
     const client = getClient(clientOpts);
-    const commandInput = Object.assign(Object.assign({}, opts), {
-      QueueUrl: queueUrl,
-    });
+    const commandInput = Object.assign({ QueueUrl: queueUrl }, opts);
     try {
       const data = yield client.send(new ReceiveMessageCommand(commandInput));
       logger.debug(`${FILE}::MESSAGES_RECEIVED_FROM_QUEUE`, {

@@ -45,10 +45,10 @@ const deleteRecord = (key, tableAlias, opts, clientOpts) =>
     ]);
     const tableName = getTableName(input.tableAlias);
     const client = getClient(clientOpts);
-    const commandInput = Object.assign(Object.assign({}, opts), {
-      TableName: tableName,
-      Key: input.key,
-    });
+    const commandInput = Object.assign(
+      { TableName: tableName, Key: input.key },
+      opts
+    );
     try {
       const data = yield client.send(new DeleteCommand(commandInput));
       logger.debug(`${FILE}::RECEIVED_RESPONSE`, { data, commandInput });

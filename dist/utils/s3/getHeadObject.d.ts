@@ -1,6 +1,6 @@
-import { HeadObjectCommandInput } from '@aws-sdk/client-s3';
+import { HeadObjectOptions } from '../../services/S3Service/getHeadObject';
 import { ClientOptions } from '../../types/aws';
-declare const getHeadObject: (key: string, opts?: HeadObjectCommandInput, clientOpts?: ClientOptions) => Promise<{
+declare const getHeadObject: (key: string, opts?: HeadObjectOptions, clientOpts?: ClientOptions) => Promise<{
     LastModified: Date | undefined;
     ContentLength: number | undefined;
     ETag: string | undefined;
