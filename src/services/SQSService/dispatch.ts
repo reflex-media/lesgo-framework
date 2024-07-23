@@ -10,10 +10,16 @@ import getQueueUrl, { Queue } from './getQueueUrl';
 
 const FILE = 'lesgo.services.SQSService.dispatch';
 
+export interface DispatchOptions
+  extends Partial<Omit<SendMessageCommandInput, 'QueueUrl' | 'MessageBody'>> {
+  QueueUrl?: string;
+  MessageBody?: string;
+}
+
 const dispatch = async (
   payload: Record<any, any>,
   queue: string | Queue,
-  opts?: SendMessageCommandInput,
+  opts?: DispatchOptions,
   clientOpts?: ClientOptions
 ) => {
   const queueUrl = getQueueUrl(queue);

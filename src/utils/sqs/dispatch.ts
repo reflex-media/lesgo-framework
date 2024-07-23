@@ -1,12 +1,13 @@
-import { SendMessageCommandInput } from '@aws-sdk/client-sqs';
-import dispatchService from '../../services/SQSService/dispatch';
+import dispatchService, {
+  DispatchOptions,
+} from '../../services/SQSService/dispatch';
 import { Queue } from '../../services/SQSService/getQueueUrl';
 import { ClientOptions } from '../../types/aws';
 
 export const dispatch = async (
   payload: Record<any, any>,
   queue: string | Queue,
-  opts?: SendMessageCommandInput,
+  opts?: DispatchOptions,
   clientOpts?: ClientOptions
 ) => {
   return dispatchService(payload, queue, opts, clientOpts);
