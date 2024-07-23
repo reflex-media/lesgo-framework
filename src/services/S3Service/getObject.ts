@@ -49,7 +49,7 @@ const getObject = async (
 
   try {
     const resp = await client.send(new GetObjectCommand(commandInput));
-    logger.debug(`${FILE}::RESPONSE`, { resp, commandInput });
+    logger.debug(`${FILE}::RESPONSE`, { commandInput });
 
     return resp;
   } catch (error) {

@@ -7,9 +7,14 @@ import getTableName from './getTableName';
 
 const FILE = 'lesgo.services.DynamoDbService.scan';
 
+export interface ScanOptions
+  extends Partial<Omit<ScanCommandInput, 'TableName'>> {
+  TableName?: string;
+}
+
 const scan = async (
   tableAlias: string,
-  opts?: ScanCommandInput,
+  opts?: ScanOptions,
   clientOpts?: ClientOptions
 ) => {
   const input = validateFields({ tableAlias, ...opts }, [

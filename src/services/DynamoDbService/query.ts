@@ -7,11 +7,16 @@ import getTableName from './getTableName';
 
 const FILE = 'lesgo.services.DynamoDbService.query';
 
+export interface QueryOptions
+  extends Partial<Omit<QueryCommandInput, 'TableName'>> {
+  TableName?: string;
+}
+
 const query = async (
   tableAlias: string,
   keyConditionExpression: string,
   expressionAttributeValues: Record<string, any>,
-  opts?: QueryCommandInput,
+  opts?: QueryOptions,
   clientOpts?: ClientOptions
 ) => {
   const input = validateFields(

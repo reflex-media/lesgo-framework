@@ -11,12 +11,17 @@ import getClient from './getClient';
 
 const FILE = 'lesgo.services.DynamoDbService.putRecord';
 
+export interface PutRecordOptions
+  extends Partial<Omit<PutCommandInput, 'TableName'>> {
+  TableName?: string;
+}
+
 export type Item = Record<string, NativeAttributeValue>;
 
 const putRecord = async (
   item: Item,
   tableAlias: string,
-  opts?: PutCommandInput,
+  opts?: PutRecordOptions,
   clientOpts?: ClientOptions
 ) => {
   const input = validateFields({ item, tableAlias }, [

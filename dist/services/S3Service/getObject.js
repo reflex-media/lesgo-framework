@@ -70,7 +70,7 @@ const getObject = (key, opts, clientOpts) =>
     );
     try {
       const resp = yield client.send(new GetObjectCommand(commandInput));
-      logger.debug(`${FILE}::RESPONSE`, { resp, commandInput });
+      logger.debug(`${FILE}::RESPONSE`, { commandInput });
       return resp;
     } catch (error) {
       throw new LesgoException(
