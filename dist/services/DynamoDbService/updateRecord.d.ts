@@ -5,5 +5,5 @@ export type UpdateRecordOptions = Omit<UpdateCommandInput, 'TableName' | 'Key'> 
     TableName?: string;
     Key?: Record<string, NativeAttributeValue> | undefined;
 };
-declare const updateRecord: (key: Record<string, string>, tableAlias: string, updateExpression: string, expressionAttributeValues: Record<string, string>, opts?: UpdateRecordOptions, clientOpts?: ClientOptions) => Promise<import("@aws-sdk/lib-dynamodb").UpdateCommandOutput>;
+declare const updateRecord: (key: Record<string, string>, tableAlias: string, updateExpression: string, expressionAttributeValues: Record<string, NativeAttributeValue>, opts?: UpdateRecordOptions, clientOpts?: ClientOptions) => Promise<import("@aws-sdk/lib-dynamodb").UpdateCommandOutput>;
 export default updateRecord;

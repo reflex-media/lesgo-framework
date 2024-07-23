@@ -25,7 +25,7 @@ const updateRecord = async (
   key: Record<string, string>,
   tableAlias: string,
   updateExpression: string,
-  expressionAttributeValues: Record<string, string>,
+  expressionAttributeValues: Record<string, NativeAttributeValue>,
   opts?: UpdateRecordOptions,
   clientOpts?: ClientOptions
 ) => {

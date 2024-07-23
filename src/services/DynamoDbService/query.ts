@@ -1,4 +1,8 @@
-import { QueryCommand, QueryCommandInput } from '@aws-sdk/lib-dynamodb';
+import {
+  NativeAttributeValue,
+  QueryCommand,
+  QueryCommandInput,
+} from '@aws-sdk/lib-dynamodb';
 import LesgoException from '../../exceptions/LesgoException';
 import { validateFields, logger } from '../../utils';
 import { ClientOptions } from '../../types/aws';
@@ -15,7 +19,7 @@ export interface QueryOptions
 const query = async (
   tableAlias: string,
   keyConditionExpression: string,
-  expressionAttributeValues: Record<string, any>,
+  expressionAttributeValues: Record<string, NativeAttributeValue>,
   opts?: QueryOptions,
   clientOpts?: ClientOptions
 ) => {
