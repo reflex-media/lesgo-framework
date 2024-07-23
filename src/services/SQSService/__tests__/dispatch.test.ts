@@ -39,6 +39,12 @@ describe('dispatch', () => {
     expect(getClient).toHaveBeenCalledWith({ region, singletonConn });
   });
 
+  it('should call getClient with the correct arguments for queue string', async () => {
+    await dispatch(payload, 'testQueue', undefined, { region, singletonConn });
+
+    expect(getClient).toHaveBeenCalledWith({ region, singletonConn });
+  });
+
   it('should return the data from client.send', async () => {
     const result = await dispatch(payload, queue, undefined, {
       region,
@@ -72,6 +78,19 @@ describe('dispatch', () => {
           payload,
           queue,
         }
+      )
+    );
+  });
+
+  it('should throw a LesgoException queue does not exist on config', async () => {
+    const queue = 'invalidQueueAlias';
+
+    await expect(
+      dispatch(payload, queue, undefined, { region, singletonConn })
+    ).rejects.toThrow(
+      new LesgoException(
+        `Queue with alias ${queue} not found in config`,
+        'lesgo.services.SQSService.getQueueUrl::QUEUE_NOT_FOUND'
       )
     );
   });
