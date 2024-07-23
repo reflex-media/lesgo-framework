@@ -1,7 +1,7 @@
 import { HeadObjectCommandInput } from '@aws-sdk/client-s3';
 import { ClientOptions } from '../../types/aws';
 export type HeadObjectOptions = Omit<HeadObjectCommandInput, 'Key'> & {
-    Key?: string | undefined;
+    Key?: string;
 };
 declare const getHeadObject: (key: string, opts?: HeadObjectOptions, clientOpts?: ClientOptions) => Promise<{
     LastModified: Date | undefined;

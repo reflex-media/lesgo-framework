@@ -8,7 +8,7 @@ import getClient from './getClient';
 const FILE = 'lesgo/services/S3Service/getHeadObject';
 
 export type HeadObjectOptions = Omit<HeadObjectCommandInput, 'Key'> & {
-  Key?: string | undefined;
+  Key?: string;
 };
 
 const getHeadObject = async (

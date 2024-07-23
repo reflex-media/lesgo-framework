@@ -1,8 +1,6 @@
-import hash, { HashAlgorithm } from '../hash';
+import hash from '../hash';
 import LesgoException from '../../../exceptions/LesgoException';
 import crypto from '../../crypto';
-
-jest.mock('../../../exceptions/LesgoException');
 
 describe('hash', () => {
   afterEach(() => {
@@ -11,17 +9,16 @@ describe('hash', () => {
 
   it('should throw LesgoException if data is empty', () => {
     const data = '';
-    const expectedErrorMessage = 'Empty parameter supplied on hash';
-    const expectedErrorCode =
-      'lesgo.utils.crypto.hash::ERROR_EMPTY_STRING_TO_HASH';
 
     expect(() => {
       hash(data);
-    }).toThrow(LesgoException);
-
-    expect(LesgoException).toHaveBeenCalledWith(
-      expectedErrorMessage,
-      expectedErrorCode
+    }).toThrow(
+      new LesgoException(
+        "Missing required 'data'",
+        'lesgo.utils.validateFields::MISSING_REQUIRED_DATA',
+        500,
+        { field: { key: 'data', required: true, type: 'string' } }
+      )
     );
   });
 
@@ -47,7 +44,7 @@ describe('hash', () => {
 
   it('should use the specified hash algorithm', () => {
     const data = 'data';
-    const algorithm = HashAlgorithm.MD5;
+    const algorithm = 'md5';
     const expectedHashedValue = '8d777f385d3dfec8815d20f7496026dc';
 
     const result = hash(data, { algorithm });
@@ -65,16 +62,10 @@ describe('hash', () => {
     expect(() => {
       // @ts-ignore
       hash(data, { algorithm });
-    }).toThrow(LesgoException);
-
-    expect(LesgoException).toHaveBeenCalledWith(
-      expectedErrorMessage,
-      expectedErrorCode,
-      500,
-      {
-        algorithmSupplied: algorithm,
-        allowedAlgorithms: Object.values(HashAlgorithm),
-      }
+    }).toThrow(
+      new LesgoException(expectedErrorMessage, expectedErrorCode, 500, {
+        algorithm,
+      })
     );
   });
 });

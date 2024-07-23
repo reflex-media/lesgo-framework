@@ -2,14 +2,10 @@ import { randomBytes, createCipheriv } from 'crypto';
 import validateEncryptionFields from './validateEncryptionFields';
 import logger from '../logger';
 const FILE = 'lesgo.utils.crypto.encrypt';
-const encrypt = (text, { algorithm, secretKey, ivLength } = {}) => {
+const encrypt = (text, opts) => {
   logger.debug(`${FILE}::ENCRYPT`, { text });
   const { validText, validAlgorithm, validIvLength, validSecretKey } =
-    validateEncryptionFields(text, {
-      algorithm,
-      secretKey,
-      ivLength,
-    });
+    validateEncryptionFields(text, opts);
   const iv = randomBytes(validIvLength);
   const cipher = createCipheriv(validAlgorithm, validSecretKey, iv);
   let encrypted = cipher.update(validText);

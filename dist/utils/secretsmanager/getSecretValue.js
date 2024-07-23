@@ -40,12 +40,9 @@ const getSecretValue = (secretId, opts, clientOpts) =>
       clientOpts
     );
     try {
-      if (typeof SecretString === 'object') {
-        return JSON.parse(SecretString);
-      }
+      return JSON.parse(SecretString);
     } catch (error) {
       return SecretString;
     }
-    return SecretString;
   });
 export default getSecretValue;

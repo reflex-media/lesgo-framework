@@ -1,41 +1,37 @@
 import { createDecipheriv } from 'crypto';
 import cryptoConfig from '../../config/crypto';
-import LesgoException from '../../exceptions/LesgoException';
-import isEmpty from '../isEmpty';
 import {
   EncryptionAlgorithm,
   validateEncryptionAlgorithm,
   validateSecretKey,
 } from './validateEncryptionFields';
 import logger from '../logger';
+import validateFields from '../validateFields';
 
 const FILE = 'lesgo.utils.crypto.decrypt';
 
-const decrypt = (
-  text: string,
-  {
-    algorithm,
-    secretKey,
-  }: { algorithm?: EncryptionAlgorithm; secretKey?: string } = {}
-) => {
+export interface DecryptOptions {
+  algorithm?: EncryptionAlgorithm;
+  secretKey?: string;
+}
+
+const decrypt = (text: string, opts?: DecryptOptions) => {
   logger.debug(`${FILE}::DECRYPT`, { text });
 
-  if (isEmpty(text)) {
-    throw new LesgoException(
-      'Empty string supplied to decrypt',
-      `${FILE}::ERROR_EMPTY_STRING_TO_DECRYPT`
-    );
-  }
+  const input = validateFields({ text }, [
+    { key: 'text', type: 'string', required: true },
+  ]);
 
   const validAlgorithm =
-    algorithm || (cryptoConfig.encryption.algorithm as EncryptionAlgorithm);
+    opts?.algorithm ||
+    (cryptoConfig.encryption.algorithm as EncryptionAlgorithm);
   const validSecretKey =
-    secretKey || (cryptoConfig.encryption.secretKey as string);
+    opts?.secretKey || (cryptoConfig.encryption.secretKey as string);
 
   validateEncryptionAlgorithm(validAlgorithm);
   validateSecretKey(validSecretKey, validAlgorithm);
 
-  const textParts = text.split(':');
+  const textParts = input.text.split(':');
   const iv = Buffer.from(textParts.shift() || '', 'hex');
   const encryptedText = Buffer.from(textParts.join(':'), 'hex');
   const decipher = createDecipheriv(validAlgorithm, validSecretKey, iv);

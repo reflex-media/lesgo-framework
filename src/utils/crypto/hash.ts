@@ -1,46 +1,40 @@
 import { createHash } from 'crypto';
 import cryptoConfig from '../../config/crypto';
-import LesgoException from '../../exceptions/LesgoException';
-import isEmpty from '../isEmpty';
+import validateFields from '../validateFields';
+import { LesgoException } from '../../exceptions';
 
 const FILE = 'lesgo.utils.crypto.hash';
 
-export enum HashAlgorithm {
-  MD5 = 'md5',
-  SHA256 = 'sha256',
-  SHA512 = 'sha512',
+export type HashAlgorithm = 'md5' | 'sha256' | 'sha512';
+
+export interface HashOptions {
+  algorithm?: HashAlgorithm;
 }
 
-const hash = (
-  data: string,
-  { algorithm = HashAlgorithm.SHA256 }: { algorithm?: HashAlgorithm } = {}
-): string => {
-  if (isEmpty(data)) {
-    throw new LesgoException(
-      'Empty parameter supplied on hash',
-      `${FILE}::ERROR_EMPTY_STRING_TO_HASH`
-    );
-  }
+const isHashAlgorithm = (algorithm: string): algorithm is HashAlgorithm => {
+  return ['md5', 'sha256', 'sha512'].includes(algorithm);
+};
 
-  let algorithmSupplied: HashAlgorithm = algorithm;
-  if (isEmpty(algorithm)) {
-    algorithmSupplied = cryptoConfig.hash.algorithm as HashAlgorithm;
-  }
+const hash = (data: string, opts?: HashOptions): string => {
+  const input = validateFields({ data }, [
+    { key: 'data', type: 'string', required: true },
+  ]);
 
-  if (!Object.values(HashAlgorithm).includes(algorithmSupplied)) {
+  const algorithmSupplied = opts?.algorithm || cryptoConfig.hash.algorithm;
+
+  if (!isHashAlgorithm(algorithmSupplied)) {
     throw new LesgoException(
       'Invalid hash algorithm supplied',
       `${FILE}::ERROR_INVALID_HASH_ALGORITHM`,
       500,
       {
         algorithmSupplied,
-        allowedAlgorithms: Object.values(HashAlgorithm),
       }
     );
   }
 
   const hashedValue: string = createHash(algorithmSupplied)
-    .update(data)
+    .update(input.data)
     .digest('hex');
 
   return hashedValue;

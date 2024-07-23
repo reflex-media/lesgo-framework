@@ -1,9 +1,6 @@
-export declare enum HashAlgorithm {
-    MD5 = "md5",
-    SHA256 = "sha256",
-    SHA512 = "sha512"
+export type HashAlgorithm = 'md5' | 'sha256' | 'sha512';
+export interface HashOptions {
+    algorithm?: HashAlgorithm;
 }
-declare const hash: (data: string, { algorithm }?: {
-    algorithm?: HashAlgorithm | undefined;
-}) => string;
+declare const hash: (data: string, opts?: HashOptions) => string;
 export default hash;

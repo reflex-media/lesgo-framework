@@ -6,26 +6,17 @@ import logger from '../logger';
 
 const FILE = 'lesgo.utils.crypto.encrypt';
 
-const encrypt = (
-  text: string,
-  {
-    algorithm,
-    secretKey,
-    ivLength,
-  }: {
-    algorithm?: EncryptionAlgorithm;
-    secretKey?: string;
-    ivLength?: number;
-  } = {}
-) => {
+export interface EncryptOptions {
+  algorithm?: EncryptionAlgorithm;
+  secretKey?: string;
+  ivLength?: number;
+}
+
+const encrypt = (text: string, opts?: EncryptOptions) => {
   logger.debug(`${FILE}::ENCRYPT`, { text });
 
   const { validText, validAlgorithm, validIvLength, validSecretKey } =
-    validateEncryptionFields(text, {
-      algorithm,
-      secretKey,
-      ivLength,
-    });
+    validateEncryptionFields(text, opts);
 
   const iv = randomBytes(validIvLength);
   const cipher = createCipheriv(validAlgorithm, validSecretKey, iv);

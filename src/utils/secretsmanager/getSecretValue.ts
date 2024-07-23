@@ -1,10 +1,11 @@
-import { GetSecretValueCommandInput } from '@aws-sdk/client-secrets-manager';
-import getSecretValueService from '../../services/SecretsManagerService/getSecretValue';
+import getSecretValueService, {
+  GetSecretValueOptions,
+} from '../../services/SecretsManagerService/getSecretValue';
 import { ClientOptions } from '../../types/aws';
 
 const getSecretValue = async (
   secretId: string,
-  opts?: GetSecretValueCommandInput,
+  opts?: GetSecretValueOptions,
   clientOpts?: ClientOptions
 ) => {
   const { SecretString } = await getSecretValueService(
@@ -14,14 +15,10 @@ const getSecretValue = async (
   );
 
   try {
-    if (typeof SecretString === 'object') {
-      return JSON.parse(SecretString);
-    }
+    return JSON.parse(SecretString as string);
   } catch (error) {
     return SecretString;
   }
-
-  return SecretString;
 };
 
 export default getSecretValue;

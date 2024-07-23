@@ -3,8 +3,6 @@ import encrypt from '../encrypt';
 import decrypt from '../decrypt';
 import crypto from '../../crypto';
 
-jest.mock('../../../exceptions/LesgoException');
-
 describe('decrypt', () => {
   afterEach(() => {
     jest.clearAllMocks();
@@ -12,17 +10,16 @@ describe('decrypt', () => {
 
   it('should throw LesgoException if text is empty', () => {
     const text = '';
-    const expectedErrorMessage = 'Empty string supplied to decrypt';
+    const expectedErrorMessage = "Missing required 'text'";
     const expectedErrorCode =
-      'lesgo.utils.crypto.decrypt::ERROR_EMPTY_STRING_TO_DECRYPT';
+      'lesgo.utils.validateFields::MISSING_REQUIRED_TEXT';
 
     expect(() => {
       decrypt(text);
-    }).toThrow(LesgoException);
-
-    expect(LesgoException).toHaveBeenCalledWith(
-      expectedErrorMessage,
-      expectedErrorCode
+    }).toThrow(
+      new LesgoException(expectedErrorMessage, expectedErrorCode, 500, {
+        field: { key: 'text', required: true, type: 'string' },
+      })
     );
   });
 

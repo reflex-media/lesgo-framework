@@ -9,9 +9,16 @@ import getClient from './getClient';
 
 const FILE = 'lesgo.services.SecretsManager.getSecretValue';
 
+export type GetSecretValueOptions = Omit<
+  GetSecretValueCommandInput,
+  'SecretId'
+> & {
+  SecretId?: string;
+};
+
 const getSecretValue = async (
   secretId: string,
-  opts?: GetSecretValueCommandInput,
+  opts?: GetSecretValueOptions,
   clientOpts?: ClientOptions
 ) => {
   const input = validateFields({ secretId }, [

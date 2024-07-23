@@ -1,7 +1,8 @@
 import { EncryptionAlgorithm } from './validateEncryptionFields';
-declare const encrypt: (text: string, { algorithm, secretKey, ivLength, }?: {
-    algorithm?: EncryptionAlgorithm | undefined;
-    secretKey?: string | undefined;
-    ivLength?: number | undefined;
-}) => string;
+export interface EncryptOptions {
+    algorithm?: EncryptionAlgorithm;
+    secretKey?: string;
+    ivLength?: number;
+}
+declare const encrypt: (text: string, opts?: EncryptOptions) => string;
 export default encrypt;

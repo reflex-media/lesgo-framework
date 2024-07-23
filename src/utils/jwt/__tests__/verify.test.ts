@@ -18,6 +18,12 @@ describe('verify', () => {
     expect(verifyService).toHaveBeenCalledWith(token, undefined, undefined);
   });
 
+  it('should call verifyService with Bearer Token', () => {
+    verify(`Bearer ${token}`);
+
+    expect(verifyService).toHaveBeenCalledWith(token, undefined, undefined);
+  });
+
   it('should call verifyService with provided secret', () => {
     const secret = 'custom-secret';
 

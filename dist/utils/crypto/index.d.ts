@@ -3,17 +3,8 @@ import encrypt from './encrypt';
 import hash from './hash';
 export { decrypt, encrypt, hash };
 declare const _default: {
-    decrypt: (text: string, { algorithm, secretKey, }?: {
-        algorithm?: import("./validateEncryptionFields").EncryptionAlgorithm | undefined;
-        secretKey?: string | undefined;
-    }) => string;
-    encrypt: (text: string, { algorithm, secretKey, ivLength, }?: {
-        algorithm?: import("./validateEncryptionFields").EncryptionAlgorithm | undefined;
-        secretKey?: string | undefined;
-        ivLength?: number | undefined;
-    }) => string;
-    hash: (data: string, { algorithm }?: {
-        algorithm?: import("./hash").HashAlgorithm | undefined;
-    }) => string;
+    decrypt: (text: string, opts?: import("./decrypt").DecryptOptions | undefined) => string;
+    encrypt: (text: string, opts?: import("./encrypt").EncryptOptions | undefined) => string;
+    hash: (data: string, opts?: import("./hash").HashOptions | undefined) => string;
 };
 export default _default;

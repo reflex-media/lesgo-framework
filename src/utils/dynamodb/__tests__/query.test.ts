@@ -37,4 +37,20 @@ describe('query', () => {
       }
     );
   });
+
+  it('should return empty array if no results', async () => {
+    const tableName = 'testingTable';
+    const keyConditionExpression = 'id = :id';
+    const expressionAttributeValues = { ':id': '123' };
+
+    (queryService as jest.Mock).mockResolvedValue({});
+
+    const resp = await query(
+      tableName,
+      keyConditionExpression,
+      expressionAttributeValues
+    );
+
+    expect(resp.length).toEqual(0);
+  });
 });
