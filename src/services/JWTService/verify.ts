@@ -1,7 +1,7 @@
 import { verify as verifyToken, VerifyOptions } from 'jsonwebtoken';
 import jwtConfig from '../../config/jwt';
 import { LesgoException } from '../../exceptions';
-import { logger } from '../../utils';
+import { isEmpty, logger } from '../../utils';
 import getJwtSecret from './getJwtSecret';
 import decodeJwt from './decodeJwt';
 
@@ -21,7 +21,9 @@ const verify = (token: string, secret?: string, opts?: VerifyInputOptions) => {
     keyid: payload.kid || header.kid || opts?.keyid,
   });
 
-  const validateClaims = opts?.validateClaims || jwtConfig.validateClaims;
+  const validateClaims = !isEmpty(opts?.validateClaims)
+    ? opts?.validateClaims
+    : jwtConfig.validateClaims;
 
   if (validateClaims) {
     opts = {
@@ -37,6 +39,11 @@ const verify = (token: string, secret?: string, opts?: VerifyInputOptions) => {
   };
 
   try {
+    logger.debug(`${FILE}::VERIFYING_TOKEN`, {
+      token,
+      opts,
+      isValidateClaims: validateClaims,
+    });
     const decoded = verifyToken(token, jwtSecret.secret, opts);
     logger.debug(`${FILE}::VERIFIED_TOKEN`, decoded);
     return decoded;

@@ -1,7 +1,7 @@
 import { verify as verifyToken } from 'jsonwebtoken';
 import jwtConfig from '../../config/jwt';
 import { LesgoException } from '../../exceptions';
-import { logger } from '../../utils';
+import { isEmpty, logger } from '../../utils';
 import getJwtSecret from './getJwtSecret';
 import decodeJwt from './decodeJwt';
 const FILE = 'lesgo.services.JWTService.verify';
@@ -15,9 +15,13 @@ const verify = (token, secret, opts) => {
       header.kid ||
       (opts === null || opts === void 0 ? void 0 : opts.keyid),
   });
-  const validateClaims =
-    (opts === null || opts === void 0 ? void 0 : opts.validateClaims) ||
-    jwtConfig.validateClaims;
+  const validateClaims = !isEmpty(
+    opts === null || opts === void 0 ? void 0 : opts.validateClaims
+  )
+    ? opts === null || opts === void 0
+      ? void 0
+      : opts.validateClaims
+    : jwtConfig.validateClaims;
   if (validateClaims) {
     opts = Object.assign(
       {
@@ -33,6 +37,11 @@ const verify = (token, secret, opts) => {
   }
   opts = Object.assign({ complete: true }, opts);
   try {
+    logger.debug(`${FILE}::VERIFYING_TOKEN`, {
+      token,
+      opts,
+      isValidateClaims: validateClaims,
+    });
     const decoded = verifyToken(token, jwtSecret.secret, opts);
     logger.debug(`${FILE}::VERIFIED_TOKEN`, decoded);
     return decoded;
