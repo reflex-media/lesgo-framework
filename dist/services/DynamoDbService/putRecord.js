@@ -33,30 +33,25 @@ var __awaiter =
   };
 import { PutCommand } from '@aws-sdk/lib-dynamodb';
 import LesgoException from '../../exceptions/LesgoException';
-import dynamodbConfig from '../../config/dynamodb';
-import getClient from './getClient';
 import { validateFields, logger } from '../../utils';
+import getTableName from './getTableName';
+import getClient from './getClient';
 const FILE = 'lesgo.services.DynamoDbService.putRecord';
-const putRecord = (item, tableName, clientOpts) =>
+const putRecord = (item, tableAlias, opts, clientOpts) =>
   __awaiter(void 0, void 0, void 0, function* () {
-    var _a;
-    const input = validateFields({ item, tableName }, [
+    const input = validateFields({ item, tableAlias }, [
       { key: 'item', type: 'object', required: true },
-      { key: 'tableName', type: 'string', required: true },
+      { key: 'tableAlias', type: 'string', required: true },
     ]);
+    const tableName = getTableName(input.tableAlias);
     const client = getClient(clientOpts);
-    const commandInput = {
-      TableName:
-        (_a = dynamodbConfig.tables.find(t => t.alias === input.tableName)) ===
-          null || _a === void 0
-          ? void 0
-          : _a.name,
+    const commandInput = Object.assign(Object.assign({}, opts), {
+      TableName: tableName,
       Item: input.item,
-    };
-    logger.debug(`${FILE}::QUERY_PREPARED`, { commandInput, clientOpts });
+    });
     try {
       const resp = yield client.send(new PutCommand(commandInput));
-      logger.debug(`${FILE}::RECEIVED_RESPONSE`, { resp });
+      logger.debug(`${FILE}::RECEIVED_RESPONSE`, { resp, commandInput });
       return resp;
     } catch (error) {
       throw new LesgoException('Failed to put record', `${FILE}::ERROR`, 500, {

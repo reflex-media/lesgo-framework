@@ -33,11 +33,19 @@ var __awaiter =
   };
 import { GetObjectCommand } from '@aws-sdk/client-s3';
 import { Readable } from 'stream';
-import getClient from './getClient';
 import LesgoException from '../../exceptions/LesgoException';
+import s3Config from '../../config/s3';
+import { logger, validateFields } from '../../utils';
+import getClient from './getClient';
 const FILE = 'lesgo.services.S3Service.getObject';
-const streamToBuffer = stream =>
+export const streamToBuffer = stream =>
   __awaiter(void 0, void 0, void 0, function* () {
+    if (!stream || !(stream instanceof Readable)) {
+      throw new LesgoException(
+        'Data is not a readable stream',
+        `${FILE}::ERROR_NOT_READABLE_STREAM`
+      );
+    }
     return new Promise((resolve, reject) => {
       const chunks = [];
       stream.on('data', chunk => chunks.push(chunk));
@@ -45,17 +53,24 @@ const streamToBuffer = stream =>
       stream.on('end', () => resolve(Buffer.concat(chunks)));
     });
   });
-const getObject = (key, bucket, { region, singletonConn }) =>
+const getObject = (key, opts, clientOpts) =>
   __awaiter(void 0, void 0, void 0, function* () {
-    const client = getClient({ region, singletonConn });
-    const command = new GetObjectCommand({
-      Bucket: bucket,
-      Key: key,
-    });
-    let body;
+    const input = validateFields({ key }, [
+      { key: 'key', type: 'string', required: true },
+    ]);
+    const client = getClient(clientOpts);
+    const command = new GetObjectCommand(
+      Object.assign(Object.assign({}, opts), {
+        Bucket:
+          (opts === null || opts === void 0 ? void 0 : opts.Bucket) ||
+          s3Config.bucket,
+        Key: input.key,
+      })
+    );
     try {
-      const { Body } = yield client.send(command);
-      body = Body;
+      const resp = yield client.send(command);
+      logger.debug(`${FILE}::RESPONSE`, { resp, command });
+      return resp;
     } catch (error) {
       throw new LesgoException(
         'Error occurred getting object from S3 bucket',
@@ -63,23 +78,11 @@ const getObject = (key, bucket, { region, singletonConn }) =>
         500,
         {
           error,
-          bucket,
-          key,
+          command,
+          opts,
+          clientOpts,
         }
       );
     }
-    if (!body || !(body instanceof Readable)) {
-      throw new LesgoException(
-        'No data returned from S3 or data is not a readable stream',
-        `${FILE}::ERROR_NO_DATA_OR_NOT_READABLE`,
-        500,
-        {
-          bucket,
-          key,
-        }
-      );
-    }
-    const objectBody = yield streamToBuffer(body);
-    return objectBody;
   });
 export default getObject;

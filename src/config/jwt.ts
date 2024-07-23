@@ -13,7 +13,7 @@ export default {
   algorithm: process.env.LESGO_JWT_ALGORITHM || 'HS256',
   secrets,
   expiresIn: process.env.LESGO_JWT_EXPIRES_IN || '1h',
-  issuer: process.env.LESGO_JWT_ISSUER || 'lesgo-api',
-  audience: process.env.LESGO_JWT_AUDIENCE || 'lesgo-web',
+  issuer: process.env.LESGO_JWT_ISSUER,
+  audience: process.env.LESGO_JWT_AUDIENCE,
   validateClaims: process.env.LESGO_JWT_VALIDATE_CLAIMS !== 'false',
 };

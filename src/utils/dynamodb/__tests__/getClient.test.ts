@@ -26,7 +26,6 @@ describe('getClient', () => {
 
     expect(getClientService).toHaveBeenCalledTimes(1);
     expect(getClientService).toHaveBeenCalledWith({
-      singletonConn: 'default',
       region,
     });
   });
@@ -39,17 +38,20 @@ describe('getClient', () => {
     expect(getClientService).toHaveBeenCalledTimes(1);
     expect(getClientService).toHaveBeenCalledWith({
       singletonConn,
-      region: 'ap-southeast-1',
     });
   });
 
   it('should call getClientService with default singletonConn and region if not provided', () => {
+    getClient();
+
+    expect(getClientService).toHaveBeenCalledTimes(1);
+    expect(getClientService).toHaveBeenCalledWith(undefined);
+  });
+
+  it('should call getClientService with default singletonConn and region if empty object provided', () => {
     getClient({});
 
     expect(getClientService).toHaveBeenCalledTimes(1);
-    expect(getClientService).toHaveBeenCalledWith({
-      singletonConn: 'default',
-      region: 'ap-southeast-1',
-    });
+    expect(getClientService).toHaveBeenCalledWith({});
   });
 });

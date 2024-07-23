@@ -1,14 +1,14 @@
-import { GetClientOptions } from '../../services/DynamoDbService/getClient';
-import scanService, {
-  ScanInputOptions,
-} from '../../services/DynamoDbService/scan';
+import { ScanCommandInput } from '@aws-sdk/lib-dynamodb';
+import { ClientOptions } from '../../types/aws';
+import scanService from '../../services/DynamoDbService/scan';
 
 export const scan = async (
-  tableName: string,
-  opts?: ScanInputOptions,
-  clientOpts?: GetClientOptions
+  tableAlias: string,
+  opts?: ScanCommandInput,
+  clientOpts?: ClientOptions
 ) => {
-  return scanService(tableName, opts, clientOpts);
+  const data = await scanService(tableAlias, opts, clientOpts);
+  return data?.Items || [];
 };
 
 export default scan;

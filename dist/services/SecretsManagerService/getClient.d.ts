@@ -1,10 +1,7 @@
 import { SecretsManagerClient } from '@aws-sdk/client-secrets-manager';
+import { ClientOptions } from '../../types/aws';
 export interface Singleton {
     [key: string]: SecretsManagerClient;
 }
-export interface GetClientOptions {
-    region: string;
-    singletonConn: string;
-}
-declare const getClient: ({ region, singletonConn }: GetClientOptions) => SecretsManagerClient;
+declare const getClient: (clientOpts?: ClientOptions) => SecretsManagerClient;
 export default getClient;

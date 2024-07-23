@@ -1,15 +1,5 @@
-import { NativeAttributeValue } from '@aws-sdk/lib-dynamodb';
-import { GetClientOptions } from './getClient';
+import { NativeAttributeValue, UpdateCommandInput } from '@aws-sdk/lib-dynamodb';
+import { ClientOptions } from '../../types/aws';
 export type Key = Record<string, NativeAttributeValue>;
-export interface UpdateRecordInputOptions {
-    conditionExpression?: string;
-    expressionAttributeNames?: Record<string, string>;
-}
-export interface ValidatedCommandInput extends UpdateRecordInputOptions {
-    key: Key;
-    tableName: string;
-    updateExpression: string;
-    expressionAttributeValues: Record<string, string>;
-}
-declare const updateRecord: (key: Record<string, string>, tableName: string, updateExpression: string, expressionAttributeValues: Record<string, string>, opts?: UpdateRecordInputOptions, clientOpts?: GetClientOptions) => Promise<import("@aws-sdk/lib-dynamodb").UpdateCommandOutput>;
+declare const updateRecord: (key: Record<string, string>, tableAlias: string, updateExpression: string, expressionAttributeValues: Record<string, string>, opts?: UpdateCommandInput, clientOpts?: ClientOptions) => Promise<import("@aws-sdk/lib-dynamodb").UpdateCommandOutput>;
 export default updateRecord;

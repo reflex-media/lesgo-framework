@@ -33,30 +33,25 @@ var __awaiter =
   };
 import { DeleteCommand } from '@aws-sdk/lib-dynamodb';
 import LesgoException from '../../exceptions/LesgoException';
-import dynamodbConfig from '../../config/dynamodb';
 import { validateFields, logger } from '../../utils';
 import getClient from './getClient';
+import getTableName from './getTableName';
 const FILE = 'lesgo.services.DynamoDbService.deleteRecord';
-const deleteRecord = (key, tableName, clientOpts) =>
+const deleteRecord = (key, tableAlias, opts, clientOpts) =>
   __awaiter(void 0, void 0, void 0, function* () {
-    var _a;
-    const input = validateFields({ key, tableName }, [
+    const input = validateFields({ key, tableAlias }, [
       { key: 'key', type: 'object', required: true },
-      { key: 'tableName', type: 'string', required: true },
+      { key: 'tableAlias', type: 'string', required: true },
     ]);
+    const tableName = getTableName(input.tableAlias);
     const client = getClient(clientOpts);
-    const commandInput = {
-      TableName:
-        (_a = dynamodbConfig.tables.find(t => t.alias === input.tableName)) ===
-          null || _a === void 0
-          ? void 0
-          : _a.name,
+    const commandInput = Object.assign(Object.assign({}, opts), {
+      TableName: tableName,
       Key: input.key,
-    };
-    logger.debug(`${FILE}::QUERY_PREPARED`, { commandInput, clientOpts });
+    });
     try {
       const data = yield client.send(new DeleteCommand(commandInput));
-      logger.debug(`${FILE}::RECEIVED_RESPONSE`, { data });
+      logger.debug(`${FILE}::RECEIVED_RESPONSE`, { data, commandInput });
       return data;
     } catch (error) {
       throw new LesgoException(

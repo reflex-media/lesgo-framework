@@ -1,10 +1,8 @@
 import getDownloadSignedUrl from '../getDownloadSignedUrl';
 import getDownloadSignedUrlService from '../../../services/S3Service/getDownloadSignedUrl';
 import s3Utils from '../../../utils/s3';
-import config from '../../../config/aws';
 
 jest.mock('../../../services/S3Service/getDownloadSignedUrl');
-jest.mock('../../../config/aws');
 
 describe('getDownloadSignedUrl', () => {
   afterEach(() => {
@@ -18,12 +16,9 @@ describe('getDownloadSignedUrl', () => {
 
     expect(getDownloadSignedUrlService).toHaveBeenCalledWith(
       key,
-      config.s3.bucket,
-      {
-        singletonConn: 'default',
-        region: config.region,
-        expiresIn: 3600,
-      }
+      undefined,
+      undefined,
+      undefined
     );
   });
 
@@ -34,17 +29,25 @@ describe('getDownloadSignedUrl', () => {
     const region = 'us-west-2';
     const expiresIn = 1800;
 
-    s3Utils.getDownloadSignedUrl(key, bucket, {
-      singletonConn,
-      region,
-      expiresIn,
-    });
+    s3Utils.getDownloadSignedUrl(
+      key,
+      { Bucket: bucket },
+      { expiresIn },
+      {
+        singletonConn,
+        region,
+      }
+    );
 
-    expect(getDownloadSignedUrlService).toHaveBeenCalledWith(key, bucket, {
-      singletonConn,
-      region,
-      expiresIn,
-    });
+    expect(getDownloadSignedUrlService).toHaveBeenCalledWith(
+      key,
+      { Bucket: bucket },
+      { expiresIn },
+      {
+        singletonConn,
+        region,
+      }
+    );
   });
 
   it('should call getDownloadSignedUrlService with default singletonConn, specified region, and expiresIn', () => {
@@ -53,16 +56,14 @@ describe('getDownloadSignedUrl', () => {
     const region = 'us-west-2';
     const expiresIn = 1800;
 
-    getDownloadSignedUrl(key, bucket, {
-      region,
-      expiresIn,
-    });
+    getDownloadSignedUrl(key, { Bucket: bucket }, { expiresIn }, { region });
 
-    expect(getDownloadSignedUrlService).toHaveBeenCalledWith(key, bucket, {
-      singletonConn: 'default',
-      region,
-      expiresIn,
-    });
+    expect(getDownloadSignedUrlService).toHaveBeenCalledWith(
+      key,
+      { Bucket: bucket },
+      { expiresIn },
+      { region }
+    );
   });
 
   it('should call getDownloadSignedUrlService with specified singletonConn, specified region, and expiresIn', () => {
@@ -72,16 +73,24 @@ describe('getDownloadSignedUrl', () => {
     const region = 'us-west-2';
     const expiresIn = 1800;
 
-    getDownloadSignedUrl(key, bucket, {
-      singletonConn,
-      region,
-      expiresIn,
-    });
+    getDownloadSignedUrl(
+      key,
+      { Bucket: bucket },
+      { expiresIn },
+      {
+        singletonConn,
+        region,
+      }
+    );
 
-    expect(getDownloadSignedUrlService).toHaveBeenCalledWith(key, bucket, {
-      singletonConn,
-      region,
-      expiresIn,
-    });
+    expect(getDownloadSignedUrlService).toHaveBeenCalledWith(
+      key,
+      { Bucket: bucket },
+      { expiresIn },
+      {
+        singletonConn,
+        region,
+      }
+    );
   });
 });

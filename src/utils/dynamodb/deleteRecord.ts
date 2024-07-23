@@ -1,14 +1,16 @@
-import { GetClientOptions } from '../../services/DynamoDbService/getClient';
+import { ClientOptions } from '../../types/aws';
 import deleteRecordService, {
   Key,
 } from '../../services/DynamoDbService/deleteRecord';
+import { DeleteCommandInput } from '@aws-sdk/lib-dynamodb';
 
 const deleteRecord = async (
   key: Key,
-  tableName: string,
-  clientOpts?: GetClientOptions
+  tableAlias: string,
+  opts?: DeleteCommandInput,
+  clientOpts?: ClientOptions
 ) => {
-  return deleteRecordService(key, tableName, clientOpts);
+  return deleteRecordService(key, tableAlias, opts, clientOpts);
 };
 
 export default deleteRecord;

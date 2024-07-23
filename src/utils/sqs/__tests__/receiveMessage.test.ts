@@ -1,9 +1,6 @@
-import { LesgoException } from '../../../exceptions';
-import config from '../../../config/aws';
-import receiveMessagesService, {
-  Queue,
-} from '../../../services/SQSService/receiveMessages';
-import receiveMessages, { ReceiveMessagesOptions } from '../receiveMessages';
+import receiveMessagesService from '../../../services/SQSService/receiveMessages';
+import { Queue } from '../../../services/SQSService/getQueueUrl';
+import receiveMessages from '../receiveMessages';
 
 jest.mock('../../../services/SQSService/receiveMessages');
 
@@ -21,39 +18,31 @@ describe('receiveMessages', () => {
   });
 
   it('should call receiveMessagesService with the correct arguments', async () => {
-    const options: ReceiveMessagesOptions = {
+    const options = {
+      MaxNumberOfMessages: 10,
+      WaitTimeSeconds: 5,
+    };
+    const clientOptions = {
       region,
       singletonConn,
-      maxNumberOfMessages: 10,
-      waitTimeSeconds: 5,
     };
 
-    await receiveMessages(queue, options);
+    await receiveMessages(queue, options, clientOptions);
 
-    expect(receiveMessagesService).toHaveBeenCalledWith(queue, options);
+    expect(receiveMessagesService).toHaveBeenCalledWith(
+      queue,
+      options,
+      clientOptions
+    );
   });
 
   it('should call receiveMessagesService with default options if not provided', async () => {
     await receiveMessages(queue);
 
-    expect(receiveMessagesService).toHaveBeenCalledWith(queue, {
-      region: config.sqs.region,
-      singletonConn: 'default',
-    });
-  });
-
-  it('should throw a LesgoException when the queue alias is not found in config', async () => {
-    const invalidQueueAlias = 'invalidQueueAlias';
-
-    await expect(receiveMessages(invalidQueueAlias)).rejects.toThrow(
-      new LesgoException(
-        `Queue with alias ${invalidQueueAlias} not found in config`,
-        'lesgo.utils.sqs.receiveMessages::QUEUE_NOT_FOUND',
-        500,
-        {
-          queue: invalidQueueAlias,
-        }
-      )
+    expect(receiveMessagesService).toHaveBeenCalledWith(
+      queue,
+      undefined,
+      undefined
     );
   });
 });

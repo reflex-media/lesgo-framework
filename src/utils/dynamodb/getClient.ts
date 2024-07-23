@@ -1,8 +1,7 @@
-import getClientService, {
-  GetClientOptions,
-} from '../../services/DynamoDbService/getClient';
+import getClientService from '../../services/DynamoDbService/getClient';
+import { ClientOptions } from '../../types/aws';
 
-const getClient = (opts?: GetClientOptions) => {
+const getClient = (opts?: ClientOptions) => {
   return getClientService(opts);
 };
 

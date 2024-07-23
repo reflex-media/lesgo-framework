@@ -1,4 +1,4 @@
-import { GetClientOptions } from '../../services/DynamoDbService/getClient';
-import { QueryInputOptions } from '../../services/DynamoDbService/query';
-export declare const query: (tableName: string, keyConditionExpression: string, expressionAttributeValues: Record<string, string>, opts?: QueryInputOptions, clientOpts?: GetClientOptions) => Promise<Record<string, any>[] | undefined>;
+import { QueryCommandInput } from '@aws-sdk/lib-dynamodb';
+import { ClientOptions } from '../../types/aws';
+export declare const query: (tableName: string, keyConditionExpression: string, expressionAttributeValues: Record<string, string>, opts?: QueryCommandInput, clientOpts?: ClientOptions) => Promise<Record<string, any>[] | undefined>;
 export default query;

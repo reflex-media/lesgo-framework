@@ -1,42 +1,47 @@
-import { HeadObjectCommand } from '@aws-sdk/client-s3';
-import getClient from './getClient';
+import { HeadObjectCommand, HeadObjectCommandInput } from '@aws-sdk/client-s3';
+import s3Config from '../../config/s3';
 import LesgoException from '../../exceptions/LesgoException';
-import isEmpty from '../../utils/isEmpty';
+import { logger, validateFields } from '../../utils';
+import { ClientOptions } from '../../types/aws';
+import getClient from './getClient';
 
 const FILE = 'lesgo/services/S3Service/getHeadObject';
 
-export interface GetHeadObjectOptions {
-  region: string;
-  singletonConn: string;
-}
+export type HeadObjectOptions = Omit<HeadObjectCommandInput, 'Key'> & {
+  Key?: string | undefined;
+};
 
 const getHeadObject = async (
   key: string,
-  bucket: string,
-  { region, singletonConn }: GetHeadObjectOptions
+  opts?: HeadObjectOptions,
+  clientOpts?: ClientOptions
 ) => {
-  if (isEmpty(key)) {
-    throw new LesgoException('Key is undefined', `${FILE}::KEY_UNDEFINED`);
-  }
+  const input = validateFields({ key }, [
+    { key: 'key', type: 'string', required: true },
+  ]);
 
-  if (isEmpty(bucket)) {
-    throw new LesgoException(
-      'Bucket is undefined',
-      `${FILE}::BUCKET_UNDEFINED`
-    );
-  }
+  const client = getClient(clientOpts);
 
-  const client = getClient({ region, singletonConn });
-
-  const command = new HeadObjectCommand({
-    Bucket: bucket,
-    Key: key,
-  });
+  const commandInput: HeadObjectCommandInput = {
+    Bucket: opts?.Bucket || s3Config.bucket,
+    Key: input.key,
+    ...opts,
+  };
 
   try {
-    const response = await client.send(command);
+    const response = await client.send(new HeadObjectCommand(commandInput));
     const { LastModified, ContentLength, ETag, ContentType, Metadata } =
       response;
+
+    logger.debug(`${FILE}::RESPONSE`, {
+      LastModified,
+      ContentLength,
+      ETag,
+      ContentType,
+      Metadata,
+      response,
+      commandInput,
+    });
 
     return { LastModified, ContentLength, ETag, ContentType, Metadata };
   } catch (error) {
@@ -46,8 +51,9 @@ const getHeadObject = async (
       500,
       {
         error,
-        bucket,
-        key,
+        commandInput,
+        opts,
+        clientOpts,
       }
     );
   }

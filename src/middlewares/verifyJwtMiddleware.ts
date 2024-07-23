@@ -2,22 +2,18 @@ import middy from '@middy/core';
 import { verify } from '../utils/jwt';
 import logger from '../utils/logger';
 import { LesgoException } from '../exceptions';
+import { VerifyInputOptions } from '../services/JWTService/verify';
 
 const FILE = 'lesgo.middlewares.verifyJwtMiddleware';
 
-export interface VerifyJwtOptions {
-  keyid?: string;
-  algorithm?: string;
-  validateClaims?: boolean;
-  issuer?: string;
-  audience?: string;
-  secret?: string;
-}
-
-const verifyJwtMiddleware = (options: VerifyJwtOptions = {}) => {
-  const verifyJwt = (token: string, opts: VerifyJwtOptions) => {
+const verifyJwtMiddleware = (secret?: string, options?: VerifyInputOptions) => {
+  const verifyJwt = (
+    token: string,
+    secret?: string,
+    opts?: VerifyInputOptions
+  ) => {
     try {
-      const decoded = verify(token, { secret: opts.secret, opts });
+      const decoded = verify(token, secret, opts);
       return decoded;
     } catch (error: any) {
       throw new LesgoException(
@@ -41,7 +37,7 @@ const verifyJwtMiddleware = (options: VerifyJwtOptions = {}) => {
       );
     }
 
-    const decoded = verifyJwt(token, options);
+    const decoded = verifyJwt(token, secret, options);
     logger.debug(`${FILE}::JWT_VERIFIED`, { decoded });
 
     request.event.jwt = decoded;

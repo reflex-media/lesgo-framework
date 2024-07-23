@@ -38,7 +38,7 @@ describe('getObject', () => {
       singletonConn: 'default',
     };
 
-    await getObject(key, bucket, options);
+    await getObject(key, { Bucket: bucket }, options);
 
     expect(getClient).toHaveBeenCalledWith({
       region: options.region,
@@ -59,7 +59,7 @@ describe('getObject', () => {
       send: jest.fn().mockRejectedValueOnce(error),
     });
 
-    await expect(getObject(key, bucket, options)).rejects.toThrow(
+    await expect(getObject(key, { Bucket: bucket }, options)).rejects.toThrow(
       new LesgoException(
         'Error occurred getting object from S3 bucket',
         'lesgo.services.S3Service.getObject::ERROR',

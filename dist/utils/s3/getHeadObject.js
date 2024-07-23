@@ -31,27 +31,11 @@ var __awaiter =
       step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
   };
-import s3Config from '../../config/s3';
 import getHeadObjectService from '../../services/S3Service/getHeadObject';
-import isEmpty from '../isEmpty';
-import validateFields from '../validateFields';
-const getHeadObject = (
-  key,
-  bucket,
-  { singletonConn = 'default', region = '' } = {}
-) =>
+const getHeadObject = (key, opts, clientOpts) =>
   __awaiter(void 0, void 0, void 0, function* () {
-    region = isEmpty(region) ? s3Config.region : region;
-    bucket = isEmpty(bucket) ? s3Config.bucket : bucket;
-    const input = validateFields({ key, bucket, singletonConn, region }, [
-      { key: 'key', type: 'string', required: true },
-      { key: 'bucket', type: 'string', required: true },
-      { key: 'singletonConn', type: 'string', required: true },
-      { key: 'region', type: 'string', required: true },
-    ]);
-    return getHeadObjectService(input.key, input.bucket, {
-      singletonConn: input.singletonConn,
-      region: input.region,
-    });
+    const { LastModified, ContentLength, ETag, ContentType, Metadata } =
+      yield getHeadObjectService(key, opts, clientOpts);
+    return { LastModified, ContentLength, ETag, ContentType, Metadata };
   });
 export default getHeadObject;

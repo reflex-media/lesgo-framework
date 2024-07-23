@@ -1,7 +1,8 @@
 import { ReceiveMessageCommand } from '@aws-sdk/client-sqs';
 import LesgoException from '../../../exceptions/LesgoException';
 import getClient from '../getClient';
-import receiveMessages, { Queue } from '../receiveMessages';
+import receiveMessages from '../receiveMessages';
+import { Queue } from '../getQueueUrl';
 
 jest.mock('../getClient', () => {
   return jest.fn().mockImplementation(() => ({
@@ -33,19 +34,20 @@ describe('receiveMessages', () => {
   });
 
   it('should call getClient with the correct arguments', async () => {
-    await receiveMessages(queue, { region, singletonConn });
+    await receiveMessages(queue, undefined, { region, singletonConn });
 
     expect(getClient).toHaveBeenCalledWith({ region, singletonConn });
   });
 
   it('should return the data from client.send', async () => {
-    const resp = await receiveMessages(queue, { region, singletonConn });
+    const resp = await receiveMessages(queue, undefined, {
+      region,
+      singletonConn,
+    });
 
     expect(resp).toMatchObject({
       _mocked: {
         QueueUrl: queue.url,
-        MaxNumberOfMessages: 1,
-        WaitTimeSeconds: 0,
       },
     });
   });
@@ -58,7 +60,7 @@ describe('receiveMessages', () => {
     };
 
     await expect(
-      receiveMessages(queue, { region, singletonConn })
+      receiveMessages(queue, undefined, { region, singletonConn })
     ).rejects.toThrow(
       new LesgoException(
         'Error occurred receiving messages from queue',

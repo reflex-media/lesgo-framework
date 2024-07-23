@@ -2,6 +2,7 @@ import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import { DynamoDBDocumentClient } from '@aws-sdk/lib-dynamodb';
 import { isEmpty, logger, validateFields } from '../../utils';
 import dynamodbConfig from '../../config/dynamodb';
+import { ClientOptions } from '../../types/aws';
 
 const FILE = 'lesgo.services.DynamoDbService.getClient';
 
@@ -9,18 +10,13 @@ export interface Singleton {
   [key: string]: DynamoDBDocumentClient;
 }
 
-export interface GetClientOptions {
-  region?: string;
-  singletonConn?: string;
-}
-
 const singleton: Singleton = {};
 
-const getClient = (opts: GetClientOptions = {}) => {
+const getClient = (opts: ClientOptions = {}) => {
   const options = validateFields(opts, [
     { key: 'region', type: 'string', required: false },
     { key: 'singletonConn', type: 'string', required: false },
-  ]) as GetClientOptions;
+  ]);
 
   const region = options.region || dynamodbConfig.region;
   const singletonConn = options.singletonConn || 'default';

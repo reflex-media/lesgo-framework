@@ -1,20 +1,12 @@
-import rdsConfig from '../../../config/rds';
+import { PoolOptions } from 'mysql2/promise';
 import getClientService from '../../../services/RDSAuroraMySQLProxyService/getClient';
-import isEmpty from '../../isEmpty';
-import validateFields from '../../validateFields';
+import { RDSAuroraMySQLProxyClientOptions } from '../../../types/aws';
 
-const getClient = ({ singletonConn = 'default', region = '' } = {}) => {
-  region = isEmpty(region) ? rdsConfig.aurora.mysql.region : region;
-
-  const input = validateFields({ singletonConn, region }, [
-    { key: 'singletonConn', type: 'string', required: true },
-    { key: 'region', type: 'string', required: true },
-  ]);
-
-  return getClientService({
-    singletonConn: input.singletonConn,
-    region: input.region,
-  });
+const getClient = (
+  poolOpts?: PoolOptions,
+  clientOpts?: RDSAuroraMySQLProxyClientOptions
+) => {
+  return getClientService(poolOpts, clientOpts);
 };
 
 export default getClient;

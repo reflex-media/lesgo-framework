@@ -1,7 +1,6 @@
 import putObject from '../putObject';
 import putObjectService from '../../../services/S3Service/putObject';
 import s3Utils from '../../../utils/s3';
-import config from '../../../config/aws';
 
 jest.mock('../../../services/S3Service/putObject');
 jest.mock('../../../config/aws');
@@ -17,11 +16,12 @@ describe('putObject', () => {
 
     putObject(key, file);
 
-    expect(putObjectService).toHaveBeenCalledWith(key, file, config.s3.bucket, {
-      singletonConn: 'default',
-      region: config.region,
-      storageClass: 'STANDARD',
-    });
+    expect(putObjectService).toHaveBeenCalledWith(
+      key,
+      file,
+      undefined,
+      undefined
+    );
   });
 
   it('should call putObjectService with specified singletonConn, config region, and STANDARD storageClass', () => {
@@ -30,13 +30,16 @@ describe('putObject', () => {
     const file = Buffer.from('test-file');
     const singletonConn = 'customSingletonConn';
 
-    s3Utils.putObject(key, file, bucket, { singletonConn });
+    s3Utils.putObject(key, file, { Bucket: bucket }, { singletonConn });
 
-    expect(putObjectService).toHaveBeenCalledWith(key, file, bucket, {
-      singletonConn,
-      region: config.region,
-      storageClass: 'STANDARD',
-    });
+    expect(putObjectService).toHaveBeenCalledWith(
+      key,
+      file,
+      { Bucket: bucket },
+      {
+        singletonConn,
+      }
+    );
   });
 
   it('should call putObjectService with default singletonConn, specified region, and STANDARD storageClass', () => {
@@ -45,13 +48,16 @@ describe('putObject', () => {
     const file = Buffer.from('test-file');
     const region = 'us-west-2';
 
-    putObject(key, file, bucket, { region });
+    putObject(key, file, { Bucket: bucket }, { region });
 
-    expect(putObjectService).toHaveBeenCalledWith(key, file, bucket, {
-      singletonConn: 'default',
-      region,
-      storageClass: 'STANDARD',
-    });
+    expect(putObjectService).toHaveBeenCalledWith(
+      key,
+      file,
+      { Bucket: bucket },
+      {
+        region,
+      }
+    );
   });
 
   it('should call putObjectService with specified singletonConn, specified region, and STANDARD storageClass', () => {
@@ -61,13 +67,17 @@ describe('putObject', () => {
     const singletonConn = 'customSingletonConn';
     const region = 'us-west-2';
 
-    putObject(key, file, bucket, { singletonConn, region });
+    putObject(key, file, { Bucket: bucket }, { singletonConn, region });
 
-    expect(putObjectService).toHaveBeenCalledWith(key, file, bucket, {
-      singletonConn,
-      region,
-      storageClass: 'STANDARD',
-    });
+    expect(putObjectService).toHaveBeenCalledWith(
+      key,
+      file,
+      { Bucket: bucket },
+      {
+        singletonConn,
+        region,
+      }
+    );
   });
 
   it('should call putObjectService with default singletonConn, config region, and specified storageClass', () => {
@@ -76,13 +86,14 @@ describe('putObject', () => {
     const file = Buffer.from('test-file');
     const storageClass = 'REDUCED_REDUNDANCY';
 
-    putObject(key, file, bucket, { storageClass });
+    putObject(key, file, { Bucket: bucket, StorageClass: storageClass });
 
-    expect(putObjectService).toHaveBeenCalledWith(key, file, bucket, {
-      singletonConn: 'default',
-      region: config.region,
-      storageClass,
-    });
+    expect(putObjectService).toHaveBeenCalledWith(
+      key,
+      file,
+      { Bucket: bucket, StorageClass: storageClass },
+      undefined
+    );
   });
 
   it('should call putObjectService with specified singletonConn, config region, and specified storageClass', () => {
@@ -92,13 +103,21 @@ describe('putObject', () => {
     const singletonConn = 'customSingletonConn';
     const storageClass = 'REDUCED_REDUNDANCY';
 
-    putObject(key, file, bucket, { singletonConn, storageClass });
+    putObject(
+      key,
+      file,
+      { Bucket: bucket, StorageClass: storageClass },
+      { singletonConn }
+    );
 
-    expect(putObjectService).toHaveBeenCalledWith(key, file, bucket, {
-      singletonConn,
-      region: config.region,
-      storageClass,
-    });
+    expect(putObjectService).toHaveBeenCalledWith(
+      key,
+      file,
+      { Bucket: bucket, StorageClass: storageClass },
+      {
+        singletonConn,
+      }
+    );
   });
 
   it('should call putObjectService with default singletonConn, specified region, and specified storageClass', () => {
@@ -108,13 +127,21 @@ describe('putObject', () => {
     const region = 'us-west-2';
     const storageClass = 'REDUCED_REDUNDANCY';
 
-    putObject(key, file, bucket, { region, storageClass });
+    putObject(
+      key,
+      file,
+      { Bucket: bucket, StorageClass: storageClass },
+      { region }
+    );
 
-    expect(putObjectService).toHaveBeenCalledWith(key, file, bucket, {
-      singletonConn: 'default',
-      region,
-      storageClass,
-    });
+    expect(putObjectService).toHaveBeenCalledWith(
+      key,
+      file,
+      { Bucket: bucket, StorageClass: storageClass },
+      {
+        region,
+      }
+    );
   });
 
   it('should call putObjectService with specified singletonConn, specified region, and specified storageClass', () => {
@@ -125,12 +152,21 @@ describe('putObject', () => {
     const region = 'us-west-2';
     const storageClass = 'REDUCED_REDUNDANCY';
 
-    putObject(key, file, bucket, { singletonConn, region, storageClass });
+    putObject(
+      key,
+      file,
+      { Bucket: bucket, StorageClass: storageClass },
+      { singletonConn, region }
+    );
 
-    expect(putObjectService).toHaveBeenCalledWith(key, file, bucket, {
-      singletonConn,
-      region,
-      storageClass,
-    });
+    expect(putObjectService).toHaveBeenCalledWith(
+      key,
+      file,
+      { Bucket: bucket, StorageClass: storageClass },
+      {
+        singletonConn,
+        region,
+      }
+    );
   });
 });

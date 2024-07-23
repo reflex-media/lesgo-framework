@@ -2,7 +2,6 @@ import jwt from '../../jwt';
 import sign from '../sign';
 import signService from '../../../services/JWTService/sign';
 import jwtConfig from '../../../config/jwt';
-import { LesgoException } from '../../../exceptions';
 
 jest.mock('../../../services/JWTService/sign');
 
@@ -13,105 +12,43 @@ describe('sign', () => {
 
   it('should call signService with default secret and options', () => {
     const payload = { id: '123', username: 'john.doe' };
-    const opts = {
-      secret: '',
-    };
-
-    sign(payload, opts);
-
-    expect(signService).toHaveBeenCalledWith(
-      payload,
-      jwtConfig.secrets[0].secret,
-      {
-        algorithm: 'HS256',
-        audience: 'lesgo',
-        expiresIn: '1h',
-        issuer: 'lesgo',
-        jwtid: expect.any(String),
-        subject: '',
-      }
-    );
-  });
-
-  it('should call signService with default secret and options when non provided', () => {
-    const payload = { id: '123', username: 'john.doe' };
 
     sign(payload);
 
-    expect(signService).toHaveBeenCalledWith(
-      payload,
-      jwtConfig.secrets[0].secret,
-      {
-        algorithm: 'HS256',
-        audience: 'lesgo',
-        expiresIn: '1h',
-        issuer: 'lesgo',
-        jwtid: expect.any(String),
-        subject: '',
-      }
-    );
+    expect(signService).toHaveBeenCalledWith(payload, undefined, undefined);
   });
 
   it('should call signService with provided secret and options', () => {
     const payload = { id: '123', username: 'john.doe' };
     const secret = 'custom-secret';
-    const opts = { secret, opts: { expiresIn: '2h' } };
+    const opts = { expiresIn: '2h' };
 
-    jwt.sign(payload, opts);
+    jwt.sign(payload, secret, opts);
 
     expect(signService).toHaveBeenCalledWith(payload, secret, {
-      algorithm: 'HS256',
-      audience: 'lesgo',
       expiresIn: '2h',
-      issuer: 'lesgo',
-      jwtid: expect.any(String),
-      subject: '',
     });
   });
 
   it('should call signService with provided kid', () => {
     const payload = { id: '123', username: 'john.doe' };
-    const opts = { opts: { keyid: jwtConfig.secrets[1].keyid } };
+    const opts = { keyid: jwtConfig.secrets[1].keyid };
 
-    jwt.sign(payload, opts);
+    jwt.sign(payload, undefined, opts);
 
-    expect(signService).toHaveBeenCalledWith(
-      payload,
-      jwtConfig.secrets[1].secret,
-      {
-        algorithm: 'HS256',
-        audience: 'lesgo',
-        expiresIn: '1h',
-        issuer: 'lesgo',
-        jwtid: expect.any(String),
-        keyid: jwtConfig.secrets[1].keyid,
-        subject: '',
-      }
-    );
-  });
-
-  it('should throw error with invalid kid', () => {
-    const payload = { id: '123', username: 'john.doe' };
-    const opts = { opts: { keyid: 'xyz' } };
-
-    expect(() => jwt.sign(payload, opts)).toThrow(
-      new LesgoException(
-        'lesgo.utils.jwt.sign::KID_NOT_FOUND',
-        'kid xyz not found.'
-      )
-    );
+    expect(signService).toHaveBeenCalledWith(payload, undefined, {
+      keyid: jwtConfig.secrets[1].keyid,
+    });
   });
 
   it('should return the signed token', () => {
     const payload = { id: '123', username: 'john.doe' };
-    const opts = {
-      secret: '',
-    };
+    const secret = '';
     const signedToken = 'some-signed-token';
 
     (signService as jest.Mock).mockReturnValue(signedToken);
 
-    const result = sign(payload, opts);
+    const result = sign(payload, secret);
 
     expect(result).toEqual(signedToken);
   });

@@ -1,10 +1,8 @@
 import { PutCommand, PutCommandInput } from '@aws-sdk/lib-dynamodb';
 import LesgoException from '../../../exceptions/LesgoException';
-import logger from '../../../utils/logger';
 import dynamodbConfig from '../../../config/dynamodb';
 import getClient from '../getClient';
 import putRecord, { Item } from '../putRecord';
-import DynamoDbService from '../../DynamoDbService';
 
 jest.mock('../getClient', () => {
   return jest.fn().mockImplementation(() => ({
@@ -17,7 +15,6 @@ jest.mock('../getClient', () => {
     }),
   }));
 });
-jest.mock('../../../utils/logger');
 
 describe('putRecord', () => {
   const tableName = 'testingTable';
@@ -35,7 +32,10 @@ describe('putRecord', () => {
       Item: item,
     };
 
-    const result = await putRecord(item, tableName, { region, singletonConn });
+    const result = await putRecord(item, tableName, undefined, {
+      region,
+      singletonConn,
+    });
 
     expect(getClient).toHaveBeenCalledWith({ singletonConn, region });
     expect(result).toEqual(input);
@@ -54,7 +54,7 @@ describe('putRecord', () => {
     (getClient as jest.Mock).mockReturnValue(client);
 
     await expect(
-      DynamoDbService.putRecord(item, tableName, { region, singletonConn })
+      putRecord(item, tableName, undefined, { region, singletonConn })
     ).rejects.toThrow(
       new LesgoException(
         'Failed to put record',
@@ -68,9 +68,5 @@ describe('putRecord', () => {
     );
 
     expect(getClient).toHaveBeenCalledWith({ singletonConn, region });
-    expect(logger.debug).toHaveBeenCalledWith(
-      'lesgo.services.DynamoDbService.putRecord::QUERY_PREPARED',
-      { input }
-    );
   });
 });

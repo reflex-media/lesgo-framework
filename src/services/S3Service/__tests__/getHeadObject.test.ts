@@ -1,5 +1,4 @@
 import { HeadObjectCommand } from '@aws-sdk/client-s3';
-import S3Service from '../../S3Service';
 import getHeadObject from '../getHeadObject';
 import getClient from '../getClient';
 import { LesgoException } from '../../../exceptions';
@@ -29,26 +28,12 @@ describe('getHeadObject', () => {
       singletonConn: 'default',
     };
 
-    await expect(getHeadObject(key, bucket, options)).rejects.toThrow(
+    await expect(
+      getHeadObject(key, { Bucket: bucket }, options)
+    ).rejects.toThrow(
       new LesgoException(
-        'Key is undefined',
+        "Missing required 'key'",
         'lesgo.services.S3Service.getHeadObject::KEY_UNDEFINED'
-      )
-    );
-  });
-
-  it('should throw an error if bucket is undefined', async () => {
-    const key = 'testKey';
-    const bucket = '';
-    const options = {
-      region: 'us-west-2',
-      singletonConn: 'default',
-    };
-
-    await expect(S3Service.getHeadObject(key, bucket, options)).rejects.toThrow(
-      new LesgoException(
-        'Bucket is undefined',
-        'lesgo.services.S3Service.getHeadObject::BUCKET_UNDEFINED'
       )
     );
   });
@@ -61,7 +46,7 @@ describe('getHeadObject', () => {
       singletonConn: 'default',
     };
 
-    await getHeadObject(key, bucket, options);
+    await getHeadObject(key, { Bucket: bucket }, options);
 
     expect(getClient).toHaveBeenCalledWith({
       region: options.region,
@@ -76,8 +61,9 @@ describe('getHeadObject', () => {
       region: 'us-west-2',
       singletonConn: 'default',
     };
-
-    await expect(getHeadObject(key, bucket, options)).resolves.toMatchObject({
+    await expect(
+      getHeadObject(key, { Bucket: bucket }, options)
+    ).resolves.toMatchObject({
       ContentLength: undefined,
       ContentType: undefined,
       ETag: undefined,
@@ -99,7 +85,9 @@ describe('getHeadObject', () => {
       send: jest.fn().mockRejectedValueOnce(error),
     });
 
-    await expect(getHeadObject(key, bucket, options)).rejects.toThrow(
+    await expect(
+      getHeadObject(key, { Bucket: bucket }, options)
+    ).rejects.toThrow(
       new LesgoException(
         'Error occurred getting object metadata from S3 bucket',
         'lesgo.services.S3Service.getHeadObject::ERROR',

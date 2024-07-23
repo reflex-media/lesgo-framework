@@ -1,10 +1,8 @@
 import { DeleteCommand, DeleteCommandInput } from '@aws-sdk/lib-dynamodb';
 import LesgoException from '../../../exceptions/LesgoException';
-import logger from '../../../utils/logger';
 import dynamodbConfig from '../../../config/dynamodb';
 import getClient from '../getClient';
 import deleteRecord, { Key } from '../deleteRecord';
-import DynamoDbService from '../../DynamoDbService';
 
 jest.mock('../getClient', () => {
   return jest.fn().mockImplementation(() => ({
@@ -17,7 +15,6 @@ jest.mock('../getClient', () => {
     }),
   }));
 });
-jest.mock('../../../utils/logger');
 
 describe('deleteRecord', () => {
   const tableName = 'testingTable';
@@ -35,7 +32,7 @@ describe('deleteRecord', () => {
       Key: key,
     };
 
-    const result = await deleteRecord(key, tableName, {
+    const result = await deleteRecord(key, tableName, undefined, {
       region,
       singletonConn,
     });
@@ -57,7 +54,7 @@ describe('deleteRecord', () => {
     (getClient as jest.Mock).mockReturnValue(client);
 
     await expect(
-      DynamoDbService.deleteRecord(key, tableName, { region, singletonConn })
+      deleteRecord(key, tableName, undefined, { region, singletonConn })
     ).rejects.toThrow(
       new LesgoException(
         'Failed to delete record',
@@ -72,9 +69,5 @@ describe('deleteRecord', () => {
     );
 
     expect(getClient).toHaveBeenCalledWith({ singletonConn, region });
-    expect(logger.debug).toHaveBeenCalledWith(
-      'lesgo.services.DynamoDbService.deleteRecord::QUERY_PREPARED',
-      { commandInput, clientOpts: { region, singletonConn } 
-    );
   });
 });

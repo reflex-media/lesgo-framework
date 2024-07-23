@@ -33,26 +33,22 @@ var __awaiter =
   };
 import { ReceiveMessageCommand } from '@aws-sdk/client-sqs';
 import LesgoException from '../../exceptions/LesgoException';
-import logger from '../../utils/logger';
+import { logger } from '../../utils';
 import getClient from './getClient';
+import getQueueUrl from './getQueueUrl';
 const FILE = 'lesgo.services.SQSService.receiveMessages';
-const receiveMessages = (
-  queue,
-  { region, singletonConn, maxNumberOfMessages = 1, waitTimeSeconds = 0 }
-) =>
+const receiveMessages = (queue, opts, clientOpts) =>
   __awaiter(void 0, void 0, void 0, function* () {
-    const client = getClient({ region, singletonConn });
-    const opts = {
-      QueueUrl: queue.url,
-      MaxNumberOfMessages: maxNumberOfMessages,
-      WaitTimeSeconds: waitTimeSeconds,
-    };
+    const queueUrl = getQueueUrl(queue);
+    const client = getClient(clientOpts);
+    const commandInput = Object.assign(Object.assign({}, opts), {
+      QueueUrl: queueUrl,
+    });
     try {
-      const data = yield client.send(new ReceiveMessageCommand(opts));
+      const data = yield client.send(new ReceiveMessageCommand(commandInput));
       logger.debug(`${FILE}::MESSAGES_RECEIVED_FROM_QUEUE`, {
         data,
-        opts,
-        queue,
+        commandInput,
       });
       return data;
     } catch (error) {
@@ -62,7 +58,7 @@ const receiveMessages = (
         500,
         {
           error,
-          queue,
+          commandInput,
           opts,
         }
       );

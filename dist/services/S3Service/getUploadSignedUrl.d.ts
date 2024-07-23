@@ -1,8 +1,7 @@
-export interface GetUploadSignedUrlOptions {
-    singletonConn: string;
-    region: string;
-    expiresIn: number;
-    metadata?: Record<string, string>;
+import { PutObjectCommandInput } from '@aws-sdk/client-s3';
+import { ClientOptions } from '../../types/aws';
+export interface GetSignedUrlOptions {
+    expiresIn?: number;
 }
-declare const getUploadSignedUrl: (key: string, bucket: string, { singletonConn, region, expiresIn, metadata }: GetUploadSignedUrlOptions) => Promise<string>;
+declare const getUploadSignedUrl: (key: string, opts?: PutObjectCommandInput, signingOpts?: GetSignedUrlOptions, clientOpts?: ClientOptions) => Promise<string>;
 export default getUploadSignedUrl;

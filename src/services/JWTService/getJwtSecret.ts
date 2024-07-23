@@ -9,21 +9,24 @@ export interface GetJwtSecretInput {
 }
 
 const getJwtSecret = (input: GetJwtSecretInput) => {
-  let { secret, keyid } = input;
+  const { keyid } = input;
+  let { secret } = input;
 
   if (!secret) {
     secret = jwtConfig.secrets[0]?.secret;
   }
 
   if (keyid) {
-    secret = jwtConfig.secrets.find(s => s?.keyid === keyid)?.secret;
+    const foundSecret = jwtConfig.secrets.find(s => s?.keyid === keyid);
 
-    if (!secret) {
+    if (!foundSecret) {
       throw new LesgoException(
         `kid ${input.keyid} not found.`,
         `${FILE}::KID_NOT_FOUND`
       );
     }
+
+    secret = foundSecret.secret;
   }
 
   if (!secret) {

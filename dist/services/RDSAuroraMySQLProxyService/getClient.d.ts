@@ -1,12 +1,7 @@
-import mysql from 'mysql2/promise';
+import mysql, { Pool, PoolOptions } from 'mysql2/promise';
+import { RDSAuroraMySQLProxyClientOptions } from '../../types/aws';
 export interface Singleton {
-    [key: string]: mysql.Pool;
+    [key: string]: Pool;
 }
-export interface GetClientOptions {
-    dbCredentialsSecretId?: string;
-    databaseName?: string;
-    region: string;
-    singletonConn: string;
-}
-declare const getClient: (opts: GetClientOptions) => Promise<mysql.Pool>;
+declare const getClient: (poolOpts?: PoolOptions, clientOpts?: RDSAuroraMySQLProxyClientOptions) => Promise<mysql.Pool>;
 export default getClient;

@@ -1,5 +1,4 @@
-declare const getSecretValue: (secretId: string, { singletonConn, region }?: {
-    singletonConn?: string | undefined;
-    region?: string | undefined;
-}) => Promise<any>;
+import { GetSecretValueCommandInput } from '@aws-sdk/client-secrets-manager';
+import { ClientOptions } from '../../types/aws';
+declare const getSecretValue: (secretId: string, opts?: GetSecretValueCommandInput, clientOpts?: ClientOptions) => Promise<any>;
 export default getSecretValue;

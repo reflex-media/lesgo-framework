@@ -34,13 +34,16 @@ describe('dispatch', () => {
   });
 
   it('should call getClient with the correct arguments', async () => {
-    await dispatch(payload, queue, { region, singletonConn });
+    await dispatch(payload, queue, undefined, { region, singletonConn });
 
     expect(getClient).toHaveBeenCalledWith({ region, singletonConn });
   });
 
   it('should return the data from client.send', async () => {
-    const result = await dispatch(payload, queue, { region, singletonConn });
+    const result = await dispatch(payload, queue, undefined, {
+      region,
+      singletonConn,
+    });
 
     expect(result).toMatchObject({
       _mocked: {
@@ -58,7 +61,7 @@ describe('dispatch', () => {
     };
 
     await expect(
-      dispatch(payload, queue, { region, singletonConn })
+      dispatch(payload, queue, undefined, { region, singletonConn })
     ).rejects.toThrow(
       new LesgoException(
         'Error occurred sending message to queue',

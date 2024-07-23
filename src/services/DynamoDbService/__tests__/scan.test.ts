@@ -1,17 +1,7 @@
-import { ScanCommand, ScanCommandInput } from '@aws-sdk/lib-dynamodb';
+import { ScanCommand } from '@aws-sdk/lib-dynamodb';
 import LesgoException from '../../../exceptions/LesgoException';
 import getClient from '../getClient';
-import scan, { prepareScanInput } from '../scan';
-
-const mockScanCommandInput: ScanCommandInput = {
-  TableName: 'lesgo-testing-testingTable',
-  FilterExpression: 'filterExpression',
-  ExpressionAttributeValues: { key: 'value' },
-  ProjectionExpression: 'projectionExpression',
-  ExpressionAttributeNames: { key: 'name' },
-  IndexName: 'indexName',
-  Select: 'ALL_ATTRIBUTES',
-};
+import scan from '../scan';
 
 const mockScanCommandResponse = {
   Items: [{ id: '1', name: 'John' }],
@@ -39,37 +29,15 @@ describe('scan', () => {
   const region = 'us-west-2';
   const singletonConn = 'default';
 
-  it('should prepare scan input correctly', () => {
-    const opts = {
-      filterExpression: 'filterExpression',
-      expressionAttributeValues: { key: 'value' },
-      projectionExpression: 'projectionExpression',
-      expressionAttributeNames: { key: 'name' },
-      indexName: 'indexName',
-      select: 'ALL_ATTRIBUTES',
-    };
-    const clientOpts = {
-      region,
-      singletonConn,
-    };
-
-    const result = prepareScanInput({ ...opts, ...clientOpts, tableName });
-
-    expect(result).toEqual(mockScanCommandInput);
-  });
-
   it('should call getClient with correct parameters', async () => {
     const clientOpts = {
       region,
       singletonConn,
     };
 
-    await scan(tableName, clientOpts);
+    await scan(tableName, undefined, clientOpts);
 
-    expect(getClient).toHaveBeenCalledWith({
-      region,
-      singletonConn,
-    });
+    expect(getClient).toHaveBeenCalledWith(clientOpts);
   });
 
   it('should return the scanned items', async () => {
@@ -78,9 +46,9 @@ describe('scan', () => {
       singletonConn,
     };
 
-    const result = await scan(tableName, clientOpts);
+    const result = await scan(tableName, undefined, clientOpts);
 
-    expect(result).toEqual(mockScanCommandResponse.Items);
+    expect(result).toEqual(mockScanCommandResponse);
   });
 
   it('should throw LesgoException if scan fails', async () => {
@@ -94,6 +62,8 @@ describe('scan', () => {
       send: jest.fn().mockRejectedValue(mockError),
     });
 
-    await expect(scan(tableName, opts)).rejects.toThrow(LesgoException);
+    await expect(scan(tableName, undefined, opts)).rejects.toThrow(
+      LesgoException
+    );
   });
 });

@@ -1,22 +1,23 @@
-import { GetClientOptions } from '../../services/DynamoDbService/getClient';
-import queryService, {
-  QueryInputOptions,
-} from '../../services/DynamoDbService/query';
+import { QueryCommandInput } from '@aws-sdk/lib-dynamodb';
+import { ClientOptions } from '../../types/aws';
+import queryService from '../../services/DynamoDbService/query';
 
 export const query = async (
-  tableName: string,
+  tableAlias: string,
   keyConditionExpression: string,
   expressionAttributeValues: Record<string, string>,
-  opts?: QueryInputOptions,
-  clientOpts?: GetClientOptions
+  opts?: QueryCommandInput,
+  clientOpts?: ClientOptions
 ) => {
-  return queryService(
-    tableName,
+  const data = await queryService(
+    tableAlias,
     keyConditionExpression,
     expressionAttributeValues,
     opts,
     clientOpts
   );
+
+  return data?.Items || [];
 };
 
 export default query;

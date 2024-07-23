@@ -1,44 +1,33 @@
+import { PoolOptions } from 'mysql2/promise';
 import { logger, validateFields } from '../../utils';
+import { RDSAuroraMySQLProxyClientOptions } from '../../types/aws';
 import { LesgoException } from '../../exceptions';
 import getClient from './getClient';
 
 const FILE = 'lesgo.services.RDSAuroraMySQLService.query';
 
-export interface QueryOptions {
-  dbCredentialsSecretId?: string;
-  databaseName?: string;
-  singletonConn: string;
-  region: string;
-}
-
-export interface GetClientOptions {
-  dbCredentialsSecretId?: string;
-  databaseName?: string;
-  region: string;
-  singletonConn: string;
-}
-
-const query = async (sql: string, opts: QueryOptions) => {
-  const input = validateFields({ query, ...opts }, [
+const query = async (
+  sql: string,
+  poolOpts?: PoolOptions,
+  clientOpts?: RDSAuroraMySQLProxyClientOptions
+) => {
+  const input = validateFields({ sql }, [
     { key: 'sql', type: 'string', required: true },
-    { key: 'dbCredentialsSecretId', type: 'string', required: false },
-    { key: 'databaseName', type: 'string', required: false },
-    { key: 'singletonConn', type: 'string', required: true },
-    { key: 'region', type: 'string', required: true },
-  ]) as GetClientOptions & { sql: string };
+  ]);
 
-  const connection = await getClient(input);
+  const connection = await getClient(poolOpts, clientOpts);
 
   try {
-    const [results, fields] = await connection.query(input.sql);
+    const resp = await connection.query(input.sql);
+    logger.debug(`${FILE}::RECEIVED_RESPONSE`, resp);
 
-    logger.debug(`${FILE}::RECEIVED_RESPONSE`, { results, fields });
-    return { results, fields };
+    return resp;
   } catch (err) {
     throw new LesgoException('Failed to query', `${FILE}::QUERY_ERROR`, 500, {
       err,
-      query,
-      opts,
+      poolOpts,
+      clientOpts,
+      sql,
     });
   }
 };

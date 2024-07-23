@@ -1,4 +1,4 @@
-import { GetClientOptions } from '../../services/DynamoDbService/getClient';
-import { ScanInputOptions } from '../../services/DynamoDbService/scan';
-export declare const scan: (tableName: string, opts?: ScanInputOptions, clientOpts?: GetClientOptions) => Promise<Record<string, any>[] | undefined>;
+import { ScanCommandInput } from '@aws-sdk/lib-dynamodb';
+import { ClientOptions } from '../../types/aws';
+export declare const scan: (tableName: string, opts?: ScanCommandInput, clientOpts?: ClientOptions) => Promise<Record<string, any>[] | undefined>;
 export default scan;

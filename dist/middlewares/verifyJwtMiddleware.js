@@ -2,10 +2,10 @@ import { verify } from '../utils/jwt';
 import logger from '../utils/logger';
 import { LesgoException } from '../exceptions';
 const FILE = 'lesgo.middlewares.verifyJwtMiddleware';
-const verifyJwtMiddleware = (options = {}) => {
-  const verifyJwt = (token, opts) => {
+const verifyJwtMiddleware = (secret, options) => {
+  const verifyJwt = (token, secret, opts) => {
     try {
-      const decoded = verify(token, { secret: opts.secret, opts });
+      const decoded = verify(token, secret, opts);
       return decoded;
     } catch (error) {
       throw new LesgoException(
@@ -26,7 +26,7 @@ const verifyJwtMiddleware = (options = {}) => {
         401
       );
     }
-    const decoded = verifyJwt(token, options);
+    const decoded = verifyJwt(token, secret, options);
     logger.debug(`${FILE}::JWT_VERIFIED`, { decoded });
     request.event.jwt = decoded;
   };

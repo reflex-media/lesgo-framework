@@ -1,20 +1,20 @@
-import { GetClientOptions } from '../../services/DynamoDbService/getClient';
+import { ClientOptions } from '../../types/aws';
 import updateRecordService, {
   Key,
-  UpdateRecordInputOptions,
+  UpdateRecordOptions,
 } from '../../services/DynamoDbService/updateRecord';
 
 export const updateRecord = async (
   key: Key,
-  tableName: string,
+  tableAlias: string,
   updateExpression: string,
   expressionAttributeValues: Record<string, string>,
-  opts?: UpdateRecordInputOptions,
-  clientOpts?: GetClientOptions
+  opts?: UpdateRecordOptions,
+  clientOpts?: ClientOptions
 ) => {
   return updateRecordService(
     key,
-    tableName,
+    tableAlias,
     updateExpression,
     expressionAttributeValues,
     opts,

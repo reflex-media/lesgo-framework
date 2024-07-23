@@ -1,27 +1,14 @@
-import s3Config from '../../config/s3';
-import getHeadObjectService from '../../services/S3Service/getHeadObject';
-import isEmpty from '../isEmpty';
-import validateFields from '../validateFields';
+import getHeadObjectService, {
+  HeadObjectOptions,
+} from '../../services/S3Service/getHeadObject';
+import { ClientOptions } from '../../types/aws';
 
 const getHeadObject = async (
   key: string,
-  bucket?: string,
-  { singletonConn = 'default', region = '' } = {}
+  opts?: HeadObjectOptions,
+  clientOpts?: ClientOptions
 ) => {
-  region = isEmpty(region) ? s3Config.region : region;
-  bucket = isEmpty(bucket) ? s3Config.bucket : bucket;
-
-  const input = validateFields({ key, bucket, singletonConn, region }, [
-    { key: 'key', type: 'string', required: true },
-    { key: 'bucket', type: 'string', required: true },
-    { key: 'singletonConn', type: 'string', required: true },
-    { key: 'region', type: 'string', required: true },
-  ]);
-
-  return getHeadObjectService(input.key, input.bucket, {
-    singletonConn: input.singletonConn,
-    region: input.region,
-  });
+  return getHeadObjectService(key, opts, clientOpts);
 };
 
 export default getHeadObject;

@@ -32,13 +32,16 @@ describe('deleteMessage', () => {
   });
 
   it('should call getClient with the correct arguments', async () => {
-    await deleteMessage(queue, receiptHandle, { region, singletonConn });
+    await deleteMessage(queue, receiptHandle, undefined, {
+      region,
+      singletonConn,
+    });
 
     expect(getClient).toHaveBeenCalledWith({ region, singletonConn });
   });
 
   it('should call client.send with the correct arguments', async () => {
-    await deleteMessage(queue, receiptHandle, {
+    await deleteMessage(queue, receiptHandle, undefined, {
       region,
       singletonConn,
     });
@@ -46,11 +49,10 @@ describe('deleteMessage', () => {
     expect(logger.debug).toHaveBeenCalledWith(
       'lesgo.services.SQSService.deleteMessage::MESSAGE_DELETED_FROM_QUEUE',
       {
-        opts: {
+        commandInput: {
           QueueUrl: queue.url,
           ReceiptHandle: receiptHandle,
         },
-        queue,
       }
     );
   });
@@ -61,16 +63,18 @@ describe('deleteMessage', () => {
     };
     (getClient as jest.Mock).mockReturnValue(client);
 
-    await deleteMessage(queue, receiptHandle, { region, singletonConn });
+    await deleteMessage(queue, receiptHandle, undefined, {
+      region,
+      singletonConn,
+    });
 
     expect(logger.debug).toHaveBeenCalledWith(
       'lesgo.services.SQSService.deleteMessage::MESSAGE_DELETED_FROM_QUEUE',
       {
-        opts: {
+        commandInput: {
           QueueUrl: queue.url,
           ReceiptHandle: receiptHandle,
         },
-        queue,
       }
     );
   });
@@ -83,7 +87,7 @@ describe('deleteMessage', () => {
     (getClient as jest.Mock).mockReturnValue(client);
 
     await expect(
-      deleteMessage(queue, receiptHandle, { region, singletonConn })
+      deleteMessage(queue, receiptHandle, undefined, { region, singletonConn })
     ).rejects.toThrow(
       new LesgoException(
         'Error occurred deleting message from queue',

@@ -1,27 +1,45 @@
-import { PutObjectCommand } from '@aws-sdk/client-s3';
+import { PutObjectCommand, PutObjectCommandInput } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
+import { logger, validateFields } from '../../utils';
+import s3Config from '../../config/s3';
+import { ClientOptions } from '../../types/aws';
 import getClient from './getClient';
+import { PutObjectOptions } from './putObject';
 
-export interface GetUploadSignedUrlOptions {
-  singletonConn: string;
-  region: string;
-  expiresIn: number;
-  metadata?: Record<string, string>;
+const FILE = 'lesgo.services.S3Service.getUploadSignedUrl';
+
+export interface GetSignedUrlOptions {
+  expiresIn?: number;
 }
 
-const getUploadSignedUrl = (
+const getUploadSignedUrl = async (
   key: string,
-  bucket: string,
-  { singletonConn, region, expiresIn, metadata }: GetUploadSignedUrlOptions
+  opts?: PutObjectOptions,
+  signingOpts?: GetSignedUrlOptions,
+  clientOpts?: ClientOptions
 ) => {
-  const client = getClient({ region, singletonConn });
-  const command = new PutObjectCommand({
-    Bucket: bucket,
-    Key: key,
-    Metadata: metadata,
-  });
+  const input = validateFields({ key }, [
+    { key: 'key', type: 'string', required: true },
+  ]);
 
-  return getSignedUrl(client, command, { expiresIn });
+  const client = getClient(clientOpts);
+
+  const commandInput: PutObjectCommandInput = {
+    Bucket: opts?.Bucket || s3Config.bucket,
+    Key: input.key,
+    ...opts,
+  };
+  const command = new PutObjectCommand(commandInput);
+
+  signingOpts = {
+    expiresIn: 3600,
+    ...signingOpts,
+  };
+
+  const resp = await getSignedUrl(client, command, signingOpts);
+  logger.debug(`${FILE}::RESPONSE`, { resp, commandInput, signingOpts });
+
+  return resp;
 };
 
 export default getUploadSignedUrl;

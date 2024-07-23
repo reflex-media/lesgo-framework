@@ -1,35 +1,46 @@
-import { DeleteCommand, NativeAttributeValue } from '@aws-sdk/lib-dynamodb';
+import {
+  DeleteCommand,
+  DeleteCommandInput,
+  NativeAttributeValue,
+} from '@aws-sdk/lib-dynamodb';
 import LesgoException from '../../exceptions/LesgoException';
-import dynamodbConfig from '../../config/dynamodb';
 import { validateFields, logger } from '../../utils';
-import getClient, { GetClientOptions } from './getClient';
+import { ClientOptions } from '../../types/aws';
+import getClient from './getClient';
+import getTableName from './getTableName';
 
 const FILE = 'lesgo.services.DynamoDbService.deleteRecord';
 
 export type Key = Record<string, NativeAttributeValue>;
 
+export interface DeleteRecordOptions
+  extends Partial<Omit<DeleteCommandInput, 'TableName'>> {
+  TableName?: string;
+}
+
 const deleteRecord = async (
   key: Key,
-  tableName: string,
-  clientOpts?: GetClientOptions
+  tableAlias: string,
+  opts?: DeleteRecordOptions,
+  clientOpts?: ClientOptions
 ) => {
-  const input = validateFields({ key, tableName }, [
+  const input = validateFields({ key, tableAlias }, [
     { key: 'key', type: 'object', required: true },
-    { key: 'tableName', type: 'string', required: true },
-  ]) as { key: Key; tableName: string };
+    { key: 'tableAlias', type: 'string', required: true },
+  ]);
 
+  const tableName = getTableName(input.tableAlias);
   const client = getClient(clientOpts);
 
-  const commandInput = {
-    TableName: dynamodbConfig.tables.find(t => t.alias === input.tableName)
-      ?.name,
+  const commandInput: DeleteCommandInput = {
+    TableName: tableName,
     Key: input.key,
+    ...opts,
   };
-  logger.debug(`${FILE}::QUERY_PREPARED`, { commandInput, clientOpts });
 
   try {
     const data = await client.send(new DeleteCommand(commandInput));
-    logger.debug(`${FILE}::RECEIVED_RESPONSE`, { data });
+    logger.debug(`${FILE}::RECEIVED_RESPONSE`, { data, commandInput });
     return data;
   } catch (error) {
     throw new LesgoException('Failed to delete record', `${FILE}::ERROR`, 500, {

@@ -33,21 +33,25 @@ var __awaiter =
   };
 import { DeleteMessageCommand } from '@aws-sdk/client-sqs';
 import LesgoException from '../../exceptions/LesgoException';
-import logger from '../../utils/logger';
+import { logger, validateFields } from '../../utils';
 import getClient from './getClient';
+import getQueueUrl from './getQueueUrl';
 const FILE = 'lesgo.services.SQSService.deleteMessage';
-const deleteMessage = (queue, receiptHandle, { region, singletonConn }) =>
+const deleteMessage = (queue, receiptHandle, opts, clientOpts) =>
   __awaiter(void 0, void 0, void 0, function* () {
-    const client = getClient({ region, singletonConn });
-    const opts = {
-      QueueUrl: queue.url,
-      ReceiptHandle: receiptHandle,
-    };
+    const queueUrl = getQueueUrl(queue);
+    const input = validateFields({ receiptHandle }, [
+      { key: 'receiptHandle', type: 'string', required: true },
+    ]);
+    const client = getClient(clientOpts);
+    const commandInput = Object.assign(Object.assign({}, opts), {
+      QueueUrl: queueUrl,
+      ReceiptHandle: input.receiptHandle,
+    });
     try {
-      yield client.send(new DeleteMessageCommand(opts));
+      yield client.send(new DeleteMessageCommand(commandInput));
       logger.debug(`${FILE}::MESSAGE_DELETED_FROM_QUEUE`, {
-        opts,
-        queue,
+        commandInput,
       });
     } catch (error) {
       throw new LesgoException(
@@ -56,7 +60,7 @@ const deleteMessage = (queue, receiptHandle, { region, singletonConn }) =>
         500,
         {
           error,
-          queue,
+          commandInput,
           opts,
         }
       );

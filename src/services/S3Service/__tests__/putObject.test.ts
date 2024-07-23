@@ -27,15 +27,16 @@ describe('putObject', () => {
     const options = {
       region: 'us-west-2',
       singletonConn: 'default',
-      storageClass: StorageClass.STANDARD,
     };
 
-    await putObject(key, file, bucket, options);
+    await putObject(
+      key,
+      file,
+      { Bucket: bucket, StorageClass: StorageClass.STANDARD },
+      options
+    );
 
-    expect(getClient).toHaveBeenCalledWith({
-      region: options.region,
-      singletonConn: options.singletonConn,
-    });
+    expect(getClient).toHaveBeenCalledWith(options);
   });
 
   it('should return the response from the client', async () => {
@@ -45,7 +46,6 @@ describe('putObject', () => {
     const options = {
       region: 'us-west-2',
       singletonConn: 'default',
-      storageClass: StorageClass.STANDARD,
     };
     const response = {
       /* mock response */
@@ -55,7 +55,12 @@ describe('putObject', () => {
       send: jest.fn().mockResolvedValue(response),
     });
 
-    const result = await putObject(key, file, bucket, options);
+    const result = await putObject(
+      key,
+      file,
+      { Bucket: bucket, StorageClass: StorageClass.STANDARD },
+      options
+    );
 
     expect(result).toBe(response);
   });
@@ -67,7 +72,6 @@ describe('putObject', () => {
     const options = {
       region: 'us-west-2',
       singletonConn: 'default',
-      storageClass: StorageClass.STANDARD,
     };
     const error = new Error('Test error');
 
@@ -75,7 +79,14 @@ describe('putObject', () => {
       send: jest.fn().mockRejectedValueOnce(error),
     });
 
-    await expect(putObject(key, file, bucket, options)).rejects.toThrow(
+    await expect(
+      putObject(
+        key,
+        file,
+        { Bucket: bucket, StorageClass: StorageClass.STANDARD },
+        options
+      )
+    ).rejects.toThrow(
       new LesgoException(
         'Error occurred putting object to S3 bucket',
         'lesgo.services.S3Service.putObject::ERROR',

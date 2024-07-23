@@ -1,5 +1,4 @@
 import { GetObjectCommand } from '@aws-sdk/client-s3';
-import S3Service from '../../S3Service';
 import getDownloadSignedUrl from '../getDownloadSignedUrl';
 import getClient from '../getClient';
 
@@ -24,13 +23,13 @@ describe('getDownloadSignedUrl', () => {
   it('should call getClient with the correct region and singletonConn', async () => {
     const key = 'testKey';
     const bucket = 'testBucket';
+    const expiresIn = 3600;
     const options = {
       region: 'us-west-2',
       singletonConn: 'default',
-      expiresIn: 3600,
     };
 
-    await getDownloadSignedUrl(key, bucket, options);
+    await getDownloadSignedUrl(key, { Bucket: bucket }, { expiresIn }, options);
 
     expect(getClient).toHaveBeenCalledWith({
       region: options.region,
@@ -41,13 +40,18 @@ describe('getDownloadSignedUrl', () => {
   it('should return the signed URL', async () => {
     const key = 'testKey';
     const bucket = 'testBucket';
+    const expiresIn = 3600;
     const options = {
       region: 'us-west-2',
       singletonConn: 'default',
-      expiresIn: 3600,
     };
 
-    const result = await S3Service.getDownloadSignedUrl(key, bucket, options);
+    const result = await getDownloadSignedUrl(
+      key,
+      { Bucket: bucket },
+      { expiresIn },
+      options
+    );
 
     expect(result).toBe('https://test-url.com');
   });

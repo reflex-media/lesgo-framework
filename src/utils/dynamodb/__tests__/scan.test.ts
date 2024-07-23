@@ -20,7 +20,7 @@ describe('scan', () => {
 
     await scan(tableName, undefined, clientOpts);
 
-    expect(scanService).toHaveBeenCalledWith(tableName, {
+    expect(scanService).toHaveBeenCalledWith(tableName, undefined, {
       region,
       singletonConn,
     });
@@ -32,11 +32,12 @@ describe('scan', () => {
       singletonConn,
     };
 
-    const mockScanResult = [{ id: '1', name: 'John' }];
+    const mockItems = [{ id: '1', name: 'John' }];
+    const mockScanResult = { Items: mockItems };
     (scanService as jest.Mock).mockResolvedValueOnce(mockScanResult);
 
     const result = await scan(tableName, undefined, clientOpts);
 
-    expect(result).toEqual(mockScanResult);
+    expect(result).toEqual(mockItems);
   });
 });

@@ -3,54 +3,40 @@ import {
   SendMessageCommandInput,
 } from '@aws-sdk/client-sqs';
 import LesgoException from '../../exceptions/LesgoException';
-import logger from '../../utils/logger';
+import { logger, validateFields } from '../../utils';
+import { ClientOptions } from '../../types/aws';
 import getClient from './getClient';
+import getQueueUrl, { Queue } from './getQueueUrl';
 
 const FILE = 'lesgo.services.SQSService.dispatch';
 
-export type Queue = {
-  alias: string;
-  name: string;
-  url: string;
-};
-
 const dispatch = async (
   payload: Record<any, any>,
-  queue: Queue,
-  {
-    region,
-    singletonConn,
-    fifo = false,
-    messageGroupId,
-    messageDeduplicationId,
-  }: {
-    region: string;
-    singletonConn: string;
-    fifo?: boolean;
-    messageGroupId?: string;
-    messageDeduplicationId?: string;
-  }
+  queue: string | Queue,
+  opts?: SendMessageCommandInput,
+  clientOpts?: ClientOptions
 ) => {
-  const client = getClient({ region, singletonConn });
+  const queueUrl = getQueueUrl(queue);
 
-  const opts: SendMessageCommandInput = {
-    MessageBody: JSON.stringify(payload),
-    QueueUrl: queue.url,
+  const input = validateFields({ payload }, [
+    { key: 'payload', type: 'object', required: true },
+  ]);
+
+  const client = getClient(clientOpts);
+
+  const commandInput: SendMessageCommandInput = {
+    MessageBody: JSON.stringify(input.payload),
+    QueueUrl: queueUrl,
+    ...opts,
   };
 
-  if (fifo) {
-    opts.MessageGroupId = messageGroupId;
-    opts.MessageDeduplicationId = messageDeduplicationId;
-  }
-
   try {
-    const data = await client.send(new SendMessageCommand(opts));
+    const data = await client.send(new SendMessageCommand(commandInput));
     logger.debug(`${FILE}::MESSAGE_SENT_TO_QUEUE`, {
-      opts,
-      payload,
-      queue,
       data,
+      commandInput,
     });
+
     return data;
   } catch (error) {
     throw new LesgoException(
@@ -59,8 +45,7 @@ const dispatch = async (
       500,
       {
         error,
-        payload,
-        queue,
+        commandInput,
         opts,
       }
     );

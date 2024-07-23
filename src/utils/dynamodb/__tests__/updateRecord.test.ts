@@ -1,5 +1,5 @@
-import updateRecord from '../../../utils/dynamodb/updateRecord';
-import DynamoDbService from '../../../services/DynamoDbService';
+import updateRecord from '../updateRecord';
+import updateRecordService from '../../../services/DynamoDbService/updateRecord';
 
 jest.mock('../../../services/DynamoDbService/updateRecord');
 
@@ -14,8 +14,8 @@ describe('updateRecord', () => {
     const updateExpression = 'SET #name = :name';
     const expressionAttributeValues = { ':name': 'John Doe' };
     const opts = {
-      conditionExpression: 'attribute_exists(id)',
-      expressionAttributeNames: { '#name': 'name' },
+      ConditionExpression: 'attribute_exists(id)',
+      ExpressionAttributeNames: { '#name': 'name' },
     };
     const clientOpts = {
       region: 'ap-southeast-1',
@@ -31,7 +31,7 @@ describe('updateRecord', () => {
       clientOpts
     );
 
-    expect(DynamoDbService.updateRecord).toHaveBeenCalledWith(
+    expect(updateRecordService).toHaveBeenCalledWith(
       key,
       tableName,
       updateExpression,
@@ -59,16 +59,13 @@ describe('updateRecord', () => {
       clientOpts
     );
 
-    expect(DynamoDbService.updateRecord).toHaveBeenCalledWith(
+    expect(updateRecordService).toHaveBeenCalledWith(
       key,
       tableName,
       updateExpression,
       expressionAttributeValues,
       undefined,
-      {
-        ...clientOpts,
-        region: 'ap-southeast-1',
-      }
+      clientOpts
     );
   });
 });

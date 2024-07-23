@@ -31,32 +31,9 @@ var __awaiter =
       step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
   };
-import s3Config from '../../config/s3';
 import getDownloadSignedUrlService from '../../services/S3Service/getDownloadSignedUrl';
-import isEmpty from '../isEmpty';
-import validateFields from '../validateFields';
-const getDownloadSignedUrl = (
-  key,
-  bucket,
-  { singletonConn = 'default', region = '', expiresIn = 3600 } = {}
-) =>
+const getDownloadSignedUrl = (key, opts, signingOpts, clientOpts) =>
   __awaiter(void 0, void 0, void 0, function* () {
-    region = isEmpty(region) ? s3Config.region : region;
-    bucket = isEmpty(bucket) ? s3Config.bucket : bucket;
-    const input = validateFields(
-      { key, bucket, singletonConn, region, expiresIn },
-      [
-        { key: 'key', type: 'string', required: true },
-        { key: 'bucket', type: 'string', required: true },
-        { key: 'singletonConn', type: 'string', required: true },
-        { key: 'region', type: 'string', required: true },
-        { key: 'expiresIn', type: 'number', required: true },
-      ]
-    );
-    return getDownloadSignedUrlService(input.key, input.bucket, {
-      singletonConn: input.singletonConn,
-      region: input.region,
-      expiresIn: input.expiresIn,
-    });
+    return getDownloadSignedUrlService(key, opts, signingOpts, clientOpts);
   });
 export default getDownloadSignedUrl;

@@ -32,43 +32,52 @@ var __awaiter =
     });
   };
 import mysql from 'mysql2/promise';
-import logger from '../../utils/logger';
-import isEmpty from '../../utils/isEmpty';
+import { logger, isEmpty, validateFields } from '../../utils';
 import rdsConfig from '../../config/rds';
 import { getSecretValue } from '../../utils/secretsmanager';
 const FILE = 'lesgo.services.RDSAuroraMySQLProxyService.getClient';
 const singleton = {};
-const getClient = opts =>
+const getClient = (poolOpts, clientOpts = {}) =>
   __awaiter(void 0, void 0, void 0, function* () {
-    var _a;
-    if (!isEmpty(singleton[opts.singletonConn])) {
+    const options = validateFields(clientOpts, [
+      { key: 'region', type: 'string', required: false },
+      { key: 'singletonConn', type: 'string', required: false },
+      { key: 'dbCredentialsSecretId', type: 'string', required: false },
+      { key: 'databaseName', type: 'string', required: false },
+    ]);
+    const region = options.region || rdsConfig.aurora.mysql.region;
+    const singletonConn = options.singletonConn || 'default';
+    const dbCredentialsSecretId =
+      options.dbCredentialsSecretId ||
+      rdsConfig.aurora.mysql.proxy.dbCredentialsSecretId;
+    const databaseName =
+      options.databaseName || rdsConfig.aurora.mysql.databaseName;
+    if (!isEmpty(singleton[singletonConn])) {
       logger.debug(`${FILE}::REUSE_CLIENT_SINGLETON`, {
-        client: singleton[opts.singletonConn],
-        region: opts.region,
+        client: singleton[singletonConn],
+        region,
       });
-      return singleton[opts.singletonConn];
+      return singleton[singletonConn];
     }
     const dbCredentials = yield getSecretValue(
-      opts.dbCredentialsSecretId
-        ? opts.dbCredentialsSecretId
-        : rdsConfig.aurora.mysql.proxy.dbCredentialsSecretId,
+      dbCredentialsSecretId,
+      undefined,
       {
-        region: opts.region,
-        singletonConn: opts.singletonConn,
+        region,
+        singletonConn,
       }
     );
-    const pool = mysql.createPool({
-      host: dbCredentials.host,
-      user: dbCredentials.username,
-      password: dbCredentials.password,
-      database:
-        (_a = opts.databaseName) !== null && _a !== void 0
-          ? _a
-          : rdsConfig.aurora.mysql.databaseName,
-    });
-    singleton[opts.singletonConn] = pool;
+    const pool = mysql.createPool(
+      Object.assign(Object.assign({}, poolOpts), {
+        host: dbCredentials.host,
+        user: dbCredentials.username,
+        password: dbCredentials.password,
+        database: databaseName,
+      })
+    );
+    singleton[singletonConn] = pool;
     logger.debug(`${FILE}::NEW_CLIENT_SINGLETON`, {
-      opts,
+      client: pool,
     });
     return pool;
   });

@@ -1,7 +1,4 @@
 import { SQSClient } from '@aws-sdk/client-sqs';
-export interface GetClientOptions {
-    region: string;
-    singletonConn: string;
-}
-declare const getClient: ({ region, singletonConn }: GetClientOptions) => SQSClient;
+import { ClientOptions } from '../../types/aws';
+declare const getClient: (clientOpts?: ClientOptions) => SQSClient;
 export default getClient;

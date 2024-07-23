@@ -32,19 +32,23 @@ var __awaiter =
     });
   };
 import { GetSecretValueCommand } from '@aws-sdk/client-secrets-manager';
-import getClient from './getClient';
 import LesgoException from '../../exceptions/LesgoException';
+import { logger, validateFields } from '../../utils';
+import getClient from './getClient';
 const FILE = 'lesgo.services.SecretsManager.getSecretValue';
-const getSecretValue = (secretId, { region, singletonConn }) =>
+const getSecretValue = (secretId, opts, clientOpts) =>
   __awaiter(void 0, void 0, void 0, function* () {
-    const client = getClient({ region, singletonConn });
-    const command = new GetSecretValueCommand({
-      SecretId: secretId,
-    });
-    let body;
+    const input = validateFields({ secretId }, [
+      { key: 'secretId', type: 'string', required: true },
+    ]);
+    const client = getClient(clientOpts);
+    const command = new GetSecretValueCommand(
+      Object.assign(Object.assign({}, opts), { SecretId: input.secretId })
+    );
     try {
-      const { SecretString } = yield client.send(command);
-      body = SecretString;
+      const resp = yield client.send(command);
+      logger.debug(`${FILE}::RESPONSE`, { resp, command });
+      return resp;
     } catch (error) {
       throw new LesgoException(
         'Error occurred getting secret value from Secrets Manager',
@@ -52,12 +56,10 @@ const getSecretValue = (secretId, { region, singletonConn }) =>
         500,
         {
           error,
-          secretId,
+          command,
+          opts,
         }
       );
-    }
-    if (body) {
-      return JSON.parse(body);
     }
   });
 export default getSecretValue;

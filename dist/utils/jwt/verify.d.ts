@@ -1,12 +1,3 @@
-import { JwtPayload } from 'jsonwebtoken';
-declare const verify: (token: string, { secret, opts, }?: {
-    secret?: string | undefined;
-    opts?: {
-        keyid?: string | undefined;
-        algorithm?: string | Algorithm | undefined;
-        validateClaims?: boolean | undefined;
-        issuer?: string | undefined;
-        audience?: string | undefined;
-    } | undefined;
-}) => string | import("jsonwebtoken").Jwt | JwtPayload;
+import { VerifyInputOptions } from '../../services/JWTService/verify';
+declare const verify: (token: string, secret?: string, opts?: VerifyInputOptions) => string | import("jsonwebtoken").JwtPayload | import("jsonwebtoken").Jwt;
 export default verify;

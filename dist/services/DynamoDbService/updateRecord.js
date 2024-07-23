@@ -33,37 +33,13 @@ var __awaiter =
   };
 import { UpdateCommand } from '@aws-sdk/lib-dynamodb';
 import LesgoException from '../../exceptions/LesgoException';
-import { isEmpty, logger, validateFields } from '../../utils';
-import dynamodbConfig from '../../config/dynamodb';
+import { logger, validateFields } from '../../utils';
 import getClient from './getClient';
+import getTableName from './getTableName';
 const FILE = 'lesgo.services.DynamoDbService.updateRecord';
-const prepareUpdateInput = input => {
-  var _a;
-  let commandInput = {
-    TableName:
-      (_a = dynamodbConfig.tables.find(t => t.alias === input.tableName)) ===
-        null || _a === void 0
-        ? void 0
-        : _a.name,
-    Key: input.key,
-    UpdateExpression: input.updateExpression,
-    ExpressionAttributeValues: input.expressionAttributeValues,
-  };
-  if (!isEmpty(input.conditionExpression)) {
-    commandInput = Object.assign(Object.assign({}, commandInput), {
-      ConditionExpression: input.conditionExpression,
-    });
-  }
-  if (!isEmpty(input.expressionAttributeNames)) {
-    commandInput = Object.assign(Object.assign({}, commandInput), {
-      ExpressionAttributeNames: input.expressionAttributeNames,
-    });
-  }
-  return commandInput;
-};
 const updateRecord = (
   key,
-  tableName,
+  tableAlias,
   updateExpression,
   expressionAttributeValues,
   opts,
@@ -72,24 +48,27 @@ const updateRecord = (
   __awaiter(void 0, void 0, void 0, function* () {
     const input = validateFields(
       Object.assign(
-        { key, tableName, updateExpression, expressionAttributeValues },
+        { key, tableAlias, updateExpression, expressionAttributeValues },
         opts
       ),
       [
         { key: 'key', type: 'object', required: true },
-        { key: 'tableName', type: 'string', required: true },
+        { key: 'tableAlias', type: 'string', required: true },
         { key: 'updateExpression', type: 'string', required: true },
         { key: 'expressionAttributeValues', type: 'object', required: true },
-        { key: 'conditionExpression', type: 'string', required: false },
-        { key: 'expressionAttributeNames', type: 'object', required: false },
       ]
     );
+    const tableName = getTableName(input.tableAlias);
     const client = getClient(clientOpts);
-    const commandInput = prepareUpdateInput(input);
-    logger.debug(`${FILE}::QUERY_PREPARED`, { commandInput });
+    const commandInput = Object.assign(Object.assign({}, opts), {
+      TableName: tableName,
+      Key: input.key,
+      UpdateExpression: input.updateExpression,
+      ExpressionAttributeValues: input.expressionAttributeValues,
+    });
     try {
       const data = yield client.send(new UpdateCommand(commandInput));
-      logger.debug(`${FILE}::RECEIVED_RESPONSE`, { data });
+      logger.debug(`${FILE}::RECEIVED_RESPONSE`, { data, commandInput });
       return data;
     } catch (error) {
       throw new LesgoException(

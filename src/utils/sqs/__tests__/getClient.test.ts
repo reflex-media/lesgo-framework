@@ -10,15 +10,9 @@ describe('getClient', () => {
   });
 
   it('should create a new client if singleton connection is not yet created', () => {
-    const region = 'ap-southeast-1';
-    const singletonConn = 'default';
-
     getClient();
 
-    expect(getClientService).toHaveBeenCalledWith({
-      singletonConn,
-      region,
-    });
+    expect(getClientService).toHaveBeenCalledWith(undefined);
   });
 
   it('should call getClientService with defined region and singletonConn', () => {

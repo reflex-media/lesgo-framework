@@ -40,12 +40,13 @@ export const query = (
   clientOpts
 ) =>
   __awaiter(void 0, void 0, void 0, function* () {
-    return queryService(
+    const data = yield queryService(
       tableName,
       keyConditionExpression,
       expressionAttributeValues,
       opts,
       clientOpts
     );
+    return data.Items;
   });
 export default query;

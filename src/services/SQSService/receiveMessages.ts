@@ -3,46 +3,39 @@ import {
   ReceiveMessageCommandInput,
 } from '@aws-sdk/client-sqs';
 import LesgoException from '../../exceptions/LesgoException';
-import logger from '../../utils/logger';
+import { logger } from '../../utils';
+import { ClientOptions } from '../../types/aws';
 import getClient from './getClient';
+import getQueueUrl, { Queue } from './getQueueUrl';
 
 const FILE = 'lesgo.services.SQSService.receiveMessages';
 
-export type Queue = {
-  alias: string;
-  name: string;
-  url: string;
-};
+export interface ReceiveMessagesOptions
+  extends Partial<Omit<ReceiveMessageCommandInput, 'QueueUrl'>> {
+  QueueUrl?: string;
+}
 
 const receiveMessages = async (
-  queue: Queue,
-  {
-    region,
-    singletonConn,
-    maxNumberOfMessages = 1,
-    waitTimeSeconds = 0,
-  }: {
-    region: string;
-    singletonConn: string;
-    maxNumberOfMessages?: number;
-    waitTimeSeconds?: number;
-  }
+  queue: string | Queue,
+  opts?: ReceiveMessagesOptions,
+  clientOpts?: ClientOptions
 ) => {
-  const client = getClient({ region, singletonConn });
+  const queueUrl = getQueueUrl(queue);
 
-  const opts: ReceiveMessageCommandInput = {
-    QueueUrl: queue.url,
-    MaxNumberOfMessages: maxNumberOfMessages,
-    WaitTimeSeconds: waitTimeSeconds,
+  const client = getClient(clientOpts);
+
+  const commandInput: ReceiveMessageCommandInput = {
+    QueueUrl: queueUrl,
+    ...opts,
   };
 
   try {
-    const data = await client.send(new ReceiveMessageCommand(opts));
+    const data = await client.send(new ReceiveMessageCommand(commandInput));
     logger.debug(`${FILE}::MESSAGES_RECEIVED_FROM_QUEUE`, {
       data,
-      opts,
-      queue,
+      commandInput,
     });
+
     return data;
   } catch (error) {
     throw new LesgoException(
@@ -51,7 +44,7 @@ const receiveMessages = async (
       500,
       {
         error,
-        queue,
+        commandInput,
         opts,
       }
     );

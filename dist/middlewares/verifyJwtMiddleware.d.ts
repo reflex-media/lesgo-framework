@@ -1,13 +1,6 @@
 import middy from '@middy/core';
-export interface VerifyJwtOptions {
-    keyid?: string;
-    algorithm?: string;
-    validateClaims?: boolean;
-    issuer?: string;
-    audience?: string;
-    secret?: string;
-}
-declare const verifyJwtMiddleware: (options?: VerifyJwtOptions) => {
+import { VerifyInputOptions } from '../services/JWTService/verify';
+declare const verifyJwtMiddleware: (secret?: string, options?: VerifyInputOptions) => {
     before: (request: middy.Request) => void;
 };
 export default verifyJwtMiddleware;

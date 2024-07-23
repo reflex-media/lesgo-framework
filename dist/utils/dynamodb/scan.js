@@ -34,6 +34,7 @@ var __awaiter =
 import scanService from '../../services/DynamoDbService/scan';
 export const scan = (tableName, opts, clientOpts) =>
   __awaiter(void 0, void 0, void 0, function* () {
-    return scanService(tableName, opts, clientOpts);
+    const data = yield scanService(tableName, opts, clientOpts);
+    return data.Items;
   });
 export default scan;

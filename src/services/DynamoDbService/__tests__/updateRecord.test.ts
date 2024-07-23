@@ -1,10 +1,8 @@
 import { UpdateCommand, UpdateCommandInput } from '@aws-sdk/lib-dynamodb';
 import LesgoException from '../../../exceptions/LesgoException';
-import logger from '../../../utils/logger';
 import dynamodbConfig from '../../../config/dynamodb';
 import getClient from '../getClient';
 import updateRecord, { Key } from '../updateRecord';
-import DynamoDbService from '../../DynamoDbService';
 
 jest.mock('../getClient', () => {
   return jest.fn().mockImplementation(() => ({
@@ -72,7 +70,7 @@ describe('updateRecord', () => {
     (getClient as jest.Mock).mockReturnValue(client);
 
     await expect(
-      DynamoDbService.updateRecord(
+      updateRecord(
         key,
         tableName,
         updateExpression,
@@ -96,9 +94,5 @@ describe('updateRecord', () => {
     );
 
     expect(getClient).toHaveBeenCalledWith({ singletonConn, region });
-    expect(logger.debug).toHaveBeenCalledWith(
-      'lesgo.services.DynamoDbService.updateRecord::QUERY_PREPARED',
-      { params: input }
-    );
   });
 });

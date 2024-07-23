@@ -50,8 +50,8 @@ declare const _default: {
             secret: string;
         }[];
         expiresIn: string;
-        issuer: string;
-        audience: string;
+        issuer: string | undefined;
+        audience: string | undefined;
         validateClaims: boolean;
     };
     rds: {

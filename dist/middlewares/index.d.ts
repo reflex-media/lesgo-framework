@@ -33,7 +33,7 @@ declare const _default: {
     verifyBasicAuthMiddleware: (options?: import("./verifyBasicAuthMiddleware").VerifyBasicAuthMiddlewareOptions) => {
         before: (request: import("@middy/core").Request<any, any, Error, import("aws-lambda").Context, {}>) => void;
     };
-    verifyJwtMiddleware: (options?: import("./verifyJwtMiddleware").VerifyJwtOptions) => {
+    verifyJwtMiddleware: (secret?: string | undefined, options?: import("../services/JWTService/verify").VerifyInputOptions | undefined) => {
         before: (request: import("@middy/core").Request<any, any, Error, import("aws-lambda").Context, {}>) => void;
     };
 };

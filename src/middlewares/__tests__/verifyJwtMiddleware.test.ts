@@ -1,9 +1,8 @@
 import middy from '@middy/core';
-import verifyJwtMiddleware, { VerifyJwtOptions } from '../verifyJwtMiddleware';
+import { Context } from 'aws-lambda';
+import verifyJwtMiddleware from '../verifyJwtMiddleware';
 import { LesgoException } from '../../exceptions';
 import { verify } from '../../utils/jwt';
-import logger from '../../utils/logger';
-import { Context } from 'aws-lambda';
 
 jest.mock('../../utils/jwt');
 jest.mock('../../utils/logger');
@@ -23,15 +22,6 @@ describe('verifyJwtMiddleware', () => {
     internal: {},
   };
 
-  const mockOptions: VerifyJwtOptions = {
-    keyid: 'mock-keyid',
-    algorithm: 'mock-algorithm',
-    validateClaims: true,
-    issuer: 'mock-issuer',
-    audience: 'mock-audience',
-    secret: 'mock-secret',
-  };
-
   afterEach(() => {
     jest.clearAllMocks();
   });
@@ -40,34 +30,16 @@ describe('verifyJwtMiddleware', () => {
     const mockDecodedToken = { id: '123', username: 'john.doe' };
     (verify as jest.Mock).mockReturnValue(mockDecodedToken);
 
-    verifyJwtMiddleware(mockOptions).before(mockRequest);
+    verifyJwtMiddleware().before(mockRequest);
 
-    expect(logger.debug).toHaveBeenCalledWith(
-      'lesgo.middlewares.verifyJwtMiddleware::JWT_TO_VERIFY',
-      {
-        request: mockRequest,
-        options: mockOptions,
-      }
-    );
-    expect(verify).toHaveBeenCalledWith('mock-token', {
-      secret: 'mock-secret',
-      opts: mockOptions,
-    });
-    expect(logger.debug).toHaveBeenCalledWith(
-      'lesgo.middlewares.verifyJwtMiddleware::JWT_VERIFIED',
-      {
-        decoded: mockDecodedToken,
-      }
-    );
+    expect(verify).toHaveBeenCalledWith('mock-token', undefined, undefined);
     expect(mockRequest.event.jwt).toEqual(mockDecodedToken);
   });
 
   it('should throw a LesgoException if there is no token provided', () => {
     mockRequest.event.headers.authorization = undefined;
 
-    expect(() =>
-      verifyJwtMiddleware(mockOptions).before(mockRequest)
-    ).toThrowError(
+    expect(() => verifyJwtMiddleware().before(mockRequest)).toThrow(
       new LesgoException(
         'No token provided',
         'lesgo.middlewares.verifyJwtMiddleware::NO_TOKEN_PROVIDED',
@@ -83,9 +55,7 @@ describe('verifyJwtMiddleware', () => {
       throw mockError;
     });
 
-    expect(() =>
-      verifyJwtMiddleware(mockOptions).before(mockRequest)
-    ).toThrowError(
+    expect(() => verifyJwtMiddleware().before(mockRequest)).toThrow(
       new LesgoException(
         'Error verifying JWT',
         'lesgo.middlewares.verifyJwtMiddleware::ERROR_VERIFYING_JWT',

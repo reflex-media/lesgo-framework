@@ -1,10 +1,9 @@
 import getHeadObject from '../getHeadObject';
 import getHeadObjectService from '../../../services/S3Service/getHeadObject';
 import s3Utils from '../../../utils/s3';
-import config from '../../../config/aws';
 
 jest.mock('../../../services/S3Service/getHeadObject');
-jest.mock('../../../config/aws');
+jest.mock('../../../config/s3');
 
 describe('getHeadObject', () => {
   afterEach(() => {
@@ -16,10 +15,11 @@ describe('getHeadObject', () => {
 
     getHeadObject(key);
 
-    expect(getHeadObjectService).toHaveBeenCalledWith(key, config.s3.bucket, {
-      singletonConn: 'default',
-      region: config.region,
-    });
+    expect(getHeadObjectService).toHaveBeenCalledWith(
+      key,
+      undefined,
+      undefined
+    );
   });
 
   it('should call getHeadObjectService with specified singletonConn and config region', () => {
@@ -27,12 +27,13 @@ describe('getHeadObject', () => {
     const bucket = 'testBucket';
     const singletonConn = 'customSingletonConn';
 
-    s3Utils.getHeadObject(key, bucket, { singletonConn });
+    s3Utils.getHeadObject(key, { Bucket: bucket }, { singletonConn });
 
-    expect(getHeadObjectService).toHaveBeenCalledWith(key, bucket, {
-      singletonConn,
-      region: config.region,
-    });
+    expect(getHeadObjectService).toHaveBeenCalledWith(
+      key,
+      { Bucket: bucket },
+      { singletonConn }
+    );
   });
 
   it('should call getHeadObjectService with default singletonConn and specified region', () => {
@@ -40,12 +41,13 @@ describe('getHeadObject', () => {
     const bucket = 'testBucket';
     const region = 'us-west-2';
 
-    getHeadObject(key, bucket, { region });
+    getHeadObject(key, { Bucket: bucket }, { region });
 
-    expect(getHeadObjectService).toHaveBeenCalledWith(key, bucket, {
-      singletonConn: 'default',
-      region,
-    });
+    expect(getHeadObjectService).toHaveBeenCalledWith(
+      key,
+      { Bucket: bucket },
+      { region }
+    );
   });
 
   it('should call getHeadObjectService with specified singletonConn and specified region', () => {
@@ -54,11 +56,15 @@ describe('getHeadObject', () => {
     const singletonConn = 'customSingletonConn';
     const region = 'us-west-2';
 
-    getHeadObject(key, bucket, { singletonConn, region });
+    getHeadObject(key, { Bucket: bucket }, { singletonConn, region });
 
-    expect(getHeadObjectService).toHaveBeenCalledWith(key, bucket, {
-      singletonConn,
-      region,
-    });
+    expect(getHeadObjectService).toHaveBeenCalledWith(
+      key,
+      { Bucket: bucket },
+      {
+        singletonConn,
+        region,
+      }
+    );
   });
 });

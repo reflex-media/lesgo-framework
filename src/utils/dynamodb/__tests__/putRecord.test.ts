@@ -14,9 +14,9 @@ describe('putRecord', () => {
     const region = 'ap-southeast-1';
     const singletonConn = 'default';
 
-    await putRecord(item, tableName, { region, singletonConn });
+    await putRecord(item, tableName, undefined, { region, singletonConn });
 
-    expect(putRecordService).toHaveBeenCalledWith(item, tableName, {
+    expect(putRecordService).toHaveBeenCalledWith(item, tableName, undefined, {
       region,
       singletonConn,
     });

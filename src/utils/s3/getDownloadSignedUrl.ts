@@ -1,32 +1,16 @@
-import s3Config from '../../config/s3';
-import getDownloadSignedUrlService from '../../services/S3Service/getDownloadSignedUrl';
-import isEmpty from '../isEmpty';
-import validateFields from '../validateFields';
+import getDownloadSignedUrlService, {
+  GetSignedUrlOptions,
+} from '../../services/S3Service/getDownloadSignedUrl';
+import { GetObjectOptions } from '../../services/S3Service/getObject';
+import { ClientOptions } from '../../types/aws';
 
 const getDownloadSignedUrl = async (
   key: string,
-  bucket?: string,
-  { singletonConn = 'default', region = '', expiresIn = 3600 } = {}
+  opts?: GetObjectOptions,
+  signingOpts?: GetSignedUrlOptions,
+  clientOpts?: ClientOptions
 ) => {
-  region = isEmpty(region) ? s3Config.region : region;
-  bucket = isEmpty(bucket) ? s3Config.bucket : bucket;
-
-  const input = validateFields(
-    { key, bucket, singletonConn, region, expiresIn },
-    [
-      { key: 'key', type: 'string', required: true },
-      { key: 'bucket', type: 'string', required: true },
-      { key: 'singletonConn', type: 'string', required: true },
-      { key: 'region', type: 'string', required: true },
-      { key: 'expiresIn', type: 'number', required: true },
-    ]
-  );
-
-  return getDownloadSignedUrlService(input.key, input.bucket, {
-    singletonConn: input.singletonConn,
-    region: input.region,
-    expiresIn: input.expiresIn,
-  });
+  return getDownloadSignedUrlService(key, opts, signingOpts, clientOpts);
 };
 
 export default getDownloadSignedUrl;

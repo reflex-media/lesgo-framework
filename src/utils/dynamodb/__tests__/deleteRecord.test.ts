@@ -15,11 +15,16 @@ describe('deleteRecord', () => {
   it('should call deleteRecordService with the correct parameters', async () => {
     const key = { id: '123' };
 
-    await deleteRecord(key, tableName, { region, singletonConn });
+    await deleteRecord(key, tableName, undefined, { region, singletonConn });
 
-    expect(deleteRecordService).toHaveBeenCalledWith(key, tableName, {
-      region,
-      singletonConn,
-    });
+    expect(deleteRecordService).toHaveBeenCalledWith(
+      key,
+      tableName,
+      undefined,
+      {
+        region,
+        singletonConn,
+      }
+    );
   });
 });

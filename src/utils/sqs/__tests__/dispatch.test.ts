@@ -1,8 +1,6 @@
-import { dispatch } from '../../../utils/sqs/dispatch';
-import sqs from '../../../utils/sqs';
+import dispatch from '../dispatch';
+import sqs from '../../sqs';
 import dispatchService from '../../../services/SQSService/dispatch';
-import config from '../../../config/aws';
-import { LesgoException } from '../../../exceptions';
 
 jest.mock('../../../services/SQSService/dispatch');
 
@@ -11,25 +9,25 @@ describe('dispatch', () => {
     jest.clearAllMocks();
   });
 
-  it('should call dispatchService with the default values', () => {
+  it('should call dispatchService with the default values', async () => {
     const payload = { foo: 'bar' };
     const queue = {
       alias: 'testQueue',
       name: 'testQueueName',
       url: 'testQueueUrl',
     };
-    const singletonConn = 'default';
-    const region = 'ap-southeast-1';
 
-    dispatch(payload, queue);
+    await dispatch(payload, queue);
 
-    expect(dispatchService).toHaveBeenCalledWith(payload, queue, {
-      region,
-      singletonConn,
-    });
+    expect(dispatchService).toHaveBeenCalledWith(
+      payload,
+      queue,
+      undefined,
+      undefined
+    );
   });
 
-  it('should call dispatchService with the correct arguments', () => {
+  it('should call dispatchService with the correct arguments', async () => {
     const payload = { foo: 'bar' };
     const queue = {
       alias: 'testQueue',
@@ -39,54 +37,25 @@ describe('dispatch', () => {
     const singletonConn = 'customSingletonConn';
     const region = 'us-west-2';
 
-    sqs.dispatch(payload, queue, { singletonConn, region });
+    await sqs.dispatch(payload, queue, undefined, { singletonConn, region });
 
-    expect(dispatchService).toHaveBeenCalledWith(payload, queue, {
+    expect(dispatchService).toHaveBeenCalledWith(payload, queue, undefined, {
       region,
       singletonConn,
     });
   });
 
-  it('should call dispatchService with queue as string', () => {
+  it('should call dispatchService with queue as string', async () => {
     const payload = { foo: 'bar' };
     const queue = 'testQueue';
     const singletonConn = 'customSingletonConn';
     const region = 'us-west-2';
-    const queueObject = config.sqs.queues.find(q => q.alias === queue);
 
-    sqs.dispatch(payload, queue, { singletonConn, region });
+    await sqs.dispatch(payload, queue, undefined, { singletonConn, region });
 
-    expect(dispatchService).toHaveBeenCalledWith(
-      payload,
-      {
-        alias: queue,
-        name: queueObject?.name,
-        url: queueObject?.url,
-      },
-      {
-        region,
-        singletonConn,
-      }
-    );
-  });
-
-  it('should throw error if queue not found', async () => {
-    const payload = { foo: 'bar' };
-    const queue = 'invalidQueue';
-    const singletonConn = 'customSingletonConn';
-    const region = 'us-west-2';
-
-    expect(
-      sqs.dispatch(payload, queue, { singletonConn, region })
-    ).rejects.toThrow(
-      new LesgoException(
-        `Queue with alias ${queue} not found in config`,
-        '::QUEUE_NOT_FOUND',
-        500,
-        {
-          queue,
-        }
-      )
-    );
+    expect(dispatchService).toHaveBeenCalledWith(payload, queue, undefined, {
+      region,
+      singletonConn,
+    });
   });
 });

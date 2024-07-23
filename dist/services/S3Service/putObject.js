@@ -33,24 +33,31 @@ var __awaiter =
   };
 import { PutObjectCommand } from '@aws-sdk/client-s3';
 import LesgoException from '../../exceptions/LesgoException';
+import s3Config from '../../config/s3';
+import { logger, validateFields } from '../../utils';
 import getClient from './getClient';
 const FILE = 'lesgo/services/S3Service/putObject';
-const putObject = (
-  key,
-  file,
-  bucket,
-  { region, singletonConn, storageClass }
-) =>
+const putObject = (key, file, opts, clientOpts) =>
   __awaiter(void 0, void 0, void 0, function* () {
-    const client = getClient({ region, singletonConn });
-    const command = new PutObjectCommand({
-      Bucket: bucket,
-      Key: key,
-      Body: file,
-      StorageClass: storageClass,
-    });
+    const input = validateFields({ key }, [
+      { key: 'key', type: 'string', required: true },
+    ]);
+    const client = getClient(clientOpts);
+    const command = new PutObjectCommand(
+      Object.assign(Object.assign({}, opts), {
+        Bucket:
+          (opts === null || opts === void 0 ? void 0 : opts.Bucket) ||
+          s3Config.bucket,
+        Key: input.key,
+        Body: file,
+        StorageClass:
+          (opts === null || opts === void 0 ? void 0 : opts.StorageClass) ||
+          'STANDARD',
+      })
+    );
     try {
       const response = yield client.send(command);
+      logger.debug(`${FILE}::RESPONSE`, { response, command });
       return response;
     } catch (error) {
       throw new LesgoException(
@@ -59,9 +66,9 @@ const putObject = (
         500,
         {
           error,
-          bucket,
-          key,
-          storageClass,
+          command,
+          opts,
+          clientOpts,
         }
       );
     }

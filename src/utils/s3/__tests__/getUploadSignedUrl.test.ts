@@ -1,10 +1,8 @@
 import getUploadSignedUrl from '../getUploadSignedUrl';
 import getUploadSignedUrlService from '../../../services/S3Service/getUploadSignedUrl';
 import s3Utils from '../../../utils/s3';
-import config from '../../../config/aws';
 
 jest.mock('../../../services/S3Service/getUploadSignedUrl');
-jest.mock('../../../config/aws');
 
 describe('getUploadSignedUrl', () => {
   afterEach(() => {
@@ -18,12 +16,9 @@ describe('getUploadSignedUrl', () => {
 
     expect(getUploadSignedUrlService).toHaveBeenCalledWith(
       key,
-      config.s3.bucket,
-      {
-        singletonConn: 'default',
-        region: config.region,
-        expiresIn: 600,
-      }
+      undefined,
+      undefined,
+      undefined
     );
   });
 
@@ -34,18 +29,21 @@ describe('getUploadSignedUrl', () => {
     const metadata = { foo: 'bar' };
     const expiresIn = 600;
 
-    s3Utils.getUploadSignedUrl(key, bucket, {
-      singletonConn,
-      metadata,
-      expiresIn,
-    });
+    s3Utils.getUploadSignedUrl(
+      key,
+      { Bucket: bucket, Metadata: metadata },
+      { expiresIn },
+      {
+        singletonConn,
+      }
+    );
 
-    expect(getUploadSignedUrlService).toHaveBeenCalledWith(key, bucket, {
-      singletonConn,
-      region: config.region,
-      metadata,
-      expiresIn,
-    });
+    expect(getUploadSignedUrlService).toHaveBeenCalledWith(
+      key,
+      { Bucket: bucket, Metadata: metadata },
+      { expiresIn },
+      { singletonConn }
+    );
   });
 
   it('should call getUploadSignedUrlService with default singletonConn, specified region, and provided parameters', () => {
@@ -55,14 +53,19 @@ describe('getUploadSignedUrl', () => {
     const metadata = { foo: 'bar' };
     const expiresIn = 600;
 
-    getUploadSignedUrl(key, bucket, { region, metadata, expiresIn });
+    getUploadSignedUrl(
+      key,
+      { Bucket: bucket, Metadata: metadata },
+      { expiresIn },
+      { region }
+    );
 
-    expect(getUploadSignedUrlService).toHaveBeenCalledWith(key, bucket, {
-      singletonConn: 'default',
-      region,
-      metadata,
-      expiresIn,
-    });
+    expect(getUploadSignedUrlService).toHaveBeenCalledWith(
+      key,
+      { Bucket: bucket, Metadata: metadata },
+      { expiresIn },
+      { region }
+    );
   });
 
   it('should call getUploadSignedUrlService with specified singletonConn, specified region, and provided parameters', () => {
@@ -73,18 +76,24 @@ describe('getUploadSignedUrl', () => {
     const metadata = { foo: 'bar' };
     const expiresIn = 600;
 
-    getUploadSignedUrl(key, bucket, {
-      singletonConn,
-      region,
-      metadata,
-      expiresIn,
-    });
+    getUploadSignedUrl(
+      key,
+      { Bucket: bucket, Metadata: metadata },
+      { expiresIn },
+      {
+        singletonConn,
+        region,
+      }
+    );
 
-    expect(getUploadSignedUrlService).toHaveBeenCalledWith(key, bucket, {
-      singletonConn,
-      region,
-      metadata,
-      expiresIn,
-    });
+    expect(getUploadSignedUrlService).toHaveBeenCalledWith(
+      key,
+      { Bucket: bucket, Metadata: metadata },
+      { expiresIn },
+      {
+        singletonConn,
+        region,
+      }
+    );
   });
 });

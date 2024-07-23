@@ -32,31 +32,29 @@ var __awaiter =
     });
   };
 import { HeadObjectCommand } from '@aws-sdk/client-s3';
-import getClient from './getClient';
+import s3Config from '../../config/s3';
 import LesgoException from '../../exceptions/LesgoException';
-import isEmpty from '../../utils/isEmpty';
+import { logger, validateFields } from '../../utils';
+import getClient from './getClient';
 const FILE = 'lesgo/services/S3Service/getHeadObject';
-const getHeadObject = (key, bucket, { region, singletonConn }) =>
+const getHeadObject = (key, opts, clientOpts) =>
   __awaiter(void 0, void 0, void 0, function* () {
-    if (isEmpty(key)) {
-      throw new LesgoException('Key is undefined', `${FILE}::KEY_UNDEFINED`);
-    }
-    if (isEmpty(bucket)) {
-      throw new LesgoException(
-        'Bucket is undefined',
-        `${FILE}::BUCKET_UNDEFINED`
-      );
-    }
-    const client = getClient({ region, singletonConn });
-    const command = new HeadObjectCommand({
-      Bucket: bucket,
-      Key: key,
-    });
+    const input = validateFields({ key }, [
+      { key: 'key', type: 'string', required: true },
+    ]);
+    const client = getClient(clientOpts);
+    const command = new HeadObjectCommand(
+      Object.assign(Object.assign({}, opts), {
+        Bucket:
+          (opts === null || opts === void 0 ? void 0 : opts.Bucket) ||
+          s3Config.bucket,
+        Key: input.key,
+      })
+    );
     try {
       const response = yield client.send(command);
-      const { LastModified, ContentLength, ETag, ContentType, Metadata } =
-        response;
-      return { LastModified, ContentLength, ETag, ContentType, Metadata };
+      logger.debug(`${FILE}::RESPONSE`, { response, command });
+      return response;
     } catch (error) {
       throw new LesgoException(
         'Error occurred getting object metadata from S3 bucket',
@@ -64,8 +62,9 @@ const getHeadObject = (key, bucket, { region, singletonConn }) =>
         500,
         {
           error,
-          bucket,
-          key,
+          command,
+          opts,
+          clientOpts,
         }
       );
     }

@@ -1,24 +1,27 @@
+import { GetSecretValueCommandInput } from '@aws-sdk/client-secrets-manager';
 import getSecretValueService from '../../services/SecretsManagerService/getSecretValue';
-import secretsManagerConfig from '../../config/secretsManager';
-import isEmpty from '../isEmpty';
-import validateFields from '../validateFields';
+import { ClientOptions } from '../../types/aws';
 
 const getSecretValue = async (
   secretId: string,
-  { singletonConn = 'default', region = '' } = {}
+  opts?: GetSecretValueCommandInput,
+  clientOpts?: ClientOptions
 ) => {
-  region = isEmpty(region) ? secretsManagerConfig.region : region;
+  const { SecretString } = await getSecretValueService(
+    secretId,
+    opts,
+    clientOpts
+  );
 
-  const input = validateFields({ secretId, singletonConn, region }, [
-    { key: 'secretId', type: 'string', required: true },
-    { key: 'singletonConn', type: 'string', required: true },
-    { key: 'region', type: 'string', required: true },
-  ]);
+  try {
+    if (typeof SecretString === 'object') {
+      return JSON.parse(SecretString);
+    }
+  } catch (error) {
+    return SecretString;
+  }
 
-  return getSecretValueService(input.secretId, {
-    singletonConn: input.singletonConn,
-    region: input.region,
-  });
+  return SecretString;
 };
 
 export default getSecretValue;

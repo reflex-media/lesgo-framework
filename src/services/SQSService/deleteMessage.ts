@@ -3,40 +3,45 @@ import {
   DeleteMessageCommandInput,
 } from '@aws-sdk/client-sqs';
 import LesgoException from '../../exceptions/LesgoException';
-import logger from '../../utils/logger';
+import { logger, validateFields } from '../../utils';
+import { ClientOptions } from '../../types/aws';
 import getClient from './getClient';
+import getQueueUrl, { Queue } from './getQueueUrl';
 
 const FILE = 'lesgo.services.SQSService.deleteMessage';
 
-export type Queue = {
-  alias: string;
-  name: string;
-  url: string;
-};
+export interface DeleteMessageOptions
+  extends Partial<
+    Omit<DeleteMessageCommandInput, 'QueueUrl' | 'ReceiptHandle'>
+  > {
+  QueueUrl?: string;
+  ReceiptHandle?: string;
+}
 
 const deleteMessage = async (
-  queue: Queue,
+  queue: string | Queue,
   receiptHandle: string,
-  {
-    region,
-    singletonConn,
-  }: {
-    region: string;
-    singletonConn: string;
-  }
+  opts?: DeleteMessageOptions,
+  clientOpts?: ClientOptions
 ) => {
-  const client = getClient({ region, singletonConn });
+  const queueUrl = getQueueUrl(queue);
 
-  const opts: DeleteMessageCommandInput = {
-    QueueUrl: queue.url,
-    ReceiptHandle: receiptHandle,
+  const input = validateFields({ receiptHandle }, [
+    { key: 'receiptHandle', type: 'string', required: true },
+  ]);
+
+  const client = getClient(clientOpts);
+
+  const commandInput: DeleteMessageCommandInput = {
+    QueueUrl: queueUrl,
+    ReceiptHandle: input.receiptHandle,
+    ...opts,
   };
 
   try {
-    await client.send(new DeleteMessageCommand(opts));
+    await client.send(new DeleteMessageCommand(commandInput));
     logger.debug(`${FILE}::MESSAGE_DELETED_FROM_QUEUE`, {
-      opts,
-      queue,
+      commandInput,
     });
   } catch (error) {
     throw new LesgoException(
@@ -45,7 +50,7 @@ const deleteMessage = async (
       500,
       {
         error,
-        queue,
+        commandInput,
         opts,
       }
     );

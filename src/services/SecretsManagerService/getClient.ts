@@ -1,7 +1,7 @@
-import aws from 'aws-sdk';
 import { SecretsManagerClient } from '@aws-sdk/client-secrets-manager';
-import logger from '../../utils/logger';
-import isEmpty from '../../utils/isEmpty';
+import { logger, isEmpty, validateFields } from '../../utils';
+import secretsManagerConfig from '../../config/secretsManager';
+import { ClientOptions } from '../../types/aws';
 
 const FILE = 'lesgo.services.SecretsManager.getClient';
 
@@ -9,14 +9,17 @@ export interface Singleton {
   [key: string]: SecretsManagerClient;
 }
 
-export interface GetClientOptions {
-  region: string;
-  singletonConn: string;
-}
-
 const singleton: Singleton = {};
 
-const getClient = ({ region, singletonConn }: GetClientOptions) => {
+const getClient = (clientOpts: ClientOptions = {}) => {
+  const options = validateFields(clientOpts, [
+    { key: 'region', type: 'string', required: false },
+    { key: 'singletonConn', type: 'string', required: false },
+  ]);
+
+  const region = options.region || secretsManagerConfig.region;
+  const singletonConn = options.singletonConn || 'default';
+
   if (!isEmpty(singleton[singletonConn])) {
     logger.debug(`${FILE}::REUSE_CLIENT_SINGLETON`, {
       singletonConn,

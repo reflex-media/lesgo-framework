@@ -1,6 +1,6 @@
 import { JwtPayload } from 'jsonwebtoken';
-import JWTService from '../../JWTService';
 import verify from '../verify';
+import sign from '../sign';
 
 describe('verify', () => {
   afterEach(() => {
@@ -12,7 +12,7 @@ describe('verify', () => {
     const secret = 'custom-secret';
     const opts = { expiresIn: '2h' };
 
-    const result = JWTService.sign(payload, secret, opts);
+    const result = sign(payload, secret, opts);
     const verifyResult = verify(result, secret) as JwtPayload;
 
     expect(verifyResult.id).toEqual(payload.id);
@@ -25,12 +25,12 @@ describe('verify', () => {
     const payload = { id: '123', username: 'john.doe' };
     const secret = 'custom-secret';
 
-    const result = JWTService.sign(payload, secret);
+    const result = sign(payload, secret);
     const verifyResult = verify(result, secret) as JwtPayload;
 
     expect(verifyResult.id).toEqual(payload.id);
     expect(verifyResult.username).toEqual(payload.username);
-    expect(verifyResult.exp).toBeFalsy();
+    expect(verifyResult.exp).toBeTruthy();
     expect(verifyResult.iat).toBeTruthy();
   });
 });

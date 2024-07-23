@@ -1,7 +1,7 @@
-export interface GetDownloadSignedUrlOptions {
-    region: string;
-    singletonConn: string;
-    expiresIn: number;
+import { GetObjectCommandInput } from '@aws-sdk/client-s3';
+import { ClientOptions } from '../../types/aws';
+export interface GetSignedUrlOptions {
+    expiresIn?: number;
 }
-declare const getDownloadSignedUrl: (key: string, bucket: string, { singletonConn, region, expiresIn }: GetDownloadSignedUrlOptions) => Promise<string>;
+declare const getDownloadSignedUrl: (key: string, opts?: GetObjectCommandInput, signingOpts?: GetSignedUrlOptions, clientOpts?: ClientOptions) => Promise<string>;
 export default getDownloadSignedUrl;

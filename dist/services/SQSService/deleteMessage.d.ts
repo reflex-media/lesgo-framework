@@ -1,10 +1,5 @@
-export type Queue = {
-    alias: string;
-    name: string;
-    url: string;
-};
-declare const deleteMessage: (queue: Queue, receiptHandle: string, { region, singletonConn, }: {
-    region: string;
-    singletonConn: string;
-}) => Promise<void>;
+import { DeleteMessageCommandInput } from '@aws-sdk/client-sqs';
+import { ClientOptions } from '../../types/aws';
+import { Queue } from './getQueueUrl';
+declare const deleteMessage: (queue: string | Queue, receiptHandle: string, opts?: DeleteMessageCommandInput, clientOpts?: ClientOptions) => Promise<void>;
 export default deleteMessage;

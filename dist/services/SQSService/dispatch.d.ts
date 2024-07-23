@@ -1,13 +1,5 @@
-export type Queue = {
-    alias: string;
-    name: string;
-    url: string;
-};
-declare const dispatch: (payload: Record<any, any>, queue: Queue, { region, singletonConn, fifo, messageGroupId, messageDeduplicationId, }: {
-    region: string;
-    singletonConn: string;
-    fifo?: boolean | undefined;
-    messageGroupId?: string | undefined;
-    messageDeduplicationId?: string | undefined;
-}) => Promise<import("@aws-sdk/client-sqs").SendMessageCommandOutput>;
+import { SendMessageCommandInput } from '@aws-sdk/client-sqs';
+import { ClientOptions } from '../../types/aws';
+import { Queue } from './getQueueUrl';
+declare const dispatch: (payload: Record<any, any>, queue: string | Queue, opts?: SendMessageCommandInput, clientOpts?: ClientOptions) => Promise<import("@aws-sdk/client-sqs").SendMessageCommandOutput>;
 export default dispatch;

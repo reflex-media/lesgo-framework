@@ -1,6 +1,7 @@
 import { QueryCommand } from '@aws-sdk/lib-dynamodb';
-import query, { prepareQueryInput } from '../query';
+import query from '../query';
 import getClient from '../getClient';
+import { LesgoException } from '../../../exceptions';
 
 jest.mock('../getClient', () => {
   return jest.fn().mockImplementation(() => ({
@@ -21,7 +22,7 @@ describe('query', () => {
   });
 
   it('should call getClient with the correct options', async () => {
-    const tableName = 'myTable';
+    const tableName = 'testingTable';
     const keyConditionExpression = 'id = :id';
     const expressionAttributeValues = { ':id': '123' };
     const clientOpts = {
@@ -42,7 +43,7 @@ describe('query', () => {
   });
 
   it('should return the items from the response', async () => {
-    const tableName = 'myTable';
+    const tableName = 'testingTable';
     const keyConditionExpression = 'id = :id';
     const expressionAttributeValues = { ':id': '123' };
     const clientOpts = {
@@ -68,11 +69,31 @@ describe('query', () => {
       clientOpts
     );
 
-    expect(result).toEqual(mockItems);
+    expect(result).toEqual(mockData);
+  });
+
+  it('should throw an error if the table is not found', async () => {
+    const tableName = 'myTable';
+    const keyConditionExpression = 'id = :id';
+    const expressionAttributeValues = { ':id': '123' };
+    const clientOpts = {
+      region: 'us-west-2',
+      singletonConn: 'default',
+    };
+
+    await expect(
+      query(
+        tableName,
+        keyConditionExpression,
+        expressionAttributeValues,
+        undefined,
+        clientOpts
+      )
+    ).rejects.toThrow(new LesgoException('Table not found'));
   });
 
   it('should throw an error if the query fails', async () => {
-    const tableName = 'myTable';
+    const tableName = 'testingTable';
     const keyConditionExpression = 'id = :id';
     const expressionAttributeValues = { ':id': '123' };
     const clientOpts = {
@@ -95,39 +116,6 @@ describe('query', () => {
         undefined,
         clientOpts
       )
-    ).rejects.toThrowError('Failed to query');
-  });
-});
-
-describe('prepareQueryInput', () => {
-  it('should return the prepared query input', () => {
-    const tableName = 'testingTable';
-    const keyConditionExpression = 'id = :id';
-    const expressionAttributeValues = { ':id': '123' };
-    const opts = {
-      projectionExpression: 'name',
-      expressionAttributeNames: { '#n': 'name' },
-      filterExpression: 'age > :age',
-      indexName: 'index',
-      select: 'ALL_ATTRIBUTES',
-    };
-
-    const result = prepareQueryInput({
-      tableName,
-      keyConditionExpression,
-      expressionAttributeValues,
-      ...opts,
-    });
-
-    expect(result).toEqual({
-      TableName: expect.any(String),
-      KeyConditionExpression: expect.any(String),
-      ExpressionAttributeValues: expect.any(Object),
-      ProjectionExpression: expect.any(String),
-      ExpressionAttributeNames: expect.any(Object),
-      FilterExpression: expect.any(String),
-      IndexName: expect.any(String),
-      Select: expect.any(String),
-    });
+    ).rejects.toThrow(new LesgoException('Failed to query'));
   });
 });

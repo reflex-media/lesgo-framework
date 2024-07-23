@@ -1,20 +1,8 @@
-import secretsManagerConfig from '../../config/secretsManager';
-import getClientService from '../../services/S3Service/getClient';
-import isEmpty from '../isEmpty';
-import validateFields from '../validateFields';
+import getClientService from '../../services/SecretsManagerService/getClient';
+import { ClientOptions } from '../../types/aws';
 
-const getClient = ({ singletonConn = 'default', region = '' } = {}) => {
-  region = isEmpty(region) ? secretsManagerConfig.region : region;
-
-  const input = validateFields({ singletonConn, region }, [
-    { key: 'singletonConn', type: 'string', required: true },
-    { key: 'region', type: 'string', required: true },
-  ]);
-
-  return getClientService({
-    singletonConn: input.singletonConn,
-    region: input.region,
-  });
+const getClient = (clientOpts?: ClientOptions) => {
+  return getClientService(clientOpts);
 };
 
 export default getClient;

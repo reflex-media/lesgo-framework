@@ -1,6 +1,5 @@
-declare const getDownloadSignedUrl: (key: string, bucket?: string, { singletonConn, region, expiresIn }?: {
-    singletonConn?: string | undefined;
-    region?: string | undefined;
-    expiresIn?: number | undefined;
-}) => Promise<string>;
+import { GetObjectCommandInput } from '@aws-sdk/client-s3';
+import { GetSignedUrlOptions } from '../../services/S3Service/getDownloadSignedUrl';
+import { ClientOptions } from '../../types/aws';
+declare const getDownloadSignedUrl: (key: string, opts?: GetObjectCommandInput, signingOpts?: GetSignedUrlOptions, clientOpts?: ClientOptions) => Promise<string>;
 export default getDownloadSignedUrl;

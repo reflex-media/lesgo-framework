@@ -4,80 +4,55 @@ import {
   UpdateCommandInput,
 } from '@aws-sdk/lib-dynamodb';
 import LesgoException from '../../exceptions/LesgoException';
-import { isEmpty, logger, validateFields } from '../../utils';
-import dynamodbConfig from '../../config/dynamodb';
-import getClient, { GetClientOptions } from './getClient';
+import { logger, validateFields } from '../../utils';
+import { ClientOptions } from '../../types/aws';
+import getClient from './getClient';
+import getTableName from './getTableName';
 
 const FILE = 'lesgo.services.DynamoDbService.updateRecord';
 
 export type Key = Record<string, NativeAttributeValue>;
 
-export interface UpdateRecordInputOptions {
-  conditionExpression?: string;
-  expressionAttributeNames?: Record<string, string>;
-}
-
-export interface ValidatedCommandInput extends UpdateRecordInputOptions {
-  key: Key;
-  tableName: string;
-  updateExpression: string;
-  expressionAttributeValues: Record<string, string>;
-}
-
-const prepareUpdateInput = (input: ValidatedCommandInput) => {
-  let commandInput: UpdateCommandInput = {
-    TableName: dynamodbConfig.tables.find(t => t.alias === input.tableName)
-      ?.name,
-    Key: input.key,
-    UpdateExpression: input.updateExpression,
-    ExpressionAttributeValues: input.expressionAttributeValues,
-  };
-
-  if (!isEmpty(input.conditionExpression)) {
-    commandInput = {
-      ...commandInput,
-      ConditionExpression: input.conditionExpression,
-    };
-  }
-
-  if (!isEmpty(input.expressionAttributeNames)) {
-    commandInput = {
-      ...commandInput,
-      ExpressionAttributeNames: input.expressionAttributeNames,
-    };
-  }
-
-  return commandInput;
+export type UpdateRecordOptions = Omit<
+  UpdateCommandInput,
+  'TableName' | 'Key'
+> & {
+  TableName?: string;
+  Key?: Record<string, NativeAttributeValue> | undefined;
 };
 
 const updateRecord = async (
   key: Record<string, string>,
-  tableName: string,
+  tableAlias: string,
   updateExpression: string,
   expressionAttributeValues: Record<string, string>,
-  opts?: UpdateRecordInputOptions,
-  clientOpts?: GetClientOptions
+  opts?: UpdateRecordOptions,
+  clientOpts?: ClientOptions
 ) => {
   const input = validateFields(
-    { key, tableName, updateExpression, expressionAttributeValues, ...opts },
+    { key, tableAlias, updateExpression, expressionAttributeValues, ...opts },
     [
       { key: 'key', type: 'object', required: true },
-      { key: 'tableName', type: 'string', required: true },
+      { key: 'tableAlias', type: 'string', required: true },
       { key: 'updateExpression', type: 'string', required: true },
       { key: 'expressionAttributeValues', type: 'object', required: true },
-      { key: 'conditionExpression', type: 'string', required: false },
-      { key: 'expressionAttributeNames', type: 'object', required: false },
     ]
-  ) as ValidatedCommandInput;
+  );
 
+  const tableName = getTableName(input.tableAlias);
   const client = getClient(clientOpts);
 
-  const commandInput = prepareUpdateInput(input);
-  logger.debug(`${FILE}::QUERY_PREPARED`, { commandInput });
+  const commandInput = {
+    TableName: tableName,
+    Key: input.key,
+    UpdateExpression: input.updateExpression,
+    ExpressionAttributeValues: input.expressionAttributeValues,
+    ...opts,
+  };
 
   try {
     const data = await client.send(new UpdateCommand(commandInput));
-    logger.debug(`${FILE}::RECEIVED_RESPONSE`, { data });
+    logger.debug(`${FILE}::RECEIVED_RESPONSE`, { data, commandInput });
     return data;
   } catch (error) {
     throw new LesgoException('Failed to update record', `${FILE}::ERROR`, 500, {

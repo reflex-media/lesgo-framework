@@ -33,37 +33,26 @@ var __awaiter =
   };
 import { SendMessageCommand } from '@aws-sdk/client-sqs';
 import LesgoException from '../../exceptions/LesgoException';
-import logger from '../../utils/logger';
+import { logger, validateFields } from '../../utils';
 import getClient from './getClient';
+import getQueueUrl from './getQueueUrl';
 const FILE = 'lesgo.services.SQSService.dispatch';
-const dispatch = (
-  payload,
-  queue,
-  {
-    region,
-    singletonConn,
-    fifo = false,
-    messageGroupId,
-    messageDeduplicationId,
-  }
-) =>
+const dispatch = (payload, queue, opts, clientOpts) =>
   __awaiter(void 0, void 0, void 0, function* () {
-    const client = getClient({ region, singletonConn });
-    const opts = {
-      MessageBody: JSON.stringify(payload),
-      QueueUrl: queue.url,
-    };
-    if (fifo) {
-      opts.MessageGroupId = messageGroupId;
-      opts.MessageDeduplicationId = messageDeduplicationId;
-    }
+    const queueUrl = getQueueUrl(queue);
+    const input = validateFields({ payload }, [
+      { key: 'payload', type: 'object', required: true },
+    ]);
+    const client = getClient(clientOpts);
+    const commandInput = Object.assign(Object.assign({}, opts), {
+      MessageBody: JSON.stringify(input.payload),
+      QueueUrl: queueUrl,
+    });
     try {
-      const data = yield client.send(new SendMessageCommand(opts));
+      const data = yield client.send(new SendMessageCommand(commandInput));
       logger.debug(`${FILE}::MESSAGE_SENT_TO_QUEUE`, {
-        opts,
-        payload,
-        queue,
         data,
+        commandInput,
       });
       return data;
     } catch (error) {
@@ -73,8 +62,7 @@ const dispatch = (
         500,
         {
           error,
-          payload,
-          queue,
+          commandInput,
           opts,
         }
       );

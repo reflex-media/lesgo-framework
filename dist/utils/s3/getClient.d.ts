@@ -1,5 +1,3 @@
-declare const getClient: ({ singletonConn, region }?: {
-    singletonConn?: string | undefined;
-    region?: string | undefined;
-}) => import("@aws-sdk/client-s3").S3Client;
+import { ClientOptions } from '../../types/aws';
+declare const getClient: (clientOpts: ClientOptions) => import("@aws-sdk/client-s3").S3Client;
 export default getClient;
