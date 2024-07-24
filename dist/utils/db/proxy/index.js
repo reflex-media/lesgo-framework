@@ -1,5 +1,7 @@
 import getClient from './getClient';
-export { getClient };
+import query from './query';
+export { getClient, query };
 export default {
   getClient,
+  query,
 };
