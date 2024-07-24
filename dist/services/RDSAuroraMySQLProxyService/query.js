@@ -35,22 +35,24 @@ import { logger, validateFields } from '../../utils';
 import { LesgoException } from '../../exceptions';
 import getClient from './getClient';
 const FILE = 'lesgo.services.RDSAuroraMySQLService.query';
-const query = (sql, poolOpts, clientOpts) =>
+const query = (sql, preparedValues, connOptions, clientOpts) =>
   __awaiter(void 0, void 0, void 0, function* () {
-    const input = validateFields({ sql }, [
+    const input = validateFields({ sql, preparedValues }, [
       { key: 'sql', type: 'string', required: true },
+      { key: 'preparedValues', type: 'array', required: false },
     ]);
-    const connection = yield getClient(poolOpts, clientOpts);
+    const connection = yield getClient(connOptions, clientOpts);
     try {
-      const resp = yield connection.query(input.sql);
-      logger.debug(`${FILE}::RECEIVED_RESPONSE`, resp);
+      const resp = yield connection.execute(input.sql, input.preparedValues);
+      logger.debug(`${FILE}::RECEIVED_RESPONSE`, { resp, sql, preparedValues });
       return resp;
     } catch (err) {
       throw new LesgoException('Failed to query', `${FILE}::QUERY_ERROR`, 500, {
         err,
-        poolOpts,
-        clientOpts,
         sql,
+        preparedValues,
+        connOptions,
+        clientOpts,
       });
     }
   });

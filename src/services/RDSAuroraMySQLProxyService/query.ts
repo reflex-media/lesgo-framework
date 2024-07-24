@@ -1,4 +1,4 @@
-import { PoolOptions } from 'mysql2/promise';
+import { ConnectionOptions } from 'mysql2/promise';
 import { logger, validateFields } from '../../utils';
 import { RDSAuroraMySQLProxyClientOptions } from '../../types/aws';
 import { LesgoException } from '../../exceptions';
@@ -8,26 +8,29 @@ const FILE = 'lesgo.services.RDSAuroraMySQLService.query';
 
 const query = async (
   sql: string,
-  poolOpts?: PoolOptions,
+  preparedValues?: any[],
+  connOptions?: ConnectionOptions,
   clientOpts?: RDSAuroraMySQLProxyClientOptions
 ) => {
-  const input = validateFields({ sql }, [
+  const input = validateFields({ sql, preparedValues }, [
     { key: 'sql', type: 'string', required: true },
+    { key: 'preparedValues', type: 'array', required: false },
   ]);
 
-  const connection = await getClient(poolOpts, clientOpts);
+  const connection = await getClient(connOptions, clientOpts);
 
   try {
-    const resp = await connection.query(input.sql);
-    logger.debug(`${FILE}::RECEIVED_RESPONSE`, resp);
+    const resp = await connection.execute(input.sql, input.preparedValues);
+    logger.debug(`${FILE}::RECEIVED_RESPONSE`, { resp, sql, preparedValues });
 
     return resp;
   } catch (err) {
     throw new LesgoException('Failed to query', `${FILE}::QUERY_ERROR`, 500, {
       err,
-      poolOpts,
-      clientOpts,
       sql,
+      preparedValues,
+      connOptions,
+      clientOpts,
     });
   }
 };

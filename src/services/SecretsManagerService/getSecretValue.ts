@@ -34,7 +34,7 @@ const getSecretValue = async (
 
   try {
     const resp = await client.send(command);
-    logger.debug(`${FILE}::RESPONSE`, { resp, command });
+    logger.debug(`${FILE}::RESPONSE`, { resp: '<REDACTED>', command });
 
     return resp;
   } catch (error) {

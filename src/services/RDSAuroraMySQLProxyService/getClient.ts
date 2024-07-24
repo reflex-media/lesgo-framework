@@ -1,4 +1,4 @@
-import mysql, { Pool, PoolOptions } from 'mysql2/promise';
+import mysql, { ConnectionOptions } from 'mysql2/promise';
 import { logger, isEmpty, validateFields } from '../../utils';
 import rdsConfig from '../../config/rds';
 import { getSecretValue } from '../../utils/secretsmanager';
@@ -7,16 +7,16 @@ import { RDSAuroraMySQLProxyClientOptions } from '../../types/aws';
 const FILE = 'lesgo.services.RDSAuroraMySQLProxyService.getClient';
 
 export interface Singleton {
-  [key: string]: Pool;
+  [key: string]: mysql.Connection;
 }
 
 const singleton: Singleton = {};
 
 const getClient = async (
-  poolOpts?: PoolOptions,
-  clientOpts: RDSAuroraMySQLProxyClientOptions = {}
+  connOptions?: ConnectionOptions,
+  clientOpts?: RDSAuroraMySQLProxyClientOptions
 ) => {
-  const options = validateFields(clientOpts, [
+  const options = validateFields(clientOpts || {}, [
     { key: 'region', type: 'string', required: false },
     { key: 'singletonConn', type: 'string', required: false },
     { key: 'dbCredentialsSecretId', type: 'string', required: false },
@@ -32,7 +32,7 @@ const getClient = async (
     options.databaseName || rdsConfig.aurora.mysql.databaseName;
 
   if (!isEmpty(singleton[singletonConn])) {
-    logger.debug(`${FILE}::REUSE_CLIENT_SINGLETON`, {
+    logger.debug(`${FILE}::REUSE_RDS_CONNECTION`, {
       client: singleton[singletonConn],
       region,
     });
@@ -45,18 +45,22 @@ const getClient = async (
     singletonConn,
   });
 
-  const pool = mysql.createPool({
-    ...poolOpts,
-    host: dbCredentials.host,
-    user: dbCredentials.username,
-    password: dbCredentials.password,
+  const validatedDbCredentials = validateFields(dbCredentials, [
+    { key: 'host', type: 'string', required: true },
+    { key: 'username', type: 'string', required: true },
+    { key: 'password', type: 'string', required: true },
+  ]);
+
+  const pool = await mysql.createConnection({
+    ...connOptions,
+    host: validatedDbCredentials.host,
+    user: validatedDbCredentials.username,
+    password: validatedDbCredentials.password,
     database: databaseName,
   });
 
   singleton[singletonConn] = pool;
-  logger.debug(`${FILE}::NEW_CLIENT_SINGLETON`, {
-    client: pool,
-  });
+  logger.debug(`${FILE}::NEW_RDS_CONNECTION`);
 
   return pool;
 };

@@ -37,9 +37,9 @@ import rdsConfig from '../../config/rds';
 import { getSecretValue } from '../../utils/secretsmanager';
 const FILE = 'lesgo.services.RDSAuroraMySQLProxyService.getClient';
 const singleton = {};
-const getClient = (poolOpts, clientOpts = {}) =>
+const getClient = (connOptions, clientOpts) =>
   __awaiter(void 0, void 0, void 0, function* () {
-    const options = validateFields(clientOpts, [
+    const options = validateFields(clientOpts || {}, [
       { key: 'region', type: 'string', required: false },
       { key: 'singletonConn', type: 'string', required: false },
       { key: 'dbCredentialsSecretId', type: 'string', required: false },
@@ -53,7 +53,7 @@ const getClient = (poolOpts, clientOpts = {}) =>
     const databaseName =
       options.databaseName || rdsConfig.aurora.mysql.databaseName;
     if (!isEmpty(singleton[singletonConn])) {
-      logger.debug(`${FILE}::REUSE_CLIENT_SINGLETON`, {
+      logger.debug(`${FILE}::REUSE_RDS_CONNECTION`, {
         client: singleton[singletonConn],
         region,
       });
@@ -67,18 +67,21 @@ const getClient = (poolOpts, clientOpts = {}) =>
         singletonConn,
       }
     );
-    const pool = mysql.createPool(
-      Object.assign(Object.assign({}, poolOpts), {
-        host: dbCredentials.host,
-        user: dbCredentials.username,
-        password: dbCredentials.password,
+    const validatedDbCredentials = validateFields(dbCredentials, [
+      { key: 'host', type: 'string', required: true },
+      { key: 'username', type: 'string', required: true },
+      { key: 'password', type: 'string', required: true },
+    ]);
+    const pool = yield mysql.createConnection(
+      Object.assign(Object.assign({}, connOptions), {
+        host: validatedDbCredentials.host,
+        user: validatedDbCredentials.username,
+        password: validatedDbCredentials.password,
         database: databaseName,
       })
     );
     singleton[singletonConn] = pool;
-    logger.debug(`${FILE}::NEW_CLIENT_SINGLETON`, {
-      client: pool,
-    });
+    logger.debug(`${FILE}::NEW_RDS_CONNECTION`);
     return pool;
   });
 export default getClient;

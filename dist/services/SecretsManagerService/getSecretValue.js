@@ -47,7 +47,7 @@ const getSecretValue = (secretId, opts, clientOpts) =>
     );
     try {
       const resp = yield client.send(command);
-      logger.debug(`${FILE}::RESPONSE`, { resp, command });
+      logger.debug(`${FILE}::RESPONSE`, { resp: '<REDACTED>', command });
       return resp;
     } catch (error) {
       throw new LesgoException(
