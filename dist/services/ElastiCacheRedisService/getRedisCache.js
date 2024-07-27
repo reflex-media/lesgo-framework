@@ -31,38 +31,31 @@ var __awaiter =
       step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
   };
+import { logger, validateFields } from '../../utils';
 import { LesgoException } from '../../exceptions';
-import getSecretValueService from '../../services/SecretsManagerService/getSecretValue';
-import isEmpty from '../isEmpty';
-const FILE = 'lesgo.utils.secretsmanager.getSecretValue';
-const getSecretValue = (secretId, opts, clientOpts) =>
+import getElastiCacheRedisClient from './getElastiCacheRedisClient';
+const FILE = 'lesgo.services.ElastiCacheRedis.getRedisCache';
+const getRedisCache = (key, clientOpts) =>
   __awaiter(void 0, void 0, void 0, function* () {
-    let secretString;
+    const input = validateFields({ key }, [
+      { key: 'key', type: 'string', required: true },
+    ]);
+    const client = yield getElastiCacheRedisClient(clientOpts);
     try {
-      const { SecretString } = yield getSecretValueService(
-        secretId,
-        opts,
-        clientOpts
-      );
-      secretString = SecretString;
-    } catch (error) {
+      const resp = yield client.get(input.key);
+      logger.debug(`${FILE}::RECEIVED_RESPONSE`, { resp, input });
+      return resp;
+    } catch (err) {
       throw new LesgoException(
-        'Failed to get secret value',
-        `${FILE}::ERROR_GET_SECRET_VALUE`,
-        500
+        'Failed to get redis cache',
+        `${FILE}::GET_ERROR`,
+        500,
+        {
+          err,
+          input,
+          clientOpts,
+        }
       );
-    }
-    if (isEmpty(secretString)) {
-      throw new LesgoException(
-        'Missing secretString',
-        `${FILE}::SECRET_STRING_EMPTY`,
-        500
-      );
-    }
-    try {
-      return JSON.parse(secretString);
-    } catch (error) {
-      return secretString;
     }
   });
-export default getSecretValue;
+export default getRedisCache;
