@@ -6,9 +6,9 @@ import dynamodb from './dynamodb';
 import jwt from './jwt';
 import rds from './rds';
 import s3 from './s3';
-import secretsManager from './secretsManager';
+import secretsmanager from './secretsmanager';
 import sqs from './sqs';
-export { app, aws, basicAuth, crypto, dynamodb, jwt, rds, s3, secretsManager, sqs, };
+export { app, aws, basicAuth, crypto, dynamodb, jwt, rds, s3, secretsmanager, sqs, };
 declare const _default: {
     app: {
         name: string;
@@ -76,7 +76,7 @@ declare const _default: {
         region: string;
         bucket: string;
     };
-    secretsManager: {
+    secretsmanager: {
         region: string;
     };
     sqs: {

@@ -155,9 +155,9 @@
       "import": "./dist/utils/dynamodb/index.js",
       "require": "./dist/utils/dynamodb/index.js"
     },
-    "./utils/secretsManager": {
-      "import": "./dist/utils/secretsManager/index.js",
-      "require": "./dist/utils/secretsManager/index.js"
+    "./utils/secretsmanager": {
+      "import": "./dist/utils/secretsmanager/index.js",
+      "require": "./dist/utils/secretsmanager/index.js"
     },
     "./utils/db/mysql/proxy": {
       "import": "./dist/utils/db/mysql/proxy/index.js",

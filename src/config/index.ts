@@ -6,7 +6,7 @@ import dynamodb from './dynamodb';
 import jwt from './jwt';
 import rds from './rds';
 import s3 from './s3';
-import secretsManager from './secretsManager';
+import secretsmanager from './secretsmanager';
 import sqs from './sqs';
 
 export {
@@ -18,7 +18,7 @@ export {
   jwt,
   rds,
   s3,
-  secretsManager,
+  secretsmanager,
   sqs,
 };
 
@@ -31,6 +31,6 @@ export default {
   jwt,
   rds,
   s3,
-  secretsManager,
+  secretsmanager,
   sqs,
 };
