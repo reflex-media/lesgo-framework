@@ -1,6 +1,6 @@
 import { ConnectionOptions } from 'mysql2/promise';
-import queryService from '../../../services/RDSAuroraMySQLProxyService/query';
-import { RDSAuroraMySQLProxyClientOptions } from '../../../types/aws';
+import queryService from '../../../../services/RDSAuroraMySQLProxyService/query';
+import { RDSAuroraMySQLProxyClientOptions } from '../../../../types/aws';
 
 const query = (
   sql: string,

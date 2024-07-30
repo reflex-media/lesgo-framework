@@ -1,6 +1,6 @@
 import { ConnectionOptions } from 'mysql2/promise';
-import getClientService from '../../../services/RDSAuroraMySQLProxyService/getClient';
-import { RDSAuroraMySQLProxyClientOptions } from '../../../types/aws';
+import getClientService from '../../../../services/RDSAuroraMySQLProxyService/getMySQLProxyClient';
+import { RDSAuroraMySQLProxyClientOptions } from '../../../../types/aws';
 
 const getClient = (
   connOptions?: ConnectionOptions,

@@ -4,15 +4,15 @@ import rdsConfig from '../../config/rds';
 import { getSecretValue } from '../../utils/secretsmanager';
 import { RDSAuroraMySQLProxyClientOptions } from '../../types/aws';
 
-const FILE = 'lesgo.services.RDSAuroraMySQLProxyService.getClient';
+const FILE = 'lesgo.services.RDSAuroraMySQLProxyService.getMySQLProxyClient';
 
 export interface Singleton {
   [key: string]: mysql.Connection;
 }
 
-const singleton: Singleton = {};
+export const singleton: Singleton = {};
 
-const getClient = async (
+const getMySQLProxyClient = async (
   connOptions?: ConnectionOptions,
   clientOpts?: RDSAuroraMySQLProxyClientOptions
 ) => {
@@ -51,7 +51,7 @@ const getClient = async (
     { key: 'password', type: 'string', required: true },
   ]);
 
-  const pool = await mysql.createConnection({
+  const conn = await mysql.createConnection({
     ...connOptions,
     host: validatedDbCredentials.host,
     user: validatedDbCredentials.username,
@@ -59,10 +59,10 @@ const getClient = async (
     database: databaseName,
   });
 
-  singleton[singletonConn] = pool;
+  singleton[singletonConn] = conn;
   logger.debug(`${FILE}::NEW_RDS_CONNECTION`);
 
-  return pool;
+  return conn;
 };
 
-export default getClient;
+export default getMySQLProxyClient;

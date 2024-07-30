@@ -33,7 +33,7 @@ var __awaiter =
   };
 import { logger, validateFields } from '../../utils';
 import { LesgoException } from '../../exceptions';
-import getClient from './getClient';
+import getClient from './getMySQLProxyClient';
 const FILE = 'lesgo.services.RDSAuroraMySQLService.query';
 const query = (sql, preparedValues, connOptions, clientOpts) =>
   __awaiter(void 0, void 0, void 0, function* () {

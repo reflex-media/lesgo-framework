@@ -34,8 +34,9 @@ var __awaiter =
 import logger from '../utils/logger';
 // import { getClientSingleton as getMemcacheClientSingleton } from '../services/MemcacheElastiCacheService/getClient';
 // import { disconnect as disconnectMemcacheClient } from '../services/MemcacheElastiCacheService';
+// import { singleton as rdsAuroraMySQLProxySingleton } from '../services/RDSAuroraMySQLProxyService/getMySQLProxyClient';
+import disconnectMySQLProxyClient from '../services/RDSAuroraMySQLProxyService/disconnectMySQLProxyClient';
 const FILE = 'lesgo.middlewares.disconnectOpenConnectionsMiddleware';
-// FIXME: This function is not disconnecting any open connections
 const disconnectOpenConnectionsMiddleware = opts => {
   const disconnectOpenConnections = () =>
     __awaiter(void 0, void 0, void 0, function* () {
@@ -50,20 +51,37 @@ const disconnectOpenConnectionsMiddleware = opts => {
       //     );
       //   });
       // }
+      // const deleteRdsAuroraMySQLProxySingletonConn: string[] = [];
+      // Object.keys(rdsAuroraMySQLProxySingleton).forEach(async singletonConn => {
+      //   disconnect.push(rdsAuroraMySQLProxySingleton[singletonConn].end());
+      //   deleteRdsAuroraMySQLProxySingletonConn.push(singletonConn);
+      // });
+      disconnect.push(disconnectMySQLProxyClient());
       if (disconnect.length > 0) {
-        yield Promise.all(disconnect);
-        logger.debug(`${FILE}::ALL_OPEN_CONNECTIONS_DISCONNECTED`, opts);
+        const results = yield Promise.allSettled(disconnect);
+        results.forEach(result => {
+          if (result.status === 'fulfilled') {
+            logger.debug(`${FILE}::DISCONNECT_SUCCESS`, { result });
+          } else if (result.status === 'rejected') {
+            logger.error(`${FILE}::DISCONNECT_ERROR`, { result });
+          }
+          // if (deleteRdsAuroraMySQLProxySingletonConn.length > 0) {
+          //   deleteRdsAuroraMySQLProxySingletonConn.forEach(singletonConn => {
+          //     delete rdsAuroraMySQLProxySingleton[singletonConn];
+          //     logger.debug(`${FILE}::SINGLETON_DELETED`, { singletonConn });
+          //   });
+          // }
+        });
+        logger.debug(`${FILE}::DISCONNECT_COMPLETED`, opts);
       }
     });
   const disconnectOpenConnectionsMiddlewareAfter = () =>
     __awaiter(void 0, void 0, void 0, function* () {
       yield disconnectOpenConnections();
-      logger.debug(`${FILE}::ALL_OPEN_CONNECTIONS_DISCONNECTED_AFTER`, opts);
     });
   const disconnectOpenConnectionsMiddlewareOnError = () =>
     __awaiter(void 0, void 0, void 0, function* () {
       yield disconnectOpenConnections();
-      logger.debug(`${FILE}::ALL_OPEN_CONNECTIONS_DISCONNECTED_ON_ERROR`, opts);
     });
   return {
     after: disconnectOpenConnectionsMiddlewareAfter,

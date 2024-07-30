@@ -2,7 +2,7 @@ import { ConnectionOptions } from 'mysql2/promise';
 import { logger, validateFields } from '../../utils';
 import { RDSAuroraMySQLProxyClientOptions } from '../../types/aws';
 import { LesgoException } from '../../exceptions';
-import getClient from './getClient';
+import getClient from './getMySQLProxyClient';
 
 const FILE = 'lesgo.services.RDSAuroraMySQLService.query';
 
