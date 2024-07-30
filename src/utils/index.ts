@@ -1,3 +1,4 @@
+import formatUnixTimestamp from './formatUnixTimestamp';
 import generateUid from './generateUid';
 import getCurrentTimestamp from './getCurrentTimestamp';
 import getJwtSubFromAuthHeader from './getJwtSubFromAuthHeader';
@@ -8,6 +9,7 @@ import logger from './logger';
 import validateFields from './validateFields';
 
 export {
+  formatUnixTimestamp,
   generateUid,
   getCurrentTimestamp,
   getJwtSubFromAuthHeader,
@@ -19,6 +21,7 @@ export {
 };
 
 export default {
+  formatUnixTimestamp,
   generateUid,
   getCurrentTimestamp,
   getJwtSubFromAuthHeader,

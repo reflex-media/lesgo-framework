@@ -1,4 +1,4 @@
-import { logger } from 'src/utils';
+import { logger } from '../../utils';
 import { singleton } from '../RDSAuroraMySQLProxyService/getMySQLProxyClient';
 
 const FILE =

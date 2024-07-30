@@ -31,7 +31,7 @@ var __awaiter =
       step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
   };
-import { logger } from 'src/utils';
+import { logger } from '../../utils';
 import { singleton } from '../RDSAuroraMySQLProxyService/getMySQLProxyClient';
 const FILE =
   'lesgo.services.RDSAuroraMySQLProxyService.disconnectMySQLProxyClient';

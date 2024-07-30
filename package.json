@@ -159,13 +159,9 @@
       "import": "./dist/utils/secretsManager/index.js",
       "require": "./dist/utils/secretsManager/index.js"
     },
-    "./utils/db/dataApi": {
-      "import": "./dist/utils/db/dataApi/index.js",
-      "require": "./dist/utils/db/dataApi/index.js"
-    },
-    "./utils/db/proxy": {
-      "import": "./dist/utils/db/proxy/index.js",
-      "require": "./dist/utils/db/proxy/index.js"
+    "./utils/db/mysql/proxy": {
+      "import": "./dist/utils/db/mysql/proxy/index.js",
+      "require": "./dist/utils/db/mysql/proxy/index.js"
     },
     "./utils/cache/redis": {
       "import": "./dist/utils/cache/redis/index.js",
