@@ -1,3 +1,9 @@
+/**
+ * Checks if a value is empty.
+ *
+ * @param value - The value to check.
+ * @returns Returns `true` if the value is empty, otherwise `false`.
+ */
 const isEmpty = value => {
   if (value === undefined || value === null || value === '') {
     return true;

@@ -20,6 +20,9 @@ const loggerOptions = {
   transports,
 };
 
+/**
+ * The logger instance for logging messages.
+ */
 const logger = new LoggerService(loggerOptions);
 
 export default logger;

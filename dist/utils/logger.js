@@ -17,5 +17,8 @@ const loggerOptions = {
   defaultMeta: {},
   transports,
 };
+/**
+ * The logger instance for logging messages.
+ */
 const logger = new LoggerService(loggerOptions);
 export default logger;

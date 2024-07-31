@@ -6,6 +6,12 @@ export interface GenerateUidParams {
   length?: number;
 }
 
+/**
+ * Generates a unique identifier with optional prefix, suffix, and length.
+ *
+ * @param params - The parameters for generating the unique identifier.
+ * @returns The generated unique identifier.
+ */
 const generateUid = (params: GenerateUidParams = {}) => {
   const { prefix, suffix, length } = params;
 
