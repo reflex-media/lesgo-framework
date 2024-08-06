@@ -60,12 +60,20 @@ const getElastiCacheRedisClient = clientOpts =>
         { options, elasticacheConfig }
       );
     }
-    const redisClient = new Redis.Cluster([
+    const redisClient = new Redis.Cluster(
+      [
+        {
+          host: clusterEndpoint,
+          port: clusterPort,
+        },
+      ],
       {
-        host: clusterEndpoint,
-        port: clusterPort,
-      },
-    ]);
+        dnsLookup: (address, callback) => callback(null, address),
+        redisOptions: {
+          tls: {},
+        },
+      }
+    );
     redisClient.on('error', err => {
       logger.error(`${FILE}::REDIS_CLIENT_NOT_CONNECTED_ERROR`, { err });
     });
