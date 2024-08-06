@@ -36,6 +36,7 @@ import logger from '../utils/logger';
 // import { disconnect as disconnectMemcacheClient } from '../services/MemcacheElastiCacheService';
 // import { singleton as rdsAuroraMySQLProxySingleton } from '../services/RDSAuroraMySQLProxyService/getMySQLProxyClient';
 import disconnectMySQLProxyClient from '../services/RDSAuroraMySQLProxyService/disconnectMySQLProxyClient';
+import disconnectElastiCacheRedisClient from '../services/ElastiCacheRedisService/disconnectElastiCacheRedisClient';
 const FILE = 'lesgo.middlewares.disconnectOpenConnectionsMiddleware';
 const disconnectOpenConnectionsMiddleware = opts => {
   const disconnectOpenConnections = () =>
@@ -57,6 +58,7 @@ const disconnectOpenConnectionsMiddleware = opts => {
       //   deleteRdsAuroraMySQLProxySingletonConn.push(singletonConn);
       // });
       disconnect.push(disconnectMySQLProxyClient());
+      disconnect.push(disconnectElastiCacheRedisClient());
       if (disconnect.length > 0) {
         const results = yield Promise.allSettled(disconnect);
         results.forEach(result => {
