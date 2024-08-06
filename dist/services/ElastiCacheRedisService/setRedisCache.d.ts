@@ -3,5 +3,5 @@ export interface SetRedisCacheOptions {
     EX?: number;
     NX?: boolean;
 }
-declare const setRedisCache: (key: string, value: any, opts?: SetRedisCacheOptions, clientOpts?: ClientOptions) => Promise<string | null>;
+declare const setRedisCache: (key: string, value: any, opts?: SetRedisCacheOptions, clientOpts?: ClientOptions) => Promise<"OK">;
 export default setRedisCache;
