@@ -28,7 +28,7 @@ const setRedisCache = async (
   const client = await getElastiCacheRedisClient(clientOpts);
 
   input.value =
-    typeof input.value === 'object' ? JSON.stringify(input.value) : input;
+    typeof input.value === 'object' ? JSON.stringify(input.value) : input.value;
 
   try {
     // @ts-ignore

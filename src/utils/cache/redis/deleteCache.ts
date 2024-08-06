@@ -1,8 +1,8 @@
 import { ClientOptions } from '../../../types/aws';
-import { getRedisCache } from '../../../services/ElastiCacheRedisService';
+import { deleteRedisCache } from '../../../services/ElastiCacheRedisService';
 
 const getCache = (key: string, clientOpts?: ClientOptions) => {
-  return getRedisCache(key, clientOpts);
+  return deleteRedisCache(key, clientOpts);
 };
 
 export default getCache;

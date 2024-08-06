@@ -54,6 +54,7 @@ const httpResponseMiddleware = (opts = {}) => {
   );
   const httpResponseMiddlewareAfter = request =>
     __awaiter(void 0, void 0, void 0, function* () {
+      var _a;
       let body;
       if (options.headers['Content-Type'] !== 'application/json') {
         body = request.response;
@@ -68,7 +69,9 @@ const httpResponseMiddleware = (opts = {}) => {
         statusCode: 200,
         headers: Object.assign(
           Object.assign({}, options.headers),
-          request.response.headers
+          (_a = request.response) === null || _a === void 0
+            ? void 0
+            : _a.headers
         ),
         body,
         isBase64Encoded: options.isBase64Encoded,
@@ -83,15 +86,15 @@ const httpResponseMiddleware = (opts = {}) => {
     });
   const httpResponseMiddlewareOnError = request =>
     __awaiter(void 0, void 0, void 0, function* () {
-      var _a;
+      var _b;
       const error = request.error;
       const responseData = {
         statusCode: error.statusCode || 500,
         headers: Object.assign(
           Object.assign({}, options.headers),
-          (_a = request.response) === null || _a === void 0
+          (_b = request.response) === null || _b === void 0
             ? void 0
-            : _a.headers
+            : _b.headers
         ),
         body: {
           status: 'error',

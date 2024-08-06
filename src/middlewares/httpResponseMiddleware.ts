@@ -42,7 +42,7 @@ const httpResponseMiddleware = (opts: HttpMiddlewareOptions = {}) => {
       statusCode: 200,
       headers: {
         ...options.headers,
-        ...request.response.headers,
+        ...request.response?.headers,
       },
       body,
       isBase64Encoded: options.isBase64Encoded,

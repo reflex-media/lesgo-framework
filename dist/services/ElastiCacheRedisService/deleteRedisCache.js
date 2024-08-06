@@ -34,44 +34,29 @@ var __awaiter =
 import { logger, validateFields } from '../../utils';
 import { LesgoException } from '../../exceptions';
 import getElastiCacheRedisClient from './getElastiCacheRedisClient';
-const FILE = 'lesgo.services.ElastiCacheRedis.setRedisCache';
-const setRedisCache = (key, value, opts, clientOpts) =>
+const FILE = 'lesgo.services.ElastiCacheRedis.deleteRedisCache';
+const deleteRedisCache = (key, clientOpts) =>
   __awaiter(void 0, void 0, void 0, function* () {
-    var _a;
-    const input = validateFields({ key, value }, [
+    const input = validateFields({ key }, [
       { key: 'key', type: 'string', required: true },
-      { key: 'value', type: 'any', required: true },
     ]);
-    opts = Object.assign(Object.assign({}, opts), {
-      EX:
-        (_a = opts === null || opts === void 0 ? void 0 : opts.EX) !== null &&
-        _a !== void 0
-          ? _a
-          : 300,
-    });
     const client = yield getElastiCacheRedisClient(clientOpts);
-    input.value =
-      typeof input.value === 'object'
-        ? JSON.stringify(input.value)
-        : input.value;
+    let resp;
     try {
-      // @ts-ignore
-      const resp = yield client.set(input.key, input.value, 'EX', opts.EX);
-      logger.debug(`${FILE}::RECEIVED_RESPONSE`, { resp, input, value });
+      resp = yield client.del(input.key);
+      logger.debug(`${FILE}::RECEIVED_RESPONSE`, { resp, input });
       return resp;
     } catch (err) {
       throw new LesgoException(
-        'Failed to set redis cache',
-        `${FILE}::SET_ERROR`,
+        'Failed to delete redis cache',
+        `${FILE}::DELETE_ERROR`,
         500,
         {
           err,
           input,
-          value,
-          opts,
           clientOpts,
         }
       );
     }
   });
-export default setRedisCache;
+export default deleteRedisCache;
