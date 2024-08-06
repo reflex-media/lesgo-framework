@@ -31,7 +31,7 @@ var __awaiter =
       step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
   };
-import { logger, validateFields } from '../../utils';
+import { isEmpty, logger, validateFields } from '../../utils';
 import { LesgoException } from '../../exceptions';
 import getElastiCacheRedisClient from './getElastiCacheRedisClient';
 const FILE = 'lesgo.services.ElastiCacheRedis.getRedisCache';
@@ -41,10 +41,10 @@ const getRedisCache = (key, clientOpts) =>
       { key: 'key', type: 'string', required: true },
     ]);
     const client = yield getElastiCacheRedisClient(clientOpts);
+    let resp;
     try {
-      const resp = yield client.get(input.key);
+      resp = yield client.get(input.key);
       logger.debug(`${FILE}::RECEIVED_RESPONSE`, { resp, input });
-      return resp;
     } catch (err) {
       throw new LesgoException(
         'Failed to get redis cache',
@@ -56,6 +56,15 @@ const getRedisCache = (key, clientOpts) =>
           clientOpts,
         }
       );
+    }
+    try {
+      if (isEmpty(resp) || !resp) return resp;
+      const data = JSON.parse(resp);
+      logger.debug(`${FILE}::DATA_IS_JSON`, { data });
+      return data;
+    } catch (e) {
+      logger.debug(`${FILE}::DATA_NOT_JSON`, { resp });
+      return resp;
     }
   });
 export default getRedisCache;

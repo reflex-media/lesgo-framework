@@ -37,12 +37,21 @@ import getElastiCacheRedisClient from './getElastiCacheRedisClient';
 const FILE = 'lesgo.services.ElastiCacheRedis.setRedisCache';
 const setRedisCache = (key, value, opts, clientOpts) =>
   __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
     const input = validateFields({ key, value }, [
       { key: 'key', type: 'string', required: true },
       { key: 'value', type: 'any', required: true },
     ]);
-    opts = Object.assign({ EX: 300 }, opts);
+    opts = Object.assign(Object.assign({}, opts), {
+      EX:
+        (_a = opts === null || opts === void 0 ? void 0 : opts.EX) !== null &&
+        _a !== void 0
+          ? _a
+          : 300,
+    });
     const client = yield getElastiCacheRedisClient(clientOpts);
+    input.value =
+      typeof input.value === 'object' ? JSON.stringify(input.value) : input;
     try {
       // @ts-ignore
       const resp = yield client.set(input.key, input.value, 'EX', opts.EX);

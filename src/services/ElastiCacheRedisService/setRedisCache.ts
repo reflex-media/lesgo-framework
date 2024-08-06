@@ -21,11 +21,14 @@ const setRedisCache = async (
   ]);
 
   opts = {
-    EX: 300, // defaults to 5 min expiry if not defined
     ...opts,
+    EX: opts?.EX ?? 300, // defaults to 5 min expiry if not defined
   };
 
   const client = await getElastiCacheRedisClient(clientOpts);
+
+  input.value =
+    typeof input.value === 'object' ? JSON.stringify(input.value) : input;
 
   try {
     // @ts-ignore
