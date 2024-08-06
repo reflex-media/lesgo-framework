@@ -5,8 +5,6 @@ export interface Singleton {
 }
 export declare const singleton: Singleton;
 export interface ElastiCacheRedisClientOptions extends ClientOptions {
-    clusterId?: string;
-    secretId?: string;
     endpoint?: string;
     port?: number;
 }

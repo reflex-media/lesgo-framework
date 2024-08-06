@@ -29,11 +29,9 @@ const setRedisCache = async (
   const client = await getElastiCacheRedisClient(clientOpts);
 
   try {
-    const resp = await client.set(input.key, input.value);
+    // @ts-ignore
+    const resp = await client.set(input.key, input.value, 'EX', opts.EX);
     logger.debug(`${FILE}::RECEIVED_RESPONSE`, { resp, input, value });
-
-    await client.disconnect();
-    logger.debug(`${FILE}::CLIENT_DISCONNECTED`);
 
     return resp;
   } catch (err) {

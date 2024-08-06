@@ -5,6 +5,10 @@ const FILE =
   'lesgo.services.RDSAuroraMySQLProxyService.disconnectMySQLProxyClient';
 
 const disconnectMySQLProxyClient = async () => {
+  logger.debug(`${FILE}::PREPARING_TO_DISCONNECT`, {
+    singletonConns: Object.keys(singleton),
+  });
+
   Object.keys(singleton).forEach(async singletonConn => {
     try {
       await singleton[singletonConn].end();

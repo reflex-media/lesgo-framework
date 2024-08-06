@@ -44,10 +44,9 @@ const setRedisCache = (key, value, opts, clientOpts) =>
     opts = Object.assign({ EX: 300 }, opts);
     const client = yield getElastiCacheRedisClient(clientOpts);
     try {
-      const resp = yield client.set(input.key, input.value);
+      // @ts-ignore
+      const resp = yield client.set(input.key, input.value, 'EX', opts.EX);
       logger.debug(`${FILE}::RECEIVED_RESPONSE`, { resp, input, value });
-      yield client.disconnect();
-      logger.debug(`${FILE}::CLIENT_DISCONNECTED`);
       return resp;
     } catch (err) {
       throw new LesgoException(

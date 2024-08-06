@@ -5,6 +5,10 @@ const FILE =
   'lesgo.services.ElastiCacheRedisService.disconnectElastiCacheRedisClient';
 
 const disconnectElastiCacheRedisClient = async () => {
+  logger.debug(`${FILE}::PREPARING_TO_DISCONNECT`, {
+    singletonConns: Object.keys(singleton),
+  });
+
   Object.keys(singleton).forEach(async singletonConn => {
     try {
       await singleton[singletonConn].quit();
