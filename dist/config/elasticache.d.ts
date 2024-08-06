@@ -4,6 +4,7 @@ declare const _default: {
         clusterId: string | undefined;
         secretId: string | undefined;
         endpoint: string | undefined;
+        port: number;
     };
 };
 export default _default;

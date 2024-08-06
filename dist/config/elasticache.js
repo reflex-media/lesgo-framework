@@ -5,5 +5,6 @@ export default {
     clusterId: process.env.LESGO_AWS_ELASTICACHE_REDIS_CLUSTER_ID,
     secretId: process.env.LESGO_AWS_ELASTICACHE_REDIS_SECRET_ID,
     endpoint: process.env.LESGO_AWS_ELASTICACHE_REDIS_ENDPOINT,
+    port: Number(process.env.LESGO_AWS_ELASTICACHE_REDIS_PORT || 6379),
   },
 };
