@@ -37,10 +37,15 @@ const FILE =
   'lesgo.services.ElastiCacheRedisService.disconnectElastiCacheRedisClient';
 const disconnectElastiCacheRedisClient = () =>
   __awaiter(void 0, void 0, void 0, function* () {
+    const singletonConns = Object.keys(singleton);
+    if (singletonConns.length === 0) {
+      logger.debug(`${FILE}::NO_CONNECTIONS_TO_DISCONNECT`);
+      return;
+    }
     logger.debug(`${FILE}::PREPARING_TO_DISCONNECT`, {
-      singletonConns: Object.keys(singleton),
+      singletonConns,
     });
-    Object.keys(singleton).forEach(singletonConn =>
+    singletonConns.forEach(singletonConn =>
       __awaiter(void 0, void 0, void 0, function* () {
         try {
           yield singleton[singletonConn].quit();

@@ -31,11 +31,11 @@ const httpResponseMiddleware = (opts: HttpMiddlewareOptions = {}) => {
     if (options.headers['Content-Type'] !== 'application/json') {
       body = request.response;
     } else {
-      body = JSON.stringify({
+      body = {
         status: 'success',
         data: request.response,
         _meta: options.debugMode ? request.event : {},
-      });
+      };
     }
 
     const responseData = {
@@ -49,7 +49,13 @@ const httpResponseMiddleware = (opts: HttpMiddlewareOptions = {}) => {
     };
 
     logger.debug(`${FILE}::RESPONSE_DATA_SUCCESS`, responseData);
-    request.response = responseData;
+    request.response = {
+      ...responseData,
+      body:
+        options.headers['Content-Type'] === 'application/json'
+          ? JSON.stringify(responseData.body)
+          : responseData.body,
+    };
   };
 
   const httpResponseMiddlewareOnError = async (request: middy.Request) => {
@@ -61,7 +67,7 @@ const httpResponseMiddleware = (opts: HttpMiddlewareOptions = {}) => {
         ...options.headers,
         ...request.response?.headers,
       },
-      body: JSON.stringify({
+      body: {
         status: 'error',
         data: null,
         error: {
@@ -70,11 +76,14 @@ const httpResponseMiddleware = (opts: HttpMiddlewareOptions = {}) => {
           details: error.extra || {},
         },
         _meta: options.debugMode ? request.event : {},
-      }),
+      },
     };
 
     logger.debug(`${FILE}::RESPONSE_DATA_ERROR`, responseData);
-    request.response = responseData;
+    request.response = {
+      ...responseData,
+      body: JSON.stringify(responseData.body),
+    };
 
     if (isEmpty(error.statusCode) || error.statusCode >= 500) {
       logger.error(error.message, error);

@@ -58,11 +58,11 @@ const httpResponseMiddleware = (opts = {}) => {
       if (options.headers['Content-Type'] !== 'application/json') {
         body = request.response;
       } else {
-        body = JSON.stringify({
+        body = {
           status: 'success',
           data: request.response,
           _meta: options.debugMode ? request.event : {},
-        });
+        };
       }
       const responseData = {
         statusCode: 200,
@@ -74,7 +74,12 @@ const httpResponseMiddleware = (opts = {}) => {
         isBase64Encoded: options.isBase64Encoded,
       };
       logger.debug(`${FILE}::RESPONSE_DATA_SUCCESS`, responseData);
-      request.response = responseData;
+      request.response = Object.assign(Object.assign({}, responseData), {
+        body:
+          options.headers['Content-Type'] === 'application/json'
+            ? JSON.stringify(responseData.body)
+            : responseData.body,
+      });
     });
   const httpResponseMiddlewareOnError = request =>
     __awaiter(void 0, void 0, void 0, function* () {
@@ -88,7 +93,7 @@ const httpResponseMiddleware = (opts = {}) => {
             ? void 0
             : _a.headers
         ),
-        body: JSON.stringify({
+        body: {
           status: 'error',
           data: null,
           error: {
@@ -97,10 +102,12 @@ const httpResponseMiddleware = (opts = {}) => {
             details: error.extra || {},
           },
           _meta: options.debugMode ? request.event : {},
-        }),
+        },
       };
       logger.debug(`${FILE}::RESPONSE_DATA_ERROR`, responseData);
-      request.response = responseData;
+      request.response = Object.assign(Object.assign({}, responseData), {
+        body: JSON.stringify(responseData.body),
+      });
       if (isEmpty(error.statusCode) || error.statusCode >= 500) {
         logger.error(error.message, error);
       } else {

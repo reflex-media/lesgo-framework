@@ -7,7 +7,6 @@ const FILE = 'lesgo.services.ElastiCacheRedis.setRedisCache';
 
 export interface SetRedisCacheOptions {
   EX?: number; // Expiry time in seconds
-  NX?: boolean; // Only set the key if it does not already exist
 }
 
 const setRedisCache = async (

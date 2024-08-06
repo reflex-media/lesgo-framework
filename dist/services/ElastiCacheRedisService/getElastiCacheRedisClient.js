@@ -77,7 +77,13 @@ const getElastiCacheRedisClient = clientOpts =>
     } catch (error) {
       // Not ideal to base on error message but ioredis doesn't have a better way to check if it's already connected
       if (error.message === 'Redis is already connecting/connected') {
-        logger.debug(`${FILE}::REDIS_ALREADY_CONNECTED`);
+        logger.debug(`${FILE}::REDIS_ALREADY_CONNECTED`, {
+          error,
+          errorMessage:
+            error === null || error === void 0 ? void 0 : error.message,
+          clusterEndpoint,
+          clusterPort,
+        });
       } else {
         throw new LesgoException(
           'Failed to connect to ElastiCache Redis',
