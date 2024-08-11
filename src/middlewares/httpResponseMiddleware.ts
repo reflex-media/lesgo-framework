@@ -61,6 +61,10 @@ const httpResponseMiddleware = (opts: HttpMiddlewareOptions = {}) => {
   const httpResponseMiddlewareOnError = async (request: middy.Request) => {
     const error = request.error as LesgoException;
 
+    if (error.extra && error.extra.statusCode) {
+      delete error.extra.statusCode;
+    }
+
     const responseData = {
       statusCode: error.statusCode || 500,
       headers: {

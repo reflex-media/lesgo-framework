@@ -88,6 +88,9 @@ const httpResponseMiddleware = (opts = {}) => {
     __awaiter(void 0, void 0, void 0, function* () {
       var _b;
       const error = request.error;
+      if (error.extra && error.extra.statusCode) {
+        delete error.extra.statusCode;
+      }
       const responseData = {
         statusCode: error.statusCode || 500,
         headers: Object.assign(

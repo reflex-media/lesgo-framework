@@ -1,6 +1,6 @@
 import { SecretsManagerClient } from '@aws-sdk/client-secrets-manager';
 import { logger, isEmpty, validateFields } from '../../utils';
-import secretsManagerConfig from '../../config/secretsmanager';
+import secretsmanagerConfig from '../../config/secretsmanager';
 import { ClientOptions } from '../../types/aws';
 
 const FILE = 'lesgo.services.SecretsManager.getClient';
@@ -17,7 +17,7 @@ const getClient = (clientOpts: ClientOptions = {}) => {
     { key: 'singletonConn', type: 'string', required: false },
   ]);
 
-  const region = options.region || secretsManagerConfig.region;
+  const region = options.region || secretsmanagerConfig.region;
   const singletonConn = options.singletonConn || 'default';
 
   if (!isEmpty(singleton[singletonConn])) {

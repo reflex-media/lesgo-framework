@@ -52,14 +52,14 @@ const getElastiCacheRedisClient = async (
       },
     ],
     {
-      dnsLookup: (address, callback) => callback(null, address),
+      dnsLookup: (address: any, callback: any) => callback(null, address),
       redisOptions: {
         tls: {},
       },
     }
   );
 
-  redisClient.on('error', err => {
+  redisClient.on('error', (err: unknown) => {
     logger.error(`${FILE}::REDIS_CLIENT_NOT_CONNECTED_ERROR`, { err });
   });
 
