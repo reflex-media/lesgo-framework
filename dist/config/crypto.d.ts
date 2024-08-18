@@ -5,7 +5,6 @@ declare const _default: {
     encryption: {
         algorithm: string;
         secretKey: string | undefined;
-        ivLength: number;
     };
 };
 export default _default;

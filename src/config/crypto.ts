@@ -5,6 +5,5 @@ export default {
   encryption: {
     algorithm: process.env.LESGO_CRYPTO_ENCRYPTION_ALG || 'aes-256-cbc',
     secretKey: process.env.LESGO_CRYPTO_ENCRYPTION_SEC,
-    ivLength: parseInt(process.env.LESGO_CRYPTO_ENCRYPTION_IVLEN || '16', 10),
   },
 };

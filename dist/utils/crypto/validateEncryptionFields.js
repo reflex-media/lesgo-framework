@@ -3,6 +3,8 @@ import cryptoConfig from '../../config/crypto';
 import validateFields from '../validateFields';
 export var EncryptionAlgorithm;
 (function (EncryptionAlgorithm) {
+  EncryptionAlgorithm['AES128'] = 'aes-128-cbc';
+  EncryptionAlgorithm['AES192'] = 'aes-192-cbc';
   EncryptionAlgorithm['AES256'] = 'aes-256-cbc';
   EncryptionAlgorithm['AES512'] = 'aes-512-cbc';
 })(EncryptionAlgorithm || (EncryptionAlgorithm = {}));
@@ -24,59 +26,25 @@ export const validateEncryptionAlgorithm = algorithm => {
   }
 };
 export const validateSecretKey = (secretKey, algorithm) => {
+  const keyLengths = {
+    'aes-128-cbc': 16,
+    'aes-192-cbc': 24,
+    'aes-256-cbc': 32,
+    'aes-512-cbc': 64,
+  };
   const input = validateFields({ secretKey, algorithm }, [
     { key: 'algorithm', type: 'string', required: true },
     { key: 'secretKey', type: 'string', required: true },
   ]);
-  if (
-    input.algorithm === EncryptionAlgorithm.AES256 &&
-    input.secretKey.length !== 32
-  ) {
+  const keyLength = keyLengths[input.algorithm];
+  if (!keyLength) {
     throw new LesgoException(
-      'Invalid secret key length for AES256',
-      `${FILE}::ERROR_INVALID_SECRET_KEY_LENGTH_FOR_AES256`,
+      `Invalid secret key length for ${input.algorithm}`,
+      `${FILE}::ERROR_INVALID_SECRET_KEY_LENGTH`,
       500,
       {
         secretKey,
-      }
-    );
-  }
-  if (
-    input.algorithm === EncryptionAlgorithm.AES512 &&
-    input.secretKey.length !== 64
-  ) {
-    throw new LesgoException(
-      'Invalid secret key length for AES512',
-      `${FILE}::ERROR_INVALID_SECRET_KEY_LENGTH_FOR_AES512`,
-      500,
-      {
-        secretKey,
-      }
-    );
-  }
-};
-export const validateIvLength = (ivLength, algorithm) => {
-  const input = validateFields({ ivLength, algorithm }, [
-    { key: 'ivLength', type: 'number', required: true },
-    { key: 'algorithm', type: 'string', required: true },
-  ]);
-  if (input.ivLength !== 16 && input.algorithm === EncryptionAlgorithm.AES256) {
-    throw new LesgoException(
-      'Invalid IV length supplied for AES256',
-      `${FILE}::ERROR_INVALID_IV_LENGTH_FOR_AES256`,
-      500,
-      {
-        ivLength,
-      }
-    );
-  }
-  if (input.ivLength !== 32 && input.algorithm === EncryptionAlgorithm.AES512) {
-    throw new LesgoException(
-      'Invalid IV length supplied for AES512',
-      `${FILE}::ERROR_INVALID_IV_LENGTH_FOR_AES512`,
-      500,
-      {
-        ivLength,
+        keyLength,
       }
     );
   }
@@ -91,17 +59,13 @@ const validateEncryptionFields = (text, opts) => {
   const secretKeySupplied =
     (opts === null || opts === void 0 ? void 0 : opts.secretKey) ||
     cryptoConfig.encryption.secretKey;
-  const ivLengthSupplied =
-    (opts === null || opts === void 0 ? void 0 : opts.ivLength) ||
-    cryptoConfig.encryption.ivLength;
   validateEncryptionAlgorithm(algorithmSupplied);
   validateSecretKey(secretKeySupplied, algorithmSupplied);
-  validateIvLength(ivLengthSupplied, algorithmSupplied);
   return {
     validText: input.text,
     validAlgorithm: algorithmSupplied,
     validSecretKey: secretKeySupplied,
-    validIvLength: ivLengthSupplied,
+    validIvLength: 16,
   };
 };
 export default validateEncryptionFields;

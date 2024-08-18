@@ -9,7 +9,6 @@ const FILE = 'lesgo.utils.crypto.encrypt';
 export interface EncryptOptions {
   algorithm?: EncryptionAlgorithm;
   secretKey?: string;
-  ivLength?: number;
 }
 
 const encrypt = (text: string, opts?: EncryptOptions) => {
