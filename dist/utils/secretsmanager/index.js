@@ -1,7 +1,2 @@
-import getClient from './getClient';
-import getSecretValue from './getSecretValue';
-export { getClient, getSecretValue };
-export default {
-  getClient,
-  getSecretValue,
-};
+export { default as getClient } from './getClient';
+export { default as getSecretValue } from './getSecretValue';

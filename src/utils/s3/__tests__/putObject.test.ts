@@ -1,6 +1,5 @@
 import putObject from '../putObject';
 import putObjectService from '../../../services/S3Service/putObject';
-import s3Utils from '../../../utils/s3';
 
 jest.mock('../../../services/S3Service/putObject');
 jest.mock('../../../config/aws');
@@ -30,7 +29,7 @@ describe('putObject', () => {
     const file = Buffer.from('test-file');
     const singletonConn = 'customSingletonConn';
 
-    s3Utils.putObject(key, file, { Bucket: bucket }, { singletonConn });
+    putObject(key, file, { Bucket: bucket }, { singletonConn });
 
     expect(putObjectService).toHaveBeenCalledWith(
       key,

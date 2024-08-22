@@ -1,7 +1,6 @@
 import LesgoException from '../../../exceptions/LesgoException';
 import encrypt from '../encrypt';
 import decrypt from '../decrypt';
-import crypto from '../../crypto';
 import { EncryptionAlgorithm } from '../validateEncryptionFields';
 
 describe('encrypt', () => {
@@ -34,7 +33,7 @@ describe('encrypt', () => {
 
   it('should encrypt the text and return the encrypted value from crypto', () => {
     const text = 'Hello, World!';
-    const result = crypto.encrypt(text);
+    const result = encrypt(text);
     const decrypted = decrypt(result);
 
     expect(text).toBe(decrypted);
@@ -44,12 +43,10 @@ describe('encrypt', () => {
     const text = 'Hello, World!';
     const algorithm = EncryptionAlgorithm.AES256;
     const secretKey = 'mySecretKeyMySecretKeyMySecretKe';
-    const ivLength = 16;
 
     const result = encrypt(text, {
       algorithm,
       secretKey,
-      ivLength,
     });
     const decrypted = decrypt(result, {
       algorithm,

@@ -1,4 +1,4 @@
-import jwt, { sign } from '../../jwt';
+import { sign } from '../../jwt';
 import verify from '../verify';
 import verifyService from '../../../services/JWTService/verify';
 import jwtConfig from '../../../config/jwt';
@@ -27,7 +27,7 @@ describe('verify', () => {
   it('should call verifyService with provided secret', () => {
     const secret = 'custom-secret';
 
-    jwt.verify(token, secret);
+    verify(token, secret);
 
     expect(verifyService).toHaveBeenCalledWith(token, secret, undefined);
   });
@@ -35,7 +35,7 @@ describe('verify', () => {
   it('should call verifyService with provided kid', () => {
     const opts = { keyid: jwtConfig.secrets[1].keyid };
 
-    jwt.verify(token, undefined, opts);
+    verify(token, undefined, opts);
 
     expect(verifyService).toHaveBeenCalledWith(token, undefined, opts);
   });

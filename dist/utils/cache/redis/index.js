@@ -1,11 +1,4 @@
-import deleteCache from './deleteCache';
-import getCache from './getCache';
-import getClient from './getClient';
-import setCache from './setCache';
-export { deleteCache, getCache, getClient, setCache };
-export default {
-  deleteCache,
-  getCache,
-  getClient,
-  setCache,
-};
+export { default as deleteCache } from './deleteCache';
+export { default as getCache } from './getCache';
+export { default as getClient } from './getClient';
+export { default as setCache } from './setCache';

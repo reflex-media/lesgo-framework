@@ -1,6 +1,5 @@
-import getClient from '../getClient';
 import getClientService from '../../../services/S3Service/getClient';
-import s3Utils from '../../../utils/s3';
+import { getClient } from '../../../utils/s3';
 
 jest.mock('../../../services/S3Service/getClient');
 jest.mock('../../../config/aws');
@@ -18,7 +17,7 @@ describe('getClient', () => {
 
   it('should call getClientService with specified singletonConn and config region', () => {
     const singletonConn = 'customSingletonConn';
-    s3Utils.getClient({ singletonConn });
+    getClient({ singletonConn });
 
     expect(getClientService).toHaveBeenCalledWith({
       singletonConn,

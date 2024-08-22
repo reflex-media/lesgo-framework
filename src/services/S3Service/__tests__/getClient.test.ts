@@ -1,5 +1,4 @@
 import getClient from '../getClient';
-import S3Service from '../../S3Service';
 import logger from '../../../utils/logger';
 
 jest.mock('../../../utils/logger');
@@ -29,7 +28,7 @@ describe('getClient', () => {
     const region = 'us-west-2';
     const singletonConn = 'default';
 
-    const client1 = S3Service.getClient({ region, singletonConn });
+    const client1 = getClient({ region, singletonConn });
     getClient({ region, singletonConn });
 
     expect(logger.debug).toHaveBeenCalledTimes(2);

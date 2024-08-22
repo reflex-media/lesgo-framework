@@ -1,15 +1,6 @@
-import deleteRecord from './deleteRecord';
-import getClient from './getClient';
-import putRecord from './putRecord';
-import query from './query';
-import scan from './scan';
-import updateRecord from './updateRecord';
-export { deleteRecord, getClient, putRecord, query, scan, updateRecord };
-export default {
-  deleteRecord,
-  getClient,
-  putRecord,
-  query,
-  scan,
-  updateRecord,
-};
+export { default as deleteRecord } from './deleteRecord';
+export { default as getClient } from './getClient';
+export { default as putRecord } from './putRecord';
+export { default as query } from './query';
+export { default as scan } from './scan';
+export { default as updateRecord } from './updateRecord';

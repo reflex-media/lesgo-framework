@@ -1,4 +1,3 @@
-import jwt from '../../jwt';
 import sign from '../sign';
 import signService from '../../../services/JWTService/sign';
 import jwtConfig from '../../../config/jwt';
@@ -23,7 +22,7 @@ describe('sign', () => {
     const secret = 'custom-secret';
     const opts = { expiresIn: '2h' };
 
-    jwt.sign(payload, secret, opts);
+    sign(payload, secret, opts);
 
     expect(signService).toHaveBeenCalledWith(payload, secret, {
       expiresIn: '2h',
@@ -34,7 +33,7 @@ describe('sign', () => {
     const payload = { id: '123', username: 'john.doe' };
     const opts = { keyid: jwtConfig.secrets[1].keyid };
 
-    jwt.sign(payload, undefined, opts);
+    sign(payload, undefined, opts);
 
     expect(signService).toHaveBeenCalledWith(payload, undefined, {
       keyid: jwtConfig.secrets[1].keyid,

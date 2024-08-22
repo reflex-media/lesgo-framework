@@ -1,9 +1,3 @@
-import decrypt from './decrypt';
-import encrypt from './encrypt';
-import hash from './hash';
-export { decrypt, encrypt, hash };
-export default {
-  decrypt,
-  encrypt,
-  hash,
-};
+export { default as decrypt } from './decrypt';
+export { default as encrypt } from './encrypt';
+export { default as hash } from './hash';

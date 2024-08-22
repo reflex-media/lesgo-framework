@@ -1,6 +1,5 @@
 import getHeadObject from '../getHeadObject';
 import getHeadObjectService from '../../../services/S3Service/getHeadObject';
-import s3Utils from '../../../utils/s3';
 
 jest.mock('../../../services/S3Service/getHeadObject');
 jest.mock('../../../config/s3');
@@ -27,7 +26,7 @@ describe('getHeadObject', () => {
     const bucket = 'testBucket';
     const singletonConn = 'customSingletonConn';
 
-    s3Utils.getHeadObject(key, { Bucket: bucket }, { singletonConn });
+    getHeadObject(key, { Bucket: bucket }, { singletonConn });
 
     expect(getHeadObjectService).toHaveBeenCalledWith(
       key,

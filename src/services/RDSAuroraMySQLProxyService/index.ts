@@ -1,9 +1,2 @@
-import getMySQLProxyClient from './getMySQLProxyClient';
-import query from './query';
-
-export { getMySQLProxyClient, query };
-
-export default {
-  getMySQLProxyClient,
-  query,
-};
+export { default as getMySQLProxyClient } from './getMySQLProxyClient';
+export { default as query } from './query';

@@ -1,13 +1,4 @@
-import deleteMessage from './deleteMessage';
-import dispatch from './dispatch';
-import getClient from './getClient';
-import receiveMessages from './receiveMessages';
-
-export { deleteMessage, dispatch, getClient, receiveMessages };
-
-export default {
-  deleteMessage,
-  dispatch,
-  getClient,
-  receiveMessages,
-};
+export { default as deleteMessage } from './deleteMessage';
+export { default as dispatch } from './dispatch';
+export { default as getClient } from './getClient';
+export { default as receiveMessages } from './receiveMessages';

@@ -1,6 +1,5 @@
 import getDownloadSignedUrl from '../getDownloadSignedUrl';
 import getDownloadSignedUrlService from '../../../services/S3Service/getDownloadSignedUrl';
-import s3Utils from '../../../utils/s3';
 
 jest.mock('../../../services/S3Service/getDownloadSignedUrl');
 
@@ -29,7 +28,7 @@ describe('getDownloadSignedUrl', () => {
     const region = 'us-west-2';
     const expiresIn = 1800;
 
-    s3Utils.getDownloadSignedUrl(
+    getDownloadSignedUrl(
       key,
       { Bucket: bucket },
       { expiresIn },

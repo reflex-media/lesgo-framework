@@ -1,6 +1,5 @@
 import { SecretsManagerClient } from '@aws-sdk/client-secrets-manager';
 import getClient from '../getClient';
-import SecretsManagerService from '../../SecretsManagerService';
 
 describe('getClient', () => {
   afterEach(() => {
@@ -20,7 +19,7 @@ describe('getClient', () => {
     const singletonConn = 'default';
 
     const client1 = getClient({ region, singletonConn });
-    const client2 = SecretsManagerService.getClient({ region, singletonConn });
+    const client2 = getClient({ region, singletonConn });
 
     expect(client2).toBe(client1);
   });

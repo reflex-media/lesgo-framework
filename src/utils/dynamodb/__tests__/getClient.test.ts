@@ -1,5 +1,4 @@
 import getClient from '../getClient';
-import dynamodb from '../../dynamodb';
 import getClientService from '../../../services/DynamoDbService/getClient';
 
 jest.mock('../../../services/DynamoDbService/getClient');
@@ -22,7 +21,7 @@ describe('getClient', () => {
   it('should call getClientService with default singletonConn if not provided', () => {
     const region = 'us-west-2';
 
-    dynamodb.getClient({ region });
+    getClient({ region });
 
     expect(getClientService).toHaveBeenCalledTimes(1);
     expect(getClientService).toHaveBeenCalledWith({

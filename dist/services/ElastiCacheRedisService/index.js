@@ -1,19 +1,5 @@
-import deleteRedisCache from './deleteRedisCache';
-import disconnectElastiCacheRedisClient from './disconnectElastiCacheRedisClient';
-import getElastiCacheRedisClient from './getElastiCacheRedisClient';
-import getRedisCache from './getRedisCache';
-import setRedisCache from './setRedisCache';
-export {
-  deleteRedisCache,
-  disconnectElastiCacheRedisClient,
-  getElastiCacheRedisClient,
-  setRedisCache,
-  getRedisCache,
-};
-export default {
-  deleteRedisCache,
-  disconnectElastiCacheRedisClient,
-  getElastiCacheRedisClient,
-  setRedisCache,
-  getRedisCache,
-};
+export { default as deleteRedisCache } from './deleteRedisCache';
+export { default as disconnectElastiCacheRedisClient } from './disconnectElastiCacheRedisClient';
+export { default as getElastiCacheRedisClient } from './getElastiCacheRedisClient';
+export { default as getRedisCache } from './getRedisCache';
+export { default as setRedisCache } from './setRedisCache';

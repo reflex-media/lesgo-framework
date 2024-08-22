@@ -1,5 +1,4 @@
 import getClient from '../getClient';
-import sqs from '../../sqs';
 import getClientService from '../../../services/SQSService/getClient';
 
 jest.mock('../../../services/SQSService/getClient');
@@ -19,7 +18,7 @@ describe('getClient', () => {
     const region = 'us-west-2';
     const singletonConn = 'customSingletonConn';
 
-    sqs.getClient({ region, singletonConn });
+    getClient({ region, singletonConn });
 
     expect(getClientService).toHaveBeenCalledWith({
       singletonConn,

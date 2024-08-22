@@ -1,5 +1,4 @@
 import getSecretValue from '../../../utils/secretsmanager/getSecretValue';
-import secretsmanager from '../../../utils/secretsmanager';
 import getSecretValueService from '../../../services/SecretsManagerService/getSecretValue';
 
 jest.mock('../../../services/SecretsManagerService/getSecretValue');
@@ -71,11 +70,7 @@ describe('getSecretValue', () => {
       SecretString: secretValue,
     });
 
-    const result = await secretsmanager.getSecretValue(
-      secretId,
-      opts,
-      clientOpts
-    );
+    const result = await getSecretValue(secretId, opts, clientOpts);
 
     expect(getSecretValueService).toHaveBeenCalledWith(
       secretId,

@@ -1,34 +1,10 @@
-import app from './app';
-import aws from './aws';
-import basicAuth from './basicAuth';
-import crypto from './crypto';
-import dynamodb from './dynamodb';
-import jwt from './jwt';
-import rds from './rds';
-import s3 from './s3';
-import secretsmanager from './secretsmanager';
-import sqs from './sqs';
-export {
-  app,
-  aws,
-  basicAuth,
-  crypto,
-  dynamodb,
-  jwt,
-  rds,
-  s3,
-  secretsmanager,
-  sqs,
-};
-export default {
-  app,
-  aws,
-  basicAuth,
-  crypto,
-  dynamodb,
-  jwt,
-  rds,
-  s3,
-  secretsmanager,
-  sqs,
-};
+export { default as app } from './app';
+export { default as aws } from './aws';
+export { default as basicAuth } from './basicAuth';
+export { default as crypto } from './crypto';
+export { default as dynamodb } from './dynamodb';
+export { default as jwt } from './jwt';
+export { default as rds } from './rds';
+export { default as s3 } from './s3';
+export { default as secretsmanager } from './secretsmanager';
+export { default as sqs } from './sqs';

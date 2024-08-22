@@ -1,7 +1,6 @@
 import { Jwt, JwtPayload } from 'jsonwebtoken';
 import jwtConfig from '../../../config/jwt';
-import verify from '../verify';
-import JWTService from '../../JWTService';
+import { verify, sign } from '../../JWTService';
 
 describe('verify', () => {
   afterEach(() => {
@@ -13,7 +12,7 @@ describe('verify', () => {
     const secret = jwtConfig.secrets[0].secret;
     const opts = { expiresIn: '2h' };
 
-    const result = JWTService.sign(payload, secret, opts);
+    const result = sign(payload, secret, opts);
     const verifyResult = verify(result, secret) as JwtPayload;
 
     expect(verifyResult.header).toMatchObject({
@@ -30,7 +29,7 @@ describe('verify', () => {
       keyid: jwtConfig.secrets[1].keyid,
     };
 
-    const result = JWTService.sign(payload, undefined, opts);
+    const result = sign(payload, undefined, opts);
     const verifyResult = verify(result) as Jwt;
 
     expect(verifyResult.header).toMatchObject({

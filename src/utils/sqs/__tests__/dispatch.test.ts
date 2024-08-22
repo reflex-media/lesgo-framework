@@ -1,5 +1,4 @@
 import dispatch from '../dispatch';
-import sqs from '../../sqs';
 import dispatchService from '../../../services/SQSService/dispatch';
 
 jest.mock('../../../services/SQSService/dispatch');
@@ -37,7 +36,7 @@ describe('dispatch', () => {
     const singletonConn = 'customSingletonConn';
     const region = 'us-west-2';
 
-    await sqs.dispatch(payload, queue, undefined, { singletonConn, region });
+    await dispatch(payload, queue, undefined, { singletonConn, region });
 
     expect(dispatchService).toHaveBeenCalledWith(payload, queue, undefined, {
       region,
@@ -51,7 +50,7 @@ describe('dispatch', () => {
     const singletonConn = 'customSingletonConn';
     const region = 'us-west-2';
 
-    await sqs.dispatch(payload, queue, undefined, { singletonConn, region });
+    await dispatch(payload, queue, undefined, { singletonConn, region });
 
     expect(dispatchService).toHaveBeenCalledWith(payload, queue, undefined, {
       region,

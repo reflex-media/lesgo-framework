@@ -1,7 +1,2 @@
-import getClient from './getClient';
-import query from './query';
-export { getClient, query };
-export default {
-  getClient,
-  query,
-};
+export { default as getClient } from './getClient';
+export { default as query } from './query';

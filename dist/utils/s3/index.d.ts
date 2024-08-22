@@ -1,23 +1,6 @@
-/// <reference types="node" />
-import getClient from './getClient';
-import getObject from './getObject';
-import getHeadObject from './getHeadObject';
-import getDownloadSignedUrl from './getDownloadSignedUrl';
-import getUploadSignedUrl from './getUploadSignedUrl';
-import putObject from './putObject';
-export { getClient, getObject, getHeadObject, getDownloadSignedUrl, getUploadSignedUrl, putObject, };
-declare const _default: {
-    getClient: (clientOpts?: import("../../types/aws").ClientOptions | undefined) => import("@aws-sdk/client-s3").S3Client;
-    getObject: (key: string, opts?: import("../../services/S3Service/getObject").GetObjectOptions | undefined, clientOpts?: import("../../types/aws").ClientOptions | undefined) => Promise<Buffer>;
-    getHeadObject: (key: string, opts?: import("../../services/S3Service/getHeadObject").HeadObjectOptions | undefined, clientOpts?: import("../../types/aws").ClientOptions | undefined) => Promise<{
-        LastModified: Date | undefined;
-        ContentLength: number | undefined;
-        ETag: string | undefined;
-        ContentType: string | undefined;
-        Metadata: Record<string, string> | undefined;
-    }>;
-    getDownloadSignedUrl: (key: string, opts?: import("../../services/S3Service/getObject").GetObjectOptions | undefined, signingOpts?: import("../../services/S3Service/getDownloadSignedUrl").GetSignedUrlOptions | undefined, clientOpts?: import("../../types/aws").ClientOptions | undefined) => Promise<string>;
-    getUploadSignedUrl: (key: string, opts?: import("../../services/S3Service/putObject").PutObjectOptions | undefined, signingOpts?: import("../../services/S3Service/getUploadSignedUrl").GetSignedUrlOptions | undefined, clientOpts?: import("../../types/aws").ClientOptions | undefined) => Promise<string>;
-    putObject: (key: string, file: string | Uint8Array | Buffer | Blob, opts?: import("../../services/S3Service/putObject").PutObjectOptions | undefined, clientOpts?: import("../../types/aws").ClientOptions | undefined) => Promise<import("@aws-sdk/client-s3").PutObjectCommandOutput>;
-};
-export default _default;
+export { default as getClient } from './getClient';
+export { default as getObject } from './getObject';
+export { default as getHeadObject } from './getHeadObject';
+export { default as getDownloadSignedUrl } from './getDownloadSignedUrl';
+export { default as getUploadSignedUrl } from './getUploadSignedUrl';
+export { default as putObject } from './putObject';

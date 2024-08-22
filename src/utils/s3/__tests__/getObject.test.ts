@@ -1,7 +1,6 @@
 import { Readable } from 'stream';
 import getObject from '../getObject';
 import getObjectService from '../../../services/S3Service/getObject';
-import s3Utils from '../../../utils/s3';
 
 jest.mock('../../../services/S3Service/getObject');
 
@@ -38,7 +37,7 @@ describe('getObject', () => {
 
     (getObjectService as jest.Mock).mockResolvedValueOnce(getObjectResponse);
 
-    s3Utils.getObject(key, { Bucket: bucket }, { singletonConn });
+    getObject(key, { Bucket: bucket }, { singletonConn });
 
     expect(getObjectService).toHaveBeenCalledWith(
       key,

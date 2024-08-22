@@ -1,6 +1,5 @@
 import hash from '../hash';
 import LesgoException from '../../../exceptions/LesgoException';
-import crypto from '../../crypto';
 
 describe('hash', () => {
   afterEach(() => {
@@ -37,7 +36,7 @@ describe('hash', () => {
     const expectedHashedValue =
       '3a6eb0790f39ac87c94f3856b2dd2c5d110e6811602261a9a923d3bb23adc8b7';
 
-    const result = crypto.hash(data);
+    const result = hash(data);
 
     expect(result).toBe(expectedHashedValue);
   });

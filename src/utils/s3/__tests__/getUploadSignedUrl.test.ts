@@ -1,6 +1,5 @@
 import getUploadSignedUrl from '../getUploadSignedUrl';
 import getUploadSignedUrlService from '../../../services/S3Service/getUploadSignedUrl';
-import s3Utils from '../../../utils/s3';
 
 jest.mock('../../../services/S3Service/getUploadSignedUrl');
 
@@ -29,7 +28,7 @@ describe('getUploadSignedUrl', () => {
     const metadata = { foo: 'bar' };
     const expiresIn = 600;
 
-    s3Utils.getUploadSignedUrl(
+    getUploadSignedUrl(
       key,
       { Bucket: bucket, Metadata: metadata },
       { expiresIn },
