@@ -1,4 +1,4 @@
-import Redis, { Cluster } from 'ioredis';
+import { Cluster } from 'ioredis';
 import elasticacheConfig from '../../config/elasticache';
 import { logger, isEmpty, validateFields } from '../../utils';
 import { ClientOptions } from '../../types/aws';
@@ -44,7 +44,7 @@ const getElastiCacheRedisClient = async (
     );
   }
 
-  const redisClient = new Redis.Cluster(
+  const redisClient = new Cluster(
     [
       {
         host: clusterEndpoint,

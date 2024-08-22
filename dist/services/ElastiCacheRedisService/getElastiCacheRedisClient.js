@@ -31,7 +31,7 @@ var __awaiter =
       step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
   };
-import Redis from 'ioredis';
+import { Cluster } from 'ioredis';
 import elasticacheConfig from '../../config/elasticache';
 import { logger, isEmpty, validateFields } from '../../utils';
 import { LesgoException } from '../../exceptions';
@@ -60,7 +60,7 @@ const getElastiCacheRedisClient = clientOpts =>
         { options, elasticacheConfig }
       );
     }
-    const redisClient = new Redis.Cluster(
+    const redisClient = new Cluster(
       [
         {
           host: clusterEndpoint,

@@ -1,7 +1,9 @@
 import middy from '@middy/core';
 import eventNormalizer from '@middy/event-normalizer';
 import doNotWaitForEmptyEventLoop from '@middy/do-not-wait-for-empty-event-loop';
-import disconnectOpenConnectionsMiddleware from './disconnectOpenConnectionsMiddleware';
+import disconnectMiddleware, {
+  DisconnectMiddlewareOptions,
+} from './disconnectMiddleware';
 
 interface MiddlewareObj<T = any, R = any> {
   before?: (request: middy.Request<T, R>) => Promise<void>;
@@ -9,16 +11,17 @@ interface MiddlewareObj<T = any, R = any> {
   onError?: (request: middy.Request<T, R>) => Promise<void>;
 }
 
-export interface invokeCommandMiddlewareOptions {
+export interface InvokeCommandMiddlewareOptions
+  extends DisconnectMiddlewareOptions {
   debugMode?: boolean;
   [key: string]: any;
 }
 
-const invokeCommandMiddleware = (opts: invokeCommandMiddlewareOptions = {}) => {
+const invokeCommandMiddleware = (opts: InvokeCommandMiddlewareOptions = {}) => {
   const middlewarePackages: MiddlewareObj[] = [
     doNotWaitForEmptyEventLoop(),
     eventNormalizer(),
-    disconnectOpenConnectionsMiddleware(opts),
+    disconnectMiddleware(opts),
   ];
 
   return {

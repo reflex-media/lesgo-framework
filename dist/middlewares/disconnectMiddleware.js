@@ -32,32 +32,24 @@ var __awaiter =
     });
   };
 import logger from '../utils/logger';
-// import disconnectMySQLProxyClient from '../services/RDSAuroraMySQLProxyService/disconnectMySQLProxyClient';
-// import disconnectElastiCacheRedisClient from '../services/ElastiCacheRedisService/disconnectElastiCacheRedisClient';
-const FILE = 'lesgo.middlewares.disconnectOpenConnectionsMiddleware';
-const disconnectOpenConnectionsMiddleware = opts => {
-  const disconnectOpenConnections = () =>
+const FILE = 'lesgo.middlewares.disconnectMiddleware';
+const disconnectMiddleware = opts => {
+  const disconnect = () =>
     __awaiter(void 0, void 0, void 0, function* () {
       var _a;
       logger.debug(`${FILE}::PREPARING_TO_DISCONNECT`);
       const disconnect = [];
       if (
-        (opts === null || opts === void 0
-          ? void 0
-          : opts.disconnectClientServices) &&
-        ((_a =
-          opts === null || opts === void 0
-            ? void 0
-            : opts.disconnectClientServices) === null || _a === void 0
+        (opts === null || opts === void 0 ? void 0 : opts.clients) &&
+        ((_a = opts === null || opts === void 0 ? void 0 : opts.clients) ===
+          null || _a === void 0
           ? void 0
           : _a.length) > 0
       ) {
-        opts.disconnectClientServices.forEach(service => {
-          disconnect.push(service());
+        opts.clients.forEach(client => {
+          disconnect.push(client());
         });
       }
-      // disconnect.push(disconnectMySQLProxyClient());
-      // disconnect.push(disconnectElastiCacheRedisClient());
       if (disconnect.length > 0) {
         const results = yield Promise.allSettled(disconnect);
         results.forEach(result => {
@@ -70,17 +62,17 @@ const disconnectOpenConnectionsMiddleware = opts => {
         logger.debug(`${FILE}::DISCONNECT_COMPLETED`, opts);
       }
     });
-  const disconnectOpenConnectionsMiddlewareAfter = () =>
+  const disconnectMiddlewareAfter = () =>
     __awaiter(void 0, void 0, void 0, function* () {
-      yield disconnectOpenConnections();
+      yield disconnect();
     });
-  const disconnectOpenConnectionsMiddlewareOnError = () =>
+  const disconnectMiddlewareOnError = () =>
     __awaiter(void 0, void 0, void 0, function* () {
-      yield disconnectOpenConnections();
+      yield disconnect();
     });
   return {
-    after: disconnectOpenConnectionsMiddlewareAfter,
-    onError: disconnectOpenConnectionsMiddlewareOnError,
+    after: disconnectMiddlewareAfter,
+    onError: disconnectMiddlewareOnError,
   };
 };
-export default disconnectOpenConnectionsMiddleware;
+export default disconnectMiddleware;

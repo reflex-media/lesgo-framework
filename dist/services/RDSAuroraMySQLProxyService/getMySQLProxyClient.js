@@ -31,7 +31,7 @@ var __awaiter =
       step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
   };
-import mysql from 'mysql2/promise';
+import { createConnection } from 'mysql2/promise';
 import { logger, isEmpty, validateFields } from '../../utils';
 import rdsConfig from '../../config/rds';
 import { getSecretValue } from '../../utils/secretsmanager';
@@ -72,7 +72,7 @@ const getMySQLProxyClient = (connOptions, clientOpts) =>
       { key: 'username', type: 'string', required: true },
       { key: 'password', type: 'string', required: true },
     ]);
-    const conn = yield mysql.createConnection(
+    const conn = yield createConnection(
       Object.assign(Object.assign({}, connOptions), {
         host: validatedDbCredentials.host,
         user: validatedDbCredentials.username,

@@ -1,4 +1,4 @@
-export { default as disconnectOpenConnectionsMiddleware } from './disconnectOpenConnectionsMiddleware';
+export { default as disconnectMiddleware } from './disconnectMiddleware';
 export { default as httpMiddleware } from './httpMiddleware';
 export { default as httpResponseMiddleware } from './httpResponseMiddleware';
 export { default as invokeCommandMiddleware } from './invokeCommandMiddleware';

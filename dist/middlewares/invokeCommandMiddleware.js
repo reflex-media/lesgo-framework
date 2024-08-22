@@ -33,12 +33,12 @@ var __awaiter =
   };
 import eventNormalizer from '@middy/event-normalizer';
 import doNotWaitForEmptyEventLoop from '@middy/do-not-wait-for-empty-event-loop';
-import disconnectOpenConnectionsMiddleware from './disconnectOpenConnectionsMiddleware';
+import disconnectMiddleware from './disconnectMiddleware';
 const invokeCommandMiddleware = (opts = {}) => {
   const middlewarePackages = [
     doNotWaitForEmptyEventLoop(),
     eventNormalizer(),
-    disconnectOpenConnectionsMiddleware(opts),
+    disconnectMiddleware(opts),
   ];
   return {
     before: handler =>

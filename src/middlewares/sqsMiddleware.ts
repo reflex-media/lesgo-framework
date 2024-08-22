@@ -1,7 +1,7 @@
 import middy from '@middy/core';
 import eventNormalizer from '@middy/event-normalizer';
 import doNotWaitForEmptyEventLoop from '@middy/do-not-wait-for-empty-event-loop';
-import disconnectOpenConnectionsMiddleware from './disconnectOpenConnectionsMiddleware';
+import disconnectMiddleware from './disconnectMiddleware';
 
 interface MiddlewareObj<T = any, R = any> {
   before?: (request: middy.Request<T, R>) => Promise<void>;
@@ -17,7 +17,7 @@ const httpMiddleware = () => {
   const middlewarePackages: MiddlewareObj[] = [
     doNotWaitForEmptyEventLoop(),
     eventNormalizer(),
-    disconnectOpenConnectionsMiddleware(),
+    disconnectMiddleware(),
   ];
 
   return {

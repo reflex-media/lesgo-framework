@@ -1,4 +1,8 @@
-import mysql, { ConnectionOptions } from 'mysql2/promise';
+import {
+  createConnection,
+  Connection,
+  ConnectionOptions,
+} from 'mysql2/promise';
 import { logger, isEmpty, validateFields } from '../../utils';
 import rdsConfig from '../../config/rds';
 import { getSecretValue } from '../../utils/secretsmanager';
@@ -7,7 +11,7 @@ import { RDSAuroraMySQLProxyClientOptions } from '../../types/aws';
 const FILE = 'lesgo.services.RDSAuroraMySQLProxyService.getMySQLProxyClient';
 
 export interface Singleton {
-  [key: string]: mysql.Connection;
+  [key: string]: Connection;
 }
 
 export const singleton: Singleton = {};
@@ -51,7 +55,7 @@ const getMySQLProxyClient = async (
     { key: 'password', type: 'string', required: true },
   ]);
 
-  const conn = await mysql.createConnection({
+  const conn = await createConnection({
     ...connOptions,
     host: validatedDbCredentials.host,
     user: validatedDbCredentials.username,

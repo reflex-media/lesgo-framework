@@ -4,7 +4,6 @@ import eventNormalizer from '@middy/http-event-normalizer';
 import doNotWaitForEmptyEventLoop from '@middy/do-not-wait-for-empty-event-loop';
 import httpHeaderNormalizer from '@middy/http-header-normalizer';
 import httpResponseMiddleware from './httpResponseMiddleware';
-import disconnectOpenConnectionsMiddleware from './disconnectOpenConnectionsMiddleware';
 
 interface MiddlewareObj<T = any, R = any> {
   before?: (request: middy.Request<T, R>) => Promise<void>;
@@ -24,7 +23,6 @@ const httpMiddleware = (opts: HttpMiddlewareOptions = {}) => {
     eventNormalizer(),
     httpHeaderNormalizer(),
     jsonBodyParser({ disableContentTypeError: true }),
-    disconnectOpenConnectionsMiddleware(),
     httpResponseMiddleware(opts),
   ];
 
