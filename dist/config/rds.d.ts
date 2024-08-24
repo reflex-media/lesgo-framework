@@ -3,13 +3,6 @@ declare const _default: {
         mysql: {
             region: string;
             databaseName: string | undefined;
-            connectionType: string;
-            dataApi: {
-                secretArn: string | undefined;
-                resourceArn: string | undefined;
-                maxAttempts: string | number;
-                requestTimeout: string | number;
-            };
             proxy: {
                 dbCredentialsSecretId: string | undefined;
             };
