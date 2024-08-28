@@ -1,4 +1,4 @@
-import updateRecord from '../updateRecord';
+import { updateRecord } from '../../dynamodb';
 import updateRecordService from '../../../services/DynamoDbService/updateRecord';
 
 jest.mock('../../../services/DynamoDbService/updateRecord');

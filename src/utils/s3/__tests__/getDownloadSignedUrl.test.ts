@@ -1,4 +1,4 @@
-import getDownloadSignedUrl from '../getDownloadSignedUrl';
+import { getDownloadSignedUrl } from '../../s3';
 import getDownloadSignedUrlService from '../../../services/S3Service/getDownloadSignedUrl';
 
 jest.mock('../../../services/S3Service/getDownloadSignedUrl');

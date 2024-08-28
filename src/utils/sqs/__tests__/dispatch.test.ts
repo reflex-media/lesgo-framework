@@ -1,4 +1,4 @@
-import dispatch from '../dispatch';
+import { dispatch } from '../../sqs';
 import dispatchService from '../../../services/SQSService/dispatch';
 
 jest.mock('../../../services/SQSService/dispatch');

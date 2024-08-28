@@ -1,6 +1,6 @@
 import receiveMessagesService from '../../../services/SQSService/receiveMessages';
 import { Queue } from '../../../services/SQSService/getQueueUrl';
-import receiveMessages from '../receiveMessages';
+import { receiveMessages } from '../../sqs';
 
 jest.mock('../../../services/SQSService/receiveMessages');
 

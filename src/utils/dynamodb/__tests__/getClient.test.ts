@@ -1,4 +1,4 @@
-import getClient from '../getClient';
+import { getClient } from '../../dynamodb';
 import getClientService from '../../../services/DynamoDbService/getClient';
 
 jest.mock('../../../services/DynamoDbService/getClient');

@@ -1,4 +1,4 @@
-import getClient from '../getClient';
+import { getClient } from '../../sqs';
 import getClientService from '../../../services/SQSService/getClient';
 
 jest.mock('../../../services/SQSService/getClient');

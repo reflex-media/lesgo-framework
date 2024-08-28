@@ -1,6 +1,5 @@
 import LesgoException from '../../../exceptions/LesgoException';
-import encrypt from '../encrypt';
-import decrypt from '../decrypt';
+import { encrypt, decrypt } from '../../crypto';
 import { EncryptionAlgorithm } from '../validateEncryptionFields';
 
 describe('encrypt', () => {

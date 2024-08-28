@@ -1,4 +1,4 @@
-import scan from '../scan';
+import { scan } from '../../dynamodb';
 import scanService from '../../../services/DynamoDbService/scan';
 
 jest.mock('../../../services/DynamoDbService/scan');

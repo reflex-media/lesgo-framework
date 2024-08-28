@@ -1,4 +1,4 @@
-import getHeadObject from '../getHeadObject';
+import { getHeadObject } from '../../s3';
 import getHeadObjectService from '../../../services/S3Service/getHeadObject';
 
 jest.mock('../../../services/S3Service/getHeadObject');

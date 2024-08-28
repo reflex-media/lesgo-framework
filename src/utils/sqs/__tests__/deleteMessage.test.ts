@@ -1,6 +1,6 @@
 import deleteMessageService from '../../../services/SQSService/deleteMessage';
 import { Queue } from '../../../services/SQSService/getQueueUrl';
-import deleteMessage from '../deleteMessage';
+import { deleteMessage } from '../../sqs';
 
 jest.mock('../../../services/SQSService/deleteMessage');
 

@@ -1,4 +1,4 @@
-import query from '../query';
+import { query } from '../../dynamodb';
 import queryService from '../../../services/DynamoDbService/query';
 
 jest.mock('../../../services/DynamoDbService/query');

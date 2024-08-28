@@ -1,4 +1,4 @@
-import getClient from '../../../utils/secretsmanager/getClient';
+import { getClient } from '../../secretsmanager';
 import getClientService from '../../../services/SecretsManagerService/getClient';
 
 jest.mock('../../../services/SecretsManagerService/getClient');

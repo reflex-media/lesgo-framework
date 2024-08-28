@@ -1,4 +1,4 @@
-import deleteRecord from '../../../utils/dynamodb/deleteRecord';
+import { deleteRecord } from '../../dynamodb';
 import deleteRecordService from '../../../services/DynamoDbService/deleteRecord';
 
 jest.mock('../../../services/DynamoDbService/deleteRecord');

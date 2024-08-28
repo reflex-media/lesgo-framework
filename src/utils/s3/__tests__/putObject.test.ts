@@ -1,4 +1,4 @@
-import putObject from '../putObject';
+import { putObject } from '../../s3';
 import putObjectService from '../../../services/S3Service/putObject';
 
 jest.mock('../../../services/S3Service/putObject');

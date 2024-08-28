@@ -1,4 +1,4 @@
-import hash from '../hash';
+import { hash } from '../../crypto';
 import LesgoException from '../../../exceptions/LesgoException';
 
 describe('hash', () => {

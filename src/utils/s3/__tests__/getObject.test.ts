@@ -1,5 +1,5 @@
 import { Readable } from 'stream';
-import getObject from '../getObject';
+import { getObject } from '../../s3';
 import getObjectService from '../../../services/S3Service/getObject';
 
 jest.mock('../../../services/S3Service/getObject');
