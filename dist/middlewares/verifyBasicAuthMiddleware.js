@@ -1,7 +1,7 @@
 import logger from '../utils/logger';
 import { LesgoException } from '../exceptions';
 import { validateFields } from '../utils';
-import basicAuthConfig from '../config/basicAuth';
+import { basicAuth as basicAuthConfig } from '../config';
 const FILE = 'lesgo.middlewares.verifyBasicAuthMiddleware';
 const verifyBasicAuthMiddleware = (options = {}) => {
   let decoded;

@@ -1,7 +1,7 @@
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import { DynamoDBDocumentClient } from '@aws-sdk/lib-dynamodb';
 import { isEmpty, logger, validateFields } from '../../utils';
-import dynamodbConfig from '../../config/dynamodb';
+import { dynamodb as dynamodbConfig } from '../../config';
 import { ClientOptions } from '../../types/aws';
 
 const FILE = 'lesgo.services.DynamoDbService.getClient';

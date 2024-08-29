@@ -1,5 +1,5 @@
 import { createHash } from 'crypto';
-import cryptoConfig from '../../config/crypto';
+import { crypto as cryptoConfig } from '../../config';
 import validateFields from '../validateFields';
 import { LesgoException } from '../../exceptions';
 

@@ -12,6 +12,7 @@ process.env = {
   ...process.env,
   APP_NAME: 'lesgo',
   APP_ENV: 'testing',
+  APP_DEBUG: 'false',
 
   AWS_REGION: 'ap-southeast-1',
   APP_ACCOUNT_ID: '1234567890',

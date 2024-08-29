@@ -33,7 +33,7 @@ var __awaiter =
   };
 import { createConnection } from 'mysql2/promise';
 import { logger, isEmpty, validateFields } from '../../utils';
-import rdsConfig from '../../config/rds';
+import { rds as rdsConfig } from '../../config';
 import { getSecretValue } from '../../utils/secretsmanager';
 const FILE = 'lesgo.services.RDSAuroraMySQLProxyService.getMySQLProxyClient';
 export const singleton = {};

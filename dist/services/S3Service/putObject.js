@@ -36,7 +36,7 @@ import LesgoException from '../../exceptions/LesgoException';
 import s3Config from '../../config/s3';
 import { logger, validateFields } from '../../utils';
 import getClient from './getClient';
-const FILE = 'lesgo/services/S3Service/putObject';
+const FILE = 'lesgo.services.S3Service.putObject';
 const putObject = (key, file, opts, clientOpts) =>
   __awaiter(void 0, void 0, void 0, function* () {
     const input = validateFields({ key }, [

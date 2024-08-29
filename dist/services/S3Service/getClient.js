@@ -1,6 +1,6 @@
 import { S3Client } from '@aws-sdk/client-s3';
 import { logger, isEmpty, validateFields } from '../../utils';
-import s3Config from '../../config/s3';
+import { s3 as s3Config } from '../../config';
 const FILE = 'lesgo.services.S3Service.getClient';
 const singleton = {};
 const getClient = (clientOpts = {}) => {

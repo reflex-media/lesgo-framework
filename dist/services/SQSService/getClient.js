@@ -1,6 +1,6 @@
 import { SQSClient } from '@aws-sdk/client-sqs';
 import { logger, isEmpty, validateFields } from '../../utils';
-import sqsConfig from '../../config/sqs';
+import { sqs as sqsConfig } from '../../config';
 const FILE = 'lesgo.services.SQSService.getClient';
 const singleton = {};
 const getClient = (clientOpts = {}) => {

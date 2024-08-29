@@ -1,7 +1,5 @@
 import LesgoException from '../exceptions/LesgoException';
-const getCurrentDateTime = () => {
-  return new Date().toUTCString();
-};
+import { getCurrentDatetime } from '../utils';
 export default class LoggerService {
   constructor(opts = {}) {
     const defaultOptions = {
@@ -109,7 +107,7 @@ export default class LoggerService {
         delete refinedMessage.extra.tags;
       }
       if (transport.config.getCreatedAt) {
-        refinedMessage.created = getCurrentDateTime();
+        refinedMessage.created = getCurrentDatetime();
       }
     }
     return refinedMessage;

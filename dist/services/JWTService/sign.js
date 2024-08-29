@@ -1,5 +1,5 @@
 import { sign as signJwt } from 'jsonwebtoken';
-import jwtConfig from '../../config/jwt';
+import { jwt as jwtConfig } from '../../config';
 import { generateUid } from '../../utils';
 import getJwtSecret from './getJwtSecret';
 const sign = (payload, secret, opts) => {

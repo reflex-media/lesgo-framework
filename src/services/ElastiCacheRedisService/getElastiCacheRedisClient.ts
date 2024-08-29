@@ -1,5 +1,5 @@
 import { Cluster } from 'ioredis';
-import elasticacheConfig from '../../config/elasticache';
+import { elasticache as elasticacheConfig } from '../../config';
 import { logger, isEmpty, validateFields } from '../../utils';
 import { ClientOptions } from '../../types/aws';
 import { LesgoException } from '../../exceptions';

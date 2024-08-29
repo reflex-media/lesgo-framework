@@ -32,7 +32,7 @@ var __awaiter =
     });
   };
 import { Cluster } from 'ioredis';
-import elasticacheConfig from '../../config/elasticache';
+import { elasticache as elasticacheConfig } from '../../config';
 import { logger, isEmpty, validateFields } from '../../utils';
 import { LesgoException } from '../../exceptions';
 const FILE = 'lesgo.services.ElastiCacheRedisService.getClient';

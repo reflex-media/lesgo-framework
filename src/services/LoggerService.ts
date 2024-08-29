@@ -1,4 +1,5 @@
 import LesgoException from '../exceptions/LesgoException';
+import { getCurrentDatetime } from '../utils';
 
 type LogLevel = 'error' | 'warn' | 'notice' | 'info' | 'debug';
 
@@ -23,10 +24,6 @@ interface TransportConfig {
 interface TransportConfigTags {
   [key: string]: string;
 }
-
-const getCurrentDateTime = () => {
-  return new Date().toUTCString();
-};
 
 export default class LoggerService {
   logger: string;
@@ -178,7 +175,7 @@ export default class LoggerService {
       }
 
       if (transport.config.getCreatedAt) {
-        refinedMessage.created = getCurrentDateTime();
+        refinedMessage.created = getCurrentDatetime();
       }
     }
 

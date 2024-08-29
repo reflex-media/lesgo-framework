@@ -1,7 +1,10 @@
 import middy from '@middy/core';
 import { Context } from 'aws-lambda';
 import { LesgoException } from '../../exceptions';
-import httpResponseMiddleware from '../httpResponseMiddleware';
+import httpResponseMiddleware from '../../middlewares/httpResponseMiddleware';
+import logger from '../../utils/logger';
+
+jest.mock('../../utils/logger');
 
 describe('httpResponseMiddleware', () => {
   let request: middy.Request;
@@ -98,7 +101,37 @@ describe('httpResponseMiddleware', () => {
   });
 
   it('should set the response data with custom options on error', async () => {
-    request.error = error;
+    request.error = new LesgoException('testError', 'TEST_ERROR', 499);
+
+    const middleware = httpResponseMiddleware();
+    await middleware.onError(request);
+
+    expect(logger.warn).toHaveBeenCalledWith('testError', request.error);
+    expect(request.response).toEqual({
+      statusCode: 499,
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Cache-Control': 'no-cache',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        status: 'error',
+        data: null,
+        error: {
+          code: 'TEST_ERROR',
+          message: 'testError',
+          details: {},
+        },
+        _meta: {},
+      }),
+    });
+  });
+
+  it('should remove the extra statusCode if exists', async () => {
+    request.error = new LesgoException('testError', 'TEST_ERROR', 599, {
+      message: 'internal test error',
+      statusCode: 699,
+    });
 
     const customOptions = {
       headers: {
@@ -111,8 +144,9 @@ describe('httpResponseMiddleware', () => {
     const middleware = httpResponseMiddleware(customOptions);
     await middleware.onError(request);
 
+    expect(logger.error).toHaveBeenCalledWith('testError', request.error);
     expect(request.response).toEqual({
-      statusCode: 500,
+      statusCode: 599,
       headers: {
         'Access-Control-Allow-Origin': 'example.com',
         'Cache-Control': 'max-age=3600',
@@ -122,8 +156,40 @@ describe('httpResponseMiddleware', () => {
         status: 'error',
         data: null,
         error: {
-          code: 'LESGO_EXCEPTION',
-          message: 'Test error',
+          code: 'TEST_ERROR',
+          message: 'testError',
+          details: {
+            message: 'internal test error',
+          },
+        },
+        _meta: {},
+      }),
+    });
+  });
+
+  it('should return with unhaldned error if no error object provided', async () => {
+    request.error = new Error();
+
+    const customOptions = {
+      debugMode: true,
+    };
+
+    const middleware = httpResponseMiddleware(customOptions);
+    await middleware.onError(request);
+
+    expect(request.response).toEqual({
+      statusCode: 500,
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Cache-Control': 'no-cache',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        status: 'error',
+        data: null,
+        error: {
+          code: 'UNHANDLED_ERROR',
+          message: 'Unhandled error occurred',
           details: {},
         },
         _meta: {},

@@ -1,5 +1,6 @@
 export { default as formatUnixTimestamp } from './formatUnixTimestamp';
 export { default as generateUid } from './generateUid';
+export { default as getCurrentDatetime } from './getCurrentDatetime';
 export { default as getCurrentTimestamp } from './getCurrentTimestamp';
 export { default as isDecimal } from './isDecimal';
 export { default as isEmail } from './isEmail';

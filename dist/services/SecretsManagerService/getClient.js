@@ -1,6 +1,6 @@
 import { SecretsManagerClient } from '@aws-sdk/client-secrets-manager';
 import { logger, isEmpty, validateFields } from '../../utils';
-import secretsmanagerConfig from '../../config/secretsmanager';
+import { secretsmanager as secretsmanagerConfig } from '../../config';
 const FILE = 'lesgo.services.SecretsManager.getClient';
 const singleton = {};
 const getClient = (clientOpts = {}) => {

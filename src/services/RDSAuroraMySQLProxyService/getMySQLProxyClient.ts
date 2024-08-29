@@ -4,7 +4,7 @@ import {
   ConnectionOptions,
 } from 'mysql2/promise';
 import { logger, isEmpty, validateFields } from '../../utils';
-import rdsConfig from '../../config/rds';
+import { rds as rdsConfig } from '../../config';
 import { getSecretValue } from '../../utils/secretsmanager';
 import { RDSAuroraMySQLProxyClientOptions } from '../../types/aws';
 
