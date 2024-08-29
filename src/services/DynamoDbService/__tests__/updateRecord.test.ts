@@ -1,8 +1,8 @@
 import { UpdateCommand, UpdateCommandInput } from '@aws-sdk/lib-dynamodb';
 import LesgoException from '../../../exceptions/LesgoException';
 import dynamodbConfig from '../../../config/dynamodb';
-import getClient from '../getClient';
-import updateRecord, { Key } from '../updateRecord';
+import { updateRecord, getClient } from '../../DynamoDbService';
+import { Key } from '../updateRecord';
 
 jest.mock('../getClient', () => {
   return jest.fn().mockImplementation(() => ({

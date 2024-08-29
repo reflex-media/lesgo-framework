@@ -5,7 +5,7 @@ import { logger, validateFields } from '../../utils';
 import { ClientOptions } from '../../types/aws';
 import getClient from './getClient';
 
-const FILE = 'lesgo/services/S3Service/getHeadObject';
+const FILE = 'lesgo.services.S3Service.getHeadObject';
 
 export type HeadObjectOptions = Omit<HeadObjectCommandInput, 'Key'> & {
   Key?: string;

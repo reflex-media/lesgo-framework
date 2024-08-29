@@ -5,7 +5,7 @@ import { logger, validateFields } from '../../utils';
 import { ClientOptions } from '../../types/aws';
 import getClient from './getClient';
 
-const FILE = 'lesgo/services/S3Service/putObject';
+const FILE = 'lesgo.services.S3Service.putObject';
 
 export interface PutObjectOptions
   extends Partial<Omit<PutObjectCommandInput, 'Key' | 'Bucket'>> {

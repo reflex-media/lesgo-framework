@@ -1,8 +1,8 @@
 import { DeleteCommand, DeleteCommandInput } from '@aws-sdk/lib-dynamodb';
 import LesgoException from '../../../exceptions/LesgoException';
 import dynamodbConfig from '../../../config/dynamodb';
-import getClient from '../getClient';
-import deleteRecord, { Key } from '../deleteRecord';
+import { Key } from '../deleteRecord';
+import { deleteRecord, getClient } from '../../DynamoDbService';
 
 jest.mock('../getClient', () => {
   return jest.fn().mockImplementation(() => ({

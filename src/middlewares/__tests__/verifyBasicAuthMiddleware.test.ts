@@ -59,12 +59,39 @@ describe('verifyBasicAuthMiddleware', () => {
     });
   });
 
+  it('should verify the basic auth when no options is set', () => {
+    const mockDecoded = {
+      username: basicAuthConfig.authorizedList[0].username,
+      password: basicAuthConfig.authorizedList[0].password,
+    };
+
+    verifyBasicAuthMiddleware().before(mockRequest);
+
+    expect(logger.debug).toHaveBeenCalledWith(
+      'lesgo.middlewares.verifyBasicAuthMiddleware::BASIC_AUTH_TO_VERIFY',
+      {
+        request: mockRequest,
+        options: {},
+      }
+    );
+    expect(logger.debug).toHaveBeenCalledWith(
+      'lesgo.middlewares.verifyBasicAuthMiddleware::BASIC_AUTH_DECODED',
+      mockDecoded
+    );
+    expect(logger.debug).toHaveBeenCalledWith(
+      'lesgo.middlewares.verifyBasicAuthMiddleware::BASIC_AUTH_VERIFIED'
+    );
+    expect(mockRequest.event.basicAuth).toEqual({
+      username: mockDecoded.username,
+    });
+  });
+
   it('should throw a LesgoException if there is no basic auth provided', () => {
     mockRequest.event.headers.authorization = undefined;
 
     expect(() =>
       verifyBasicAuthMiddleware(mockOptions).before(mockRequest)
-    ).toThrowError(
+    ).toThrow(
       new LesgoException(
         'No basic auth provided',
         'lesgo.middlewares.verifyBasicAuthMiddleware::NO_BASIC_AUTH_PROVIDED',
@@ -78,7 +105,7 @@ describe('verifyBasicAuthMiddleware', () => {
 
     expect(() =>
       verifyBasicAuthMiddleware(mockOptions).before(mockRequest)
-    ).toThrowError(
+    ).toThrow(
       new LesgoException(
         'Invalid basic auth due to missing fields',
         'lesgo.middlewares.verifyBasicAuthMiddleware::INVALID_BASIC_AUTH_MISSING_FIELDS',
@@ -93,7 +120,7 @@ describe('verifyBasicAuthMiddleware', () => {
 
     expect(() =>
       verifyBasicAuthMiddleware(mockOptions).before(mockRequest)
-    ).toThrowError(
+    ).toThrow(
       new LesgoException(
         'Invalid basic auth due to no match found',
         'lesgo.middlewares.verifyBasicAuthMiddleware::INVALID_BASIC_AUTH_NO_MATCH',

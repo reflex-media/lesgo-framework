@@ -1,6 +1,5 @@
 import { PutObjectCommand } from '@aws-sdk/client-s3';
-import getUploadSignedUrl from '../getUploadSignedUrl';
-import getClient from '../getClient';
+import { getClient, getUploadSignedUrl } from '../../S3Service';
 
 jest.mock('../getClient');
 jest.mock('@aws-sdk/s3-request-presigner', () => {
@@ -52,6 +51,14 @@ describe('getUploadSignedUrl', () => {
       { expiresIn },
       options
     );
+
+    expect(result).toBe('https://test-url.com');
+  });
+
+  it('should return the signed URL with default options', async () => {
+    const key = 'testKey';
+
+    const result = await getUploadSignedUrl(key);
 
     expect(result).toBe('https://test-url.com');
   });

@@ -1,14 +1,9 @@
 import { JwtPayload } from 'jsonwebtoken';
 import jwtConfig from '../../../config/jwt';
-import verify from '../verify';
-import sign from '../sign';
+import { sign, verify } from '../../JWTService';
 import { LesgoException } from '../../../exceptions';
 
 describe('sign', () => {
-  afterEach(() => {
-    jest.clearAllMocks();
-  });
-
   it('should return the signed token', () => {
     const payload = { id: '123', username: 'john.doe' };
     const secret = jwtConfig.secrets[0].secret;

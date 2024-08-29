@@ -23,7 +23,7 @@ describe('query', () => {
 
     (queryService as jest.Mock).mockResolvedValueOnce([]);
 
-    const res = await query(sql, preparedValues, connOptions, {
+    await query(sql, preparedValues, connOptions, {
       region,
       singletonConn,
     });

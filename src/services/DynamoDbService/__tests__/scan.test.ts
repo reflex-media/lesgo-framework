@@ -1,7 +1,6 @@
 import { ScanCommand } from '@aws-sdk/lib-dynamodb';
 import LesgoException from '../../../exceptions/LesgoException';
-import getClient from '../getClient';
-import scan from '../scan';
+import { scan, getClient } from '../../DynamoDbService';
 
 const mockScanCommandResponse = {
   Items: [{ id: '1', name: 'John' }],

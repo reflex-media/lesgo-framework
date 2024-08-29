@@ -1,8 +1,8 @@
 import { PutCommand, PutCommandInput } from '@aws-sdk/lib-dynamodb';
 import LesgoException from '../../../exceptions/LesgoException';
 import dynamodbConfig from '../../../config/dynamodb';
-import getClient from '../getClient';
-import putRecord, { Item } from '../putRecord';
+import { Item } from '../putRecord';
+import { getClient, putRecord } from '../../DynamoDbService';
 
 jest.mock('../getClient', () => {
   return jest.fn().mockImplementation(() => ({

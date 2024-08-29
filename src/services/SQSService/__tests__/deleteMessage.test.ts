@@ -1,8 +1,7 @@
 import { DeleteMessageCommand } from '@aws-sdk/client-sqs';
 import LesgoException from '../../../exceptions/LesgoException';
 import logger from '../../../utils/logger';
-import getClient from '../getClient';
-import deleteMessage from '../deleteMessage';
+import { getClient, deleteMessage } from '../../SQSService';
 
 jest.mock('../getClient', () => {
   return jest.fn().mockImplementation(() => ({

@@ -1,7 +1,6 @@
 import { PutObjectCommand, StorageClass } from '@aws-sdk/client-s3';
 import LesgoException from '../../../exceptions/LesgoException';
-import putObject from '../putObject';
-import getClient from '../getClient';
+import { getClient, putObject } from '../../S3Service';
 
 jest.mock('../getClient', () => {
   return jest.fn().mockImplementation(() => ({
@@ -62,6 +61,21 @@ describe('putObject', () => {
       options
     );
 
+    expect(result).toBe(response);
+  });
+
+  it('should use the default options if none provided', async () => {
+    const key = 'test-key';
+    const file = Buffer.from('test-file');
+    const response = {
+      /* mock response */
+    };
+
+    (getClient as jest.Mock).mockReturnValueOnce({
+      send: jest.fn().mockResolvedValue(response),
+    });
+
+    const result = await putObject(key, file);
     expect(result).toBe(response);
   });
 

@@ -38,4 +38,7 @@ process.env = {
 
   LESGO_AWS_DYNAMODB_REGION: 'ap-southeast-1',
   LESGO_AWS_DYNAMODB_TABLE_ALIASES: 'testingTable,testingTable2',
+
+  LESGO_AWS_ELASTICACHE_REDIS_ENDPOINT: 'localhost',
+  LESGO_AWS_ELASTICACHE_REDIS_PORT: '6379',
 };

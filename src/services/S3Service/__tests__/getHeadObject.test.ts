@@ -1,6 +1,5 @@
 import { HeadObjectCommand } from '@aws-sdk/client-s3';
-import getHeadObject from '../getHeadObject';
-import getClient from '../getClient';
+import { getClient, getHeadObject } from '../../S3Service';
 import { LesgoException } from '../../../exceptions';
 
 jest.mock('../getClient', () => {
@@ -64,6 +63,18 @@ describe('getHeadObject', () => {
     await expect(
       getHeadObject(key, { Bucket: bucket }, options)
     ).resolves.toMatchObject({
+      ContentLength: undefined,
+      ContentType: undefined,
+      ETag: undefined,
+      LastModified: undefined,
+      Metadata: undefined,
+    });
+  });
+
+  it('should call GetObjectCommand with the default options', async () => {
+    const key = 'testKey';
+
+    await expect(getHeadObject(key)).resolves.toMatchObject({
       ContentLength: undefined,
       ContentType: undefined,
       ETag: undefined,

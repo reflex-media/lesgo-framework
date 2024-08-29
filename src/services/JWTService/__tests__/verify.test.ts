@@ -3,10 +3,6 @@ import jwtConfig from '../../../config/jwt';
 import { verify, sign } from '../../JWTService';
 
 describe('verify', () => {
-  afterEach(() => {
-    jest.clearAllMocks();
-  });
-
   it('should return the signed token', () => {
     const payload = { id: '123', username: 'john.doe' };
     const secret = jwtConfig.secrets[0].secret;

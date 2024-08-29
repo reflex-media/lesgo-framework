@@ -1,5 +1,4 @@
-import getClient from '../getClient';
-import getSecretValue from '../getSecretValue';
+import { getClient, getSecretValue } from '../../SecretsManagerService';
 import LesgoException from '../../../exceptions/LesgoException';
 
 jest.mock('../getClient');

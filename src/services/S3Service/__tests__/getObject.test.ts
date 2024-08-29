@@ -1,8 +1,8 @@
 import { GetObjectCommand } from '@aws-sdk/client-s3';
-import getObject from '../getObject';
-import getClient from '../getClient';
+import { getClient, getObject } from '../../S3Service';
 import { LesgoException } from '../../../exceptions';
 import { Readable } from 'stream';
+import { streamToBuffer } from '../getObject';
 
 const readableStream = new Readable({
   read() {
@@ -71,5 +71,40 @@ describe('getObject', () => {
         }
       )
     );
+  });
+
+  it('should call getClient with the default options', async () => {
+    const key = 'testKey';
+
+    await getObject(key);
+
+    expect(getClient).toHaveBeenCalledWith(undefined);
+  });
+});
+
+describe('streamToBuffer', () => {
+  it('should throw a LesgoException if the data is not a readable stream', async () => {
+    const data = 'Not a readable stream';
+
+    await expect(streamToBuffer(data)).rejects.toThrow(
+      new LesgoException(
+        'Data is not a readable stream',
+        'lesgo.services.S3Service.getObject::ERROR_NOT_READABLE_STREAM'
+      )
+    );
+  });
+
+  it('should resolve with a buffer when given a readable stream', async () => {
+    const readableStream = new Readable({
+      read() {
+        this.push('Your stream content here');
+        this.push(null);
+      },
+    });
+
+    const buffer = await streamToBuffer(readableStream);
+
+    expect(buffer).toBeInstanceOf(Buffer);
+    expect(buffer.toString()).toBe('Your stream content here');
   });
 });

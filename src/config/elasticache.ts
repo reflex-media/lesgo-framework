@@ -1,5 +1,3 @@
-import awsConfig from './aws';
-
 export default {
   redis: {
     endpoint: process.env.LESGO_AWS_ELASTICACHE_REDIS_ENDPOINT,

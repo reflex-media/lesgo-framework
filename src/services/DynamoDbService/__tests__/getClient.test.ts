@@ -1,6 +1,7 @@
 import { DynamoDBDocumentClient } from '@aws-sdk/lib-dynamodb';
 import logger from '../../../utils/logger';
-import getClient from '../getClient';
+import { getClient } from '../../DynamoDbService';
+import dynamodbConfig from '../../../config/dynamodb';
 
 jest.mock('../../../utils/logger');
 
@@ -43,5 +44,21 @@ describe('getClient', () => {
       }
     );
     expect(client2).toBe(client1);
+  });
+
+  it('should use default clientOptions if none provided', () => {
+    const defaultRegion = dynamodbConfig.region;
+
+    const client = getClient();
+
+    expect(logger.debug).toHaveBeenCalledTimes(1);
+    expect(logger.debug).toHaveBeenCalledWith(
+      'lesgo.services.DynamoDbService.getClient::REUSE_CLIENT_SINGLETON',
+      {
+        client,
+        region: defaultRegion,
+      }
+    );
+    expect(client).toBeInstanceOf(DynamoDBDocumentClient);
   });
 });

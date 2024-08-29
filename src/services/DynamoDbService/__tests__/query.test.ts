@@ -1,6 +1,5 @@
 import { QueryCommand } from '@aws-sdk/lib-dynamodb';
-import query from '../query';
-import getClient from '../getClient';
+import { query, getClient } from '../../DynamoDbService';
 import { LesgoException } from '../../../exceptions';
 
 jest.mock('../getClient', () => {

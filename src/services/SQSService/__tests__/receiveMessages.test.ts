@@ -1,7 +1,6 @@
 import { ReceiveMessageCommand } from '@aws-sdk/client-sqs';
 import LesgoException from '../../../exceptions/LesgoException';
-import getClient from '../getClient';
-import receiveMessages from '../receiveMessages';
+import { getClient, receiveMessages } from '../../SQSService';
 import { Queue } from '../getQueueUrl';
 
 jest.mock('../getClient', () => {

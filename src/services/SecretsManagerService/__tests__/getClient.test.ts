@@ -1,5 +1,5 @@
 import { SecretsManagerClient } from '@aws-sdk/client-secrets-manager';
-import getClient from '../getClient';
+import { getClient } from '../../SecretsManagerService';
 
 describe('getClient', () => {
   afterEach(() => {
