@@ -12,6 +12,8 @@ process.env = {
   ...process.env,
   APP_NAME: 'lesgo',
   APP_ENV: 'testing',
+
+  AWS_REGION: 'ap-southeast-1',
   APP_ACCOUNT_ID: '1234567890',
 
   LESGO_CRYPTO_HASH_ALG: 'sha256',
@@ -27,8 +29,6 @@ process.env = {
   LESGO_JWT_VALIDATE_CLAIMS: 'true',
 
   LESGO_BASIC_AUTH_LIST: 'john:j04nD0e,jane:j4n3d03',
-
-  LESGO_AWS_REGION: 'ap-southeast-1',
 
   LESGO_AWS_S3_REGION: 'ap-southeast-1',
   LESGO_AWS_S3_BUCKET: 'lesgo-dev',
