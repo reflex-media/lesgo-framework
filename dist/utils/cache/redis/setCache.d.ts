@@ -13,7 +13,7 @@ import { SetRedisCacheOptions } from '../../../services/ElastiCacheRedisService/
  *
  * @example
  * ```typescript
- * import { setCache } from '@core/utils/cache/redis';
+ * import { setCache } from 'lesgo/utils/cache/redis';
  *
  * const key = 'myKey';
  * const value = 'myValue';
