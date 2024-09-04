@@ -1,6 +1,6 @@
 {
   "name": "lesgo",
-  "version": "2.1.1-rc1",
+  "version": "2.1.1",
   "description": "Core framework for lesgo node.js serverless framework.",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
