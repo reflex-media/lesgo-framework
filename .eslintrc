@@ -1,18 +1,35 @@
 {
+  "env": {
+    "browser": true,
+    "es2021": true,
+    "node": true
+  },
+  "parser": "@typescript-eslint/parser",
   "extends": [
-    "airbnb-base",
-    "plugin:jest/recommended",
+    "eslint:recommended",
+    "plugin:@typescript-eslint/recommended",
     "plugin:prettier/recommended"
   ],
-  "rules": {
-    "no-multi-str": "off",
-    "import/no-named-as-default": "off",
-    "import/no-named-as-default-member": "off",
-    "import/no-extraneous-dependencies": "off",
-    "consistent-return": "off",
-    "no-plusplus": [2, { "allowForLoopAfterthoughts": true }]
-  },
   "parserOptions": {
-    "ecmaVersion": 2019
-  }
+    "ecmaVersion": 2020,
+    "sourceType": "module"
+  },
+  "rules": {
+    "strict": ["error", "never"],
+    "lines-around-directive": [
+      "error",
+      { "before": "always", "after": "always" }
+    ],
+    "@typescript-eslint/no-explicit-any": "off",
+    "@typescript-eslint/ban-ts-comment": "off"
+  },
+  "overrides": [
+    {
+      "files": ["dist/**/*.js"],
+      "rules": {
+        "@typescript-eslint/no-var-requires": "off",
+        "require-yield": "off"
+      }
+    }
+  ]
 }

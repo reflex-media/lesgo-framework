@@ -5,7 +5,7 @@
 
 Bootstrap your next microservice with a lightweight node.js serverless framework.
 
-> Note: This repository contains the core code of the Lesgo! framework. If you want to build an application using Lesgo!, visit the main Lesgo! repository.
+> Note: This repository contains the core code of the Lesgo! framework. If you want to build an application using Lesgo!, visit the [docs](https://reflex-media.github.io/lesgo-docs).
 
 ## Unit Test
 
