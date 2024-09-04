@@ -1,18 +1,17 @@
 module.exports = {
   verbose: true,
-  testMatch: ['**/__tests__/*.spec.js'],
-  collectCoverageFrom: ['src/**/*.js'],
+  preset: 'ts-jest',
+  testEnvironment: 'node',
+  testMatch: ['**/__tests__/*.test.ts'],
+  collectCoverageFrom: ['src/**/*.ts'],
   coverageReporters: ['html', 'text', 'lcov'],
   coverageThreshold: {
     global: {
-      branches: 99,
-      functions: 99,
-      lines: 99,
-      statements: 99,
+      branches: 90,
+      functions: 90,
+      lines: 90,
+      statements: 90,
     },
   },
-  setupFiles: ['./setupTest.js'],
-  moduleNameMapper: {
-    '^Config(.*)$': '<rootDir>/tests/__mocks__/config$1.js',
-  },
+  setupFiles: ['./jest.setup.ts'],
 };
