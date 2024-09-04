@@ -12,12 +12,12 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
-      - name: Use Node.js 12.x
-        uses: actions/setup-node@v1
+      - name: Use Node.js 18.x
+        uses: actions/setup-node@v4
         with:
-          node-version: 12.x
+          node-version: 18.x
 
       - name: NPM Install
         run: npm ci
@@ -29,7 +29,7 @@ jobs:
         run: npm run coverage
 
       - name: Upload code coverage report
-        uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v4
         if: failure()
         with:
           name: coverage
