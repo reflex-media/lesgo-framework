@@ -11,7 +11,7 @@ Bootstrap your next microservice with a lightweight node.js serverless framework
 
 This framework uses Jest test framework for unit testing.
 
-All test files exist in the respective `src/__tests__/` directory.
+All test files exist in the respective `src/**/__tests__/*.test.ts` directory.
 
 **Install dependencies**
 
@@ -35,8 +35,9 @@ View the generated html report in `coverage/index.html`.
 
 ### Testing environment
 
-Declare testing environment configurations in `tests/config` directory.
+Declare testing environment configurations in `jest.setup.ts` directory.
 
 ## Contributing
 
-You may contribute to the core framework by submitting a PR to the `develop` branch. Refer to the official [Docs](https://reflex-media.github.io/lesgo-docs/contributing/) for more information.
+You may contribute to the core framework by submitting a PR to the `develop` branch. Refer to the official [Docs](https://reflex-media.github.io/lesgo-docs/stable/prologue/contribution-guide/) for more information.
+
