@@ -7,6 +7,7 @@ export default {
       proxy: {
         dbCredentialsSecretId:
           process.env.LESGO_AWS_RDS_AURORA_MYSQL_PROXY_DB_CREDENTIALS_SECRET_ID,
+        host: process.env.LESGO_AWS_RDS_AURORA_MYSQL_PROXY_HOST,
       },
     },
   },
