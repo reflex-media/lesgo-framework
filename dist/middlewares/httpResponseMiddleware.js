@@ -65,7 +65,7 @@ const httpResponseMiddleware = (opts = {}) => {
             data: request.response,
             _meta: options.debugMode ? request.event : {},
           },
-          request.response.body
+          request.event.extendedResponse
         );
       }
       const responseData = {
@@ -113,7 +113,7 @@ const httpResponseMiddleware = (opts = {}) => {
             },
             _meta: options.debugMode ? request.event : {},
           },
-          request.response.body
+          request.event.extendedResponse
         ),
       };
       logger.debug(`${FILE}::RESPONSE_DATA_ERROR`, responseData);

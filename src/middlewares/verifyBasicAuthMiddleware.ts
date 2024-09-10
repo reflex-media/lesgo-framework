@@ -73,8 +73,18 @@ const verifyBasicAuthMiddleware = (
     request.event.basicAuth = decoded;
   };
 
+  const verifyBasicAuthMiddlewareAfter = async (request: middy.Request) => {
+    request.event = {
+      ...request.event,
+      extendedResponse: {
+        _basicAuth: request.event.basicAuth,
+      },
+    };
+  };
+
   return {
     before: verifyBasicAuthMiddlewareBefore,
+    after: verifyBasicAuthMiddlewareAfter,
   };
 };
 
