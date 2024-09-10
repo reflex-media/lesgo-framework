@@ -43,8 +43,18 @@ const verifyJwtMiddleware = (secret?: string, options?: VerifyInputOptions) => {
     request.event.jwt = decoded;
   };
 
+  const verifyJwtMiddlewareAfter = async (request: middy.Request) => {
+    request.event = {
+      ...request.event,
+      extendedResponse: {
+        _jwt: request.event.jwt,
+      },
+    };
+  };
+
   return {
     before: verifyJwtMiddlewareBefore,
+    after: verifyJwtMiddlewareAfter,
   };
 };
 
