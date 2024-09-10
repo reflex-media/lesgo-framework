@@ -56,11 +56,11 @@ const getMySQLProxyClient = async (
   ]);
 
   const conn = await createConnection({
-    ...connOptions,
-    host: validatedDbCredentials.host,
+    host: rdsConfig.aurora.mysql.proxy.host || validatedDbCredentials.host,
     user: validatedDbCredentials.username,
     password: validatedDbCredentials.password,
     database: databaseName,
+    ...connOptions,
   });
 
   singleton[singletonConn] = conn;
