@@ -35,6 +35,7 @@ const httpResponseMiddleware = (opts: HttpMiddlewareOptions = {}) => {
         status: 'success',
         data: request.response,
         _meta: options.debugMode ? request.event : {},
+        ...request.response.body,
       };
     }
 
@@ -80,6 +81,7 @@ const httpResponseMiddleware = (opts: HttpMiddlewareOptions = {}) => {
           details: error.extra || {},
         },
         _meta: options.debugMode ? request.event : {},
+        ...request.response.body,
       },
     };
 
