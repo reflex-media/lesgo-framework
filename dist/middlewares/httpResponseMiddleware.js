@@ -59,11 +59,14 @@ const httpResponseMiddleware = (opts = {}) => {
       if (options.headers['Content-Type'] !== 'application/json') {
         body = request.response;
       } else {
-        body = {
-          status: 'success',
-          data: request.response,
-          _meta: options.debugMode ? request.event : {},
-        };
+        body = Object.assign(
+          {
+            status: 'success',
+            data: request.response,
+            _meta: options.debugMode ? request.event : {},
+          },
+          request.event.extendedResponse
+        );
       }
       const responseData = {
         statusCode: 200,
@@ -99,16 +102,19 @@ const httpResponseMiddleware = (opts = {}) => {
             ? void 0
             : _b.headers
         ),
-        body: {
-          status: 'error',
-          data: null,
-          error: {
-            code: error.code || 'UNHANDLED_ERROR',
-            message: error.message || 'Unhandled error occurred',
-            details: error.extra || {},
+        body: Object.assign(
+          {
+            status: 'error',
+            data: null,
+            error: {
+              code: error.code || 'UNHANDLED_ERROR',
+              message: error.message || 'Unhandled error occurred',
+              details: error.extra || {},
+            },
+            _meta: options.debugMode ? request.event : {},
           },
-          _meta: options.debugMode ? request.event : {},
-        },
+          request.event.extendedResponse
+        ),
       };
       logger.debug(`${FILE}::RESPONSE_DATA_ERROR`, responseData);
       request.response = Object.assign(Object.assign({}, responseData), {
