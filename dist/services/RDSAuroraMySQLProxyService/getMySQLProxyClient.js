@@ -72,13 +72,22 @@ const getMySQLProxyClient = (connOptions, clientOpts) =>
       { key: 'username', type: 'string', required: true },
       { key: 'password', type: 'string', required: true },
     ]);
-    const conn = yield createConnection(
-      Object.assign(Object.assign({}, connOptions), {
-        host: validatedDbCredentials.host,
-        user: validatedDbCredentials.username,
-        password: validatedDbCredentials.password,
+    const connOpts = Object.assign(
+      {
+        host: rdsConfig.aurora.mysql.proxy.host || validatedDbCredentials.host,
         database: databaseName,
-      })
+      },
+      connOptions
+    );
+    logger.debug(`${FILE}::CONN_OPTS`, { connOpts });
+    const conn = yield createConnection(
+      Object.assign(
+        {
+          user: validatedDbCredentials.username,
+          password: validatedDbCredentials.password,
+        },
+        connOpts
+      )
     );
     singleton[singletonConn] = conn;
     logger.debug(`${FILE}::NEW_RDS_CONNECTION`);

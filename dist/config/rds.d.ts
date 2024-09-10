@@ -5,6 +5,7 @@ declare const _default: {
             databaseName: string | undefined;
             proxy: {
                 dbCredentialsSecretId: string | undefined;
+                host: string | undefined;
             };
         };
     };
