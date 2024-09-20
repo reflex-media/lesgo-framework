@@ -1,3 +1,4 @@
+export { default as changeMessageVisibility } from './changeMessageVisibility';
 export { default as convertQueueAliasToObject } from './convertQueueAliasToObject';
 export { default as deleteMessage } from './deleteMessage';
 export { default as dispatch } from './dispatch';
