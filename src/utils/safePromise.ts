@@ -1,24 +1,24 @@
 /**
  *
  * @param promise
- * @returns [error, data]
+ * @returns [err, res]
  *
  * @example
- * const [error, data] = await safePromise(fetch('https://jsonplaceholder.typicode.com/todos/1'));
- * if (error) {
- *  console.error(error);
+ * const [err, res] = await safePromise(fetch('https://example.com/'));
+ * if (err) {
+ *   console.error(err);
  * } else {
- * console.log(data);
+ *   console.log(res);
  * }
  */
 const safePromise = async <T>(
   promise: Promise<T>
 ): Promise<[unknown, T | null]> => {
   try {
-    const data = await promise;
-    return [null, data];
-  } catch (error) {
-    return [error, null];
+    const res = await promise;
+    return [null, res];
+  } catch (err) {
+    return [err, null];
   }
 };
 
