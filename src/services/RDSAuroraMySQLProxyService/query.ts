@@ -22,7 +22,7 @@ const query = async (
   try {
     const resp = await connection.execute(input.sql, input.preparedValues);
     logger.debug(`${FILE}::RECEIVED_RESPONSE`, {
-      result: resp,
+      result: resp[0],
       sql,
       preparedValues,
     });

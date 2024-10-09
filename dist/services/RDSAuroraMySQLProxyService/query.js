@@ -45,7 +45,7 @@ const query = (sql, preparedValues, connOptions, clientOpts) =>
     try {
       const resp = yield connection.execute(input.sql, input.preparedValues);
       logger.debug(`${FILE}::RECEIVED_RESPONSE`, {
-        result: resp,
+        result: resp[0],
         sql,
         preparedValues,
       });
