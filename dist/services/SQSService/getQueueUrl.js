@@ -1,5 +1,6 @@
 import { LesgoException } from '../../exceptions';
 import sqsConfig from '../../config/sqs';
+import { convertQueueAliasToObject } from '../../utils/sqs';
 const FILE = 'lesgo.services.SQSService.getQueueUrl';
 export default queue => {
   if (
@@ -10,7 +11,8 @@ export default queue => {
   ) {
     return queue.url;
   }
-  const configQueue = sqsConfig.queues.find(q => q.alias === queue);
+  const queues = convertQueueAliasToObject(sqsConfig.queueAliases);
+  const configQueue = queues.find(q => q.alias === queue);
   if (!configQueue) {
     throw new LesgoException(
       `Queue with alias ${queue} not found in config`,

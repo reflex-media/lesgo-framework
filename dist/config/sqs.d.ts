@@ -1,9 +1,5 @@
 declare const _default: {
     region: string;
-    queues: {
-        alias: string;
-        name: string;
-        url: string;
-    }[];
+    queueAliases: string[];
 };
 export default _default;
