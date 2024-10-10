@@ -1,12 +1,4 @@
-import {
-  ConnectionOptions,
-  FieldPacket,
-  OkPacket,
-  ProcedureCallPacket,
-  QueryResult,
-  ResultSetHeader,
-  RowDataPacket,
-} from 'mysql2/promise';
+import { ConnectionOptions, FieldPacket, QueryResult } from 'mysql2/promise';
 import { logger, validateFields } from '../../utils';
 import { RDSAuroraMySQLProxyClientOptions } from '../../types/aws';
 import { LesgoException } from '../../exceptions';
@@ -14,17 +6,7 @@ import getClient from './getMySQLProxyClient';
 
 const FILE = 'lesgo.services.RDSAuroraMySQLService.query';
 
-type QueryResultType<T> = T extends ResultSetHeader
-  ? T
-  : T extends ResultSetHeader[]
-  ? T
-  : T extends RowDataPacket[]
-  ? T
-  : T extends RowDataPacket[][]
-  ? T
-  : T extends ProcedureCallPacket
-  ? T
-  : never;
+type QueryResultType<T> = T extends QueryResult ? T : never;
 
 type QueryReturn<T> = [T, FieldPacket[]];
 
