@@ -1,6 +1,5 @@
-import { Queue } from '../services/SQSService/getQueueUrl';
 declare const _default: {
     region: string;
-    queues: Queue[];
+    queueAliases: string[];
 };
 export default _default;

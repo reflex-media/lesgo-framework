@@ -7,9 +7,10 @@ const convert = queueAlias => ({
     awsConfig.accountId
   }/${`${appConfig.stackName}-${queueAlias}`}`,
 });
-export default queueAlias => {
+export const convertQueueAliasToObject = queueAlias => {
   if (Array.isArray(queueAlias)) {
     return queueAlias.map(q => convert(q));
   }
   return convert(queueAlias);
 };
+export default convertQueueAliasToObject;
