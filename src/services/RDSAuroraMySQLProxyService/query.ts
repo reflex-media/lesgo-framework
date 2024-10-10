@@ -1,4 +1,4 @@
-import { ConnectionOptions } from 'mysql2/promise';
+import { ConnectionOptions, QueryResult } from 'mysql2/promise';
 import { logger, validateFields } from '../../utils';
 import { RDSAuroraMySQLProxyClientOptions } from '../../types/aws';
 import { LesgoException } from '../../exceptions';
@@ -6,7 +6,7 @@ import getClient from './getMySQLProxyClient';
 
 const FILE = 'lesgo.services.RDSAuroraMySQLService.query';
 
-const query = async (
+const query = async <T>(
   sql: string,
   preparedValues?: any[],
   connOptions?: ConnectionOptions,
@@ -20,7 +20,10 @@ const query = async (
   const connection = await getClient(connOptions, clientOpts);
 
   try {
-    const resp = await connection.execute(input.sql, input.preparedValues);
+    const resp = await connection.execute<T & QueryResult>(
+      input.sql,
+      input.preparedValues
+    );
     logger.debug(`${FILE}::RECEIVED_RESPONSE`, {
       result: resp[0],
       sql,
