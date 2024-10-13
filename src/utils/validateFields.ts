@@ -4,9 +4,7 @@ import isDecimal from './isDecimal';
 
 const FILE = 'lesgo.utils.validateFields';
 
-export type Params = {
-  [key: string]: any;
-};
+export type Params = Record<PropertyKey, unknown>;
 
 export type Field = {
   key: string;
@@ -37,10 +35,8 @@ const isValidJSON = (jsonString: string) => {
  * @returns An object containing the validated fields.
  * @throws {LesgoException} If a required field is missing or if a field has an invalid type.
  */
-const validateFields = (params: Params, validFields: Field[]) => {
-  const validated: {
-    [key: string]: any;
-  } = {};
+const validateFields = <T extends Params>(params: T, validFields: Field[]) => {
+  const validated = {} as T;
 
   validFields.forEach(field => {
     const { required, type, key, isCollection, enumValues = [] } = field;
@@ -84,51 +80,53 @@ const validateFields = (params: Params, validFields: Field[]) => {
       }
     }
 
-    (isCollection ? params[key] || [] : [params[key]]).forEach(
-      (paramsItem: any) => {
-        if (
-          (type === 'string' &&
-            typeof paramsItem !== 'undefined' &&
-            typeof paramsItem !== 'string') ||
-          (type === 'object' &&
-            typeof paramsItem !== 'undefined' &&
-            typeof paramsItem !== 'object') ||
-          (type === 'number' &&
-            typeof paramsItem !== 'undefined' &&
-            typeof paramsItem !== 'number') ||
-          (type === 'decimal' &&
-            typeof paramsItem !== 'undefined' &&
-            !isDecimal(paramsItem)) ||
-          (type === 'email' &&
-            typeof paramsItem !== 'undefined' &&
-            !isEmail(paramsItem)) ||
-          (type === 'array' &&
-            typeof paramsItem !== 'undefined' &&
-            !Array.isArray(paramsItem)) ||
-          (type === 'enum' &&
-            typeof paramsItem !== 'undefined' &&
-            !enumValues.includes(paramsItem)) ||
-          (type === 'function' &&
-            typeof paramsItem !== 'undefined' &&
-            {}.toString.call(paramsItem) !== '[object Function]') ||
-          (type === 'json' &&
-            typeof paramsItem !== 'undefined' &&
-            !isValidJSON(paramsItem))
-        ) {
-          throw new LesgoException(
-            `Invalid type for '${key}', expecting ${
-              isCollection ? 'collection of ' : ''
-            }'${type}'`,
-            `${FILE}::INVALID_TYPE_${key.toUpperCase()}`,
-            500,
-            { field, value: paramsItem }
-          );
-        }
+    const paramsItems = isCollection
+      ? (params[key] as unknown[]) || []
+      : [params[key]];
+
+    paramsItems.forEach((paramsItem: any) => {
+      if (
+        (type === 'string' &&
+          typeof paramsItem !== 'undefined' &&
+          typeof paramsItem !== 'string') ||
+        (type === 'object' &&
+          typeof paramsItem !== 'undefined' &&
+          typeof paramsItem !== 'object') ||
+        (type === 'number' &&
+          typeof paramsItem !== 'undefined' &&
+          typeof paramsItem !== 'number') ||
+        (type === 'decimal' &&
+          typeof paramsItem !== 'undefined' &&
+          !isDecimal(paramsItem)) ||
+        (type === 'email' &&
+          typeof paramsItem !== 'undefined' &&
+          !isEmail(paramsItem)) ||
+        (type === 'array' &&
+          typeof paramsItem !== 'undefined' &&
+          !Array.isArray(paramsItem)) ||
+        (type === 'enum' &&
+          typeof paramsItem !== 'undefined' &&
+          !enumValues.includes(paramsItem)) ||
+        (type === 'function' &&
+          typeof paramsItem !== 'undefined' &&
+          {}.toString.call(paramsItem) !== '[object Function]') ||
+        (type === 'json' &&
+          typeof paramsItem !== 'undefined' &&
+          !isValidJSON(paramsItem))
+      ) {
+        throw new LesgoException(
+          `Invalid type for '${key}', expecting ${
+            isCollection ? 'collection of ' : ''
+          }'${type}'`,
+          `${FILE}::INVALID_TYPE_${key.toUpperCase()}`,
+          500,
+          { field, value: paramsItem }
+        );
       }
-    );
+    });
 
     if (typeof params[key] !== 'undefined') {
-      validated[key] = params[key];
+      (validated as T)[key as keyof T] = params[key] as T[keyof T];
     }
   });
 
