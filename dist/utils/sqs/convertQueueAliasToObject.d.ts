@@ -1,3 +1,3 @@
 import { Queue } from '../../services/SQSService/getQueueUrl';
-declare const _default: (queueAlias: string | string[]) => Queue | Queue[];
-export default _default;
+export declare const convertQueueAliasToObject: (queueAlias: string | string[]) => Queue | Queue[];
+export default convertQueueAliasToObject;

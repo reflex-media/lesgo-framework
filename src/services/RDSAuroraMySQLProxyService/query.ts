@@ -10,7 +10,7 @@ type QueryResultType<T> = T extends QueryResult ? T : never;
 
 type QueryReturn<T> = [T, FieldPacket[]];
 
-const query = async <T>(
+const query = async <T = QueryResult>(
   sql: string,
   preparedValues?: any[],
   connOptions?: ConnectionOptions,
