@@ -4,7 +4,7 @@ import isDecimal from './isDecimal';
 
 const FILE = 'lesgo.utils.validateFields';
 
-export type Params = Record<PropertyKey, unknown>;
+export type Params = Record<PropertyKey, any>;
 
 export type Field = {
   key: string;
@@ -14,7 +14,7 @@ export type Field = {
   enumValues?: string[];
 };
 
-const isValidJSON = (jsonString: string) => {
+const isValidJSON = (jsonString: unknown) => {
   if (typeof jsonString !== 'string') {
     return false;
   }
@@ -41,9 +41,11 @@ const validateFields = <T extends Params>(params: T, validFields: Field[]) => {
   validFields.forEach(field => {
     const { required, type, key, isCollection, enumValues = [] } = field;
 
+    const value = params[key];
+
     if (required) {
-      if (typeof params[key] === 'object') {
-        if (Array.isArray(params[key]) && params[key].length === 0) {
+      if (typeof value === 'object') {
+        if (Array.isArray(value) && value.length === 0) {
           throw new LesgoException(
             `Missing required '${key}'`,
             `${FILE}::MISSING_REQUIRED_${key.toUpperCase()}`,
@@ -53,8 +55,8 @@ const validateFields = <T extends Params>(params: T, validFields: Field[]) => {
         }
       }
 
-      if (!params[key]) {
-        if (typeof params[key] !== 'number') {
+      if (!value) {
+        if (typeof value !== 'number') {
           throw new LesgoException(
             `Missing required '${key}'`,
             `${FILE}::MISSING_REQUIRED_${key.toUpperCase()}`,
@@ -67,22 +69,18 @@ const validateFields = <T extends Params>(params: T, validFields: Field[]) => {
 
     if (isCollection) {
       try {
-        validateFields({ [key]: params[key] }, [
-          { key, required, type: 'array' },
-        ]);
+        validateFields({ [key]: value }, [{ key, required, type: 'array' }]);
       } catch (_) {
         throw new LesgoException(
           `Invalid type for '${key}', expecting collection of '${type}'`,
           `${FILE}::INVALID_TYPE_${key.toUpperCase()}`,
           500,
-          { field, value: params[key] }
+          { field, value }
         );
       }
     }
 
-    const paramsItems = isCollection
-      ? (params[key] as unknown[]) || []
-      : [params[key]];
+    const paramsItems = isCollection ? (value as unknown[]) || [] : [value];
 
     paramsItems.forEach((paramsItem: any) => {
       if (
@@ -125,8 +123,8 @@ const validateFields = <T extends Params>(params: T, validFields: Field[]) => {
       }
     });
 
-    if (typeof params[key] !== 'undefined') {
-      (validated as T)[key as keyof T] = params[key] as T[keyof T];
+    if (typeof value !== 'undefined') {
+      (validated as T)[key as keyof T] = value;
     }
   });
 

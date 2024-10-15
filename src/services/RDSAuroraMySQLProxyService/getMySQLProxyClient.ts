@@ -29,9 +29,8 @@ const getMySQLProxyClient = async (
 
   const region = options.region || rdsConfig.aurora.mysql.region;
   const singletonConn = options.singletonConn || 'default';
-  const dbCredentialsSecretId =
-    options.dbCredentialsSecretId ||
-    rdsConfig.aurora.mysql.proxy.dbCredentialsSecretId;
+  const dbCredentialsSecretId = (options.dbCredentialsSecretId ||
+    rdsConfig.aurora.mysql.proxy.dbCredentialsSecretId) as string;
   const databaseName =
     options.databaseName || rdsConfig.aurora.mysql.databaseName;
 
