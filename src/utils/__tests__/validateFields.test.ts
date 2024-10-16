@@ -1,5 +1,5 @@
 import LesgoException from '../../exceptions/LesgoException';
-import validateFields from '../validateFields';
+import validateFields, { Field } from '../validateFields';
 
 describe('validateFields', () => {
   const validFields = [
@@ -17,7 +17,7 @@ describe('validateFields', () => {
       enumValues: ['BEGINNER', 'INTERMEDIATE', 'ADVANCED'],
     },
     { key: 'someFunction', type: 'function', required: false },
-  ];
+  ] satisfies Field[];
 
   it('should validate fields and return validated object', () => {
     const params = {

@@ -25,9 +25,10 @@ const validateFields = (params, validFields) => {
   const validated = {};
   validFields.forEach(field => {
     const { required, type, key, isCollection, enumValues = [] } = field;
+    const value = params[key];
     if (required) {
-      if (typeof params[key] === 'object') {
-        if (Array.isArray(params[key]) && params[key].length === 0) {
+      if (typeof value === 'object') {
+        if (Array.isArray(value) && value.length === 0) {
           throw new LesgoException(
             `Missing required '${key}'`,
             `${FILE}::MISSING_REQUIRED_${key.toUpperCase()}`,
@@ -36,8 +37,8 @@ const validateFields = (params, validFields) => {
           );
         }
       }
-      if (!params[key]) {
-        if (typeof params[key] !== 'number') {
+      if (!value) {
+        if (typeof value !== 'number') {
           throw new LesgoException(
             `Missing required '${key}'`,
             `${FILE}::MISSING_REQUIRED_${key.toUpperCase()}`,
@@ -49,19 +50,18 @@ const validateFields = (params, validFields) => {
     }
     if (isCollection) {
       try {
-        validateFields({ [key]: params[key] }, [
-          { key, required, type: 'array' },
-        ]);
+        validateFields({ [key]: value }, [{ key, required, type: 'array' }]);
       } catch (_) {
         throw new LesgoException(
           `Invalid type for '${key}', expecting collection of '${type}'`,
           `${FILE}::INVALID_TYPE_${key.toUpperCase()}`,
           500,
-          { field, value: params[key] }
+          { field, value }
         );
       }
     }
-    (isCollection ? params[key] || [] : [params[key]]).forEach(paramsItem => {
+    const paramsItems = isCollection ? value || [] : [value];
+    paramsItems.forEach(paramsItem => {
       if (
         (type === 'string' &&
           typeof paramsItem !== 'undefined' &&
@@ -101,8 +101,8 @@ const validateFields = (params, validFields) => {
         );
       }
     });
-    if (typeof params[key] !== 'undefined') {
-      validated[key] = params[key];
+    if (typeof value !== 'undefined') {
+      validated[key] = value;
     }
   });
   return validated;
