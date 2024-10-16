@@ -1,6 +1,4 @@
-export type Params = {
-    [key: string]: any;
-};
+export type Params = Record<PropertyKey, any>;
 export type Field = {
     key: string;
     type: string;
@@ -16,7 +14,5 @@ export type Field = {
  * @returns An object containing the validated fields.
  * @throws {LesgoException} If a required field is missing or if a field has an invalid type.
  */
-declare const validateFields: (params: Params, validFields: Field[]) => {
-    [key: string]: any;
-};
+declare const validateFields: <T extends Params>(params: T, validFields: Field[]) => T;
 export default validateFields;

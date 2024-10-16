@@ -11,7 +11,7 @@ interface ValidateEncryptionFieldsOptions {
 export declare const validateEncryptionAlgorithm: (algorithm: EncryptionAlgorithm) => void;
 export declare const validateSecretKey: (secretKey?: string, algorithm?: EncryptionAlgorithm) => void;
 declare const validateEncryptionFields: (text: string, opts?: ValidateEncryptionFieldsOptions) => {
-    validText: any;
+    validText: string;
     validAlgorithm: EncryptionAlgorithm;
     validSecretKey: string;
     validIvLength: number;
