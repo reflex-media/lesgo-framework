@@ -4,9 +4,7 @@ import isDecimal from './isDecimal';
 
 const FILE = 'lesgo.utils.validateFields';
 
-export type Params = {
-  [key: string]: any;
-};
+export type Params = Record<PropertyKey, any>;
 
 export type Field = {
   key: string;
@@ -16,7 +14,7 @@ export type Field = {
   enumValues?: string[];
 };
 
-const isValidJSON = (jsonString: string) => {
+const isValidJSON = (jsonString: unknown) => {
   if (typeof jsonString !== 'string') {
     return false;
   }
@@ -37,17 +35,17 @@ const isValidJSON = (jsonString: string) => {
  * @returns An object containing the validated fields.
  * @throws {LesgoException} If a required field is missing or if a field has an invalid type.
  */
-const validateFields = (params: Params, validFields: Field[]) => {
-  const validated: {
-    [key: string]: any;
-  } = {};
+const validateFields = <T extends Params>(params: T, validFields: Field[]) => {
+  const validated = {} as T;
 
   validFields.forEach(field => {
     const { required, type, key, isCollection, enumValues = [] } = field;
 
+    const value = params[key];
+
     if (required) {
-      if (typeof params[key] === 'object') {
-        if (Array.isArray(params[key]) && params[key].length === 0) {
+      if (typeof value === 'object') {
+        if (Array.isArray(value) && value.length === 0) {
           throw new LesgoException(
             `Missing required '${key}'`,
             `${FILE}::MISSING_REQUIRED_${key.toUpperCase()}`,
@@ -57,8 +55,8 @@ const validateFields = (params: Params, validFields: Field[]) => {
         }
       }
 
-      if (!params[key]) {
-        if (typeof params[key] !== 'number') {
+      if (!value) {
+        if (typeof value !== 'number') {
           throw new LesgoException(
             `Missing required '${key}'`,
             `${FILE}::MISSING_REQUIRED_${key.toUpperCase()}`,
@@ -71,64 +69,62 @@ const validateFields = (params: Params, validFields: Field[]) => {
 
     if (isCollection) {
       try {
-        validateFields({ [key]: params[key] }, [
-          { key, required, type: 'array' },
-        ]);
+        validateFields({ [key]: value }, [{ key, required, type: 'array' }]);
       } catch (_) {
         throw new LesgoException(
           `Invalid type for '${key}', expecting collection of '${type}'`,
           `${FILE}::INVALID_TYPE_${key.toUpperCase()}`,
           500,
-          { field, value: params[key] }
+          { field, value }
         );
       }
     }
 
-    (isCollection ? params[key] || [] : [params[key]]).forEach(
-      (paramsItem: any) => {
-        if (
-          (type === 'string' &&
-            typeof paramsItem !== 'undefined' &&
-            typeof paramsItem !== 'string') ||
-          (type === 'object' &&
-            typeof paramsItem !== 'undefined' &&
-            typeof paramsItem !== 'object') ||
-          (type === 'number' &&
-            typeof paramsItem !== 'undefined' &&
-            typeof paramsItem !== 'number') ||
-          (type === 'decimal' &&
-            typeof paramsItem !== 'undefined' &&
-            !isDecimal(paramsItem)) ||
-          (type === 'email' &&
-            typeof paramsItem !== 'undefined' &&
-            !isEmail(paramsItem)) ||
-          (type === 'array' &&
-            typeof paramsItem !== 'undefined' &&
-            !Array.isArray(paramsItem)) ||
-          (type === 'enum' &&
-            typeof paramsItem !== 'undefined' &&
-            !enumValues.includes(paramsItem)) ||
-          (type === 'function' &&
-            typeof paramsItem !== 'undefined' &&
-            {}.toString.call(paramsItem) !== '[object Function]') ||
-          (type === 'json' &&
-            typeof paramsItem !== 'undefined' &&
-            !isValidJSON(paramsItem))
-        ) {
-          throw new LesgoException(
-            `Invalid type for '${key}', expecting ${
-              isCollection ? 'collection of ' : ''
-            }'${type}'`,
-            `${FILE}::INVALID_TYPE_${key.toUpperCase()}`,
-            500,
-            { field, value: paramsItem }
-          );
-        }
-      }
-    );
+    const paramsItems = isCollection ? (value as unknown[]) || [] : [value];
 
-    if (typeof params[key] !== 'undefined') {
-      validated[key] = params[key];
+    paramsItems.forEach((paramsItem: any) => {
+      if (
+        (type === 'string' &&
+          typeof paramsItem !== 'undefined' &&
+          typeof paramsItem !== 'string') ||
+        (type === 'object' &&
+          typeof paramsItem !== 'undefined' &&
+          typeof paramsItem !== 'object') ||
+        (type === 'number' &&
+          typeof paramsItem !== 'undefined' &&
+          typeof paramsItem !== 'number') ||
+        (type === 'decimal' &&
+          typeof paramsItem !== 'undefined' &&
+          !isDecimal(paramsItem)) ||
+        (type === 'email' &&
+          typeof paramsItem !== 'undefined' &&
+          !isEmail(paramsItem)) ||
+        (type === 'array' &&
+          typeof paramsItem !== 'undefined' &&
+          !Array.isArray(paramsItem)) ||
+        (type === 'enum' &&
+          typeof paramsItem !== 'undefined' &&
+          !enumValues.includes(paramsItem)) ||
+        (type === 'function' &&
+          typeof paramsItem !== 'undefined' &&
+          {}.toString.call(paramsItem) !== '[object Function]') ||
+        (type === 'json' &&
+          typeof paramsItem !== 'undefined' &&
+          !isValidJSON(paramsItem))
+      ) {
+        throw new LesgoException(
+          `Invalid type for '${key}', expecting ${
+            isCollection ? 'collection of ' : ''
+          }'${type}'`,
+          `${FILE}::INVALID_TYPE_${key.toUpperCase()}`,
+          500,
+          { field, value: paramsItem }
+        );
+      }
+    });
+
+    if (typeof value !== 'undefined') {
+      (validated as T)[key as keyof T] = value;
     }
   });
 
