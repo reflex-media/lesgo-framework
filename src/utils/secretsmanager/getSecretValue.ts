@@ -1,9 +1,16 @@
+import { logger } from '../../utils';
 import { LesgoException } from '../../exceptions';
 import getSecretValueService, {
   GetSecretValueOptions,
 } from '../../services/SecretsManagerService/getSecretValue';
 import { ClientOptions } from '../../types/aws';
 import isEmpty from '../isEmpty';
+
+export interface Secrets {
+  [key: string]: string | object;
+}
+
+const secret: Secrets = {};
 
 const FILE = 'lesgo.utils.secretsmanager.getSecretValue';
 
@@ -12,6 +19,11 @@ const getSecretValue = async (
   opts?: GetSecretValueOptions,
   clientOpts?: ClientOptions
 ) => {
+  if (secret[secretId]) {
+    logger.debug(`${FILE}::CACHED_SECRET_VALUE`, { secretId });
+    return secret[secretId];
+  }
+
   let secretString;
 
   try {
@@ -39,8 +51,15 @@ const getSecretValue = async (
   }
 
   try {
-    return JSON.parse(secretString as string);
+    const secretObj = JSON.parse(secretString as string);
+    secret[secretId] = secretObj;
+
+    logger.debug(`${FILE}::SECRET_VALUE`, { secretId });
+    return secretObj;
   } catch (error) {
+    secret[secretId] = secretString || '';
+
+    logger.debug(`${FILE}::SECRET_VALUE`, { secretId });
     return secretString;
   }
 };

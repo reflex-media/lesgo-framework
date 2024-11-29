@@ -41,9 +41,9 @@ const query = (sql, preparedValues, connOptions, clientOpts) =>
       { key: 'sql', type: 'string', required: true },
       { key: 'preparedValues', type: 'array', required: false },
     ]);
-    const connection = yield getClient(connOptions, clientOpts);
+    const pool = yield getClient(connOptions, clientOpts);
     try {
-      const resp = yield connection.execute(input.sql, input.preparedValues);
+      const resp = yield pool.execute(input.sql, input.preparedValues);
       logger.debug(`${FILE}::RECEIVED_RESPONSE`, {
         result: resp[0],
         sql,

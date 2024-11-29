@@ -31,12 +31,18 @@ var __awaiter =
       step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
   };
+import { logger } from '../../utils';
 import { LesgoException } from '../../exceptions';
 import getSecretValueService from '../../services/SecretsManagerService/getSecretValue';
 import isEmpty from '../isEmpty';
+const secret = {};
 const FILE = 'lesgo.utils.secretsmanager.getSecretValue';
 const getSecretValue = (secretId, opts, clientOpts) =>
   __awaiter(void 0, void 0, void 0, function* () {
+    if (secret[secretId]) {
+      logger.debug(`${FILE}::CACHED_SECRET_VALUE`, { secretId });
+      return secret[secretId];
+    }
     let secretString;
     try {
       const { SecretString } = yield getSecretValueService(
@@ -60,8 +66,13 @@ const getSecretValue = (secretId, opts, clientOpts) =>
       );
     }
     try {
-      return JSON.parse(secretString);
+      const secretObj = JSON.parse(secretString);
+      secret[secretId] = secretObj;
+      logger.debug(`${FILE}::SECRET_VALUE`, { secretId });
+      return secretObj;
     } catch (error) {
+      secret[secretId] = secretString || '';
+      logger.debug(`${FILE}::SECRET_VALUE`, { secretId });
       return secretString;
     }
   });
