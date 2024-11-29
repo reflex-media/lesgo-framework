@@ -21,10 +21,10 @@ const query = async <T = QueryResult>(
     { key: 'preparedValues', type: 'array', required: false },
   ]);
 
-  const connection = await getClient(connOptions, clientOpts);
+  const pool = await getClient(connOptions, clientOpts);
 
   try {
-    const resp = await connection.execute<QueryResultType<T>>(
+    const resp = await pool.execute<QueryResultType<T>>(
       input.sql,
       input.preparedValues
     );

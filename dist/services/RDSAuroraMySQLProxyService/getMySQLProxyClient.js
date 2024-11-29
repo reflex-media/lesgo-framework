@@ -31,7 +31,7 @@ var __awaiter =
       step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
   };
-import { createConnection } from 'mysql2/promise';
+import { createPool } from 'mysql2/promise';
 import { logger, isEmpty, validateFields } from '../../utils';
 import { rds as rdsConfig } from '../../config';
 import { getSecretValue } from '../../utils/secretsmanager';
@@ -53,10 +53,7 @@ const getMySQLProxyClient = (connOptions, clientOpts) =>
     const databaseName =
       options.databaseName || rdsConfig.aurora.mysql.databaseName;
     if (!isEmpty(singleton[singletonConn])) {
-      logger.debug(`${FILE}::REUSE_RDS_CONNECTION`, {
-        client: singleton[singletonConn],
-        region,
-      });
+      logger.debug(`${FILE}::REUSE_RDS_CONNECTION`);
       return singleton[singletonConn];
     }
     const dbCredentials = yield getSecretValue(
@@ -80,17 +77,18 @@ const getMySQLProxyClient = (connOptions, clientOpts) =>
       connOptions
     );
     logger.debug(`${FILE}::CONN_OPTS`, { connOpts });
-    const conn = yield createConnection(
+    const dbPool = createPool(
       Object.assign(
         {
           user: validatedDbCredentials.username,
           password: validatedDbCredentials.password,
+          connectionLimit: 20,
         },
         connOpts
       )
     );
-    singleton[singletonConn] = conn;
+    singleton[singletonConn] = dbPool;
     logger.debug(`${FILE}::NEW_RDS_CONNECTION`);
-    return conn;
+    return dbPool;
   });
 export default getMySQLProxyClient;
