@@ -29,8 +29,19 @@ describe('getSecretValue', () => {
     expect(result).toBe(secretValue);
   });
 
-  it('should return the parsed secret value if it is an object', async () => {
+  it('should return the cached secret value', async () => {
     const secretId = 'my-secret-id';
+    const opts = {};
+    const clientOpts = {};
+    const secretValue = 'my-secret-value';
+
+    const result = await getSecretValue(secretId, opts, clientOpts);
+
+    expect(result).toBe(secretValue);
+  });
+
+  it('should return the parsed secret value if it is an object', async () => {
+    const secretId = 'my-secret-id-object';
     const secretValue = { key: 'value' };
 
     (getSecretValueService as jest.Mock).mockResolvedValueOnce({
@@ -43,7 +54,7 @@ describe('getSecretValue', () => {
   });
 
   it('should throw exception if service fails', async () => {
-    const secretId = 'my-secret-id';
+    const secretId = 'my-secret-id-error';
 
     (getSecretValueService as jest.Mock).mockRejectedValueOnce(
       new Error('Mock error message')
@@ -55,7 +66,7 @@ describe('getSecretValue', () => {
   });
 
   it('should throw exception if returned value is empty', async () => {
-    const secretId = 'my-secret-id';
+    const secretId = 'my-secret-id-empty';
     const secretValue = '';
 
     (getSecretValueService as jest.Mock).mockResolvedValueOnce({
