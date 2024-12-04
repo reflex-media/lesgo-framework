@@ -1,21 +1,24 @@
-import { logger, validateFields } from '../../utils';
+import { logger } from '../../utils';
 import { ClientOptions } from '../../types/aws';
 import { LesgoException } from '../../exceptions';
 import getElastiCacheRedisClient from './getElastiCacheRedisClient';
 
 const FILE = 'lesgo.services.ElastiCacheRedis.deleteRedisCache';
 
-const deleteRedisCache = async (key: string, clientOpts?: ClientOptions) => {
-  const input = validateFields({ key }, [
-    { key: 'key', type: 'string', required: true },
-  ]);
-
+const deleteRedisCache = async (
+  keys: string | string[],
+  clientOpts?: ClientOptions
+) => {
   const client = await getElastiCacheRedisClient(clientOpts);
   let resp;
 
+  if (!Array.isArray(keys)) {
+    keys = [keys];
+  }
+
   try {
-    resp = await client.del(input.key);
-    logger.debug(`${FILE}::RECEIVED_RESPONSE`, { resp, input });
+    resp = await client.del(...keys);
+    logger.debug(`${FILE}::RECEIVED_RESPONSE`, { resp, keys });
 
     return resp;
   } catch (err) {
@@ -25,7 +28,7 @@ const deleteRedisCache = async (key: string, clientOpts?: ClientOptions) => {
       500,
       {
         err,
-        input,
+        keys,
         clientOpts,
       }
     );
