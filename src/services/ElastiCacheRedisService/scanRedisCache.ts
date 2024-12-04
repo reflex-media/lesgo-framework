@@ -20,26 +20,31 @@ const scanRedisCache = async (pattern: string, clientOpts?: ClientOptions) => {
   ]);
 
   const client = await getElastiCacheRedisClient(clientOpts);
-  const keys: string[] = [];
+  const allKeys: string[] = [];
 
   try {
-    let cursor = '0'; // Start cursor
+    const masterNodes = client.nodes('master');
 
-    do {
-      // Perform SCAN operation
-      const [newCursor, matchedKeys] = await client.scan(
-        cursor,
-        'MATCH',
-        pattern
-      );
-      cursor = newCursor;
+    for (const node of masterNodes) {
+      let cursor = '0';
 
-      if (matchedKeys.length > 0) {
-        keys.push(...matchedKeys);
-      }
-    } while (cursor !== '0'); // Continue until cursor is 0 (scan complete)
+      do {
+        const [newCursor, keys] = await node.scan(
+          cursor,
+          'MATCH',
+          pattern,
+          'COUNT',
+          100
+        );
+        cursor = newCursor;
 
-    logger.debug(`${FILE}::RECEIVED_RESPONSE`, { keys, input });
+        if (keys.length > 0) {
+          allKeys.push(...keys);
+        }
+      } while (cursor !== '0');
+    }
+
+    logger.debug(`${FILE}::RECEIVED_RESPONSE`, { allKeys, input });
   } catch (err) {
     throw new LesgoException(
       'Failed to scan redis cache',
@@ -53,7 +58,7 @@ const scanRedisCache = async (pattern: string, clientOpts?: ClientOptions) => {
     );
   }
 
-  return keys;
+  return allKeys;
 };
 
 export default scanRedisCache;

@@ -10,17 +10,22 @@ const deleteRedisCache = async (
   clientOpts?: ClientOptions
 ) => {
   const client = await getElastiCacheRedisClient(clientOpts);
-  let resp;
 
   if (!Array.isArray(keys)) {
     keys = [keys];
   }
 
   try {
-    resp = await client.del(...keys);
-    logger.debug(`${FILE}::RECEIVED_RESPONSE`, { resp, keys });
+    if (keys.length > 0) {
+      for (const key of keys) {
+        // Keys to be deleted individually due to using Redis Cluster and key may exist across different nodes
+        // ioredis handles the routing of the key to the correct node automatically
+        const resp = await client.del(key);
+        logger.debug(`${FILE}::CACHE_KEY_DELETED`, { resp, key });
+      }
+    }
 
-    return resp;
+    logger.debug(`${FILE}::ALL_KEYS_DELETED`, { keys });
   } catch (err) {
     throw new LesgoException(
       'Failed to delete redis cache',

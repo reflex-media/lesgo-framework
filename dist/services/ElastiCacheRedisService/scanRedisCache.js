@@ -50,22 +50,26 @@ const scanRedisCache = (pattern, clientOpts) =>
       { key: 'pattern', type: 'string', required: true },
     ]);
     const client = yield getElastiCacheRedisClient(clientOpts);
-    const keys = [];
+    const allKeys = [];
     try {
-      let cursor = '0'; // Start cursor
-      do {
-        // Perform SCAN operation
-        const [newCursor, matchedKeys] = yield client.scan(
-          cursor,
-          'MATCH',
-          pattern
-        );
-        cursor = newCursor;
-        if (matchedKeys.length > 0) {
-          keys.push(...matchedKeys);
-        }
-      } while (cursor !== '0'); // Continue until cursor is 0 (scan complete)
-      logger.debug(`${FILE}::RECEIVED_RESPONSE`, { keys, input });
+      const masterNodes = client.nodes('master');
+      for (const node of masterNodes) {
+        let cursor = '0';
+        do {
+          const [newCursor, keys] = yield node.scan(
+            cursor,
+            'MATCH',
+            pattern,
+            'COUNT',
+            100
+          );
+          cursor = newCursor;
+          if (keys.length > 0) {
+            allKeys.push(...keys);
+          }
+        } while (cursor !== '0');
+      }
+      logger.debug(`${FILE}::RECEIVED_RESPONSE`, { allKeys, input });
     } catch (err) {
       throw new LesgoException(
         'Failed to scan redis cache',
@@ -78,6 +82,6 @@ const scanRedisCache = (pattern, clientOpts) =>
         }
       );
     }
-    return keys;
+    return allKeys;
   });
 export default scanRedisCache;

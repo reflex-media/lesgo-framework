@@ -38,14 +38,19 @@ const FILE = 'lesgo.services.ElastiCacheRedis.deleteRedisCache';
 const deleteRedisCache = (keys, clientOpts) =>
   __awaiter(void 0, void 0, void 0, function* () {
     const client = yield getElastiCacheRedisClient(clientOpts);
-    let resp;
     if (!Array.isArray(keys)) {
       keys = [keys];
     }
     try {
-      resp = yield client.del(...keys);
-      logger.debug(`${FILE}::RECEIVED_RESPONSE`, { resp, keys });
-      return resp;
+      if (keys.length > 0) {
+        for (const key of keys) {
+          // Keys to be deleted individually due to using Redis Cluster and key may exist across different nodes
+          // ioredis handles the routing of the key to the correct node automatically
+          const resp = yield client.del(key);
+          logger.debug(`${FILE}::CACHE_KEY_DELETED`, { resp, key });
+        }
+      }
+      logger.debug(`${FILE}::ALL_KEYS_DELETED`, { keys });
     } catch (err) {
       throw new LesgoException(
         'Failed to delete redis cache',
