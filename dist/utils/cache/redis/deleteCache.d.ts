@@ -16,5 +16,5 @@ import { ClientOptions } from '../../../types/aws';
  *
  * await deleteCache(keys);
  */
-declare const deleteCache: (keys: string | string[], clientOpts?: ClientOptions) => Promise<number>;
+declare const deleteCache: (keys: string | string[], clientOpts?: ClientOptions) => Promise<void>;
 export default deleteCache;
