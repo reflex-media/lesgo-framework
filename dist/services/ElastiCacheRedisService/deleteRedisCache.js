@@ -31,20 +31,20 @@ var __awaiter =
       step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
   };
-import { logger, validateFields } from '../../utils';
+import { logger } from '../../utils';
 import { LesgoException } from '../../exceptions';
 import getElastiCacheRedisClient from './getElastiCacheRedisClient';
 const FILE = 'lesgo.services.ElastiCacheRedis.deleteRedisCache';
-const deleteRedisCache = (key, clientOpts) =>
+const deleteRedisCache = (keys, clientOpts) =>
   __awaiter(void 0, void 0, void 0, function* () {
-    const input = validateFields({ key }, [
-      { key: 'key', type: 'string', required: true },
-    ]);
     const client = yield getElastiCacheRedisClient(clientOpts);
     let resp;
+    if (!Array.isArray(keys)) {
+      keys = [keys];
+    }
     try {
-      resp = yield client.del(input.key);
-      logger.debug(`${FILE}::RECEIVED_RESPONSE`, { resp, input });
+      resp = yield client.del(...keys);
+      logger.debug(`${FILE}::RECEIVED_RESPONSE`, { resp, keys });
       return resp;
     } catch (err) {
       throw new LesgoException(
@@ -53,7 +53,7 @@ const deleteRedisCache = (key, clientOpts) =>
         500,
         {
           err,
-          input,
+          keys,
           clientOpts,
         }
       );

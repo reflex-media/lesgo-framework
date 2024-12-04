@@ -18,7 +18,7 @@ describe('deleteRedisCache', () => {
 
   it('should delete the redis cache when valid input is provided', async () => {
     const key = 'testKey';
-    const input = { key };
+    const input = [key];
 
     mockClient.del.mockResolvedValue(1);
 
@@ -32,19 +32,10 @@ describe('deleteRedisCache', () => {
 
     expect(logger.debug).toHaveBeenCalledWith(
       'lesgo.services.ElastiCacheRedis.deleteRedisCache::RECEIVED_RESPONSE',
-      { resp: 1, input }
+      { resp: 1, keys: input }
     );
 
     expect(result).toEqual(1);
-  });
-
-  it('should throw an exception when invalid input is provided', async () => {
-    const key = 123;
-
-    // @ts-ignore
-    await expect(deleteRedisCache(key)).rejects.toThrow(
-      new LesgoException("Invalid type for 'key', expecting 'string'")
-    );
   });
 
   it('should throw an exception when client.del fails', async () => {
