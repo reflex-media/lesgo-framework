@@ -64,26 +64,22 @@ const getMySQLProxyClient = (connOptions, clientOpts) =>
         singletonConn,
       }
     );
-    const validatedDbCredentials = validateFields(dbCredentials, [
-      { key: 'host', type: 'string', required: true },
-      { key: 'username', type: 'string', required: true },
-      { key: 'password', type: 'string', required: true },
-    ]);
     const connOpts = Object.assign(
       {
-        host: rdsConfig.aurora.mysql.proxy.host || validatedDbCredentials.host,
+        host: rdsConfig.aurora.mysql.proxy.host || dbCredentials.host,
         database: databaseName,
+        port: rdsConfig.aurora.mysql.proxy.port || dbCredentials.port || 3306,
+        connectionLimit: rdsConfig.aurora.mysql.proxy.connectionLimit || 10,
+        waitForConnections:
+          rdsConfig.aurora.mysql.proxy.waitForConnections || true,
+        queueLimit: rdsConfig.aurora.mysql.proxy.queueLimit || 0,
       },
       connOptions
     );
     logger.debug(`${FILE}::CONN_OPTS`, { connOpts });
     const dbPool = createPool(
       Object.assign(
-        {
-          user: validatedDbCredentials.username,
-          password: validatedDbCredentials.password,
-          connectionLimit: 20,
-        },
+        { user: dbCredentials.username, password: dbCredentials.password },
         connOpts
       )
     );
