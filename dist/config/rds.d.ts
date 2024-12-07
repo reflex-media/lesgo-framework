@@ -6,6 +6,10 @@ declare const _default: {
             proxy: {
                 dbCredentialsSecretId: string | undefined;
                 host: string | undefined;
+                port: string | undefined;
+                connectionLimit: number;
+                waitForConnections: boolean;
+                queueLimit: number;
             };
         };
     };
