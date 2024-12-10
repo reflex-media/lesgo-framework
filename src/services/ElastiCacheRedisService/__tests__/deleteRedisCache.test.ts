@@ -31,11 +31,15 @@ describe('deleteRedisCache', () => {
     expect(mockClient.del).toHaveBeenCalledWith(key);
 
     expect(logger.debug).toHaveBeenCalledWith(
-      'lesgo.services.ElastiCacheRedis.deleteRedisCache::RECEIVED_RESPONSE',
-      { resp: 1, keys: input }
+      'lesgo.services.ElastiCacheRedis.deleteRedisCache::CACHE_KEY_DELETED',
+      { key: 'testKey', resp: 1 }
+    );
+    expect(logger.debug).toHaveBeenCalledWith(
+      'lesgo.services.ElastiCacheRedis.deleteRedisCache::ALL_KEYS_DELETED',
+      { keys: input }
     );
 
-    expect(result).toEqual(1);
+    expect(result).toBeUndefined();
   });
 
   it('should throw an exception when client.del fails', async () => {
