@@ -6,9 +6,9 @@
  *
  * @example
  * ```typescript
- * import { safePromise } from 'lesgo/utils';
+ * import { typeSafePromise } from 'lesgo/utils';
  *
- * const res = await safePromise(fetch('https://example.com/'));
+ * const res = await typeSafePromise(fetch('https://example.com/'));
  * if (res.success) {
  *   console.log(res.data);
  * } else {
