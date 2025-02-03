@@ -1,29 +1,47 @@
 /**
  *
  * @param promise
- * @returns [err, res]
+ * @returns {isSuccess: true, data: TData, error: undefined} | {isSuccess: false, data: undefined, error: TError}
  * @reference https://github.com/arthurfiorette/proposal-safe-assignment-operator
  *
  * @example
  * ```typescript
  * import { safePromise } from 'lesgo/utils';
  *
- * const [err, res] = await safePromise(fetch('https://example.com/'));
- * if (err) {
- *   console.error(err);
+ * const res = await safePromise(fetch('https://example.com/'));
+ * if (res.isSuccess) {
+ *   console.log(res.data);
  * } else {
- *   console.log(res);
+ *   console.error(res.error);
  * }
  * ```
  */
-const safePromise = async <T>(
-  promise: Promise<T>
-): Promise<[unknown, T | null]> => {
+type ReturnTypeSafePromise<TData, TError> =
+  | {
+      isSuccess: true;
+      data: TData;
+      error?: undefined;
+    }
+  | {
+      isSuccess: false;
+      data?: undefined;
+      error: TError;
+    };
+
+const safePromise = async <TData, TError = Error>(
+  promise: Promise<TData>
+): Promise<ReturnTypeSafePromise<TData, TError>> => {
   try {
     const res = await promise;
-    return [null, res];
+    return {
+      isSuccess: true,
+      data: res,
+    };
   } catch (err) {
-    return [err, null];
+    return {
+      isSuccess: false,
+      error: err as TError,
+    };
   }
 };
 
