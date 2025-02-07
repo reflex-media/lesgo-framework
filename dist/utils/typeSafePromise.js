@@ -31,31 +31,19 @@ var __awaiter =
       step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
   };
-/**
- * @deprecated use typeSafePromise instead
- * @param promise
- * @returns [err, res]
- * @reference https://github.com/arthurfiorette/proposal-safe-assignment-operator
- *
- * @example
- * ```typescript
- * import { safePromise } from 'lesgo/utils';
- *
- * const [err, res] = await safePromise(fetch('https://example.com/'));
- * if (err) {
- *   console.error(err);
- * } else {
- *   console.log(res);
- * }
- * ```
- */
-const safePromise = promise =>
+const typeSafePromise = promise =>
   __awaiter(void 0, void 0, void 0, function* () {
     try {
       const res = yield promise;
-      return [null, res];
+      return {
+        success: true,
+        data: res,
+      };
     } catch (err) {
-      return [err, null];
+      return {
+        success: false,
+        error: err,
+      };
     }
   });
-export default safePromise;
+export default typeSafePromise;

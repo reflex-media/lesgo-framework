@@ -8,3 +8,4 @@ export { default as isEmpty } from './isEmpty';
 export { default as logger } from './logger';
 export { default as validateFields } from './validateFields';
 export { default as safePromise } from './safePromise';
+export { default as typeSafePromise } from './typeSafePromise';
