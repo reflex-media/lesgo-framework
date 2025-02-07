@@ -1,7 +1,7 @@
 import typeSafePromise from '../typeSafePromise';
 
 describe('typeSafePromise', () => {
-  it('should return success with data when promise resolves', async () => {
+  it('should return success as true with data when promise resolves', async () => {
     const mockData = { message: 'Success' };
     const promise = Promise.resolve(mockData);
 
@@ -13,7 +13,7 @@ describe('typeSafePromise', () => {
     });
   });
 
-  it('should return failure with error when promise rejects', async () => {
+  it('should return success as false with error when promise rejects', async () => {
     const mockError = new Error('Failure');
     const promise = Promise.reject(mockError);
 
