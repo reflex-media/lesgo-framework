@@ -1,5 +1,5 @@
 /**
- *
+ * @deprecated use typeSafePromise instead
  * @param promise
  * @returns [err, res]
  * @reference https://github.com/arthurfiorette/proposal-safe-assignment-operator
