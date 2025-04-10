@@ -8,9 +8,11 @@ const getClient = (opts = {}) => {
   const options = validateFields(opts, [
     { key: 'region', type: 'string', required: false },
     { key: 'singletonConn', type: 'string', required: false },
+    { key: 'retryStrategy', type: 'object', required: false },
   ]);
   const region = options.region || dynamodbConfig.region;
   const singletonConn = options.singletonConn || 'default';
+  const retryStrategy = options.retryStrategy;
   if (!isEmpty(singleton[singletonConn])) {
     logger.debug(`${FILE}::REUSE_CLIENT_SINGLETON`, {
       client: singleton[singletonConn],
@@ -18,7 +20,7 @@ const getClient = (opts = {}) => {
     });
     return singleton[singletonConn];
   }
-  const ddbClient = new DynamoDBClient({ region });
+  const ddbClient = new DynamoDBClient({ region, retryStrategy });
   const client = DynamoDBDocumentClient.from(ddbClient);
   logger.debug(`${FILE}::NEW_CLIENT_SINGLETON`, {
     client,
