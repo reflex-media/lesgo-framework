@@ -6,4 +6,5 @@ export interface ClientOptions {
 export interface RDSAuroraMySQLProxyClientOptions extends ClientOptions {
   dbCredentialsSecretId?: string;
   databaseName?: string;
+  usePool?: boolean;
 }
