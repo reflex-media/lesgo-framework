@@ -36,7 +36,7 @@ const getMySQLProxyClient = async (
     rdsConfig.aurora.mysql.proxy.dbCredentialsSecretId) as string;
   const databaseName =
     options.databaseName || rdsConfig.aurora.mysql.databaseName;
-  const usePool = options.usePool ?? true;
+  const usePool = options.usePool ?? rdsConfig.aurora.mysql.proxy.usePool;
 
   if (!isEmpty(singleton[singletonConn])) {
     logger.debug(`${FILE}::REUSE_RDS_CONNECTION`);
