@@ -1,6 +1,7 @@
 import sign from '../sign';
 import signService from '../../../services/JWTService/sign';
 import jwtConfig from '../../../config/jwt';
+import { SignOptions } from 'jsonwebtoken';
 
 jest.mock('../../../services/JWTService/sign');
 
@@ -20,7 +21,7 @@ describe('sign', () => {
   it('should call signService with provided secret and options', () => {
     const payload = { id: '123', username: 'john.doe' };
     const secret = 'custom-secret';
-    const opts = { expiresIn: '2h' };
+    const opts: SignOptions = { expiresIn: '2h' };
 
     sign(payload, secret, opts);
 
