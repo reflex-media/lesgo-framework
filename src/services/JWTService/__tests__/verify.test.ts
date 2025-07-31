@@ -1,4 +1,4 @@
-import { Jwt, JwtPayload } from 'jsonwebtoken';
+import { Jwt, JwtPayload, SignOptions } from 'jsonwebtoken';
 import jwtConfig from '../../../config/jwt';
 import { verify, sign } from '../../JWTService';
 
@@ -6,7 +6,7 @@ describe('verify', () => {
   it('should return the signed token', () => {
     const payload = { id: '123', username: 'john.doe' };
     const secret = jwtConfig.secrets[0].secret;
-    const opts = { expiresIn: '2h' };
+    const opts: SignOptions = { expiresIn: '2h' };
 
     const result = sign(payload, secret, opts);
     const verifyResult = verify(result, secret) as JwtPayload;
