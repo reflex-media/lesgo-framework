@@ -5,6 +5,8 @@ export default {
     mysql: {
       region: process.env.LESGO_AWS_RDS_AURORA_MYSQL_REGION || awsConfig.region,
       databaseName: process.env.LESGO_AWS_RDS_AURORA_MYSQL_DB_NAME,
+      user: process.env.LESGO_AWS_RDS_AURORA_MYSQL_DB_USER,
+      password: process.env.LESGO_AWS_RDS_AURORA_MYSQL_DB_PASSWORD,
       proxy: {
         dbCredentialsSecretId:
           process.env.LESGO_AWS_RDS_AURORA_MYSQL_PROXY_DB_CREDENTIALS_SECRET_ID,
