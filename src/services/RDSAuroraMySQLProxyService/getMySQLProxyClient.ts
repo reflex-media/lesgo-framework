@@ -17,7 +17,7 @@ const poolHealthCheckLocks: Record<string, Promise<Pool> | null> = {};
 
 const poolRecreationCounts: Record<string, number> = {};
 
-const MAX_POOL_CREATION_RETRIES = 3;
+const MAX_POOL_CREATION_RETRIES = rdsConfig.aurora.mysql.maxPoolCreationRetries;
 
 const isPoolHealthy = async (pool: Pool): Promise<boolean> => {
   let conn;
@@ -64,7 +64,7 @@ const createAndStoreNewPool = async (
         ...connOptions,
       };
 
-      logger.debug(`${FILE}::CONN_OPTS`, { connOpts });
+      logger.debug(`${FILE}::CONN_OPTS`, { connOpts, connOptions });
 
       const dbPool = createPool(connOpts);
 
@@ -106,6 +106,12 @@ const getClient = async (
     { key: 'dbCredentialsSecretId', type: 'string', required: false },
     { key: 'databaseName', type: 'string', required: false },
   ]);
+
+  logger.debug(`${FILE}::GET_CLIENT_OPTIONS`, {
+    connOptions,
+    clientOpts,
+    options,
+  });
 
   const region = options.region || rdsConfig.aurora.mysql.region;
   const singletonConn = options.singletonConn || 'default';
