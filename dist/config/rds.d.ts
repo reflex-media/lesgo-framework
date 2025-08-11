@@ -3,6 +3,8 @@ declare const _default: {
         mysql: {
             region: string;
             databaseName: string | undefined;
+            user: string | undefined;
+            password: string | undefined;
             proxy: {
                 dbCredentialsSecretId: string | undefined;
                 host: string | undefined;
