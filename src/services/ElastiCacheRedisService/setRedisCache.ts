@@ -17,7 +17,8 @@ const setRedisCache = async (
 ) => {
   const input = validateFields({ key, value }, [
     { key: 'key', type: 'string', required: true },
-    { key: 'value', type: 'any', required: true },
+    // Can accept empty values to caching
+    { key: 'value', type: 'any', required: false },
   ]);
 
   opts = {
