@@ -36,13 +36,30 @@ import { elasticache as elasticacheConfig } from '../../config';
 import { logger, isEmpty, validateFields } from '../../utils';
 import { LesgoException } from '../../exceptions';
 const FILE = 'lesgo.services.ElastiCacheRedisService.getClient';
+const REDIS_CONN_TIMEOUT = 5000;
 export const singleton = {};
+const waitForClusterReady = redisClient => {
+  return new Promise((resolve, reject) => {
+    const timeout = setTimeout(() => {
+      reject(new Error('ElastiCache Redis connection timed out'));
+    }, REDIS_CONN_TIMEOUT);
+    redisClient.once('ready', () => {
+      clearTimeout(timeout);
+      resolve();
+    });
+    redisClient.once('error', err => {
+      clearTimeout(timeout);
+      reject(`ElastiCache Redis: ${err.message}`);
+    });
+  });
+};
 const getElastiCacheRedisClient = clientOpts =>
   __awaiter(void 0, void 0, void 0, function* () {
     const options = validateFields(clientOpts || {}, [
       { key: 'singletonConn', type: 'string', required: false },
       { key: 'endpoint', type: 'string', required: false },
       { key: 'port', type: 'number', required: false },
+      { key: 'clusterOptions', type: 'object', required: false },
     ]);
     const singletonConn = options.singletonConn || 'default';
     if (!isEmpty(singleton[singletonConn])) {
@@ -52,6 +69,10 @@ const getElastiCacheRedisClient = clientOpts =>
     const clusterEndpoint =
       options.endpoint || elasticacheConfig.redis.endpoint;
     const clusterPort = options.port || elasticacheConfig.redis.port || 6379;
+    const clusterOptions = Object.assign(
+      { dnsLookup: (address, callback) => callback(null, address) },
+      options.clusterOptions || {}
+    );
     if (!clusterEndpoint) {
       throw new LesgoException(
         'Missing ElastiCache Redis endpoint',
@@ -67,21 +88,10 @@ const getElastiCacheRedisClient = clientOpts =>
           port: clusterPort,
         },
       ],
-      {
-        dnsLookup: (address, callback) => callback(null, address),
-        redisOptions: {
-          tls: {},
-        },
-      }
+      clusterOptions
     );
-    redisClient.on('error', err => {
-      logger.error(`${FILE}::REDIS_CLIENT_NOT_CONNECTED_ERROR`, { err });
-    });
-    redisClient.on('connect', () => {
-      logger.debug(`${FILE}::REDIS_CLIENT_CONNECTED`);
-    });
     try {
-      yield redisClient.connect();
+      yield waitForClusterReady(redisClient);
     } catch (error) {
       // Not ideal to base on error message but ioredis doesn't have a better way to check if it's already connected
       if (error.message === 'Redis is already connecting/connected') {
@@ -94,7 +104,7 @@ const getElastiCacheRedisClient = clientOpts =>
         });
       } else {
         throw new LesgoException(
-          'Failed to connect to ElastiCache Redis',
+          error.message,
           `${FILE}::REDIS_CONNECT_ERROR`,
           500,
           {
