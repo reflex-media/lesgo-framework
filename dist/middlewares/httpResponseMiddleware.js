@@ -89,7 +89,7 @@ const httpResponseMiddleware = (opts = {}) => {
     });
   const httpResponseMiddlewareOnError = request =>
     __awaiter(void 0, void 0, void 0, function* () {
-      var _b;
+      var _a;
       const error = request.error;
       if (error.extra && error.extra.statusCode) {
         delete error.extra.statusCode;
@@ -98,9 +98,9 @@ const httpResponseMiddleware = (opts = {}) => {
         statusCode: error.statusCode || 500,
         headers: Object.assign(
           Object.assign({}, options.headers),
-          (_b = request.response) === null || _b === void 0
+          (_a = request.response) === null || _a === void 0
             ? void 0
-            : _b.headers
+            : _a.headers
         ),
         body: Object.assign(
           {

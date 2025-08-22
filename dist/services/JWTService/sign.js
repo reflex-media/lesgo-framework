@@ -3,6 +3,7 @@ import { jwt as jwtConfig } from '../../config';
 import { generateUid } from '../../utils';
 import getJwtSecret from './getJwtSecret';
 const sign = (payload, secret, opts) => {
+  var _a;
   const jwtSecret = getJwtSecret({
     secret,
     keyid: opts === null || opts === void 0 ? void 0 : opts.keyid,
@@ -12,8 +13,10 @@ const sign = (payload, secret, opts) => {
       (opts === null || opts === void 0 ? void 0 : opts.algorithm) ||
       jwtConfig.algorithm,
     expiresIn:
-      (opts === null || opts === void 0 ? void 0 : opts.expiresIn) ||
-      jwtConfig.expiresIn,
+      (_a = opts === null || opts === void 0 ? void 0 : opts.expiresIn) !==
+        null && _a !== void 0
+        ? _a
+        : jwtConfig.expiresIn,
     issuer:
       (opts === null || opts === void 0 ? void 0 : opts.issuer) ||
       jwtConfig.issuer,
