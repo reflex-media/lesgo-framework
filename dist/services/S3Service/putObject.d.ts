@@ -1,4 +1,3 @@
-/// <reference types="node" />
 import { PutObjectCommandInput } from '@aws-sdk/client-s3';
 import { ClientOptions } from '../../types/aws';
 export interface PutObjectOptions extends Partial<Omit<PutObjectCommandInput, 'Key' | 'Bucket'>> {
