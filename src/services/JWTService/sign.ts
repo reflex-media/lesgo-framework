@@ -9,7 +9,8 @@ const sign = (payload: any, secret?: string, opts?: SignOptions) => {
   const options: SignOptions = {
     ...opts,
     algorithm: (opts?.algorithm || jwtConfig.algorithm) as Algorithm,
-    expiresIn: opts?.expiresIn || jwtConfig.expiresIn,
+    expiresIn:
+      opts?.expiresIn ?? (jwtConfig.expiresIn as SignOptions['expiresIn']),
     issuer: opts?.issuer || jwtConfig.issuer,
     audience: opts?.audience || jwtConfig.audience,
     jwtid: opts?.jwtid || generateUid({ length: 16 }),
