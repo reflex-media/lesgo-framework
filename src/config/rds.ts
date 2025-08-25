@@ -19,6 +19,10 @@ export default {
         queueLimit: Number(
           process.env.LESGO_AWS_RDS_AURORA_MYSQL_PROXY_QUEUE_LIMIT || '0'
         ),
+        usePool:
+          process.env.LESGO_AWS_RDS_AURORA_MYSQL_USE_POOL === 'false'
+            ? false
+            : true,
       },
     },
   },

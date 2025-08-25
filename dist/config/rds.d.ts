@@ -10,6 +10,7 @@ declare const _default: {
                 connectionLimit: number;
                 waitForConnections: boolean;
                 queueLimit: number;
+                usePool: boolean;
             };
         };
     };
