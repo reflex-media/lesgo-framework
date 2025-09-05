@@ -22,7 +22,6 @@ const getClient = (clientOpts: ClientOptions = {}) => {
 
   if (!isEmpty(singleton[singletonConn])) {
     logger.debug(`${FILE}::REUSE_CLIENT_SINGLETON`, {
-      client: singleton[singletonConn],
       region,
     });
     return singleton[singletonConn];
@@ -30,7 +29,6 @@ const getClient = (clientOpts: ClientOptions = {}) => {
 
   const client = new SQSClient({ region });
   logger.debug(`${FILE}::NEW_CLIENT`, {
-    client,
     region,
   });
 

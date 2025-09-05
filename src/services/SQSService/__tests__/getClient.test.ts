@@ -19,7 +19,6 @@ describe('getClient', () => {
     expect(logger.debug).toHaveBeenCalledWith(
       'lesgo.services.SQSService.getClient::NEW_CLIENT',
       {
-        client,
         region: 'us-west-2',
       }
     );
@@ -37,7 +36,6 @@ describe('getClient', () => {
     expect(logger.debug).toHaveBeenCalledWith(
       'lesgo.services.SQSService.getClient::REUSE_CLIENT_SINGLETON',
       {
-        client: client1,
         region: 'us-west-2',
       }
     );
@@ -53,7 +51,6 @@ describe('getClient', () => {
     expect(logger.debug).toHaveBeenCalledWith(
       'lesgo.services.SQSService.getClient::NEW_CLIENT',
       {
-        client,
         region: 'eu-central-1',
       }
     );
@@ -71,14 +68,12 @@ describe('getClient', () => {
     expect(logger.debug).toHaveBeenCalledWith(
       'lesgo.services.SQSService.getClient::NEW_CLIENT',
       {
-        client: client1,
         region: 'us-west-2',
       }
     );
     expect(logger.debug).toHaveBeenCalledWith(
       'lesgo.services.SQSService.getClient::NEW_CLIENT',
       {
-        client: client2,
         region: 'us-west-2',
       }
     );
