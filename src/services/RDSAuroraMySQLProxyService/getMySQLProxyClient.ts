@@ -19,6 +19,9 @@ const poolRecreationCounts: Record<string, number> = {};
 
 const MAX_POOL_CREATION_RETRIES = rdsConfig.aurora.mysql.maxPoolCreationRetries;
 
+// small helper to pause between retries
+const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+
 const isPoolHealthy = async (pool: Pool): Promise<boolean> => {
   let conn;
   try {
@@ -42,25 +45,28 @@ const createAndStoreNewPool = async (
   region: string,
   databaseName: string
 ): Promise<Pool> => {
+  const dbCredentials = dbCredentialsSecretId
+    ? await getSecretValue(dbCredentialsSecretId, undefined, {
+        region,
+        singletonConn,
+      })
+    : {};
+
   for (let attempt = 1; attempt <= MAX_POOL_CREATION_RETRIES; attempt++) {
     try {
-      const dbCredentials = dbCredentialsSecretId
-        ? await getSecretValue(dbCredentialsSecretId, undefined, {
-            region,
-            singletonConn,
-          })
-        : {};
-
       const connOpts = {
-        host: rdsConfig.aurora.mysql.proxy.host || dbCredentials?.host,
+        host: dbCredentials?.host || rdsConfig.aurora.mysql.proxy.host,
         database: databaseName,
-        port: rdsConfig.aurora.mysql.proxy.port || dbCredentials?.port || 3306,
-        connectionLimit: rdsConfig.aurora.mysql.proxy.connectionLimit || 10,
+        port:
+          Number(dbCredentials?.port ?? rdsConfig.aurora.mysql.proxy.port) ||
+          3306,
+        connectionLimit:
+          Number(rdsConfig.aurora.mysql.proxy.connectionLimit) || 10,
         waitForConnections:
           rdsConfig.aurora.mysql.proxy.waitForConnections ?? true,
-        queueLimit: rdsConfig.aurora.mysql.proxy.queueLimit || 0,
-        user: rdsConfig.aurora.mysql.user || dbCredentials.username,
-        password: rdsConfig.aurora.mysql.password || dbCredentials.password,
+        queueLimit: Number(rdsConfig.aurora.mysql.proxy.queueLimit) || 0,
+        user: rdsConfig.aurora.mysql.user,
+        password: rdsConfig.aurora.mysql.password,
         ...connOptions,
       };
 
@@ -84,7 +90,12 @@ const createAndStoreNewPool = async (
         error: { trace: err },
       });
 
-      if (attempt === MAX_POOL_CREATION_RETRIES) {
+      // short exponential backoff before retrying
+      if (attempt <= MAX_POOL_CREATION_RETRIES) {
+        const delay = Math.min(1000, 100 * 2 ** (attempt - 1));
+        logger.debug(`${FILE}::POOL_CREATION_BACKOFF`, { attempt, delay });
+        await sleep(delay);
+      } else {
         throw new Error(
           `Failed to create MySQL pool after ${MAX_POOL_CREATION_RETRIES} attempts`
         );

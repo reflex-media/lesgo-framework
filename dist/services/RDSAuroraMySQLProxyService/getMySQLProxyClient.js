@@ -41,6 +41,8 @@ export const singleton = {};
 const poolHealthCheckLocks = {};
 const poolRecreationCounts = {};
 const MAX_POOL_CREATION_RETRIES = rdsConfig.aurora.mysql.maxPoolCreationRetries;
+// small helper to pause between retries
+const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 const isPoolHealthy = pool =>
   __awaiter(void 0, void 0, void 0, function* () {
     let conn;
@@ -65,38 +67,41 @@ const createAndStoreNewPool = (
   databaseName
 ) =>
   __awaiter(void 0, void 0, void 0, function* () {
-    var _a;
+    var _a, _b;
+    const dbCredentials = dbCredentialsSecretId
+      ? yield getSecretValue(dbCredentialsSecretId, undefined, {
+          region,
+          singletonConn,
+        })
+      : {};
     for (let attempt = 1; attempt <= MAX_POOL_CREATION_RETRIES; attempt++) {
       try {
-        const dbCredentials = dbCredentialsSecretId
-          ? yield getSecretValue(dbCredentialsSecretId, undefined, {
-              region,
-              singletonConn,
-            })
-          : {};
         const connOpts = Object.assign(
           {
             host:
-              rdsConfig.aurora.mysql.proxy.host ||
               (dbCredentials === null || dbCredentials === void 0
                 ? void 0
-                : dbCredentials.host),
+                : dbCredentials.host) || rdsConfig.aurora.mysql.proxy.host,
             database: databaseName,
             port:
-              rdsConfig.aurora.mysql.proxy.port ||
-              (dbCredentials === null || dbCredentials === void 0
-                ? void 0
-                : dbCredentials.port) ||
-              3306,
-            connectionLimit: rdsConfig.aurora.mysql.proxy.connectionLimit || 10,
+              Number(
+                (_a =
+                  dbCredentials === null || dbCredentials === void 0
+                    ? void 0
+                    : dbCredentials.port) !== null && _a !== void 0
+                  ? _a
+                  : rdsConfig.aurora.mysql.proxy.port
+              ) || 3306,
+            connectionLimit:
+              Number(rdsConfig.aurora.mysql.proxy.connectionLimit) || 10,
             waitForConnections:
-              (_a = rdsConfig.aurora.mysql.proxy.waitForConnections) !== null &&
-              _a !== void 0
-                ? _a
+              (_b = rdsConfig.aurora.mysql.proxy.waitForConnections) !== null &&
+              _b !== void 0
+                ? _b
                 : true,
-            queueLimit: rdsConfig.aurora.mysql.proxy.queueLimit || 0,
-            user: rdsConfig.aurora.mysql.user || dbCredentials.username,
-            password: rdsConfig.aurora.mysql.password || dbCredentials.password,
+            queueLimit: Number(rdsConfig.aurora.mysql.proxy.queueLimit) || 0,
+            user: rdsConfig.aurora.mysql.user,
+            password: rdsConfig.aurora.mysql.password,
           },
           connOptions
         );
@@ -115,7 +120,12 @@ const createAndStoreNewPool = (
           attempt,
           error: { trace: err },
         });
-        if (attempt === MAX_POOL_CREATION_RETRIES) {
+        // short exponential backoff before retrying
+        if (attempt <= MAX_POOL_CREATION_RETRIES) {
+          const delay = Math.min(1000, 100 * Math.pow(2, attempt - 1));
+          logger.debug(`${FILE}::POOL_CREATION_BACKOFF`, { attempt, delay });
+          yield sleep(delay);
+        } else {
           throw new Error(
             `Failed to create MySQL pool after ${MAX_POOL_CREATION_RETRIES} attempts`
           );
