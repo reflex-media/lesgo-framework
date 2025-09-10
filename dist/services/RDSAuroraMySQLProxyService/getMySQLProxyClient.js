@@ -43,6 +43,13 @@ const poolRecreationCounts = {};
 const MAX_POOL_CREATION_RETRIES = rdsConfig.aurora.mysql.maxPoolCreationRetries;
 // small helper to pause between retries
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
+const sanitizeForLogging = obj => {
+  if (!obj) return obj;
+  const sanitized = Object.assign({}, obj);
+  delete sanitized.password;
+  delete sanitized.username;
+  return sanitized;
+};
 const isPoolHealthy = pool =>
   __awaiter(void 0, void 0, void 0, function* () {
     let conn;
@@ -67,7 +74,7 @@ const createAndStoreNewPool = (
   databaseName
 ) =>
   __awaiter(void 0, void 0, void 0, function* () {
-    var _a, _b;
+    var _a;
     const dbCredentials = dbCredentialsSecretId
       ? yield getSecretValue(dbCredentialsSecretId, undefined, {
           region,
@@ -79,34 +86,42 @@ const createAndStoreNewPool = (
         const connOpts = Object.assign(
           {
             host:
+              rdsConfig.aurora.mysql.proxy.host ||
               (dbCredentials === null || dbCredentials === void 0
                 ? void 0
-                : dbCredentials.host) || rdsConfig.aurora.mysql.proxy.host,
+                : dbCredentials.host),
             database: databaseName,
             port:
               Number(
-                (_a =
-                  dbCredentials === null || dbCredentials === void 0
+                rdsConfig.aurora.mysql.proxy.port ||
+                  (dbCredentials === null || dbCredentials === void 0
                     ? void 0
-                    : dbCredentials.port) !== null && _a !== void 0
-                  ? _a
-                  : rdsConfig.aurora.mysql.proxy.port
+                    : dbCredentials.port)
               ) || 3306,
+            user:
+              (dbCredentials === null || dbCredentials === void 0
+                ? void 0
+                : dbCredentials.username) || rdsConfig.aurora.mysql.user,
+            password:
+              (dbCredentials === null || dbCredentials === void 0
+                ? void 0
+                : dbCredentials.password) || rdsConfig.aurora.mysql.password,
             connectionLimit:
               Number(rdsConfig.aurora.mysql.proxy.connectionLimit) || 10,
             waitForConnections:
-              (_b = rdsConfig.aurora.mysql.proxy.waitForConnections) !== null &&
-              _b !== void 0
-                ? _b
+              (_a = rdsConfig.aurora.mysql.proxy.waitForConnections) !== null &&
+              _a !== void 0
+                ? _a
                 : true,
             queueLimit: Number(rdsConfig.aurora.mysql.proxy.queueLimit) || 0,
-            user: rdsConfig.aurora.mysql.user,
-            password: rdsConfig.aurora.mysql.password,
           },
           connOptions
         );
-        logger.debug(`${FILE}::CONN_OPTS`, { connOpts, connOptions });
-        const dbPool = createPool(connOpts);
+        logger.debug(`${FILE}::CONN_OPTS`, {
+          connOpts: sanitizeForLogging(connOpts),
+          connOptions: sanitizeForLogging(connOptions || {}),
+        });
+        const dbPool = createPool(Object.assign({}, connOpts));
         singleton[singletonConn] = dbPool;
         poolRecreationCounts[singletonConn] =
           (poolRecreationCounts[singletonConn] || 0) + 1;
@@ -144,9 +159,9 @@ const getClient = (connOptions, clientOpts) =>
       { key: 'databaseName', type: 'string', required: false },
     ]);
     logger.debug(`${FILE}::GET_CLIENT_OPTIONS`, {
-      connOptions,
-      clientOpts,
-      options,
+      connOptions: sanitizeForLogging(connOptions || {}),
+      clientOpts: sanitizeForLogging(clientOpts || {}),
+      options: sanitizeForLogging(options),
     });
     const region = options.region || rdsConfig.aurora.mysql.region;
     const singletonConn = options.singletonConn || 'default';
