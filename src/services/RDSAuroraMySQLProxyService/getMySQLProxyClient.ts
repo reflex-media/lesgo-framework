@@ -55,10 +55,10 @@ const createAndStoreNewPool = async (
   for (let attempt = 1; attempt <= MAX_POOL_CREATION_RETRIES; attempt++) {
     try {
       const connOpts = {
-        host: dbCredentials?.host || rdsConfig.aurora.mysql.proxy.host,
+        host: rdsConfig.aurora.mysql.proxy.host || dbCredentials?.host,
         database: databaseName,
         port:
-          Number(dbCredentials?.port ?? rdsConfig.aurora.mysql.proxy.port) ||
+          Number(rdsConfig.aurora.mysql.proxy.port || dbCredentials?.port) ||
           3306,
         connectionLimit:
           Number(rdsConfig.aurora.mysql.proxy.connectionLimit) || 10,
