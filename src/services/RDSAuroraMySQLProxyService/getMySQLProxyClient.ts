@@ -22,6 +22,19 @@ const MAX_POOL_CREATION_RETRIES = rdsConfig.aurora.mysql.maxPoolCreationRetries;
 // small helper to pause between retries
 const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
+const sanitizeForLogging = <T extends Record<string, any>>(
+  obj: T
+): Partial<T> => {
+  if (!obj) return obj;
+
+  const sanitized = { ...obj };
+
+  delete sanitized.password;
+  delete sanitized.user;
+
+  return sanitized as Partial<T>;
+};
+
 const isPoolHealthy = async (pool: Pool): Promise<boolean> => {
   let conn;
   try {
@@ -60,19 +73,24 @@ const createAndStoreNewPool = async (
         port:
           Number(rdsConfig.aurora.mysql.proxy.port || dbCredentials?.port) ||
           3306,
+        user: dbCredentials?.username || rdsConfig.aurora.mysql.user,
+        password: dbCredentials?.password || rdsConfig.aurora.mysql.password,
         connectionLimit:
           Number(rdsConfig.aurora.mysql.proxy.connectionLimit) || 10,
         waitForConnections:
           rdsConfig.aurora.mysql.proxy.waitForConnections ?? true,
         queueLimit: Number(rdsConfig.aurora.mysql.proxy.queueLimit) || 0,
-        user: rdsConfig.aurora.mysql.user,
-        password: rdsConfig.aurora.mysql.password,
         ...connOptions,
       };
 
-      logger.debug(`${FILE}::CONN_OPTS`, { connOpts, connOptions });
+      logger.debug(`${FILE}::CONN_OPTS`, {
+        connOpts: sanitizeForLogging(connOpts),
+        connOptions: sanitizeForLogging(connOptions || {}),
+      });
 
-      const dbPool = createPool(connOpts);
+      const dbPool = createPool({
+        ...connOpts,
+      });
 
       singleton[singletonConn] = dbPool;
       poolRecreationCounts[singletonConn] =
@@ -119,9 +137,9 @@ const getClient = async (
   ]);
 
   logger.debug(`${FILE}::GET_CLIENT_OPTIONS`, {
-    connOptions,
-    clientOpts,
-    options,
+    connOptions: sanitizeForLogging(connOptions || {}),
+    clientOpts: sanitizeForLogging(clientOpts || {}),
+    options: sanitizeForLogging(options),
   });
 
   const region = options.region || rdsConfig.aurora.mysql.region;
