@@ -9,7 +9,7 @@ import { getElastiCacheRedisClient } from '../../../services/ElastiCacheRedisSer
  * This function is not intended to be used directly.
  * Use the available `getCache`, `setCache`, and `deleteCache` functions instead.
  *
- * @param {ClientOptions} clientOpts - Optional client options.
+ * @param {ElastiCacheRedisClientOptions} clientOpts - Optional client options.
  * @returns A promise of with Redis client.
  *
  * @throws {LesgoException} If there is an error creating the client.

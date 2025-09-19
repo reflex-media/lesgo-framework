@@ -1,4 +1,4 @@
-import { ClientOptions } from '../../../types/aws';
+import { ElastiCacheRedisClientOptions } from '../../../types/aws';
 /**
  * Retrieves a Redis client.
  *
@@ -9,7 +9,7 @@ import { ClientOptions } from '../../../types/aws';
  * This function is not intended to be used directly.
  * Use the available `getCache`, `setCache`, and `deleteCache` functions instead.
  *
- * @param {ClientOptions} clientOpts - Optional client options.
+ * @param {ElastiCacheRedisClientOptions} clientOpts - Optional client options.
  * @returns A promise of with Redis client.
  *
  * @throws {LesgoException} If there is an error creating the client.
@@ -26,5 +26,5 @@ import { ClientOptions } from '../../../types/aws';
  * await client.set(key, value);
  * ```
  */
-declare const getClient: (clientOpts?: ClientOptions) => Promise<import("ioredis/built/cluster").default>;
+declare const getClient: (clientOpts?: ElastiCacheRedisClientOptions) => Promise<import("ioredis/built/cluster").default>;
 export default getClient;
