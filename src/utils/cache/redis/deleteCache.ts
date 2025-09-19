@@ -1,11 +1,11 @@
-import { ClientOptions } from '../../../types/aws';
+import { ElastiCacheRedisClientOptions } from '../../../types/aws';
 import { deleteRedisCache } from '../../../services/ElastiCacheRedisService';
 
 /**
  * Deletes the cache value from the Redis cache.
  *
  * @param {string | string[]} keys - The key(s) of the cache value to delete.
- * @param {ClientOptions} clientOpts - Optional client options for Redis connection.
+ * @param {ElastiCacheRedisClientOptions} clientOpts - Optional client options for Redis connection.
  * @returns A promise that resolves to the deleted cache value.
  * @throws {LesgoException} If there is an error deleting the cache.
  *
@@ -18,7 +18,7 @@ import { deleteRedisCache } from '../../../services/ElastiCacheRedisService';
  *
  * await deleteCache(keys);
  */
-const deleteCache = (keys: string | string[], clientOpts?: ClientOptions) => {
+const deleteCache = (keys: string | string[], clientOpts?: ElastiCacheRedisClientOptions) => {
   return deleteRedisCache(keys, clientOpts);
 };
 

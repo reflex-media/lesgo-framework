@@ -12,12 +12,18 @@ describe('getCache', () => {
     const key = 'testKey';
     const region = 'ap-southeast-1';
     const singletonConn = 'default';
+    const clusterOptions = {
+      redisOptions: {
+        tls: {}
+      }
+    }
 
-    await deleteCache(key, { region, singletonConn });
+    await deleteCache(key, { region, singletonConn, clusterOptions });
 
     expect(deleteRedisCache).toHaveBeenCalledWith(key, {
       region,
       singletonConn,
+      clusterOptions
     });
   });
 });

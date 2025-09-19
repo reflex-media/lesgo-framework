@@ -12,12 +12,18 @@ describe('getCache', () => {
     const key = 'testKey';
     const region = 'ap-southeast-1';
     const singletonConn = 'default';
+    const clusterOptions = {
+      redisOptions: {
+        tls: {}
+      }
+    }
 
-    await getCache(key, { region, singletonConn });
+    await getCache(key, { region, singletonConn, clusterOptions });
 
     expect(getRedisCache).toHaveBeenCalledWith(key, {
       region,
       singletonConn,
+      clusterOptions
     });
   });
 });
