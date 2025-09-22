@@ -13,13 +13,19 @@ describe('getClient', () => {
   it('should call getElastiCacheRedisClient with the correct parameters', () => {
     const singletonConn = 'default';
     const region = 'us-west-2';
+    const clusterOptions = {
+      redisOptions: {
+        tls: {}
+      }
+    }
 
-    getClient({ singletonConn, region });
+    getClient({ singletonConn, region, clusterOptions });
 
     expect(getElastiCacheRedisClient).toHaveBeenCalledTimes(1);
     expect(getElastiCacheRedisClient).toHaveBeenCalledWith({
       singletonConn,
       region,
+      clusterOptions
     });
   });
 

@@ -5,7 +5,7 @@ import { setRedisCache } from '../../../services/ElastiCacheRedisService';
  * @param {string} key - The key to set in the cache.
  * @param {any} value - The value to set in the cache.
  * @param {SetRedisCacheOptions} opts - Optional settings for setting the cache.
- * @param {ClientOptions} clientOpts - Optional client options for connecting to Redis.
+ * @param {ElastiCacheRedisClientOptions} clientOpts - Optional client options for connecting to Redis.
  * @returns A promise that resolves when the value is successfully set in the cache.
  *
  * @throws {LesgoException} If there is an error setting the cache.

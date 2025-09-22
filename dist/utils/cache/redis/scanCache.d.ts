@@ -1,9 +1,9 @@
-import { ClientOptions } from '../../../types/aws';
+import { ElastiCacheRedisClientOptions } from '../../../types/aws';
 /**
  * Scans the Redis cache for keys matching a given pattern.
  *
  * @param {string} pattern - The pattern to match keys against.
- * @param {ClientOptions} clientOpts - Optional client options for the cache client.
+ * @param {ElastiCacheRedisClientOptions} clientOpts - Optional client options for the cache client.
  * @returns A promise that resolves when the value is retrieved from the cache.
  *
  * @throws {LesgoException} If there is an error retrieving the cache.
@@ -19,5 +19,5 @@ import { ClientOptions } from '../../../types/aws';
  * console.log(keys); // Array of cache keys returned from the scan operation
  * ```
  */
-declare const scanCache: (pattern: string, clientOpts?: ClientOptions) => Promise<string[]>;
+declare const scanCache: (pattern: string, clientOpts?: ElastiCacheRedisClientOptions) => Promise<string[]>;
 export default scanCache;
