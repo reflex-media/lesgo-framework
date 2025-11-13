@@ -42,5 +42,12 @@ export default class LoggerService {
     };
     refineMessagePerTransport(transportName: string, message: any): any;
     getTransportByName(transportName: string): Transport | undefined;
+    /**
+     * Sanitizes an object for JSON serialization by:
+     * - Replacing functions with a string representation (similar to console.log behavior)
+     * - Handling circular references
+     * - Preserving other values
+     */
+    sanitizeForJson(obj: any, seen?: WeakSet<object>): any;
 }
 export {};
