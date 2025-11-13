@@ -1,0 +1,171 @@
+---
+description: Performance optimization, cold start reduction, and efficiency patterns for Lambda functions in Lesgo framework
+---
+
+# Performance & Optimization
+
+**Related Rules:**
+
+- Client initialization and connection reuse: See `03-aws-services.mdc`
+- Event loop management: See `04-middlewares.mdc`
+- Async patterns: See `09-quick-reference.mdc`
+
+## Lambda Cold Start Optimization
+
+### Connection Reuse
+
+All AWS SDK clients, database connections, and Redis clients use the singleton pattern with `singletonConn` support for reuse across Lambda invocations.
+
+**Reference implementations:**
+
+- AWS SDK clients: `src/services/DynamoDbService/getClient.ts`, `S3Service/getClient.ts`, `SQSService/getClient.ts`
+- RDS MySQL Proxy: `src/services/RDSAuroraMySQLProxyService/getMySQLProxyClient.ts`
+- ElastiCache Redis: `src/services/ElastiCacheRedisService/getElastiCacheRedisClient.ts`
+
+> **See Also**: `03-aws-services.mdc` for the complete client initialization pattern.
+
+### Lazy Loading
+
+Load heavy dependencies only when needed:
+
+```typescript
+// ✅ Good - Lazy load heavy dependencies
+const processImage = async (imageData: Buffer) => {
+  const sharp = await import('sharp');
+  return sharp(imageData).resize(100, 100).toBuffer();
+};
+```
+
+### Minimize Dependencies
+
+Keep `package.json` dependencies lean - only include what's actually used. AWS SDK v3's modular architecture helps with tree-shaking.
+
+## Event Loop Management
+
+The `doNotWaitForEmptyEventLoop` middleware is automatically included in `httpMiddleware`, `sqsMiddleware`, and `invokeCommandMiddleware`. This allows Lambda to freeze with active connections (database, Redis, HTTP keep-alive) without waiting for the event loop to empty.
+
+**Reference**: `src/middlewares/httpMiddleware.ts`, `sqsMiddleware.ts`, `invokeCommandMiddleware.ts`
+
+> **See Also**: `04-middlewares.mdc` for middleware composition patterns.
+
+## Caching
+
+### Redis Caching
+
+Use the ElastiCache Redis service for distributed caching:
+
+```typescript
+import {
+  getRedisCache,
+  setRedisCache,
+} from 'lesgo/services/ElastiCacheRedisService';
+
+// Get cached data (automatically parses JSON)
+const data = await getRedisCache(key);
+
+// Set cache with TTL (defaults to 5 minutes)
+await setRedisCache(key, value, { EX: 3600 }); // 1 hour
+```
+
+**Reference**: `src/services/ElastiCacheRedisService/getRedisCache.ts`, `setRedisCache.ts`
+
+### In-Memory Caching
+
+For Lambda-scoped caching (lost on cold start), use module-level Map:
+
+```typescript
+const cache = new Map<string, { data: any; expiresAt: number }>();
+
+const getCachedData = (key: string) => {
+  const cached = cache.get(key);
+  if (cached && cached.expiresAt > Date.now()) {
+    return cached.data;
+  }
+  // Fetch and cache...
+};
+```
+
+## Database Performance
+
+### Connection Pooling
+
+RDS MySQL Proxy uses connection pooling with singleton pattern. Connection pool configuration is in `src/config/rds.ts`.
+
+**Reference**: `src/services/RDSAuroraMySQLProxyService/getMySQLProxyClient.ts`
+
+### Query Optimization
+
+- Use indexes in WHERE clauses
+- Select only needed columns (avoid `SELECT *`)
+- Use prepared statements (automatic with `mysql2/promise`)
+- Implement pagination for large result sets
+
+**Reference**: `src/services/RDSAuroraMySQLProxyService/query.ts`
+
+### Batch Operations
+
+For DynamoDB batch operations, use `BatchWriteCommand` or `BatchGetCommand` from `@aws-sdk/lib-dynamodb`. Batch operations are not yet implemented in the framework - use AWS SDK directly when needed.
+
+## Async Operations
+
+### Parallel Execution
+
+Use `Promise.all` for independent parallel operations:
+
+```typescript
+const [user, orders, preferences] = await Promise.all([
+  fetchUser(userId),
+  fetchOrders(userId),
+  fetchPreferences(userId),
+]);
+```
+
+### Error Resilience
+
+Use `Promise.allSettled` when you need to continue even if some operations fail. The `disconnectMiddleware` uses this pattern for cleanup.
+
+**Reference**: `src/middlewares/disconnectMiddleware.ts`
+
+> **See Also**: `09-quick-reference.mdc` for async patterns.
+
+## Memory Management
+
+- Avoid keeping large objects in module-level variables
+- Use streaming for large S3 files when possible
+- Clean up references to allow garbage collection
+- Be mindful of cache growth (use TTLs)
+
+## Best Practices
+
+✅ **Do:**
+
+- Reuse connections via singleton pattern (already implemented in services)
+- Use `Promise.all` for parallel operations
+- Implement caching with Redis for frequently accessed data
+- Use lazy loading for heavy dependencies
+- Monitor Lambda execution time and memory usage
+
+❌ **Don't:**
+
+- Create new clients/connections per invocation
+- Use synchronous operations (blocking I/O)
+- Load unnecessary dependencies
+- Process large data entirely in memory
+- Ignore performance metrics
+
+## Lambda Configuration
+
+- **Memory**: Start with 1024 MB, adjust based on CloudWatch metrics
+- **Timeout**: API handlers: 30s, Background jobs: 5m
+- **Provisioned Concurrency**: For latency-sensitive endpoints
+- **Reserved Concurrency**: To prevent throttling critical functions
+
+## Performance Checklist
+
+- [ ] Clients and connections are reused (handled by service singletons)
+- [ ] Heavy dependencies are lazy-loaded
+- [ ] Caching is implemented where beneficial
+- [ ] Database queries are optimized
+- [ ] Parallel execution with `Promise.all` where applicable
+- [ ] Memory is managed properly
+- [ ] Lambda memory is appropriately sized based on metrics

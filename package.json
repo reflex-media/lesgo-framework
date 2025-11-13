@@ -19,8 +19,10 @@
     "bin"
   ],
   "scripts": {
-    "pretest": "eslint 'src/**/*.{ts,tsx}'",
+    "pretest": "npm run type-check && eslint 'src/**/*.{ts,tsx}'",
     "test": "jest",
+    "type-check": "tsc --noEmit",
+    "type-check:watch": "tsc --noEmit --watch",
     "coverage": "jest --coverage",
     "coveralls": "npm run coverage && cat ./coverage/lcov.info | coveralls",
     "lint": "eslint 'src/**/*.{ts,tsx}' --quiet",
@@ -28,6 +30,7 @@
     "lint-fix": "eslint 'src/**/*.{js,ts,jsx,tsx}' --fix",
     "format": "prettier --write 'dist/**/*.js'",
     "build": "tsc && npm run format && npm run lint:dist",
+    "prepare": "husky install",
     "prepublishOnly": "npm run build"
   },
   "bin": {
@@ -161,11 +164,6 @@
     "./utils/cache/redis": {
       "import": "./dist/utils/cache/redis/index.js",
       "require": "./dist/utils/cache/redis/index.js"
-    }
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged"
     }
   },
   "lint-staged": {

@@ -1,0 +1,337 @@
+---
+description: Security patterns, authentication, authorization, and data protection for Lesgo framework
+---
+
+> **See Also**: [Middlewares](./04-middlewares.mdc) for authentication middleware patterns  
+> **See Also**: [Error Handling](./05-error-handling.mdc) for LesgoException usage  
+> **See Also**: [Quick Reference](./09-quick-reference.mdc) for handler templates with authentication
+
+## Secrets Management
+
+### AWS Secrets Manager
+
+**Always use Secrets Manager for sensitive data**. The framework provides built-in caching:
+
+```typescript
+import { getSecretValue } from 'lesgo/utils/secretsmanager';
+
+const credentials = await getSecretValue('prod/database/credentials');
+// Returns cached value on subsequent calls
+```
+
+**Reference**: [`src/utils/secretsmanager/getSecretValue.ts`](../../src/utils/secretsmanager/getSecretValue.ts)
+
+**Patterns**:
+
+- Secrets are cached in memory per secret ID
+- Automatically parses JSON secrets, falls back to string
+- Uses `SecretsManagerService` under the hood
+- Throws `LesgoException` with `${FILE}::ERROR_GET_SECRET_VALUE` on failure
+
+### Environment Variables
+
+```typescript
+// ✅ Good - Use environment variables for non-sensitive config
+const config = {
+  region: process.env.AWS_REGION || 'us-east-1',
+};
+
+// ❌ NEVER hardcode secrets
+const config = {
+  apiKey: 'sk_live_1234567890abcdef', // ❌ NEVER DO THIS
+};
+```
+
+**Note**: For sensitive values, use Secrets Manager, not environment variables.
+
+## Authentication
+
+### JWT Authentication
+
+#### Sign JWT
+
+```typescript
+import { sign } from 'lesgo/services/JWTService';
+
+const token = sign({ sub: userId, role: 'admin' }, process.env.JWT_SECRET, {
+  expiresIn: '1h',
+});
+```
+
+**Reference**: [`src/services/JWTService/sign.ts`](../../src/services/JWTService/sign.ts)
+
+**Patterns**:
+
+- Uses `jwtConfig` for defaults (algorithm, expiresIn, issuer, audience)
+- Automatically generates `jwtid` via `generateUid`
+- Supports key rotation via `keyid` in options
+- Secret resolved via `getJwtSecret` (supports multiple keys)
+
+#### Verify JWT
+
+```typescript
+import { verify } from 'lesgo/services/JWTService';
+
+const decoded = verify(token, process.env.JWT_SECRET);
+```
+
+**Reference**: [`src/services/JWTService/verify.ts`](../../src/services/JWTService/verify.ts)
+
+**Patterns**:
+
+- Validates claims by default (issuer, audience, expiration)
+- Supports key rotation via `keyid` in token payload/header
+- Throws `LesgoException` with `${FILE}::VERIFY_ERROR` on failure
+
+#### JWT Middleware
+
+```typescript
+import { verifyJwtMiddleware } from 'lesgo/middlewares';
+
+export const handler = middy(baseHandler).use(
+  verifyJwtMiddleware(process.env.JWT_SECRET, { algorithms: ['HS256'] })
+);
+```
+
+**Reference**: [`src/middlewares/verifyJwtMiddleware.ts`](../../src/middlewares/verifyJwtMiddleware.ts)  
+**See Also**: [Middlewares](./04-middlewares.mdc#jwt-verification) for detailed patterns
+
+**Patterns**:
+
+- Reads token from `event.headers.authorization`
+- Attaches decoded token to `event.jwt`
+- Adds `_jwt` to `event.extendedResponse` in after hook
+
+### Basic Authentication
+
+```typescript
+import { verifyBasicAuthMiddleware } from 'lesgo/middlewares';
+
+export const handler = middy(baseHandler).use(verifyBasicAuthMiddleware());
+```
+
+**Reference**: [`src/middlewares/verifyBasicAuthMiddleware.ts`](../../src/middlewares/verifyBasicAuthMiddleware.ts)  
+**See Also**: [Middlewares](./04-middlewares.mdc#basic-auth-verification) for detailed patterns
+
+**Patterns**:
+
+- Uses `validateFields` for credential validation
+- Checks against `basicAuthConfig.authorizedList` (from `LESGO_BASIC_AUTH_LIST` env var)
+- Attaches `{ username }` to `event.basicAuth`
+
+**Configuration**: [`src/config/basicAuth.ts`](../../src/config/basicAuth.ts)
+
+## Input Validation & Sanitization
+
+### Validate All Inputs
+
+Use `validateFields` utility for validation - it throws `LesgoException` automatically:
+
+```typescript
+import validateFields from 'lesgo/utils/validateFields';
+
+const input = validateFields(data, [
+  { key: 'email', type: 'email', required: true },
+  { key: 'name', type: 'string', required: true },
+]);
+```
+
+**Reference**: [`src/utils/validateFields.ts`](../../src/utils/validateFields.ts)  
+**See Also**: [Error Handling](./05-error-handling.mdc#input-validation) and [Quick Reference](./09-quick-reference.mdc#input-validation) for examples
+
+**Supported Types**: `string`, `number`, `decimal`, `email`, `array`, `object`, `json`, `enum`, `function`
+
+### Prevent Injection Attacks
+
+**SQL Injection**: Always use parameterized queries (RDS Aurora MySQL Proxy Service handles this):
+
+```typescript
+// ✅ Good - Parameterized query (handled by mysql2)
+const [rows] = await connection.execute('SELECT * FROM users WHERE id = ?', [
+  userId,
+]);
+
+// ❌ Bad - String concatenation (SQL injection risk)
+const query = `SELECT * FROM users WHERE id = '${userId}'`;
+```
+
+**Reference**: [`src/services/RDSAuroraMySQLProxyService`](../../src/services/RDSAuroraMySQLProxyService)
+
+## Encryption
+
+### Encrypt/Decrypt Sensitive Data
+
+```typescript
+import { encrypt, decrypt } from 'lesgo/utils/crypto';
+
+const encrypted = encrypt('sensitive data', {
+  algorithm: 'aes-256-cbc',
+  secretKey: process.env.ENCRYPTION_KEY,
+});
+
+const decrypted = decrypt(encrypted, {
+  algorithm: 'aes-256-cbc',
+  secretKey: process.env.ENCRYPTION_KEY,
+});
+```
+
+**Reference**:
+
+- [`src/utils/crypto/encrypt.ts`](../../src/utils/crypto/encrypt.ts)
+- [`src/utils/crypto/decrypt.ts`](../../src/utils/crypto/decrypt.ts)
+
+**Patterns**:
+
+- Uses config defaults from `cryptoConfig` (`LESGO_CRYPTO_ENCRYPTION_ALG`, `LESGO_CRYPTO_ENCRYPTION_SEC`)
+- Supports algorithms: `aes-256-cbc`, `aes-128-cbc`, `aes-192-cbc`
+- Format: `iv:encrypted` (hex encoded)
+- Validates algorithm and secret key before use
+
+**Configuration**: [`src/config/crypto.ts`](../../src/config/crypto.ts)
+
+### Hash Data
+
+```typescript
+import { hash } from 'lesgo/utils/crypto';
+
+const hashed = hash('data', { algorithm: 'sha256' });
+```
+
+**Reference**: [`src/utils/crypto/hash.ts`](../../src/utils/crypto/hash.ts)
+
+**Supported Algorithms**: `md5`, `sha256`, `sha512`  
+**Default**: `sha256` (from `LESGO_CRYPTO_HASH_ALG`)
+
+**Note**: For password hashing, use a dedicated library (e.g., `bcryptjs`) - not provided by framework.
+
+## Authorization
+
+Authorization logic should be implemented in your handlers after authentication middleware:
+
+```typescript
+import { verifyJwtMiddleware } from 'lesgo/middlewares';
+import LesgoException from 'lesgo/exceptions/LesgoException';
+
+const baseHandler = async (event: APIGatewayProxyEvent & { jwt: any }) => {
+  // Check role from decoded JWT
+  if (event.jwt.role !== 'admin') {
+    throw new LesgoException('Insufficient permissions', 'FORBIDDEN', 403);
+  }
+
+  // Handler logic
+};
+
+export const handler = middy(baseHandler).use(
+  verifyJwtMiddleware(process.env.JWT_SECRET)
+);
+```
+
+**See Also**: [Error Handling](./05-error-handling.mdc) for LesgoException patterns
+
+## Data Protection
+
+### PII Masking in Logs
+
+Never log sensitive data. The framework's logger doesn't automatically mask, so be careful:
+
+```typescript
+import logger from 'lesgo/utils/logger';
+
+// ❌ Bad - Logs sensitive data
+logger.info('User data', { password: user.password, ssn: user.ssn });
+
+// ✅ Good - Mask sensitive fields
+const safeData = { ...user, password: '***', ssn: '***' };
+logger.info('User data', safeData);
+```
+
+**Reference**: [`src/utils/logger.ts`](../../src/utils/logger.ts)
+
+### Secure Token Generation
+
+```typescript
+import { randomBytes } from 'crypto';
+
+const token = randomBytes(32).toString('hex');
+```
+
+## AWS IAM Best Practices
+
+### Principle of Least Privilege
+
+Configure Lambda IAM roles with minimal required permissions:
+
+```yaml
+# serverless.yml
+iamRoleStatements:
+  - Effect: Allow
+    Action:
+      - dynamodb:GetItem
+      - dynamodb:PutItem
+    Resource:
+      - arn:aws:dynamodb:${aws:region}:${aws:accountId}:table/MyTable
+```
+
+### S3 Security
+
+```typescript
+import { putObject } from 'lesgo/services/S3Service';
+
+// Always use private ACL unless public access is required
+await putObject({
+  Bucket: 'my-bucket',
+  Key: 'sensitive-file.txt',
+  Body: data,
+  ServerSideEncryption: 'AES256',
+  ACL: 'private', // Never use 'public-read' unless necessary
+});
+```
+
+**Reference**: [`src/services/S3Service`](../../src/services/S3Service)
+
+## Security Checklist
+
+### Authentication & Authorization
+
+- [ ] JWT tokens are properly validated via `verifyJwtMiddleware`
+- [ ] Token expiration is enforced (handled by JWT service)
+- [ ] Basic auth credentials are validated via `verifyBasicAuthMiddleware`
+- [ ] Authorization checks are implemented in handlers after authentication
+- [ ] Resource ownership is verified before access
+
+### Data Protection Checklist
+
+- [ ] Sensitive data is encrypted using `encrypt`/`decrypt` utilities
+- [ ] Secrets are stored in Secrets Manager (not environment variables)
+- [ ] Secrets are retrieved via `getSecretValue` utility
+- [ ] PII is masked in logs
+- [ ] Passwords are hashed (use external library like `bcryptjs`)
+- [ ] No secrets in code or hardcoded values
+
+### Input Validation
+
+- [ ] All user inputs are validated using `validateFields`
+- [ ] SQL injection prevention (parameterized queries via RDS service)
+- [ ] Request size limits are enforced (API Gateway configuration)
+
+### AWS Security
+
+- [ ] IAM roles follow least privilege principle
+- [ ] S3 buckets use private ACL unless public access required
+- [ ] CloudWatch logging is enabled
+- [ ] VPC is used for sensitive resources
+
+## Common Vulnerabilities to Avoid
+
+❌ **SQL Injection**: Always use parameterized queries (RDS service handles this)  
+❌ **Sensitive Data Exposure**: Encrypt sensitive data, mask in logs  
+❌ **Missing Authentication**: Protect endpoints with `verifyJwtMiddleware` or `verifyBasicAuthMiddleware`  
+❌ **Broken Access Control**: Verify permissions in handlers after authentication  
+❌ **Security Misconfiguration**: Follow AWS best practices, use least privilege IAM  
+❌ **Insufficient Logging**: Log security events (but mask sensitive data)
+
+## Security Resources
+
+- **OWASP Top 10**: <https://owasp.org/www-project-top-ten/>
+- **AWS Security Best Practices**: <https://aws.amazon.com/security/best-practices/>
+- **JWT Best Practices**: <https://tools.ietf.org/html/rfc8725>

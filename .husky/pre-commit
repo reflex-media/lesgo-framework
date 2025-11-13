@@ -1,0 +1,12 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+# Source nvm if it exists (for GUI Git clients like SourceTree)
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+
+# Use nvm to load the correct Node version if .nvmrc exists
+[ -f ".nvmrc" ] && nvm use
+
+npm run type-check && npx lint-staged
+

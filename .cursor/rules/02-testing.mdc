@@ -1,0 +1,340 @@
+---
+description: Jest testing patterns, coverage requirements, and best practices for the Lesgo framework
+---
+
+# Testing Standards & Patterns
+
+## Jest Configuration
+
+**Source of Truth**: [`jest.config.js`](../../../jest.config.js) and [`jest.setup.ts`](../../../jest.setup.ts)
+
+### Coverage Requirements
+
+**Minimum 70% coverage required** for all metrics:
+
+- Branches: 70%
+- Functions: 70%
+- Lines: 70%
+- Statements: 70%
+
+### Test Setup
+
+Environment variables are configured in `jest.setup.ts`. **Do not** override `process.env` in individual tests unless testing config behavior.
+
+## Test File Organization
+
+### Directory Structure
+
+Tests live in `__tests__/` directories adjacent to source files:
+
+```bash
+src/
+  services/
+    DynamoDbService/
+      ├── putRecord.ts
+      └── __tests__/
+          └── putRecord.test.ts
+  utils/
+    ├── isEmpty.ts
+    └── __tests__/
+        └── isEmpty.test.ts
+```
+
+### Naming Convention
+
+- Test files: `*.test.ts`
+- Location: `__tests__/` directory adjacent to source
+- File name matches source: `putRecord.ts` → `putRecord.test.ts`
+
+## Test Structure Pattern
+
+### Standard Test Structure
+
+```typescript
+import { PutCommand } from '@aws-sdk/lib-dynamodb';
+import LesgoException from '../../../exceptions/LesgoException';
+import { getClient, putRecord } from '../../DynamoDbService';
+
+jest.mock('../getClient', () => {
+  return jest.fn().mockImplementation(() => ({
+    send: jest.fn().mockImplementation(command => {
+      if (command instanceof PutCommand) {
+        return Promise.resolve(command.input);
+      }
+      return Promise.reject(new Error('Command not mocked'));
+    }),
+  }));
+});
+
+describe('putRecord', () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('should put the record successfully', async () => {
+    const result = await putRecord(item, tableName);
+    expect(result).toBeDefined();
+  });
+
+  it('should throw LesgoException on error', async () => {
+    (getClient as jest.Mock).mockReturnValueOnce({
+      send: jest.fn().mockRejectedValue(new Error('AWS Error')),
+    });
+
+    await expect(putRecord(item, tableName)).rejects.toThrow(LesgoException);
+  });
+});
+```
+
+### Test Organization
+
+Use nested `describe` blocks to group related tests:
+
+```typescript
+describe('ServiceName', () => {
+  describe('methodOne', () => {
+    it('should handle success case', () => {});
+    it('should handle error case', () => {});
+  });
+});
+```
+
+## Mocking Patterns
+
+### AWS SDK Client Mocking
+
+**Pattern**: Mock the client's `send` method using `jest.mock()`:
+
+```typescript
+jest.mock('../getClient', () => {
+  return jest.fn().mockImplementation(() => ({
+    send: jest.fn().mockImplementation(command => {
+      if (command instanceof PutCommand) {
+        return Promise.resolve({
+          /* mock response */
+        });
+      }
+      return Promise.reject(new Error('Command not mocked'));
+    }),
+  }));
+});
+```
+
+**Key points**:
+
+- Mock at the module level (not in `beforeEach`)
+- Check command instance type for different operations
+- Use `jest.clearAllMocks()` in `afterEach` to reset between tests
+- For error cases, use `mockReturnValueOnce` or `mockRejectedValue` on the mocked client
+
+### Mocking Internal Dependencies
+
+```typescript
+jest.mock('../utils/isEmpty', () => ({
+  __esModule: true,
+  default: jest.fn(),
+}));
+
+import isEmpty from '../utils/isEmpty';
+
+describe('My function', () => {
+  it('should check if value is empty', () => {
+    (isEmpty as jest.Mock).mockReturnValue(true);
+    const result = myFunction('');
+    expect(isEmpty).toHaveBeenCalledWith('');
+  });
+});
+```
+
+> **See Also**: [AWS Services](./03-aws-services.mdc) for AWS SDK patterns and service development guidelines.
+
+## Testing Specific Patterns
+
+### Testing LesgoException
+
+```typescript
+import LesgoException from '../../exceptions/LesgoException';
+
+describe('Error handling', () => {
+  it('should throw LesgoException', () => {
+    expect(() => {
+      throw new LesgoException('Invalid input', 'INVALID_INPUT', 400);
+    }).toThrow(LesgoException);
+  });
+
+  it('should have correct properties', () => {
+    const error = new LesgoException('Test error', 'TEST_ERROR', 500, {
+      detail: 'extra info',
+    });
+
+    expect(error).toMatchObject({
+      message: 'Test error',
+      code: 'TEST_ERROR',
+      statusCode: 500,
+      extra: { detail: 'extra info' },
+    });
+  });
+
+  it('should throw with default values', async () => {
+    await expect(myFunction({})).rejects.toThrow(
+      new LesgoException('Expected error message', 'ERROR_CODE', 400)
+    );
+  });
+});
+```
+
+> **See Also**: [Error Handling](./05-error-handling.mdc) for LesgoException usage patterns and error code conventions.
+
+### Testing Async Functions
+
+```typescript
+describe('Async operations', () => {
+  it('should resolve successfully', async () => {
+    const result = await asyncFunction('input');
+    expect(result).toBeDefined();
+  });
+
+  it('should reject with LesgoException', async () => {
+    await expect(asyncFunction('invalid')).rejects.toThrow(LesgoException);
+  });
+});
+```
+
+### Testing Middleware
+
+```typescript
+import middy from '@middy/core';
+import myMiddleware from '../myMiddleware';
+
+describe('myMiddleware', () => {
+  let request: middy.Request;
+
+  beforeEach(() => {
+    request = {
+      event: {},
+      context: {} as Context,
+      response: null,
+      error: null,
+      internal: {},
+    };
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('should execute before hook', async () => {
+    const middleware = myMiddleware();
+    await middleware.before(request);
+    expect(request.event.modified).toBe(true);
+  });
+});
+```
+
+> **See Also**: [Middlewares](./04-middlewares.mdc) for middleware development patterns and structure.
+
+### Testing Utilities
+
+Keep utility tests focused and concise:
+
+```typescript
+import isEmpty from '../isEmpty';
+
+describe('isEmpty', () => {
+  it('should return true for empty values', () => {
+    expect(isEmpty(null)).toBe(true);
+    expect(isEmpty(undefined)).toBe(true);
+    expect(isEmpty('')).toBe(true);
+    expect(isEmpty([])).toBe(true);
+    expect(isEmpty({})).toBe(true);
+  });
+
+  it('should return false for non-empty values', () => {
+    expect(isEmpty('hello')).toBe(false);
+    expect(isEmpty([1, 2])).toBe(false);
+    expect(isEmpty({ key: 'value' })).toBe(false);
+  });
+});
+```
+
+## Test Coverage Best Practices
+
+### What to Test
+
+✅ **Always test:**
+
+- Success cases
+- Error cases (LesgoException thrown)
+- Input validation
+- Edge cases and boundary conditions
+
+❌ **Don't test:**
+
+- Third-party libraries
+- Simple getters/setters
+- TypeScript type checking
+
+### Running Coverage
+
+```bash
+npm run coverage          # Run tests with coverage
+open coverage/index.html # View HTML report
+```
+
+## Common Patterns
+
+### Testing with Fixtures
+
+```typescript
+const mockItem = { id: '123', name: 'Test' };
+
+describe('Operations', () => {
+  it('should process item', () => {
+    const result = processItem(mockItem);
+    expect(result.id).toBe('123');
+  });
+});
+```
+
+### Testing Timestamps
+
+```typescript
+describe('Timestamp utilities', () => {
+  beforeAll(() => {
+    jest.useFakeTimers();
+    jest.setSystemTime(new Date('2024-01-01'));
+  });
+
+  afterAll(() => {
+    jest.useRealTimers();
+  });
+
+  it('should return current timestamp', () => {
+    const timestamp = getCurrentTimestamp();
+    expect(timestamp).toBe(1704067200);
+  });
+});
+```
+
+## Test Checklist
+
+Before submitting PR:
+
+- [ ] All tests pass (`npm test`)
+- [ ] Coverage >= 70% (`npm run coverage`)
+- [ ] No skipped tests (`it.skip`, `describe.skip`)
+- [ ] No focused tests (`it.only`, `describe.only`)
+- [ ] Tests are descriptive and clear
+- [ ] Mocks are properly cleaned up (`jest.clearAllMocks()` in `afterEach`)
+- [ ] Error cases test LesgoException
+- [ ] Tests run in isolation (no dependencies between tests)
+
+## Related Rules
+
+For more information on related topics, see:
+
+- **[Overview](./00-overview.mdc)** - Project structure and architecture patterns
+- **[TypeScript Standards](./01-typescript-standards.mdc)** - Code style, types, and module patterns
+- **[AWS Services](./03-aws-services.mdc)** - AWS SDK patterns and service development
+- **[Middlewares](./04-middlewares.mdc)** - Middy middleware patterns and structure
+- **[Error Handling](./05-error-handling.mdc)** - LesgoException usage and error code conventions

@@ -1,0 +1,315 @@
+---
+description: Quick reference for common patterns and code snippets in Lesgo framework
+---
+
+# Quick Reference
+
+> **Note**: This is a minimal reference guide. For detailed patterns, see the related rules referenced below.
+
+## Related Rules
+
+- **[AWS Services](./03-aws-services.mdc)** - Service patterns, getClient implementation, service methods
+- **[Middlewares](./04-middlewares.mdc)** - Middleware patterns, handler composition
+- **[Error Handling](./05-error-handling.mdc)** - LesgoException, validation, logging patterns
+- **[Testing](./02-testing.mdc)** - Test structure, mocking patterns
+- **[TypeScript Standards](./01-typescript-standards.mdc)** - Code style, types, imports/exports
+
+## Service Patterns
+
+### getClient Pattern
+
+**Reference**: `src/services/S3Service/getClient.ts`, `src/services/DynamoDbService/getClient.ts`
+
+```typescript
+import { ServiceClient } from '@aws-sdk/client-service';
+import { logger, isEmpty, validateFields } from '../../utils';
+import { serviceConfig } from '../../config';
+import { ClientOptions } from '../../types/aws';
+
+const FILE = 'lesgo.services.ServiceName.getClient';
+
+interface Singleton {
+  [key: string]: ServiceClient;
+}
+
+const singleton: Singleton = {};
+
+const getClient = (clientOpts: ClientOptions = {}) => {
+  const options = validateFields(clientOpts, [
+    { key: 'region', type: 'string', required: false },
+    { key: 'singletonConn', type: 'string', required: false },
+  ]);
+
+  const region = options.region || serviceConfig.region;
+  const singletonConn = options.singletonConn || 'default';
+
+  if (!isEmpty(singleton[singletonConn])) {
+    logger.debug(`${FILE}::REUSE_CLIENT_SINGLETON`, { singletonConn, region });
+    return singleton[singletonConn];
+  }
+
+  const client = new ServiceClient({ region });
+  logger.debug(`${FILE}::NEW_CLIENT`, { singletonConn, region });
+  singleton[singletonConn] = client;
+
+  return client;
+};
+
+export default getClient;
+```
+
+**Key points**: Uses singleton pattern, `validateFields` for options, `FILE` constant for logging. See [AWS Services](./03-aws-services.mdc) for full details.
+
+### Service Method Pattern
+
+**Reference**: `src/services/DynamoDbService/putRecord.ts`
+
+```typescript
+import {
+  OperationCommand,
+  OperationCommandInput,
+} from '@aws-sdk/client-service';
+import LesgoException from '../../exceptions/LesgoException';
+import { validateFields, logger } from '../../utils';
+import { ClientOptions } from '../../types/aws';
+import getClient from './getClient';
+
+const FILE = 'lesgo.services.ServiceName.operationName';
+
+export interface OperationOptions
+  extends Partial<Omit<OperationCommandInput, 'RequiredField'>> {
+  RequiredField?: string;
+}
+
+const performOperation = async (
+  requiredParam: string,
+  opts?: OperationOptions,
+  clientOpts?: ClientOptions
+) => {
+  const input = validateFields({ requiredParam }, [
+    { key: 'requiredParam', type: 'string', required: true },
+  ]);
+
+  const client = getClient(clientOpts);
+  const commandInput: OperationCommandInput = {
+    RequiredField: input.requiredParam,
+    ...opts,
+  };
+
+  try {
+    const resp = await client.send(new OperationCommand(commandInput));
+    logger.debug(`${FILE}::RECEIVED_RESPONSE`, { resp, commandInput });
+    return resp;
+  } catch (error) {
+    throw new LesgoException('Operation failed', `${FILE}::ERROR`, 500, {
+      error,
+      commandInput,
+      clientOpts,
+    });
+  }
+};
+
+export default performOperation;
+```
+
+**Key points**: `validateFields` for validation, `${FILE}::ERROR` error codes, `clientOpts` as last param. See [AWS Services](./03-aws-services.mdc) and [Error Handling](./05-error-handling.mdc).
+
+## Middleware Patterns
+
+### Basic Middleware
+
+**Reference**: `src/middlewares/httpMiddleware.ts`
+
+```typescript
+import middy from '@middy/core';
+import logger from '../utils/logger';
+
+const FILE = 'lesgo.middlewares.middlewareName';
+
+export interface MiddlewareOptions {
+  option1?: string;
+}
+
+const middlewareName = (opts: MiddlewareOptions = {}) => {
+  const options = { option1: opts.option1 || 'default' };
+
+  return {
+    before: async (request: middy.Request) => {
+      logger.debug(`${FILE}::BEFORE_HOOK`, { options });
+      // Pre-processing
+    },
+    after: async (request: middy.Request) => {
+      logger.debug(`${FILE}::AFTER_HOOK`);
+      // Post-processing
+    },
+    onError: async (request: middy.Request) => {
+      logger.error(`${FILE}::ERROR_HOOK`, { error: request.error });
+      // Error handling
+    },
+  };
+};
+
+export default middlewareName;
+```
+
+**Key points**: FILE constant, options merging, named hooks. See [Middlewares](./04-middlewares.mdc) for composition patterns.
+
+### Handler Usage
+
+```typescript
+import middy from '@middy/core';
+import { httpMiddleware, verifyJwtMiddleware } from 'lesgo/middlewares';
+import type { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
+
+const baseHandler = async (
+  event: APIGatewayProxyEvent
+): Promise<APIGatewayProxyResult> => {
+  return { statusCode: 200, body: JSON.stringify({ data: {} }) };
+};
+
+export const handler = middy(baseHandler)
+  .use(httpMiddleware({ debugMode: process.env.DEBUG === 'true' }))
+  .use(verifyJwtMiddleware({ secret: process.env.JWT_SECRET }));
+```
+
+See [Middlewares](./04-middlewares.mdc) for complete handler patterns.
+
+## Common Utilities
+
+### Input Validation
+
+**Reference**: `src/utils/validateFields.ts`
+
+```typescript
+import { validateFields } from '../../utils';
+
+const input = validateFields({ key }, [
+  { key: 'key', type: 'string', required: true },
+]);
+```
+
+Throws `LesgoException` automatically. See [Error Handling](./05-error-handling.mdc).
+
+### Error Handling
+
+```typescript
+import LesgoException from '../../exceptions/LesgoException';
+
+const FILE = 'lesgo.module.functionName';
+
+try {
+  // operation
+} catch (error) {
+  throw new LesgoException('Operation failed', `${FILE}::ERROR`, 500, {
+    error,
+    context,
+  });
+}
+```
+
+See [Error Handling](./05-error-handling.mdc) for complete patterns.
+
+### Logging
+
+**Reference**: `src/utils/logger.ts`
+
+```typescript
+import logger from '../utils/logger';
+
+logger.debug(`${FILE}::OPERATION`, { data });
+logger.info('Informational message', { context });
+logger.error('Error message', { error });
+```
+
+See [Error Handling](./05-error-handling.mdc) for logging patterns.
+
+## Test Patterns
+
+### Service Test
+
+**Reference**: `src/services/SQSService/__tests__/getClient.test.ts`
+
+```typescript
+import { mockClient } from 'aws-sdk-client-mock';
+import { ServiceClient, OperationCommand } from '@aws-sdk/client-service';
+import performOperation from '../performOperation';
+import LesgoException from '../../../exceptions/LesgoException';
+
+const serviceMock = mockClient(ServiceClient);
+
+describe('performOperation', () => {
+  beforeEach(() => {
+    serviceMock.reset();
+  });
+
+  it('should succeed', async () => {
+    serviceMock.on(OperationCommand).resolves({ success: true });
+    const result = await performOperation('test');
+    expect(result).toBeDefined();
+  });
+
+  it('should throw LesgoException on error', async () => {
+    serviceMock.on(OperationCommand).rejects(new Error('AWS Error'));
+    await expect(performOperation('test')).rejects.toThrow(LesgoException);
+  });
+});
+```
+
+See [Testing](./02-testing.mdc) for complete test patterns.
+
+## Commands
+
+```bash
+npm ci                  # Install dependencies
+npm test               # Run tests (includes type-check + lint)
+npm run coverage       # Run tests with coverage
+npm run type-check     # Type check only (fast)
+npm run lint           # Lint code
+npm run lint-fix       # Fix linting issues
+npm run build          # Build distribution
+```
+
+**Note**: `npm run format` only formats `dist/` files. Source formatting is handled by Prettier via lint-staged.
+
+## Import Patterns
+
+```typescript
+// Services
+import { putRecord, query } from 'lesgo/services/DynamoDbService';
+
+// Middlewares
+import { httpMiddleware, verifyJwtMiddleware } from 'lesgo/middlewares';
+
+// Utilities
+import isEmpty from 'lesgo/utils/isEmpty';
+import { encrypt, decrypt } from 'lesgo/utils/crypto';
+
+// Exceptions
+import LesgoException from 'lesgo/exceptions/LesgoException';
+
+// Config
+import { dynamodb, aws, jwt } from 'lesgo/config';
+```
+
+**Reference**: See `package.json` exports for available paths.
+
+## File Structure
+
+```text
+ServiceName/
+├── index.ts           # Exports all methods
+├── getClient.ts       # Client initialization
+├── operation.ts       # Operation method
+└── __tests__/
+    ├── getClient.test.ts
+    └── operation.test.ts
+```
+
+See [Overview](./00-overview.mdc) for complete structure patterns.
+
+## Resources
+
+- **Documentation**: <https://reflex-media.github.io/lesgo-docs>
+- **GitHub**: <https://github.com/reflex-media/lesgo-framework>
+- **AWS SDK v3**: <https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/>
+- **Middy**: <https://middy.js.org/>

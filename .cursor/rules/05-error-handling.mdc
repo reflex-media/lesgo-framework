@@ -1,0 +1,206 @@
+---
+description: Exception handling patterns, LesgoException usage, and LoggerService integration for Lesgo framework
+---
+
+# Error Handling & Logging
+
+> **See Also**: [AWS Services](./03-aws-services.mdc) for AWS service error patterns  
+> **See Also**: [Middlewares](./04-middlewares.mdc) for middleware error handling  
+> **See Also**: [Quick Reference](./09-quick-reference.mdc) for error handling templates
+
+## LesgoException
+
+### Structure
+
+```typescript
+export default class LesgoException extends Error {
+  public statusCode: number;
+  public code: string;
+  public extra: any;
+
+  constructor(
+    message: string,
+    errorCode = 'LESGO_EXCEPTION',
+    httpStatusCode = 500,
+    extra: any = {}
+  );
+}
+```
+
+**Reference**: [`src/exceptions/LesgoException.ts`](../../src/exceptions/LesgoException.ts)
+
+### Properties
+
+- **message**: Human-readable error description
+- **code**: Machine-readable error code (uses `${FILE}::ERROR_CODE` pattern)
+- **statusCode**: HTTP status code (400, 401, 403, 404, 409, 422, 500)
+- **extra**: Additional context data (optional)
+
+## Error Code Pattern
+
+All error codes follow the `${FILE}::ERROR_CODE` pattern where `FILE` is the module constant:
+
+```typescript
+const FILE = 'lesgo.services.S3Service.getObject';
+
+throw new LesgoException(
+  'Error occurred getting object from S3 bucket',
+  `${FILE}::ERROR`,
+  500,
+  { error, commandInput }
+);
+```
+
+**Reference implementations**:
+
+- [`src/services/S3Service/getObject.ts`](../../src/services/S3Service/getObject.ts#L56-L66)
+- [`src/services/DynamoDbService/putRecord.ts`](../../src/services/DynamoDbService/putRecord.ts#L46-L50)
+- [`src/middlewares/verifyJwtMiddleware.ts`](../../src/middlewares/verifyJwtMiddleware.ts#L19-L24)
+
+### Common Error Code Patterns
+
+- `${FILE}::ERROR` - Generic operation error
+- `${FILE}::MISSING_REQUIRED_${KEY}` - Missing required field (from `validateFields`)
+- `${FILE}::INVALID_TYPE_${KEY}` - Invalid type (from `validateFields`)
+- `${FILE}::ERROR_${OPERATION}` - Specific operation errors (e.g., `ERROR_VERIFYING_JWT`, `ERROR_GET_SECRET_VALUE`)
+
+## Creating Exceptions
+
+### Basic Pattern
+
+```typescript
+throw new LesgoException('Resource not found', `${FILE}::NOT_FOUND`, 404);
+```
+
+### With Extra Context
+
+```typescript
+throw new LesgoException('Operation failed', `${FILE}::ERROR`, 500, {
+  error,
+  commandInput,
+  clientOpts,
+});
+```
+
+## Input Validation
+
+Use `validateFields` utility for validation (not `isEmpty` checks). The utility throws `LesgoException` automatically.
+
+**Reference**: [`src/utils/validateFields.ts`](../../src/utils/validateFields.ts)  
+**See Also**: [Quick Reference](./09-quick-reference.mdc) for validation examples
+
+```typescript
+import { validateFields } from '../../utils';
+
+const input = validateFields({ key }, [
+  { key: 'key', type: 'string', required: true },
+]);
+```
+
+## AWS Service Error Pattern
+
+AWS service methods wrap errors with `${FILE}::ERROR`:
+
+```typescript
+try {
+  const resp = await client.send(new OperationCommand(commandInput));
+  logger.debug(`${FILE}::RECEIVED_RESPONSE`, { resp, commandInput });
+  return resp;
+} catch (error) {
+  throw new LesgoException('Failed to put record', `${FILE}::ERROR`, 500, {
+    error,
+    commandInput,
+    clientOpts,
+  });
+}
+```
+
+**Reference**: [`src/services/DynamoDbService/putRecord.ts`](../../src/services/DynamoDbService/putRecord.ts#L41-L51)  
+**See Also**: [AWS Services](./03-aws-services.mdc) for complete service patterns
+
+## Logger Usage
+
+### Default Logger Instance
+
+Import the default logger instance from `utils/logger`:
+
+```typescript
+import logger from '../utils/logger';
+
+logger.error('Operation failed', { error, context });
+logger.warn('Warning condition', { context });
+logger.info('Informational message', { context });
+logger.debug('Debug message', { context });
+```
+
+**Reference**: [`src/utils/logger.ts`](../../src/utils/logger.ts)
+
+### Log Levels
+
+- **error** (0): Critical errors - use for exceptions and failures
+- **warn** (1): Warning conditions - use for recoverable issues
+- **notice** (2): Normal but significant events
+- **info** (3): Informational messages
+- **debug** (4): Debug-level messages - use for tracing operations
+
+### Error Logging Pattern
+
+Log errors with context. The `httpResponseMiddleware` automatically logs based on status code:
+
+- Status code >= 500: `logger.error()`
+- Status code < 500: `logger.warn()`
+
+**Reference**: [`src/middlewares/httpResponseMiddleware.ts`](../../src/middlewares/httpResponseMiddleware.ts#L94-L98)
+
+For manual error logging:
+
+```typescript
+try {
+  await performOperation();
+} catch (err: any) {
+  logger.error('Operation failed', {
+    error: err.message,
+    stack: err.stack,
+    code: err.code,
+    context: { userId, operation },
+  });
+  throw err;
+}
+```
+
+## Middleware Error Handling
+
+HTTP errors are handled by `httpResponseMiddleware` which:
+
+1. Extracts error details from `LesgoException`
+2. Formats error response with standard structure
+3. Logs based on status code (error for >= 500, warn for < 500)
+
+**Reference**: [`src/middlewares/httpResponseMiddleware.ts`](../../src/middlewares/httpResponseMiddleware.ts#L62-L99)  
+**See Also**: [Middlewares](./04-middlewares.mdc) for middleware patterns
+
+## Best Practices
+
+✅ **Do:**
+
+- Use `${FILE}::ERROR_CODE` pattern for all error codes
+- Use `validateFields` for input validation (not `isEmpty`)
+- Include context in `extra` field (error, commandInput, params)
+- Use appropriate HTTP status codes (400, 401, 403, 404, 409, 422, 500)
+- Log errors with context using default logger instance
+- Wrap external errors in `LesgoException`
+
+❌ **Don't:**
+
+- Use generic error codes like `'AWS_ERROR'` or `'DATABASE_ERROR'`
+- Use `isEmpty` for validation - use `validateFields`
+- Create new `LoggerService` instances - use default from `utils/logger`
+- Log sensitive data (passwords, tokens, secrets)
+- Use empty catch blocks
+- Let external errors bubble up unwrapped
+
+## Related Rules
+
+- **[AWS Services](./03-aws-services.mdc)** - AWS service error patterns and `${FILE}::ERROR` usage
+- **[Middlewares](./04-middlewares.mdc)** - Middleware error handling and `httpResponseMiddleware`
+- **[Quick Reference](./09-quick-reference.mdc)** - Error handling templates and examples
