@@ -10,12 +10,12 @@ description: Jest testing patterns, coverage requirements, and best practices fo
 
 ### Coverage Requirements
 
-**Minimum 70% coverage required** for all metrics:
+**Minimum 80% coverage required** for all metrics:
 
-- Branches: 70%
-- Functions: 70%
-- Lines: 70%
-- Statements: 70%
+- Branches: 80%
+- Functions: 85%
+- Lines: 90%
+- Statements: 90%
 
 ### Test Setup
 
