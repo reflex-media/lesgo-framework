@@ -178,7 +178,7 @@
     "node": ">=20.17.0"
   },
   "peerDependencies": {
-    "serverless": "^3.0.0"
+    "serverless": "^4.0.0"
   },
   "sideEffects": false
 }
