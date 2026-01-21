@@ -236,7 +236,9 @@ function destroy_service ()
 
 if [ -n "$STAGE" ]; then
     # Load env
-    export $(cat ./config/environments/.env.${ENVFILE} | sed 's/#.*//g' | xargs)
+    set -a
+    . ./config/environments/.env.${ENVFILE}
+    set +a
 
     if [ ${INVOKE} -eq 1 ]; then
         if [ -n "$FUNCTION" ]; then
