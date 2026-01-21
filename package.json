@@ -34,7 +34,8 @@
     "prepublishOnly": "npm run build"
   },
   "bin": {
-    "lesgo-scripts": "./bin/lesgo-scripts.sh"
+    "lesgo-scripts": "./bin/lesgo-scripts.sh",
+    "lesgo": "./bin/lesgo.js"
   },
   "devDependencies": {
     "@babel/cli": "^7.21.0",
