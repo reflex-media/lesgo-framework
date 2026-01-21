@@ -5,7 +5,7 @@ import {
 } from '@aws-sdk/lib-dynamodb';
 import LesgoException from '../../exceptions/LesgoException';
 import { validateFields, logger } from '../../utils';
-import { ClientOptions } from '../../types/aws';
+import { DynamoDbClientOptions } from '../../types/aws';
 import getClient from './getClient';
 import getTableName from './getTableName';
 
@@ -21,7 +21,7 @@ const query = async (
   keyConditionExpression: string,
   expressionAttributeValues: Record<string, NativeAttributeValue>,
   opts?: QueryOptions,
-  clientOpts?: ClientOptions
+  clientOpts?: DynamoDbClientOptions
 ) => {
   const input = validateFields(
     { tableAlias, keyConditionExpression, expressionAttributeValues },
