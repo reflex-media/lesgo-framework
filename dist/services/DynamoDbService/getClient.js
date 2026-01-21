@@ -13,7 +13,7 @@ const getClient = (opts = {}) => {
   const singletonConn = options.singletonConn || 'default';
   if (!isEmpty(singleton[singletonConn])) {
     logger.debug(`${FILE}::REUSE_CLIENT_SINGLETON`, {
-      client: singleton[singletonConn],
+      singletonConn,
       region,
     });
     return singleton[singletonConn];

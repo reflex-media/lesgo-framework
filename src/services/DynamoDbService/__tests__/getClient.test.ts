@@ -39,7 +39,7 @@ describe('getClient', () => {
     expect(logger.debug).toHaveBeenCalledWith(
       'lesgo.services.DynamoDbService.getClient::REUSE_CLIENT_SINGLETON',
       {
-        client: client1,
+        singletonConn,
         region: 'us-west-2',
       }
     );
@@ -55,7 +55,7 @@ describe('getClient', () => {
     expect(logger.debug).toHaveBeenCalledWith(
       'lesgo.services.DynamoDbService.getClient::REUSE_CLIENT_SINGLETON',
       {
-        client,
+        singletonConn: 'default',
         region: defaultRegion,
       }
     );

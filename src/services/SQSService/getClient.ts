@@ -22,7 +22,7 @@ const getClient = (clientOpts: ClientOptions = {}) => {
 
   if (!isEmpty(singleton[singletonConn])) {
     logger.debug(`${FILE}::REUSE_CLIENT_SINGLETON`, {
-      client: singleton[singletonConn],
+      singletonConn,
       region,
     });
     return singleton[singletonConn];
