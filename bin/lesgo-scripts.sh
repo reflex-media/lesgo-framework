@@ -27,7 +27,7 @@ INVOKE=0;                   # serverless invoke of specific function
 LOGS=0;                     # serverless stream log of specific function
 DESTROY=0;                  # serverless remove entire service
 FUNCTION='';                # specify function to involve
-STAGE='';                   # deploy specific stage/environment
+ENVFILE='';                   # deploy specific stage/environment
 INVOKE_LOCAL=0;             # default to non local execution
 DATA=''                     # set the data parameters for invoke function
 NO_QUESTION=0;              # default to prompt
@@ -37,7 +37,7 @@ CONFIG='./serverless.yml';  # specify serverless config file to deploy, default 
 while getopts "lhs:f:t:d:c:y" OPT ; do
   case ${OPT} in
     f) FUNCTION=${OPTARG} ;;
-    s) STAGE=${OPTARG} ;;
+    s) ENVFILE=${OPTARG} ;;
     t)
         if [ ${OPTARG} == "build" ]; then
             BUILD=1;
@@ -67,9 +67,6 @@ while getopts "lhs:f:t:d:c:y" OPT ; do
         ;;
   esac
 done
-
-# Set envfile to reference from
-ENVFILE=${STAGE}
 
 # Check if local env file exists
 FILE=config/environments/.env.${ENVFILE}.local
@@ -111,7 +108,7 @@ echo -e "Current Serverless version: ${SERVERLESS_VERSION_NUMBER}\n"
 
 function deploy_func_check ()
 {
-    if [[ ${STAGE} == "production" ]]; then
+    if [[ ${STAGE} =~ ^prod ]]; then
         prompt_confirmation_deploy_function
     else
         deploy_func
@@ -135,10 +132,10 @@ function prompt_confirmation_deploy_all ()
         deploy_full;
     else
         while true; do
-            read -p "Confirm deploy service to ${STAGE} with .env.${ENVFILE} using ${CONFIG}? [Y|N] " yn
+            read -p "Confirm deploy service ${SERVICE} to ${STAGE} with .env.${ENVFILE} using ${CONFIG}? [Y|N] " yn
             case ${yn} in
                 [Yy] | yes | Yes | YES ) deploy_full; break;;
-                [Nn] | no | No | NO ) echo -e "${YELLOW}Cancelled deploying service to [${STAGE}]${NC}"; exit;;
+                [Nn] | no | No | NO ) echo -e "${YELLOW}Cancelled deploying service ${SERVICE} to [${STAGE}]${NC}"; exit;;
                 * ) echo -e "${PURPLE}Please answer yes or no.${NC}";;
             esac
         done
@@ -159,7 +156,7 @@ function prompt_confirmation_deploy_function ()
 
 function deploy_full ()
 {
-    echo -e "${YELLOW}Deploying service to ${STAGE}${NC}"
+    echo -e "${YELLOW}Deploying service ${SERVICE} to ${STAGE}${NC}"
     if [ ${SERVERLESS_VERSION_NUMBER} -ge ${LATEST_SERVERLESS_VERSION_NUMBER} ]; then
         sls deploy --stage ${STAGE} --param="env=${ENVFILE}" --config ${CONFIG}
     else
@@ -209,10 +206,10 @@ function build ()
 function prompt_confirmation_destroy_service ()
 {
     while true; do
-        read -p "Confirm destroy service to ${STAGE} with .env.${ENVFILE} using ${CONFIG}? Note: This action will remove entire service from AWS. Ensure no other applications are using this service. [Y|N] " yn
+        read -p "Confirm destroy service ${SERVICE} to ${STAGE} with .env.${ENVFILE} using ${CONFIG}? Note: This action will remove entire service from AWS. Ensure no other applications are using this service. [Y|N] " yn
         case ${yn} in
             [Yy] | yes | Yes | YES ) destroy_service; break;;
-            [Nn] | no | No | NO ) echo -e "${YELLOW}Cancelled destroying service to [${STAGE}]${NC}"; exit;;
+            [Nn] | no | No | NO ) echo -e "${YELLOW}Cancelled destroying service ${SERVICE} to [${STAGE}]${NC}"; exit;;
             * ) echo -e "${PURPLE}Please answer yes or no.${NC}";;
         esac
     done
@@ -220,7 +217,7 @@ function prompt_confirmation_destroy_service ()
 
 function destroy_service ()
 {
-    echo -e "${YELLOW}Removing service to ${STAGE}${NC}"
+    echo -e "${YELLOW}Removing service ${SERVICE} to ${STAGE}${NC}"
     if [ ${SERVERLESS_VERSION_NUMBER} -ge ${LATEST_SERVERLESS_VERSION_NUMBER} ]; then
         sls remove --stage ${STAGE} --param="env=${ENVFILE}" --config ${CONFIG}
     else
@@ -234,9 +231,14 @@ function destroy_service ()
 #                                                                             #
 ###############################################################################
 
+# Load env
+export $(cat ./config/environments/.env.${ENVFILE} | sed 's/#.*//g' | xargs)
+
+# Derive stage from envfile
+STAGE=$APP_ENV
+SERVICE=$APP_NAME
+
 if [ -n "$STAGE" ]; then
-    # Load env
-    export $(cat ./config/environments/.env.${ENVFILE} | sed 's/#.*//g' | xargs)
 
     if [ ${INVOKE} -eq 1 ]; then
         if [ -n "$FUNCTION" ]; then
