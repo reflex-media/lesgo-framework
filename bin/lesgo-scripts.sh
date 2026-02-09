@@ -93,18 +93,30 @@ NC='\033[0m';
 # FUNCTION DECLARATIONS                                                       #
 #                                                                             #
 ###############################################################################
+LOCAL_OSLS_VERSION=`npm ls --depth=0 osls | grep -o "osls@.*" || true`
+GLOBAL_OSLS_VERSION=`npm ls -g --depth=0 osls | grep -o "osls@.*" || true`
 LOCAL_SERVERLESS_VERSION=`npm ls --depth=0 serverless | grep -o "serverless@.*" || true`
 GLOBAL_SERVERLESS_VERSION=`npm ls -g --depth=0 serverless | grep -o "serverless@.*" || true`
 LATEST_SERVERLESS_VERSION_NUMBER=3
 
-if [ -z "$LOCAL_SERVERLESS_VERSION" ]
-then
-    CURRENT_SERVERLESS_VERSION=$GLOBAL_SERVERLESS_VERSION
-else
+if [ -n "$LOCAL_OSLS_VERSION" ]; then
+    CURRENT_SERVERLESS_VERSION=$LOCAL_OSLS_VERSION
+elif [ -n "$GLOBAL_OSLS_VERSION" ]; then
+    CURRENT_SERVERLESS_VERSION=$GLOBAL_OSLS_VERSION
+elif [ -n "$LOCAL_SERVERLESS_VERSION" ]; then
     CURRENT_SERVERLESS_VERSION=$LOCAL_SERVERLESS_VERSION
+else
+    CURRENT_SERVERLESS_VERSION=$GLOBAL_SERVERLESS_VERSION
 fi
+
+if [ -z "$CURRENT_SERVERLESS_VERSION" ]; then
+    echo -e "${RED}Neither osls nor serverless CLI found. Please install one of them.${NC}"
+    exit 1
+fi
+
 SERVERLESS_VERSION=${CURRENT_SERVERLESS_VERSION#*@}
 SERVERLESS_VERSION_NUMBER=${SERVERLESS_VERSION%%.*}
+SLS_CMD="sls"
 
 echo -e "Running Serverless version:\n${CURRENT_SERVERLESS_VERSION}\n"
 echo -e "Current Serverless version: ${SERVERLESS_VERSION_NUMBER}\n"
@@ -123,9 +135,9 @@ function deploy_func ()
     echo -e "${YELLOW}Deploying ${FUNCTION} to ${STAGE}${NC} using ${CONFIG}"
 
     if [ ${SERVERLESS_VERSION_NUMBER} -ge ${LATEST_SERVERLESS_VERSION_NUMBER} ]; then
-        sls deploy function -f ${FUNCTION} --stage ${STAGE} --param="env=${ENVFILE}" --config ${CONFIG}
+        ${SLS_CMD} deploy function -f ${FUNCTION} --stage ${STAGE} --param="env=${ENVFILE}" --config ${CONFIG}
     else
-        sls deploy -f ${FUNCTION} --stage ${STAGE} --env ${ENVFILE} --config ${CONFIG}
+        ${SLS_CMD} deploy -f ${FUNCTION} --stage ${STAGE} --env ${ENVFILE} --config ${CONFIG}
     fi
 }
 
@@ -161,9 +173,9 @@ function deploy_full ()
 {
     echo -e "${YELLOW}Deploying service to ${STAGE}${NC}"
     if [ ${SERVERLESS_VERSION_NUMBER} -ge ${LATEST_SERVERLESS_VERSION_NUMBER} ]; then
-        sls deploy --stage ${STAGE} --param="env=${ENVFILE}" --config ${CONFIG}
+        ${SLS_CMD} deploy --stage ${STAGE} --param="env=${ENVFILE}" --config ${CONFIG}
     else
-        sls deploy --stage ${STAGE} --env ${ENVFILE} --config ${CONFIG}
+        ${SLS_CMD} deploy --stage ${STAGE} --env ${ENVFILE} --config ${CONFIG}
     fi
 }
 
@@ -172,16 +184,16 @@ function invoke_func ()
     echo -e "${YELLOW}Invoking function ${FUNCTION} on ${STAGE}${NC} using ${CONFIG}"
     if [ ${INVOKE_LOCAL} == 1 ]; then
         if [ ${SERVERLESS_VERSION_NUMBER} -ge ${LATEST_SERVERLESS_VERSION_NUMBER} ]; then
-            sls invoke local -f ${FUNCTION} --stage ${STAGE} --param="env=${ENVFILE}" -d ${DATA} -l --config ${CONFIG}
+            ${SLS_CMD} invoke local -f ${FUNCTION} --stage ${STAGE} --param="env=${ENVFILE}" -d ${DATA} -l --config ${CONFIG}
         else
-            sls invoke local -f ${FUNCTION} --stage ${STAGE} --env ${ENVFILE} -d ${DATA} -l --config ${CONFIG}
+            ${SLS_CMD} invoke local -f ${FUNCTION} --stage ${STAGE} --env ${ENVFILE} -d ${DATA} -l --config ${CONFIG}
         fi
 
     else
         if [ ${SERVERLESS_VERSION_NUMBER} -ge ${LATEST_SERVERLESS_VERSION_NUMBER} ]; then
-            sls invoke -f ${FUNCTION} --stage ${STAGE} --param="env=${ENVFILE}" -d ${DATA} -l --config ${CONFIG}
+            ${SLS_CMD} invoke -f ${FUNCTION} --stage ${STAGE} --param="env=${ENVFILE}" -d ${DATA} -l --config ${CONFIG}
         else
-            sls invoke -f ${FUNCTION} --stage ${STAGE} --env ${ENVFILE} -d ${DATA} -l --config ${CONFIG}
+            ${SLS_CMD} invoke -f ${FUNCTION} --stage ${STAGE} --env ${ENVFILE} -d ${DATA} -l --config ${CONFIG}
         fi
     fi
 }
@@ -190,9 +202,9 @@ function log_stream_func ()
 {
     echo -e "${YELLOW}Log Streaming function ${FUNCTION} on ${STAGE}${NC} using ${CONFIG}"
     if [ ${SERVERLESS_VERSION_NUMBER} -ge ${LATEST_SERVERLESS_VERSION_NUMBER} ]; then
-        sls logs -f ${FUNCTION} --stage ${STAGE} --param="env=${ENVFILE}" -t --config ${CONFIG}
+        ${SLS_CMD} logs -f ${FUNCTION} --stage ${STAGE} --param="env=${ENVFILE}" -t --config ${CONFIG}
     else
-        sls logs -f ${FUNCTION} --stage ${STAGE} --env ${ENVFILE} -t --config ${CONFIG}
+        ${SLS_CMD} logs -f ${FUNCTION} --stage ${STAGE} --env ${ENVFILE} -t --config ${CONFIG}
     fi
 }
 
@@ -200,9 +212,9 @@ function build ()
 {
     echo -e "${YELLOW}Building bundle without deployment${NC} using ${CONFIG}"
     if [ ${SERVERLESS_VERSION_NUMBER} -ge ${LATEST_SERVERLESS_VERSION_NUMBER} ]; then
-        sls webpack --stage ${STAGE} --param="env=${ENVFILE}" --config ${CONFIG}
+        ${SLS_CMD} webpack --stage ${STAGE} --param="env=${ENVFILE}" --config ${CONFIG}
     else
-        sls webpack --stage ${STAGE} --env ${ENVFILE} --config ${CONFIG}
+        ${SLS_CMD} webpack --stage ${STAGE} --env ${ENVFILE} --config ${CONFIG}
     fi
 }
 
@@ -222,9 +234,9 @@ function destroy_service ()
 {
     echo -e "${YELLOW}Removing service to ${STAGE}${NC}"
     if [ ${SERVERLESS_VERSION_NUMBER} -ge ${LATEST_SERVERLESS_VERSION_NUMBER} ]; then
-        sls remove --stage ${STAGE} --param="env=${ENVFILE}" --config ${CONFIG}
+        ${SLS_CMD} remove --stage ${STAGE} --param="env=${ENVFILE}" --config ${CONFIG}
     else
-        sls remove --stage ${STAGE} --env ${ENVFILE} --config ${CONFIG}
+        ${SLS_CMD} remove --stage ${STAGE} --env ${ENVFILE} --config ${CONFIG}
     fi
 }
 

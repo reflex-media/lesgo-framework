@@ -1,7 +1,7 @@
 {
   "name": "lesgo",
   "version": "3.0.1",
-  "description": "Core framework for lesgo node.js serverless framework.",
+  "description": "Core framework for lesgo node.js serverless applications. Optimized for osls.",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "author": "Sufiyan Rahmat",
@@ -180,7 +180,16 @@
     "node": ">=20.17.0"
   },
   "peerDependencies": {
+    "osls": "^3.0.0",
     "serverless": "^3.0.0"
+  },
+  "peerDependenciesMeta": {
+    "osls": {
+      "optional": true
+    },
+    "serverless": {
+      "optional": true
+    }
   },
   "sideEffects": false
 }
