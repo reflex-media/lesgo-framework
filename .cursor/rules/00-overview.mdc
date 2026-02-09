@@ -1,0 +1,274 @@
+---
+description: Core information, architecture, and fundamental concepts for the Lesgo serverless framework
+alwaysApply: true
+---
+
+# Project Overview
+
+> **For Cursor Agent**: This overview provides architecture context and a navigation guide to all available rules. Use the "Available Rules & When to Use Them" section below to determine which rules to reference for specific tasks. Always start here when beginning work on the Lesgo framework.
+
+## About Lesgo
+
+Lesgo is a lightweight, opinionated Node.js serverless framework designed for building AWS Lambda microservices. It provides abstractions for common AWS services, middleware support via Middy, and a structured approach to serverless development.
+
+**Repository**: <https://github.com/reflex-media/lesgo-framework>  
+**Documentation**: <https://reflex-media.github.io/lesgo-docs>  
+**License**: MIT
+
+## Core Technologies
+
+- **Language**: TypeScript 5.1+ (ES6 modules, strict mode)
+- **Runtime**: Node.js >= 20.17.0
+- **Middleware**: Middy v5
+- **AWS SDK**: AWS SDK v3 (modular architecture)
+- **Target Platform**: AWS Lambda (Serverless Framework v3)
+- **Testing**: Jest with ts-jest (70% minimum coverage)
+
+> **See Also**: [TypeScript Standards](./01-typescript-standards.mdc) for code style, naming conventions, import/export patterns, and development workflow.
+
+## Supported AWS Services
+
+- **DynamoDB**: Document client with lib-dynamodb
+- **S3**: Object storage with presigned URLs
+- **SQS**: Message queuing
+- **Secrets Manager**: Secure secret storage
+- **ElastiCache**: Redis integration with ioredis
+- **RDS Aurora MySQL**: Database proxy with mysql2
+
+> **See Also**: [AWS Services](./03-aws-services.mdc) for service patterns and implementation guidelines.
+
+## Architecture & Structure
+
+### Project Layout
+
+```text
+src/
+├── config/          # Configuration modules (environment-based)
+├── exceptions/      # LesgoException and custom exceptions
+├── middlewares/     # Middy middleware implementations
+├── services/        # AWS service abstractions
+├── utils/           # Utility functions and helpers
+└── types/           # TypeScript type definitions
+```
+
+### Architectural Patterns
+
+1. **Service Pattern**: Each service in its own directory with `getClient.ts` and operation methods
+
+   - Reference: `src/services/DynamoDbService/`, `src/services/S3Service/`
+   - See [AWS Services](./03-aws-services.mdc) for patterns
+
+2. **Utility Pattern**: Single-purpose functions with default exports
+
+   - Reference: `src/utils/isEmpty.ts`, `src/utils/validateFields.ts`
+   - Grouped utilities in subdirectories: `src/utils/crypto/`, `src/utils/dynamodb/`
+
+3. **Middleware Pattern**: Middy-based middleware with before/after/onError hooks
+
+   - Reference: `src/middlewares/httpMiddleware.ts`, `src/middlewares/verifyJwtMiddleware.ts`
+   - See [Middlewares](./04-middlewares.mdc) for patterns
+
+4. **Exception Pattern**: LesgoException for all framework errors
+
+   - Reference: `src/exceptions/LesgoException.ts`
+   - See [Error Handling](./05-error-handling.mdc) for usage
+
+5. **Config Pattern**: Environment-based configuration modules with defaults
+   - Reference: `src/config/` - each config exports a default object
+   - See `src/config/index.ts` for export pattern
+
+### Service Directory Structure
+
+All services follow this structure:
+
+```text
+ServiceNameService/
+├── index.ts           # Named exports of all methods
+├── getClient.ts       # Singleton client initialization
+├── operation.ts       # Operation methods
+└── __tests__/         # Test files (one per method)
+```
+
+**Actual examples**:
+
+- `src/services/DynamoDbService/index.ts` - exports all operations
+- `src/services/DynamoDbService/getClient.ts` - singleton pattern with `singletonConn` support
+- `src/services/DynamoDbService/putRecord.ts` - operation method pattern
+
+> **See Also**: [AWS Services](./03-aws-services.mdc) for detailed service implementation patterns.
+
+### Utility Structure
+
+- **Single utilities**: One function per file with default export (`src/utils/isEmpty.ts`)
+- **Grouped utilities**: Subdirectory with index barrel export (`src/utils/crypto/index.ts`)
+
+## Module Exports
+
+The framework uses conditional exports in `package.json` with both `import` and `require` support:
+
+```json
+{
+  "exports": {
+    "./services/DynamoDbService": {
+      "import": "./dist/services/DynamoDbService/index.js",
+      "require": "./dist/services/DynamoDbService/index.js"
+    }
+  }
+}
+```
+
+**Available exports**: See `package.json` for complete list. Common imports:
+
+```typescript
+import { putRecord } from 'lesgo/services/DynamoDbService';
+import { httpMiddleware } from 'lesgo/middlewares';
+import isEmpty from 'lesgo/utils/isEmpty';
+import LesgoException from 'lesgo/exceptions/LesgoException';
+```
+
+> **See Also**: [Quick Reference](./09-quick-reference.mdc) for import patterns.
+
+## Key Principles
+
+1. **Lightweight**: Minimal dependencies, focused functionality
+2. **Opinionated**: Clear patterns and conventions
+3. **TypeScript First**: Strong typing throughout (strict mode)
+4. **AWS Native**: Built for AWS Lambda and services
+5. **Test Coverage**: Minimum 70% coverage required
+6. **ES6 Modules**: Modern JavaScript standards only
+
+## Available Rules & When to Use Them
+
+The following rules are available for the Cursor Agent. Use them based on the task context:
+
+### [01-typescript-standards.mdc](./01-typescript-standards.mdc)
+
+**When to use**: TypeScript code style, naming conventions, import/export patterns, development workflow, documentation standards
+
+**Use this rule when**:
+
+- Writing or reviewing TypeScript code
+- Setting up new files or modules
+- Defining types, interfaces, or classes
+- Organizing imports/exports
+- Writing JSDoc comments
+- Running development commands (lint, type-check, build)
+
+**Covers**: Code style, naming conventions, module patterns, type safety, documentation standards, development workflow
+
+### [02-testing.mdc](./02-testing.mdc)
+
+**When to use**: Writing tests, mocking AWS services, test structure, coverage requirements
+
+**Use this rule when**:
+
+- Writing test files (`*.test.ts`)
+- Mocking AWS SDK clients
+- Setting up test fixtures
+- Verifying test coverage
+- Testing services, utilities, or middlewares
+
+**Covers**: Jest configuration, test structure, mocking patterns, coverage requirements (70% minimum), test organization
+
+### [03-aws-services.mdc](./03-aws-services.mdc)
+
+**When to use**: Creating or modifying AWS service implementations, client initialization, service methods
+
+**Use this rule when**:
+
+- Implementing new AWS services
+- Creating `getClient.ts` functions
+- Writing service operation methods
+- Working with AWS SDK v3 commands
+- Setting up service directory structure
+
+**Covers**: Service patterns, getClient singleton pattern, service method structure, AWS SDK v3 usage, service directory organization
+
+### [04-middlewares.mdc](./04-middlewares.mdc)
+
+**When to use**: Creating or modifying Middy middlewares, handler composition, HTTP request/response handling
+
+**Use this rule when**:
+
+- Writing new middlewares
+- Composing middleware stacks
+- Handling HTTP events
+- Implementing authentication/authorization middlewares
+- Working with Lambda handlers
+
+**Covers**: Middleware patterns, handler composition, built-in middlewares, before/after/onError hooks, event extension patterns
+
+### [05-error-handling.mdc](./05-error-handling.mdc)
+
+**When to use**: Error handling, validation, exception throwing, error logging
+
+**Use this rule when**:
+
+- Throwing exceptions
+- Validating input parameters
+- Handling errors in try/catch blocks
+- Logging errors
+- Creating error responses
+
+**Covers**: LesgoException usage, validation patterns, error codes, error logging, input validation with `validateFields`
+
+### [06-performance.mdc](./06-performance.mdc)
+
+**When to use**: Optimizing Lambda performance, reducing cold starts, connection management
+
+**Use this rule when**:
+
+- Optimizing Lambda functions
+- Managing connections (database, Redis, AWS clients)
+- Reducing bundle size
+- Improving cold start times
+- Managing event loop
+
+**Covers**: Cold start optimization, connection reuse, lazy loading, event loop management, bundle size optimization
+
+### [07-security.mdc](./07-security.mdc)
+
+**When to use**: Security patterns, authentication, authorization, secrets management, data protection
+
+**Use this rule when**:
+
+- Implementing authentication/authorization
+- Managing secrets and credentials
+- Handling sensitive data
+- Validating user permissions
+- Encrypting/decrypting data
+
+**Covers**: Secrets Manager usage, JWT authentication, Basic Auth, encryption patterns, security best practices
+
+### [09-quick-reference.mdc](./09-quick-reference.mdc)
+
+**When to use**: Quick code templates, common patterns, import examples, handler templates
+
+**Use this rule when**:
+
+- Need quick code snippets
+- Looking for import patterns
+- Setting up handlers
+- Finding common utility usage
+- Getting started quickly
+
+**Covers**: Code templates, import patterns, handler examples, common utilities, file structure examples
+
+## Rule Selection Guide for Cursor Agent
+
+**When working on**:
+
+- **New service implementation** → Start with `03-aws-services.mdc`, reference `05-error-handling.mdc` for validation
+- **New middleware** → Use `04-middlewares.mdc`, reference `05-error-handling.mdc` for errors
+- **Writing tests** → Use `02-testing.mdc`, reference the rule for the code being tested
+- **Code style/formatting** → Use `01-typescript-standards.mdc`
+- **Error handling** → Always reference `05-error-handling.mdc`
+- **Performance concerns** → Check `06-performance.mdc`
+- **Security/auth** → Use `07-security.mdc` and `04-middlewares.mdc`
+- **Quick templates** → Use `09-quick-reference.mdc` first, then dive into specific rules
+
+**Always reference**:
+
+- `00-overview.mdc` for architecture and navigation
+- `01-typescript-standards.mdc` for code style questions
+- `05-error-handling.mdc` when throwing exceptions

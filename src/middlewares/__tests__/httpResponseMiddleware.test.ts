@@ -167,7 +167,7 @@ describe('httpResponseMiddleware', () => {
     });
   });
 
-  it('should return with unhaldned error if no error object provided', async () => {
+  it('should return with unhandled error if no error object provided', async () => {
     request.error = new Error();
 
     const customOptions = {
@@ -195,5 +195,215 @@ describe('httpResponseMiddleware', () => {
         _meta: {},
       }),
     });
+  });
+
+  it('should include extendedResponse in success response', async () => {
+    request.response = { id: 123 };
+    request.event.extendedResponse = {
+      _custom: 'value',
+      _timestamp: 1234567890,
+    };
+
+    const middleware = httpResponseMiddleware();
+    await middleware.after(request);
+
+    expect(request.response.body).toBe(
+      JSON.stringify({
+        status: 'success',
+        data: { id: 123 },
+        _meta: {},
+        _custom: 'value',
+        _timestamp: 1234567890,
+      })
+    );
+  });
+
+  it('should include extendedResponse in error response', async () => {
+    request.error = error;
+    request.event.extendedResponse = {
+      _custom: 'value',
+      _requestId: 'abc-123',
+    };
+
+    const middleware = httpResponseMiddleware();
+    await middleware.onError(request);
+
+    expect(request.response.body).toBe(
+      JSON.stringify({
+        status: 'error',
+        data: null,
+        error: {
+          code: 'LESGO_EXCEPTION',
+          message: 'Test error',
+          details: {},
+        },
+        _meta: {},
+        _custom: 'value',
+        _requestId: 'abc-123',
+      })
+    );
+  });
+
+  it('should include event data in _meta when debugMode is enabled', async () => {
+    request.response = 'Test response';
+    request.event = {
+      httpMethod: 'GET',
+      path: '/test',
+      headers: { 'x-custom': 'header' },
+    };
+
+    const middleware = httpResponseMiddleware({ debugMode: true });
+    await middleware.after(request);
+
+    expect(request.response.body).toBe(
+      JSON.stringify({
+        status: 'success',
+        data: 'Test response',
+        _meta: {
+          httpMethod: 'GET',
+          path: '/test',
+          headers: { 'x-custom': 'header' },
+        },
+      })
+    );
+  });
+
+  it('should include event data in _meta when debugMode is enabled in error', async () => {
+    request.error = error;
+    request.event = {
+      httpMethod: 'POST',
+      path: '/error',
+      body: { test: 'data' },
+    };
+
+    const middleware = httpResponseMiddleware({ debugMode: true });
+    await middleware.onError(request);
+
+    expect(request.response.body).toBe(
+      JSON.stringify({
+        status: 'error',
+        data: null,
+        error: {
+          code: 'LESGO_EXCEPTION',
+          message: 'Test error',
+          details: {},
+        },
+        _meta: {
+          httpMethod: 'POST',
+          path: '/error',
+          body: { test: 'data' },
+        },
+      })
+    );
+  });
+
+  it('should set isBase64Encoded when provided', async () => {
+    request.response = 'Test response';
+
+    const middleware = httpResponseMiddleware({ isBase64Encoded: true });
+    await middleware.after(request);
+
+    expect(request.response.isBase64Encoded).toBe(true);
+  });
+
+  it('should merge response headers with default headers', async () => {
+    request.response = {
+      headers: {
+        'X-Custom-Header': 'custom-value',
+        'Content-Type': 'application/xml',
+      },
+    };
+
+    const middleware = httpResponseMiddleware();
+    await middleware.after(request);
+
+    expect(request.response.headers).toEqual({
+      'Access-Control-Allow-Origin': '*',
+      'Cache-Control': 'no-cache',
+      'Content-Type': 'application/xml',
+      'X-Custom-Header': 'custom-value',
+    });
+  });
+
+  it('should merge response headers in error response', async () => {
+    request.error = error;
+    request.response = {
+      headers: {
+        'X-Error-Code': 'ERR001',
+      },
+    };
+
+    const middleware = httpResponseMiddleware();
+    await middleware.onError(request);
+
+    expect(request.response.headers).toEqual({
+      'Access-Control-Allow-Origin': '*',
+      'Cache-Control': 'no-cache',
+      'Content-Type': 'application/json',
+      'X-Error-Code': 'ERR001',
+    });
+  });
+
+  it('should handle response with object data', async () => {
+    request.response = {
+      id: 123,
+      name: 'Test',
+      nested: { value: 'nested' },
+    };
+
+    const middleware = httpResponseMiddleware();
+    await middleware.after(request);
+
+    expect(request.response.body).toBe(
+      JSON.stringify({
+        status: 'success',
+        data: {
+          id: 123,
+          name: 'Test',
+          nested: { value: 'nested' },
+        },
+        _meta: {},
+      })
+    );
+  });
+
+  it('should log debug message for success response', async () => {
+    request.response = 'Test response';
+
+    const middleware = httpResponseMiddleware();
+    await middleware.after(request);
+
+    expect(logger.debug).toHaveBeenCalledWith(
+      'lesgo.middlewares.httpResponseMiddleware::RESPONSE_DATA_SUCCESS',
+      expect.objectContaining({
+        statusCode: 200,
+        body: expect.any(Object),
+      })
+    );
+  });
+
+  it('should log debug message for error response', async () => {
+    request.error = error;
+
+    const middleware = httpResponseMiddleware();
+    await middleware.onError(request);
+
+    expect(logger.debug).toHaveBeenCalledWith(
+      'lesgo.middlewares.httpResponseMiddleware::RESPONSE_DATA_ERROR',
+      expect.objectContaining({
+        statusCode: 500,
+        body: expect.any(Object),
+      })
+    );
+  });
+
+  it('should handle error with empty statusCode', async () => {
+    request.error = new LesgoException('testError', 'TEST_ERROR');
+
+    const middleware = httpResponseMiddleware();
+    await middleware.onError(request);
+
+    expect(logger.error).toHaveBeenCalledWith('testError', request.error);
+    expect(request.response.statusCode).toBe(500);
   });
 });

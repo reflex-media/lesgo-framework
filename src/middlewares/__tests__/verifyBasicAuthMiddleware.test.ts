@@ -128,4 +128,45 @@ describe('verifyBasicAuthMiddleware', () => {
       )
     );
   });
+
+  it('should handle basic auth without Basic prefix', () => {
+    mockRequest.event.headers.authorization = 'am9objpqMDRuRDBl';
+
+    verifyBasicAuthMiddleware(mockOptions).before(mockRequest);
+
+    expect(mockRequest.event.basicAuth).toEqual({
+      username: basicAuthConfig.authorizedList[0].username,
+    });
+  });
+
+  it('should set extendedResponse with basicAuth in after hook', async () => {
+    const mockBasicAuth = {
+      username: basicAuthConfig.authorizedList[0].username,
+    };
+    mockRequest.event.basicAuth = mockBasicAuth;
+
+    const middleware = verifyBasicAuthMiddleware(mockOptions);
+    await middleware.after(mockRequest);
+
+    expect(mockRequest.event.extendedResponse).toEqual({
+      _basicAuth: mockBasicAuth,
+    });
+  });
+
+  it('should overwrite extendedResponse in after hook', async () => {
+    const mockBasicAuth = {
+      username: basicAuthConfig.authorizedList[0].username,
+    };
+    mockRequest.event.basicAuth = mockBasicAuth;
+    mockRequest.event.extendedResponse = {
+      _custom: 'value',
+    };
+
+    const middleware = verifyBasicAuthMiddleware(mockOptions);
+    await middleware.after(mockRequest);
+
+    expect(mockRequest.event.extendedResponse).toEqual({
+      _basicAuth: mockBasicAuth,
+    });
+  });
 });
