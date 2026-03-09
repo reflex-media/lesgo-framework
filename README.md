@@ -3,7 +3,7 @@
 ![Build Status](https://github.com/reflex-media/lesgo-framework/actions/workflows/release.yml/badge.svg)
 [![Coverage Status](https://coveralls.io/repos/github/reflex-media/lesgo-framework/badge.svg?branch=master)](https://coveralls.io/github/reflex-media/lesgo-framework?branch=master)
 
-Bootstrap your next microservice with a lightweight node.js serverless framework.
+Bootstrap your next microservice with a lightweight node.js serverless framework. Optimized for [osls](https://github.com/oss-serverless/serverless).
 
 > Note: This repository contains the core code of the Lesgo! framework. If you want to build an application using Lesgo!, visit the [docs](https://reflex-media.github.io/lesgo-docs).
 
