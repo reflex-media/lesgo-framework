@@ -37,7 +37,7 @@ describe('getClient', () => {
     expect(logger.debug).toHaveBeenCalledWith(
       'lesgo.services.SQSService.getClient::REUSE_CLIENT_SINGLETON',
       {
-        client: client1,
+        singletonConn,
         region: 'us-west-2',
       }
     );
