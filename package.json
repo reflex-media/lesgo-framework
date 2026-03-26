@@ -178,14 +178,10 @@
     "node": ">=20.17.0"
   },
   "peerDependencies": {
-    "osls": "^3.0.0",
-    "serverless": "^4.0.0"
+    "osls": "^3.0.0"
   },
   "peerDependenciesMeta": {
     "osls": {
-      "optional": true
-    },
-    "serverless": {
       "optional": true
     }
   },
