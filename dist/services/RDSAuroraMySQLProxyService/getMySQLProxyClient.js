@@ -47,7 +47,7 @@ const sanitizeForLogging = obj => {
   if (!obj) return obj;
   const sanitized = Object.assign({}, obj);
   delete sanitized.password;
-  delete sanitized.username;
+  delete sanitized.user;
   return sanitized;
 };
 const isPoolHealthy = pool =>

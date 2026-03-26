@@ -26,5 +26,5 @@ import { ClientOptions } from '../../../types/aws';
  * await client.set(key, value);
  * ```
  */
-declare const getClient: (clientOpts?: ClientOptions) => Promise<import("ioredis").Cluster>;
+declare const getClient: (clientOpts?: ClientOptions) => Promise<import("ioredis/built/cluster").default>;
 export default getClient;
