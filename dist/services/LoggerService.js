@@ -58,7 +58,8 @@ export default class LoggerService {
     if (!this.checkIsLogRequired('console', level)) return null;
     const refinedMessage = this.refineMessagePerTransport('console', message);
     const consoleFunc = level === 'notice' ? 'log' : level;
-    return console[consoleFunc](JSON.stringify(refinedMessage));
+    const sanitizedMessage = this.sanitizeForJson(refinedMessage);
+    return console[consoleFunc](JSON.stringify(sanitizedMessage));
   }
   checkIsLogRequired(transportName, level) {
     const transport = this.getTransportByName(transportName);
@@ -116,5 +117,55 @@ export default class LoggerService {
     return this.transports.find(
       transport => transport.logType === transportName
     );
+  }
+  /**
+   * Sanitizes an object for JSON serialization by:
+   * - Replacing functions with a string representation (similar to console.log behavior)
+   * - Handling circular references
+   * - Preserving other values
+   */
+  sanitizeForJson(obj, seen = new WeakSet()) {
+    // Handle null and undefined
+    if (obj === null || obj === undefined) {
+      return obj;
+    }
+    // Handle functions - replace with string representation like console.log does
+    if (typeof obj === 'function') {
+      const funcName = obj.name || 'anonymous';
+      return `[Function: ${funcName}]`;
+    }
+    // Handle primitives
+    if (typeof obj !== 'object') {
+      return obj;
+    }
+    // Handle circular references
+    if (seen.has(obj)) {
+      return '[Circular]';
+    }
+    // Handle Date objects
+    if (obj instanceof Date) {
+      return obj.toISOString();
+    }
+    // Handle arrays
+    if (Array.isArray(obj)) {
+      seen.add(obj);
+      return obj.map(item => this.sanitizeForJson(item, seen));
+    }
+    // Handle objects
+    seen.add(obj);
+    const sanitized = {};
+    for (const key in obj) {
+      if (Object.prototype.hasOwnProperty.call(obj, key)) {
+        try {
+          sanitized[key] = this.sanitizeForJson(obj[key], seen);
+        } catch (error) {
+          // If we can't serialize a property, replace it with error message
+          sanitized[key] = `[Error: ${
+            error instanceof Error ? error.message : 'Unknown error'
+          }]`;
+        }
+      }
+    }
+    return sanitized;
   }
 }

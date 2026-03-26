@@ -1,0 +1,314 @@
+---
+description: Middy middleware patterns, HTTP handling, and Lambda middleware composition for Lesgo framework
+---
+
+# Middleware Development
+
+## Overview
+
+Lesgo uses [Middy v5](https://middy.js.org/) for Lambda middleware composition. Middlewares provide before/after/onError hooks for request processing, response formatting, and error handling.
+
+> **See Also**: [Error Handling](./05-error-handling.mdc) for LesgoException patterns and error code conventions.  
+> **See Also**: [Quick Reference](./09-quick-reference.mdc) for middleware templates and handler examples.  
+> **See Also**: [Testing](./02-testing.mdc) for middleware testing patterns.
+
+## Core Concepts
+
+- **before**: Runs before Lambda handler execution
+- **after**: Runs after successful handler execution
+- **onError**: Runs if handler throws an error
+- **request object**: Contains `event`, `context`, `response`, `error`, `internal`
+
+## Standard Middleware Pattern
+
+All middlewares follow this structure:
+
+```typescript
+import middy from '@middy/core';
+import logger from '../utils/logger';
+import { LesgoException } from '../exceptions';
+
+const FILE = 'lesgo.middlewares.middlewareName';
+
+export interface MiddlewareNameOptions {
+  option1?: string;
+  option2?: boolean;
+}
+
+const middlewareName = (opts: MiddlewareNameOptions = {}) => {
+  const options = {
+    option1: opts.option1 || 'default',
+    option2: opts.option2 ?? true,
+  };
+
+  const middlewareBefore = async (request: middy.Request) => {
+    logger.debug(`${FILE}::BEFORE_HOOK`, { request, options });
+    // Pre-processing logic
+  };
+
+  const middlewareAfter = async (request: middy.Request) => {
+    logger.debug(`${FILE}::AFTER_HOOK`, { request });
+    // Post-processing logic
+  };
+
+  const middlewareOnError = async (request: middy.Request) => {
+    logger.error(`${FILE}::ERROR_HOOK`, { error: request.error });
+    // Error handling logic
+  };
+
+  return {
+    before: middlewareBefore,
+    after: middlewareAfter,
+    onError: middlewareOnError,
+  };
+};
+
+export default middlewareName;
+```
+
+### Key Patterns
+
+1. **FILE constant**: Use `const FILE = 'lesgo.middlewares.middlewareName'` for logging context
+2. **Options merging**: Merge options with defaults using spread operator
+3. **Named hook functions**: Extract hooks as named functions for clarity
+4. **Logger usage**: Use `logger.debug()` for tracing, `logger.error()` for errors
+5. **Error codes**: Use `${FILE}::ERROR_CODE` pattern for error codes (see [Error Handling](./05-error-handling.mdc))
+
+## Middleware Composition Pattern
+
+For middlewares that compose multiple Middy packages, use the iteration pattern:
+
+```typescript
+interface MiddlewareObj<T = any, R = any> {
+  before?: (request: middy.Request<T, R>) => Promise<void>;
+  after?: (request: middy.Request<T, R>) => Promise<void>;
+  onError?: (request: middy.Request<T, R>) => Promise<void>;
+}
+
+const compositeMiddleware = (opts: Options = {}) => {
+  const middlewarePackages: MiddlewareObj[] = [
+    doNotWaitForEmptyEventLoop(),
+    eventNormalizer(),
+    customMiddleware(opts),
+  ];
+
+  return {
+    before: async (handler: middy.Request) => {
+      for (const middleware of middlewarePackages) {
+        if (middleware.before) {
+          await middleware.before(handler);
+        }
+      }
+    },
+    after: async (handler: middy.Request) => {
+      for (const middleware of middlewarePackages) {
+        if (middleware.after) {
+          await middleware.after(handler);
+        }
+      }
+    },
+    onError: async (handler: middy.Request) => {
+      for (const middleware of middlewarePackages) {
+        if (middleware.onError) {
+          await middleware.onError(handler);
+        }
+      }
+    },
+  };
+};
+```
+
+**Reference implementations**:
+
+- [`httpMiddleware.ts`](../../src/middlewares/httpMiddleware.ts) - HTTP request/response handling
+- [`invokeCommandMiddleware.ts`](../../src/middlewares/invokeCommandMiddleware.ts) - Command invocation with cleanup
+- [`sqsMiddleware.ts`](../../src/middlewares/sqsMiddleware.ts) - SQS event processing
+
+## Built-in Middlewares
+
+### HTTP Middleware Stack
+
+Composes Middy HTTP packages with response formatting:
+
+```typescript
+import { httpMiddleware } from 'lesgo/middlewares';
+
+// Usage
+middy(handler).use(
+  httpMiddleware({
+    debugMode: false,
+    headers: { 'Custom-Header': 'value' },
+  })
+);
+```
+
+**Components**:
+
+- `doNotWaitForEmptyEventLoop` - Prevents Lambda from waiting for event loop
+- `eventNormalizer` - Normalizes HTTP events
+- `httpHeaderNormalizer` - Normalizes HTTP headers
+- `jsonBodyParser` - Parses JSON request bodies
+- `httpResponseMiddleware` - Formats HTTP responses
+
+**Reference**: [`httpMiddleware.ts`](../../src/middlewares/httpMiddleware.ts)
+
+### HTTP Response Middleware
+
+Formats responses with standard structure:
+
+```typescript
+{
+  status: 'success' | 'error',
+  data: any,
+  error?: { code, message, details },
+  _meta?: object
+}
+```
+
+**Patterns**:
+
+- Uses `defaultOptions` with spread for option merging
+- Checks `Content-Type` header to determine JSON stringification
+- Supports `event.extendedResponse` for additional response metadata
+- Logs errors based on status code (error for >= 500, warn for < 500)
+
+**Reference**: [`httpResponseMiddleware.ts`](../../src/middlewares/httpResponseMiddleware.ts)
+
+### Authentication Middlewares
+
+#### JWT Verification
+
+```typescript
+import { verifyJwtMiddleware } from 'lesgo/middlewares';
+
+middy(handler).use(verifyJwtMiddleware(secret, options));
+```
+
+**Patterns**:
+
+- Reads token from `event.headers.authorization`
+- Attaches decoded token to `event.jwt`
+- Adds `_jwt` to `event.extendedResponse` in after hook
+- Uses `${FILE}::ERROR_CODE` pattern for error codes
+
+**Reference**: [`verifyJwtMiddleware.ts`](../../src/middlewares/verifyJwtMiddleware.ts)
+
+#### Basic Auth Verification
+
+```typescript
+import { verifyBasicAuthMiddleware } from 'lesgo/middlewares';
+
+middy(handler).use(verifyBasicAuthMiddleware({ debugMode: false }));
+```
+
+**Patterns**:
+
+- Uses `validateFields` utility for credential validation
+- Checks against `basicAuthConfig.authorizedList`
+- Attaches `{ username }` to `event.basicAuth`
+- Adds `_basicAuth` to `event.extendedResponse` in after hook
+
+**Reference**: [`verifyBasicAuthMiddleware.ts`](../../src/middlewares/verifyBasicAuthMiddleware.ts)
+
+### Disconnect Middleware
+
+Handles resource cleanup for database/cache connections:
+
+```typescript
+import { disconnectMiddleware } from 'lesgo/middlewares';
+
+disconnectMiddleware({ clients: [disconnectRedis, disconnectMySQL] });
+```
+
+**Patterns**:
+
+- Accepts array of disconnect functions
+- Uses `Promise.allSettled` for parallel cleanup
+- Runs in both `after` and `onError` hooks
+- Logs success/failure for each client
+
+**Reference**: [`disconnectMiddleware.ts`](../../src/middlewares/disconnectMiddleware.ts)
+
+## Event Extension Pattern
+
+Middlewares can add metadata to responses via `event.extendedResponse`:
+
+```typescript
+const middlewareAfter = async (request: middy.Request) => {
+  request.event = {
+    ...request.event,
+    extendedResponse: {
+      _customField: request.event.customData,
+    },
+  };
+};
+```
+
+This data is included in the response `_meta` field when `debugMode` is enabled.
+
+**Reference**: [`verifyJwtMiddleware.ts`](../../src/middlewares/verifyJwtMiddleware.ts#L46-L53), [`verifyBasicAuthMiddleware.ts`](../../src/middlewares/verifyBasicAuthMiddleware.ts#L76-L83)
+
+## Error Handling
+
+All middlewares use `LesgoException` for errors:
+
+```typescript
+throw new LesgoException(
+  'Error message',
+  `${FILE}::ERROR_CODE`,
+  statusCode,
+  extra
+);
+```
+
+> **See Also**: [Error Handling](./05-error-handling.mdc) for LesgoException patterns and error code conventions.
+
+## Export Pattern
+
+All middlewares are exported from `index.ts`:
+
+```typescript
+// src/middlewares/index.ts
+export { default as middlewareName } from './middlewareName';
+```
+
+## Best Practices
+
+✅ **Do:**
+
+- Use FILE constant for logging context
+- Extract hooks as named functions
+- Merge options with defaults
+- Use LesgoException with `${FILE}::ERROR_CODE` pattern
+- Log operations with appropriate levels
+- Handle errors gracefully
+- Clean up resources in after/onError hooks
+- Export options interface
+
+❌ **Don't:**
+
+- Use generic Error class
+- Hardcode configuration values
+- Skip error handling
+- Perform heavy computations in middleware
+- Mutate request.event directly (use spread)
+- Skip logging
+
+## Middleware Checklist
+
+- [ ] FILE constant defined
+- [ ] Options interface exported
+- [ ] Options merged with defaults
+- [ ] Named hook functions extracted
+- [ ] Logger used appropriately
+- [ ] LesgoException used for errors
+- [ ] Error codes use `${FILE}::ERROR_CODE` pattern
+- [ ] Exported from `middlewares/index.ts`
+- [ ] Tests written (see [Testing](./02-testing.mdc))
+
+## Related Rules
+
+- **[Error Handling](./05-error-handling.mdc)** - LesgoException usage and error code conventions
+- **[Testing](./02-testing.mdc)** - Middleware testing patterns
+- **[Quick Reference](./09-quick-reference.mdc)** - Middleware templates and handler examples
+- **[Overview](./00-overview.mdc)** - Project structure and architecture patterns

@@ -1,0 +1,815 @@
+---
+description: TypeScript configuration, code style guidelines, and best practices for Lesgo framework development
+---
+
+# TypeScript & Code Standards
+
+## Enforcing Standards
+
+### Available Scripts
+
+The following npm scripts enforce TypeScript and code quality standards:
+
+```bash
+# Type checking ⚡ NEW
+npm run type-check           # Fast type checking without building (2-5s)
+npm run type-check:watch     # Watch mode for real-time type checking
+
+# Linting
+npm run lint                 # Check for linting errors (no auto-fix)
+npm run lint-fix             # Fix auto-fixable linting errors
+npm run pretest              # Runs type-check + lint before tests
+
+# Building (includes type checking)
+npm run build                # Compile TypeScript (tsc) + format + lint dist
+
+# Testing
+npm run test                 # Run Jest tests (runs pretest hook)
+npm run coverage             # Run tests with coverage report
+
+# Formatting
+npm run format               # Format dist files with Prettier
+```
+
+### Type-Check Script Benefits
+
+The dedicated type-check scripts provide:
+
+- ⚡ **Fast feedback**: 3-5x faster than full build (2-5s vs 20-30s)
+- 🔄 **Watch mode**: Real-time type checking while coding
+- ✅ **CI/CD ready**: Can be used in pipelines
+- 🎯 **Focused errors**: Only type errors, no compilation
+- 📚 **Industry standard**: Matches common TypeScript project patterns
+
+### Pre-commit Hooks
+
+The project uses **Husky + lint-staged** to enforce standards on commit:
+
+```json
+{
+  "lint-staged": {
+    "*.{js,ts,jsx,tsx}": ["prettier --write", "npm run lint", "git add"]
+  }
+}
+```
+
+**What this enforces**:
+
+1. Code formatting (Prettier)
+2. Linting rules (ESLint + TypeScript ESLint)
+3. Type checking (via ESLint's TypeScript plugin)
+
+### Development Workflow
+
+**Recommended workflow** for developers:
+
+```bash
+# 1. While coding - run type check in watch mode (separate terminal)
+npm run type-check:watch
+
+# 2. Before committing - verify everything passes
+npm run lint-fix        # Fix auto-fixable linting issues
+npm run type-check      # Verify TypeScript types (2-5s)
+npm test                # Run tests (includes pretest: type-check + lint)
+
+# 3. Commit - Husky hooks run automatically
+git commit -m "feat: add new feature"
+
+# 4. Before PR - verify production build works
+npm run build
+```
+
+**Pro tip**: Keep `npm run type-check:watch` running in a separate terminal while developing for instant type error feedback.
+
+---
+
+## TypeScript Configuration
+
+### Compiler Options (tsconfig.json)
+
+**Source of Truth**: [`tsconfig.json`](../../../tsconfig.json)
+
+> **Note**: Always refer to the actual `tsconfig.json` file for the current configuration. The settings below explain the rationale for key options.
+
+### Key Settings
+
+- **Strict Mode**: ALWAYS enabled (`"strict": true`)
+- **Module System**: ES6 modules only
+- **Target**: ES6 for Lambda compatibility
+- **Declarations**: Generated for TypeScript consumers
+
+## Type Safety Guidelines
+
+### 1. Explicit Typing
+
+**Prefer explicit types** for function signatures and public APIs:
+
+```typescript
+// ✅ Good - Explicit types
+const processData = (input: string, options: ProcessOptions): Result => {
+  // ...
+};
+
+// ❌ Avoid - Implicit types on public APIs
+const processData = (input, options) => {
+  // ...
+};
+```
+
+**Real-world example** from `putRecord.ts`:
+
+```typescript
+// Interface exported for public API
+export interface PutRecordOptions
+  extends Partial<Omit<PutCommandInput, 'TableName'>> {
+  TableName?: string;
+}
+
+// Explicit return type with async
+const putRecord = async (
+  item: Item,
+  tableAlias: string,
+  opts?: PutRecordOptions,
+  clientOpts?: ClientOptions
+) => {
+  // Implementation
+};
+```
+
+### 2. Using `any` Type
+
+The `any` type is **allowed for flexibility**, but use judiciously:
+
+```typescript
+// ✅ Acceptable - External data or flexible utilities
+const isEmpty = (value: any): boolean => {
+  // Generic utility accepting any type
+};
+
+// ✅ Acceptable - AWS SDK responses with unknown structure
+catch (err: any) {
+  logger.error('Error occurred', { error: err });
+}
+
+// ⚠️ Consider alternatives first
+// Use specific types or generics when possible
+```
+
+**Actual codebase pattern** from `isEmpty.ts`:
+
+```typescript
+// Uses 'any' for maximum flexibility - correct for a generic utility
+const isEmpty = (value: any) => {
+  if (value === undefined || value === null || value === '') {
+    return true;
+  }
+
+  if (Array.isArray(value) && value.length === 0) {
+    return true;
+  }
+
+  if (typeof value === 'object' && Object.keys(value).length === 0) {
+    return true;
+  }
+
+  return false;
+};
+```
+
+> **Note**: The return type annotation `: boolean` is optional but recommended for public APIs. The codebase allows omitting it when TypeScript can infer it correctly.
+
+### 3. Interfaces vs Type Aliases
+
+**Use interfaces for object shapes** (options, configs, data structures):
+
+```typescript
+// ✅ Good - Interface for object shape
+interface LoggerServiceOptions {
+  logger?: string;
+  defaultMeta?: object;
+  transports?: Array<Transport>;
+}
+```
+
+**Use type aliases for unions, primitives, and utility types**:
+
+```typescript
+// ✅ Good - Type alias for union
+type LogLevel = 'error' | 'warn' | 'notice' | 'info' | 'debug';
+
+// ✅ Good - Type alias for mapped/utility types
+export type Item = Record<string, NativeAttributeValue>;
+```
+
+**Real patterns from `LoggerService.ts`**:
+
+```typescript
+// Type alias for union types
+type LogLevel = 'error' | 'warn' | 'notice' | 'info' | 'debug';
+
+// Interface for options objects
+interface LoggerServiceOptions {
+  logger?: string;
+  defaultMeta?: object;
+  transports?: Array<Transport>;
+}
+
+interface Transport {
+  logType: string;
+  level: string;
+  config?: TransportConfig;
+}
+
+interface TransportConfig {
+  getCreatedAt?: boolean;
+  meta?: object;
+  tags?: TransportConfigTags;
+}
+
+// Interface for indexed types
+interface TransportConfigTags {
+  [key: string]: string;
+}
+```
+
+### 4. Null and Undefined Handling
+
+**Always check for null/undefined before operations**:
+
+```typescript
+// ✅ Good - Explicit null checking
+if (value === undefined || value === null || value === '') {
+  throw new LesgoException('Value is required', 'INVALID_INPUT', 400);
+}
+
+// ✅ Better - Use isEmpty utility
+if (isEmpty(value)) {
+  throw new LesgoException('Value is required', 'INVALID_INPUT', 400);
+}
+```
+
+> **See Also**: [Error Handling](./05-error-handling.mdc) for comprehensive input validation patterns and exception handling best practices.
+
+### 5. Export Public Interfaces
+
+**Export all interfaces used in public APIs**:
+
+```typescript
+// ✅ Good - Exported interface
+export interface MiddlewareOptions {
+  debugMode?: boolean;
+  headers?: Record<string, string>;
+}
+
+const myMiddleware = (opts: MiddlewareOptions = {}) => {
+  // ...
+};
+
+export default myMiddleware;
+```
+
+## Module System Standards
+
+### ES6 Modules Only
+
+**NEVER use CommonJS**:
+
+```typescript
+// ❌ FORBIDDEN - CommonJS
+const middy = require('@middy/core');
+module.exports = myFunction;
+
+// ✅ REQUIRED - ES6 modules
+import middy from '@middy/core';
+export default myFunction;
+```
+
+### Import Organization
+
+**Follow this import order**:
+
+```typescript
+// 1. External packages (third-party)
+import middy from '@middy/core';
+import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
+
+// 2. Internal modules (relative imports)
+import LesgoException from '../exceptions/LesgoException';
+import isEmpty from '../utils/isEmpty';
+import getClient from './getClient';
+
+// 3. Types (separate section)
+import type { Handler } from 'aws-lambda';
+import type { MiddlewareOptions } from './types';
+```
+
+**Alternative pattern** (destructured imports from barrel exports):
+
+```typescript
+// Common in service methods
+import { validateFields, logger } from '../../utils';
+import { LesgoException } from '../exceptions';
+import { ClientOptions } from '../../types/aws';
+```
+
+**Real example** from `putRecord.ts`:
+
+```typescript
+import {
+  NativeAttributeValue,
+  PutCommand,
+  PutCommandInput,
+} from '@aws-sdk/lib-dynamodb';
+import LesgoException from '../../exceptions/LesgoException';
+import { validateFields, logger } from '../../utils';
+import { ClientOptions } from '../../types/aws';
+import getTableName from './getTableName';
+import getClient from './getClient';
+```
+
+> **Pattern Guidelines**:
+>
+> - Use **default imports** for single exports (`import isEmpty from './isEmpty'`)
+> - Use **destructured imports** from barrel exports (`import { x, y } from './index'`)
+> - Use **named imports** for AWS SDK and external packages
+
+### Export Patterns
+
+**Default export for main functionality**:
+
+```typescript
+// Service method or utility
+const myUtility = (param: string): string => {
+  return param.toUpperCase();
+};
+
+export default myUtility;
+```
+
+**Named exports for configuration and index files**:
+
+```typescript
+// config/index.ts
+export { default as app } from './app';
+export { default as aws } from './aws';
+export { default as dynamodb } from './dynamodb';
+```
+
+**Mixed exports for services**:
+
+```typescript
+// services/DynamoDbService/index.ts
+export { default as getClient } from './getClient';
+export { default as putRecord } from './putRecord';
+export { default as query } from './query';
+```
+
+## Code Style Standards
+
+### ESLint Configuration
+
+**Source of Truth**: [`.eslintrc`](../../../.eslintrc)
+
+The project enforces TypeScript standards through ESLint:
+
+```json
+{
+  "parser": "@typescript-eslint/parser",
+  "extends": [
+    "eslint:recommended",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:prettier/recommended"
+  ],
+  "rules": {
+    "strict": ["error", "never"],
+    "lines-around-directive": [
+      "error",
+      { "before": "always", "after": "always" }
+    ],
+    "@typescript-eslint/no-explicit-any": "off",
+    "@typescript-eslint/ban-ts-comment": "off"
+  }
+}
+```
+
+**Key decisions**:
+
+- ✅ `@typescript-eslint/no-explicit-any: off` - Allows `any` for flexibility
+- ✅ `@typescript-eslint/ban-ts-comment: off` - Allows `@ts-ignore` with comments
+- ✅ `strict: never` - No 'use strict' (TypeScript modules are strict by default)
+
+### Naming Conventions
+
+| Type                | Convention       | Example                                 |
+| ------------------- | ---------------- | --------------------------------------- |
+| Variables           | camelCase        | `userName`, `requestId`                 |
+| Functions           | camelCase        | `getClient`, `putRecord`                |
+| Classes             | PascalCase       | `LoggerService`, `LesgoException`       |
+| Interfaces          | PascalCase       | `MiddlewareOptions`, `Transport`        |
+| Types               | PascalCase       | `LogLevel`, `QueryResult`               |
+| Constants           | UPPER_SNAKE_CASE | `MAX_RETRY_COUNT`                       |
+| Files               | camelCase        | `getClient.ts`, `isEmpty.ts`            |
+| Class Files         | PascalCase       | `LesgoException.ts`, `LoggerService.ts` |
+| Config Files        | camelCase        | `dynamodb.ts`, `secretsmanager2.ts`     |
+| Service Directories | PascalCase       | `DynamoDbService/`, `S3Service/`        |
+| Other Directories   | camelCase        | `utils/`, `middlewares/`, `config/`     |
+| Test Directories    | `__tests__/`     | `services/__tests__/`                   |
+| Test Files          | `*.test.ts`      | `getClient.test.ts`, `isEmpty.test.ts`  |
+
+**Notes**:
+
+- **File naming**: Match the primary export (PascalCase for classes, camelCase for functions)
+- **Directory naming**: PascalCase only for service directories, camelCase everywhere else
+- **Test location**: Always in `__tests__/` subdirectories, never alongside source files
+
+### Function Declarations
+
+**Use arrow functions for utilities**:
+
+```typescript
+// ✅ Good - Arrow function with explicit return type
+const isEmpty = (value: any): boolean => {
+  if (value === undefined || value === null || value === '') {
+    return true;
+  }
+  return false;
+};
+
+export default isEmpty;
+```
+
+**Use class methods for services**:
+
+```typescript
+// ✅ Good - Class methods
+export default class LoggerService {
+  log(level: LogLevel, message: string, extra = {}) {
+    // Implementation
+  }
+
+  error(message: string, extra = {}) {
+    this.log('error', message, extra);
+  }
+}
+```
+
+### Class Design Patterns
+
+**Real-world pattern** from `LoggerService.ts` showing proper class structure:
+
+```typescript
+type LogLevel = 'error' | 'warn' | 'notice' | 'info' | 'debug';
+
+interface LoggerServiceOptions {
+  logger?: string;
+  defaultMeta?: object;
+  transports?: Array<Transport>;
+}
+
+export default class LoggerService {
+  // Public properties (no access modifiers in TypeScript for public)
+  logger: string;
+  meta: object;
+  transports: Array<Transport>;
+  logLevels: { [key: string]: number };
+
+  // Constructor with typed options and defaults
+  constructor(opts: LoggerServiceOptions = {}) {
+    const defaultOptions = {
+      logger: 'lesgo-logger',
+      meta: {},
+      transports: [],
+    };
+
+    const options = {
+      ...defaultOptions,
+      logger: opts.logger || defaultOptions.logger,
+      meta: {
+        ...defaultOptions.meta,
+        ...(opts.defaultMeta || {}),
+      },
+      transports: opts.transports || [],
+    };
+
+    this.logger = options.logger;
+    this.meta = options.meta;
+    this.transports = options.transports;
+
+    this.logLevels = {
+      error: 0,
+      warn: 1,
+      notice: 2,
+      info: 3,
+      debug: 4,
+    };
+  }
+
+  // Public methods
+  log(level: LogLevel, message: string, extra = {}) {
+    // Implementation
+  }
+
+  // Convenience methods
+  error(message: string, extra = {}) {
+    this.log('error', message, extra);
+  }
+
+  // Helper methods (private in practice, but not marked private)
+  checkIsLogRequired(transportName: string, level: LogLevel) {
+    // Implementation
+  }
+}
+```
+
+**Key patterns observed**:
+
+- ✅ Properties declared at class level with types
+- ✅ Constructor accepts options interface with defaults
+- ✅ No explicit `public` keyword (it's default)
+- ✅ Use `Array<T>` syntax for arrays (consistent with codebase)
+- ✅ Convenience methods delegate to core methods
+- ⚠️ No `private` or `protected` modifiers used (framework choice)
+
+### Async/Await Pattern
+
+**Always use async/await** (never mix with .then/.catch):
+
+```typescript
+// ✅ Good - Consistent async/await
+const fetchData = async (id: string): Promise<Data> => {
+  try {
+    const client = getClient();
+    const command = new GetCommand({ id });
+    const result = await client.send(command);
+    return result;
+  } catch (err: any) {
+    throw new LesgoException('Fetch failed', 'FETCH_ERROR', 500, { id, err });
+  }
+};
+
+// ❌ Avoid - Mixing patterns
+const fetchData = async (id: string) => {
+  return getClient()
+    .send(new GetCommand({ id }))
+    .then(result => result)
+    .catch(err => {
+      throw new LesgoException('Fetch failed', 'FETCH_ERROR', 500);
+    });
+};
+```
+
+**Real-world pattern** from `putRecord.ts`:
+
+```typescript
+try {
+  const resp = await client.send(new PutCommand(commandInput));
+  logger.debug(`${FILE}::RECEIVED_RESPONSE`, { resp, commandInput });
+  return resp;
+} catch (error) {
+  throw new LesgoException('Failed to put record', `${FILE}::ERROR`, 500, {
+    error,
+    commandInput,
+    clientOpts,
+  });
+}
+```
+
+> **Note**: Always type catch errors as `err: any` or `error` (untyped) since JavaScript doesn't enforce error types.
+
+## Documentation Standards
+
+### JSDoc Comments
+
+**All exported functions require JSDoc**:
+
+````typescript
+/**
+ * Checks if a value is empty (null, undefined, '', [], {}).
+ *
+ * @param value - The value to check for emptiness.
+ * @returns Returns `true` if the value is empty, otherwise `false`.
+ *
+ * @example
+ * ```typescript
+ * isEmpty(null);       // true
+ * isEmpty('');         // true
+ * isEmpty([]);         // true
+ * isEmpty('hello');    // false
+ * ```
+ */
+const isEmpty = (value: any): boolean => {
+  // Implementation
+};
+
+export default isEmpty;
+````
+
+**Required JSDoc tags**:
+
+- `@param` - For each parameter
+- `@returns` - For return value
+- `@throws` - For exceptions (optional but recommended)
+- `@example` - For complex functions (optional but helpful)
+
+### Inline Comments
+
+**Use inline comments for**:
+
+- Complex logic
+- Non-obvious decisions
+- Workarounds
+- TODO items
+
+```typescript
+// ✅ Good - Explains non-obvious logic
+// Check if value is an object (excluding null and arrays)
+if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
+  return Object.keys(value).length === 0;
+}
+
+// ✅ Good - Documents workaround
+// @ts-ignore - AWS SDK types are incorrect for this edge case
+const response = await client.send(command);
+```
+
+## TypeScript-Specific Patterns
+
+### Type Guards
+
+```typescript
+// ✅ Good - Type guard function
+const isError = (value: unknown): value is Error => {
+  return value instanceof Error;
+};
+```
+
+### Generics
+
+```typescript
+// ✅ Good - Generic function
+const parseResponse = <T>(response: string): T => {
+  return JSON.parse(response) as T;
+};
+```
+
+### Optional Chaining & Nullish Coalescing
+
+```typescript
+// ✅ Good - Safe property access
+const userName = user?.profile?.name ?? 'Anonymous';
+
+// ✅ Good - Safe method call
+const result = await service?.fetchData?.();
+```
+
+### Array Type Syntax
+
+**Codebase preference**: `Array<T>` over `T[]` for complex types:
+
+```typescript
+// ✅ Preferred - Consistent with codebase
+interface LoggerServiceOptions {
+  transports?: Array<Transport>;
+}
+
+// ✅ Also acceptable - For simple primitives
+const ids: string[] = ['id1', 'id2'];
+
+// ✅ Preferred - Complex types
+type Items = Array<Record<string, any>>;
+
+// ⚠️ Less common in codebase
+type Items = Record<string, any>[];
+```
+
+**Guideline**: Use `Array<T>` for consistency, especially in public APIs and complex types. Use `T[]` for simple, inline primitive arrays.
+
+## Code Quality Checklist
+
+### Automated Checks
+
+Run these commands before committing:
+
+```bash
+npm run lint-fix      # Fix auto-fixable linting issues
+npm run type-check    # Verify TypeScript types (2-5s)
+npm test              # Run all tests (includes type-check + lint via pretest)
+npm run build         # Verify production build works
+```
+
+### Manual Checks
+
+Before committing, ensure:
+
+- [ ] **Types compile**: `npm run type-check` passes ✅
+- [ ] **Linting passes**: `npm run lint` has no errors
+- [ ] **Tests pass**: `npm test` succeeds (automatically runs type-check)
+- [ ] **JSDoc present**: All exported functions have JSDoc comments
+- [ ] **Imports organized**: Follow the import order pattern
+- [ ] **No console.log**: Use LoggerService or `logger` utility
+- [ ] **No hardcoded values**: Use config/environment variables
+- [ ] **Type safety**: Avoid unnecessary `any` types
+- [ ] **Error handling**: All errors use `LesgoException`
+
+### What Runs Automatically
+
+Pre-commit hooks run on `git commit`:
+
+1. ✅ Prettier formats your code
+2. ✅ ESLint checks your code
+3. ✅ Changes are staged
+
+**Note**: The pre-commit hook will **fail** if linting errors exist.
+
+## Common TypeScript Patterns
+
+### Error Handling with Type Guards
+
+```typescript
+const handleError = (err: unknown): void => {
+  if (err instanceof LesgoException) {
+    logger.error(err.message, { code: err.code, statusCode: err.statusCode });
+  } else if (err instanceof Error) {
+    logger.error(err.message, { stack: err.stack });
+  } else {
+    logger.error('Unknown error', { error: err });
+  }
+};
+```
+
+> **See Also**: [Error Handling](./05-error-handling.mdc) for complete exception handling patterns, error logging, and middleware error handling.
+
+### Readonly Properties
+
+```typescript
+interface Config {
+  readonly apiKey: string;
+  readonly region: string;
+}
+```
+
+### Const Assertions
+
+```typescript
+const LOG_LEVELS = ['error', 'warn', 'info', 'debug'] as const;
+type LogLevel = (typeof LOG_LEVELS)[number];
+```
+
+### File-Level Constants for Logging Context
+
+**Pattern observed in codebase** - Use `FILE` constant for consistent error context:
+
+```typescript
+const FILE = 'lesgo.services.DynamoDbService.putRecord';
+
+// Later in error handling:
+throw new LesgoException('Failed to put record', `${FILE}::ERROR`, 500, {
+  error,
+  commandInput,
+});
+
+// Or in logging:
+logger.debug(`${FILE}::RECEIVED_RESPONSE`, { resp });
+```
+
+> **Best Practice**: Include the full module path in FILE constant for easier debugging and log filtering.
+
+### Using `@ts-ignore` Responsibly
+
+The ESLint config allows `@ts-ignore`, but **always document why**:
+
+```typescript
+// ✅ Good - Explains why TypeScript is wrong
+this.transports.map(transport => {
+  // @ts-ignore - Dynamic method resolution based on logType
+  return this[`${transport.logType}Logger`](level, structuredMessage);
+});
+
+// ❌ Bad - No explanation
+// @ts-ignore
+return this[`${transport.logType}Logger`](level, structuredMessage);
+```
+
+**Real example** from `LoggerService.ts` showing legitimate use of `@ts-ignore` for dynamic method calls.
+
+## Anti-Patterns to Avoid
+
+❌ **Don't** use CommonJS (`require`/`module.exports`)
+❌ **Don't** mix async/await with .then/.catch
+❌ **Don't** mutate function parameters
+❌ **Don't** use `var` (use `const` or `let`)
+❌ **Don't** use `@ts-ignore` without explaining why
+❌ **Don't** export unnamed functions
+❌ **Don't** use `Function` type (use specific function signatures)
+❌ **Don't** use `console.log` directly (use LoggerService or `logger` utility)
+❌ **Don't** log sensitive information (passwords, tokens, secrets)
+
+---
+
+## Related Rules
+
+For more information on related topics, see:
+
+- **[Overview](./00-overview.mdc)** - Core architecture and project structure patterns
+- **[Error Handling](./05-error-handling.mdc)** - Exception handling, LesgoException usage, and validation patterns
+- **[Quick Reference](./09-quick-reference.mdc)** - Code templates, snippets, and practical examples

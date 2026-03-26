@@ -64,4 +64,43 @@ describe('verifyJwtMiddleware', () => {
       )
     );
   });
+
+  it('should verify JWT with secret and options', () => {
+    const mockDecodedToken = { id: '123', username: 'john.doe' };
+    const secret = 'my-secret';
+    const options = { algorithms: ['HS256' as const] };
+    (verify as jest.Mock).mockReturnValue(mockDecodedToken);
+
+    verifyJwtMiddleware(secret, options).before(mockRequest);
+
+    expect(verify).toHaveBeenCalledWith('mock-token', secret, options);
+    expect(mockRequest.event.jwt).toEqual(mockDecodedToken);
+  });
+
+  it('should set extendedResponse with jwt in after hook', async () => {
+    const mockDecodedToken = { id: '123', username: 'john.doe' };
+    mockRequest.event.jwt = mockDecodedToken;
+
+    const middleware = verifyJwtMiddleware();
+    await middleware.after(mockRequest);
+
+    expect(mockRequest.event.extendedResponse).toEqual({
+      _jwt: mockDecodedToken,
+    });
+  });
+
+  it('should overwrite extendedResponse in after hook', async () => {
+    const mockDecodedToken = { id: '123', username: 'john.doe' };
+    mockRequest.event.jwt = mockDecodedToken;
+    mockRequest.event.extendedResponse = {
+      _custom: 'value',
+    };
+
+    const middleware = verifyJwtMiddleware();
+    await middleware.after(mockRequest);
+
+    expect(mockRequest.event.extendedResponse).toEqual({
+      _jwt: mockDecodedToken,
+    });
+  });
 });

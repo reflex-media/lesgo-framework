@@ -1,0 +1,293 @@
+---
+description: AWS SDK v3 patterns, service development, and integration guidelines for Lesgo framework
+---
+
+# AWS Services & SDK Patterns
+
+## AWS SDK v3 Overview
+
+Lesgo uses AWS SDK v3 with modular architecture for smaller bundle sizes, better tree-shaking, and modern TypeScript support. All operations use the command pattern.
+
+**Related Rules:**
+
+- Error handling patterns: See `05-error-handling.mdc`
+- Service templates: See `09-quick-reference.mdc`
+- Testing patterns: See `02-testing.mdc`
+
+## Client Initialization Pattern
+
+### Actual Implementation Pattern
+
+All services follow this pattern. See `src/services/DynamoDbService/getClient.ts`, `S3Service/getClient.ts`, `SQSService/getClient.ts` for reference implementations.
+
+```typescript
+import { ServiceClient } from '@aws-sdk/client-service';
+import { logger, isEmpty, validateFields } from '../../utils';
+import { serviceConfig } from '../../config';
+import { ClientOptions } from '../../types/aws';
+
+const FILE = 'lesgo.services.ServiceName.getClient';
+
+export interface Singleton {
+  [key: string]: ServiceClient;
+}
+
+const singleton: Singleton = {};
+
+const getClient = (clientOpts: ClientOptions = {}) => {
+  const options = validateFields(clientOpts, [
+    { key: 'region', type: 'string', required: false },
+    { key: 'singletonConn', type: 'string', required: false },
+  ]);
+
+  const region = options.region || serviceConfig.region;
+  const singletonConn = options.singletonConn || 'default';
+
+  if (!isEmpty(singleton[singletonConn])) {
+    logger.debug(`${FILE}::REUSE_CLIENT_SINGLETON`, {
+      singletonConn,
+      region,
+    });
+    return singleton[singletonConn];
+  }
+
+  const client = new ServiceClient({ region });
+  logger.debug(`${FILE}::NEW_CLIENT`, {
+    singletonConn,
+    region,
+  });
+
+  singleton[singletonConn] = client;
+
+  return client;
+};
+
+export default getClient;
+```
+
+### Key Differences from Generic Patterns
+
+- **No `defaultProvider()`**: AWS SDK v3 automatically resolves credentials from environment/IAM roles
+- **Multiple connections**: `singletonConn` allows multiple client instances (e.g., different regions)
+- **Validation**: Uses `validateFields` utility (see `09-quick-reference.mdc`)
+- **Logging**: Uses `logger.debug()` with `FILE` constant pattern
+- **Type safety**: Uses `ClientOptions` from `src/types/aws.ts`
+
+### DynamoDB Document Client Special Case
+
+DynamoDB uses `DynamoDBDocumentClient` wrapper:
+
+```typescript
+import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
+import { DynamoDBDocumentClient } from '@aws-sdk/lib-dynamodb';
+
+const ddbClient = new DynamoDBClient({ region });
+const client = DynamoDBDocumentClient.from(ddbClient);
+```
+
+See `src/services/DynamoDbService/getClient.ts` for full implementation.
+
+## Service Method Pattern
+
+### Service Method Implementation Pattern
+
+All service methods follow this structure. See `src/services/DynamoDbService/putRecord.ts`, `S3Service/getObject.ts`, `SQSService/dispatch.ts` for reference implementations.
+
+```typescript
+import {
+  OperationCommand,
+  OperationCommandInput,
+} from '@aws-sdk/client-service';
+import LesgoException from '../../exceptions/LesgoException';
+import { validateFields, logger } from '../../utils';
+import { ClientOptions } from '../../types/aws';
+import getClient from './getClient';
+
+const FILE = 'lesgo.services.ServiceName.operationName';
+
+export interface OperationOptions
+  extends Partial<Omit<OperationCommandInput, 'RequiredField'>> {
+  RequiredField?: string;
+}
+
+const performOperation = async (
+  requiredParam: string,
+  opts?: OperationOptions,
+  clientOpts?: ClientOptions
+) => {
+  const input = validateFields({ requiredParam }, [
+    { key: 'requiredParam', type: 'string', required: true },
+  ]);
+
+  const client = getClient(clientOpts);
+
+  const commandInput: OperationCommandInput = {
+    RequiredField: input.requiredParam,
+    ...opts,
+  };
+
+  try {
+    const resp = await client.send(new OperationCommand(commandInput));
+    logger.debug(`${FILE}::RECEIVED_RESPONSE`, { resp, commandInput });
+    return resp;
+  } catch (error) {
+    throw new LesgoException('Operation failed', `${FILE}::ERROR`, 500, {
+      error,
+      commandInput,
+      opts,
+    });
+  }
+};
+
+export default performOperation;
+```
+
+### Key Patterns
+
+- **FILE constant**: Always define `const FILE = 'lesgo.services.ServiceName.methodName'` for logging
+- **validateFields**: Use for input validation (not `isEmpty` checks)
+- **Command input types**: Extend `OperationCommandInput` with `Partial<Omit<...>>` pattern
+- **Error codes**: Use `${FILE}::ERROR` format, not generic codes
+- **clientOpts**: Always accept optional `ClientOptions` as last parameter
+- **Logging**: Log responses with `logger.debug()` using FILE constant
+
+**Error handling details**: See `05-error-handling.mdc` for LesgoException patterns.
+
+## Service Directory Structure
+
+```text
+services/
+  ServiceNameService/
+    ├── index.ts                # Export all methods
+    ├── getClient.ts            # Client initialization
+    ├── operationOne.ts         # Business operation
+    ├── operationTwo.ts         # Business operation
+    └── __tests__/              # Tests
+        ├── getClient.test.ts
+        ├── operationOne.test.ts
+        └── operationTwo.test.ts
+```
+
+**Index file pattern**: See `src/services/DynamoDbService/index.ts` for reference.
+
+## Adding New AWS Services
+
+### Step-by-Step Guide
+
+1. **Install AWS SDK Package**
+
+   ```bash
+   npm install @aws-sdk/client-service-name
+   ```
+
+2. **Create Configuration**
+
+   ```typescript
+   // src/config/serviceName.ts
+   export default {
+     region: process.env.AWS_REGION || 'us-east-1',
+   };
+   ```
+
+3. **Create Service Directory**
+
+   ```bash
+   mkdir -p src/services/ServiceNameService/__tests__
+   ```
+
+4. **Implement getClient**
+
+   - Copy pattern from `src/services/S3Service/getClient.ts`
+   - Replace `S3Client` with your service client
+   - Update config import
+
+5. **Implement Operations**
+
+   - Copy pattern from existing service methods
+   - Use `validateFields` for validation
+   - Use `${FILE}::ERROR` for error codes
+   - Include `clientOpts?: ClientOptions` parameter
+
+6. **Create Index File**
+
+   ```typescript
+   export { default as getClient } from './getClient';
+   export { default as operation } from './operation';
+   ```
+
+7. **Export from Main Index**
+
+   ```typescript
+   // src/services/index.ts
+   export * as ServiceName from './ServiceNameService';
+   ```
+
+8. **Update package.json Exports**
+
+   ```json
+   {
+     "exports": {
+       "./services/ServiceNameService": {
+         "import": "./dist/services/ServiceNameService/index.js",
+         "require": "./dist/services/ServiceNameService/index.js"
+       }
+     }
+   }
+   ```
+
+9. **Write Tests**
+
+   - Follow patterns in `02-testing.mdc`
+   - Use `aws-sdk-client-mock` for mocking
+   - See existing test files for examples
+
+## Service-Specific Notes
+
+### DynamoDB
+
+- Uses `DynamoDBDocumentClient` from `@aws-sdk/lib-dynamodb`
+- See `src/services/DynamoDbService/` for all operations
+
+### S3
+
+- See `src/services/S3Service/` for object operations and presigned URLs
+
+### SQS
+
+- See `src/services/SQSService/` for message operations
+
+### Secrets Manager
+
+- See `src/services/SecretsManagerService/` for secret retrieval
+
+### ElastiCache Redis
+
+- Uses `ioredis` client, not AWS SDK
+- See `src/services/ElastiCacheRedisService/` for patterns
+
+### RDS Aurora MySQL Proxy
+
+- Uses `mysql2` client, not AWS SDK
+- See `src/services/RDSAuroraMySQLProxyService/` for patterns
+
+## Best Practices
+
+✅ **Do:**
+
+- Use singleton pattern with `singletonConn` support
+- Use `validateFields` for input validation
+- Use `${FILE}::ERROR` format for error codes
+- Include `clientOpts?: ClientOptions` parameter
+- Log operations with `logger.debug()` using FILE constant
+- Extend command input types with `Partial<Omit<...>>`
+- Reference actual implementations in codebase
+
+❌ **Don't:**
+
+- Use `defaultProvider()` - credentials auto-resolve
+- Use `isEmpty()` for validation - use `validateFields`
+- Create new clients for each operation
+- Hardcode AWS resource names
+- Use generic error codes - use `${FILE}::ERROR`
+- Skip logging with FILE constant
+- Mix AWS SDK v2 and v3 patterns
