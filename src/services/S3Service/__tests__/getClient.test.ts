@@ -13,13 +13,12 @@ describe('getClient', () => {
     const region = 'us-west-2';
     const singletonConn = 'cusom1';
 
-    const client = getClient({ region, singletonConn });
+    getClient({ region, singletonConn });
 
     expect(logger.debug).toHaveBeenCalledTimes(1);
     expect(logger.debug).toHaveBeenCalledWith(
       'lesgo.services.S3Service.getClient::NEW_CLIENT',
       {
-        client,
         region: 'us-west-2',
       }
     );
@@ -29,27 +28,25 @@ describe('getClient', () => {
     const region = 'us-west-2';
     const singletonConn = 'custom2';
 
-    const client1 = getClient({ region, singletonConn });
+    getClient({ region, singletonConn });
     getClient({ region, singletonConn });
 
     expect(logger.debug).toHaveBeenCalledTimes(2);
     expect(logger.debug).toHaveBeenCalledWith(
       'lesgo.services.S3Service.getClient::REUSE_CLIENT_SINGLETON',
       {
-        client: client1,
         region: 'us-west-2',
       }
     );
   });
 
   it('should create a new client with default options if none provided', () => {
-    const client = getClient();
+    getClient();
 
     expect(logger.debug).toHaveBeenCalledTimes(1);
     expect(logger.debug).toHaveBeenCalledWith(
       'lesgo.services.S3Service.getClient::NEW_CLIENT',
       {
-        client,
         region: s3Config.region,
       }
     );
