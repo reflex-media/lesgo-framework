@@ -109,7 +109,7 @@ const createAndStoreNewPool = async (
       });
 
       // short exponential backoff before retrying
-      if (attempt <= MAX_POOL_CREATION_RETRIES) {
+      if (attempt < MAX_POOL_CREATION_RETRIES) {
         const delay = Math.min(1000, 100 * 2 ** (attempt - 1));
         logger.debug(`${FILE}::POOL_CREATION_BACKOFF`, { attempt, delay });
         await sleep(delay);
