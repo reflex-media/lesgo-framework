@@ -182,7 +182,6 @@ const getClient = async (
             databaseName
           );
         } finally {
-          // Ensure we always clean up the lock regardless of success/failure
           poolHealthCheckLocks[singletonConn] = null;
         }
       })();
@@ -190,7 +189,10 @@ const getClient = async (
       logger.debug(`${FILE}::REUSE_RDS_CONNECTION (from lock)`);
     }
 
-    const result = await poolHealthCheckLocks[singletonConn];
+    // Capture the reference before awaiting so concurrent callers hold a stable
+    // Promise even after finally nulls the shared slot.
+    const lockRef = poolHealthCheckLocks[singletonConn];
+    const result = await lockRef;
 
     if (!result) {
       throw new Error(`${FILE}::Pool health check lock failed unexpectedly`);
