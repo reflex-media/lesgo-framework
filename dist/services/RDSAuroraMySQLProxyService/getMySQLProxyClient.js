@@ -136,7 +136,7 @@ const createAndStoreNewPool = (
           error: { trace: err },
         });
         // short exponential backoff before retrying
-        if (attempt <= MAX_POOL_CREATION_RETRIES) {
+        if (attempt < MAX_POOL_CREATION_RETRIES) {
           const delay = Math.min(1000, 100 * Math.pow(2, attempt - 1));
           logger.debug(`${FILE}::POOL_CREATION_BACKOFF`, { attempt, delay });
           yield sleep(delay);
@@ -200,14 +200,16 @@ const getClient = (connOptions, clientOpts) =>
                 databaseName
               );
             } finally {
-              // Ensure we always clean up the lock regardless of success/failure
               poolHealthCheckLocks[singletonConn] = null;
             }
           }))();
       } else {
         logger.debug(`${FILE}::REUSE_RDS_CONNECTION (from lock)`);
       }
-      const result = yield poolHealthCheckLocks[singletonConn];
+      // Capture the reference before awaiting so concurrent callers hold a stable
+      // Promise even after finally nulls the shared slot.
+      const lockRef = poolHealthCheckLocks[singletonConn];
+      const result = yield lockRef;
       if (!result) {
         throw new Error(`${FILE}::Pool health check lock failed unexpectedly`);
       }
