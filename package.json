@@ -30,7 +30,7 @@
     "lint-fix": "eslint 'src/**/*.{js,ts,jsx,tsx}' --fix",
     "format": "prettier --write 'dist/**/*.js'",
     "build": "tsc && npm run format && npm run lint:dist",
-    "prepare": "husky install",
+    "prepare": "[ -d .git ] && husky install || true",
     "prepublishOnly": "npm run build"
   },
   "bin": {
