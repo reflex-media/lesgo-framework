@@ -30,7 +30,7 @@
     "lint-fix": "eslint 'src/**/*.{js,ts,jsx,tsx}' --fix",
     "format": "prettier --write 'dist/**/*.js'",
     "build": "tsc && npm run format && npm run lint:dist",
-    "prepare": "husky install",
+    "prepare": "[ -d .git ] && husky install || true",
     "prepublishOnly": "npm run build"
   },
   "bin": {
@@ -175,7 +175,7 @@
   },
   "engineStrict": true,
   "engines": {
-    "node": ">=20.17.0"
+    "node": ">=24.0.0"
   },
   "peerDependencies": {
     "osls": "^3.0.0"
